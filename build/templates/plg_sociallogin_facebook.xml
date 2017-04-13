@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension version="3.4.0" type="plugin" group="sociallogin" method="upgrade">
+    <name>PLG_SOCIALLOGIN_FACEBOOK</name>
+    <version>##VERSION##</version>
+    <creationDate>##DATE##</creationDate>
+
+    <author>Akeeba Ltd</author>
+    <authorEmail>no-reply@akeebabackup.com</authorEmail>
+    <authorUrl>https://www.akeebabackup.com</authorUrl>
+
+    <copyright>Copyright (c)2016-2017 Akeeba Ltd</copyright>
+    <license>GNU GPL v3 or later</license>
+
+    <description>PLG_SOCIALLOGIN_FACEBOOK_DESCRIPTION</description>
+
+    <files>
+        <filename plugin="facebook">facebook.php</filename>
+    </files>
+
+    <media folder="media" destination="plg_sociallogin_facebook">
+        <folder>images</folder>
+    </media>
+
+    <languages folder="language">
+        <language tag="en-GB">en-GB/en-GB.plg_sociallogin_facebook.ini</language>
+        <language tag="en-GB">en-GB/en-GB.plg_sociallogin_facebook.sys.ini</language>
+    </languages>
+
+    <config>
+        <fields name="params">
+            <fieldset name="basic">
+                <field
+                        name="helpurl"
+                        type="text"
+                        label="PLG_SOCIALLOGIN_FACEBOOK_CONFIG_HELPURL_LABEL"
+                        description="PLG_SOCIALLOGIN_FACEBOOK_CONFIG_HELPURL_DESC"
+                        default=""
+                        filter="url"
+                />
+            </fieldset>
+        </fields>
+    </config>
+
+</extension>

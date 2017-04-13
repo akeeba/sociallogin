@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="component" version="3.4.0" method="upgrade">
+	<name>SOCIALLOGIN</name>
+	<version>##VERSION##</version>
+	<creationDate>##DATE##</creationDate>
+
+	<author>Akeeba Ltd</author>
+	<authorEmail>no-reply@akeebabackup.com</authorEmail>
+	<authorUrl>https://www.akeebabackup.com</authorUrl>
+
+	<copyright>Copyright (c)2016-2017 Akeeba Ltd</copyright>
+	<license>GNU/GPL v3 or any later version</license>
+
+	<description>Akeeba Social Login</description>
+
+	<!-- Public front end files -->
+	<files folder="frontend">
+		<folder>controllers</folder>
+		<folder>helpers</folder>
+		<folder>models</folder>
+		<folder>views</folder>
+
+		<filename>controller.php</filename>
+		<filename>index.html</filename>
+		<filename>sociallogin.php</filename>
+	</files>
+
+	<!-- Front end translation files -->
+	<languages folder="language/frontend">
+		<language tag="en-GB">en-GB/en-GB.com_sociallogin.ini</language>
+	</languages>
+
+	<!-- Media files -->
+	<media destination="com_sociallogin" folder="media">
+		<folder>css</folder>
+		<folder>images</folder>
+		<folder>js</folder>
+		<filename>index.html</filename>
+	</media>
+
+	<!-- Administrator back-end section -->
+	<administration>
+		<!-- Administration menu -->
+		<menu view="cpanel">COM_SOCIALLOGIN</menu>
+
+		<!-- Back-end files -->
+		<files folder="backend">
+			<folder>controllers</folder>
+			<folder>models</folder>
+			<folder>views</folder>
+			<folder>sql</folder>
+
+			<filename>access.xml</filename>
+			<filename>cacert.pem</filename>
+			<filename>config.xml</filename>
+			<filename>controller.php</filename>
+			<filename>index.html</filename>
+			<filename>sociallogin.php</filename>
+		</files>
+
+		<!-- Back-end translation files -->
+		<languages folder="language/backend">
+			<language tag="en-GB">en-GB/en-GB.com_sociallogin.ini</language>
+			<language tag="en-GB">en-GB/en-GB.com_sociallogin.sys.ini</language>
+		</languages>
+	</administration>
+
+	<!-- Handle the database installation and updates -->
+	<install>
+		<sql>
+			<file driver="mysql" charset="utf8">sql/mysql/install.sql</file>
+		</sql>
+	</install>
+	<uninstall>
+		<sql>
+			<file driver="mysql" charset="utf8">sql/mysql/uninstall.sql</file>
+		</sql>
+	</uninstall>
+	<update>
+		<schemas>
+			<schemapath type="mysql">sql/mysql/updates</schemapath>
+		</schemas>
+	</update>
+	
+	<!-- Installation / uninstallation script file -->
+	<scriptfile>script.com_sociallogin.php</scriptfile>
+</extension>

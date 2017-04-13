@@ -1,0 +1,119 @@
+<?xml version="1.0"?>
+<project name="AkeebaSocialLogin" description="Akeeba Social Login" default="git" >
+	<import file="${phing.dir}/../../buildfiles/phing/common.xml" />
+
+	<!-- Fileset for building the component ZIP -->
+	<fileset dir="${dirs.component}" id="component">
+		<include name="backend/**" />
+		<include name="frontend/**" />
+		<include name="language/**" />
+		<include name="media/**" />
+
+		<include name="*" />
+
+		<!-- Exclude uncompressed CSS and JS -->
+		<exclude name="media/uncompressed/**" />
+
+		<!-- Exclude the script used by the package -->
+		<exclude name="script.sociallogin.php" />
+	</fileset>
+
+	<!-- Fileset for building the package ZIP -->
+	<fileset dir="${dirs.release}" id="package">
+		<include name="com_*.zip" />
+		<include name="mod_*.zip" />
+		<include name="plg_*.zip" />
+		<include name="lib_*.zip" />
+		<include name="pkg_*.xml" />
+		<include name="*.txt" />
+		<include name="script.sociallogin.php" />
+	</fileset>
+
+	<!--
+	====================================================================================================
+	Build customization
+	====================================================================================================
+	-->
+	<target name="component-packages" depends="plugin-manifests,package-pkg" />
+
+	<target name="plugin-manifests" depends="setup-properties">
+		<copy file="${phing.dir}/templates/plg_user_sociallogin.xml" tofile="${dirs.plugins}/user/sociallogin/sociallogin.xml" overwrite="true">
+			<filterchain id="manifest-replace-tokens">
+				<replacetokens begintoken="##" endtoken="##">
+					<token key="DATE" value="${build.date}" />
+					<token key="VERSION" value="${version}" />
+				</replacetokens>
+			</filterchain>
+		</copy>
+
+		<copy file="${phing.dir}/templates/plg_sociallogin_facebook.xml" tofile="${dirs.plugins}/sociallogin/facebook/facebook.xml" overwrite="true">
+			<filterchain refid="manifest-replace-tokens" />
+		</copy>
+	</target>
+
+	<!--
+	====================================================================================================
+	Tasks - Documentation
+	====================================================================================================
+	-->
+
+	<target name="documentation" description="The documentation">
+		<echo message="The documentation can be found in the repository's Wiki on GitHub. This task is obsolete." />
+	</target>
+
+	<!--
+	====================================================================================================
+	Tasks - Project management
+	====================================================================================================
+	-->
+
+	<target name="release">
+		<!-- Make sure there is a tag that's the same as the version number -->
+		<gittag gitPath="${git.binary}"
+				repository="${dirs.root}"
+				list="true" pattern="${version}"
+				outputProperty="git.tags"
+		/>
+
+		<php function="trim" returnProperty="git.tags">
+			<param value="${git.tags}" />
+		</php>
+
+		<if>
+			<not>
+				<equals arg1="${git.tags}" arg2="${version}" />
+			</not>
+			<then>
+				<fail message="You must tag version ${version} before trying to release it." />
+			</then>
+		</if>
+
+		<!-- Verify the tag. If it can't verify the tag the build fails. -->
+		<gittag gitPath="${git.binary}"
+				repository="${dirs.root}"
+				verify="true"
+				object="${version}"
+				outputProperty="git.verify"
+		/>
+
+		<!-- Make a draft release -->
+		<loadfile property="github.release.body" file="${dirs.root}/RELEASENOTES.md" />
+
+		<GitHubRelease token="${github.token}" organization="${github.organization}" repository="${github.repository}"
+					   tagName="${version}" releaseName="v.${version}" releaseBody="${github.release.body}" draft="1"
+					   propName="github.release.id" />
+
+		<!-- Upload the release files -->
+		<GitHubAsset token="${github.token}" organization="${github.organization}" repository="${github.repository}"
+					 file="${dirs.release}/pkg_sociallogin-${version}.zip"
+					 releaseId="${github.release.id}" />
+
+		<!-- Publish the release -->
+		<GitHubRelease token="${github.token}" organization="${github.organization}" repository="${github.repository}"
+					   tagName="${version}" draft="0" />
+	</target>
+
+	<target name="docsdeploy">
+		<echo message="The documentation can be found in the repository's Wiki on GitHub. This task is obsolete." />
+	</target>
+</project>

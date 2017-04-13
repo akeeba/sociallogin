@@ -1,0 +1,11 @@
+.idea/
+
+/build/override.properties
+
+/component/sociallogin.xml
+
+/component/media/js/*.map
+
+/plugins/**/**/*.xml
+
+/release

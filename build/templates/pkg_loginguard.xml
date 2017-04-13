@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension version="3.4.0" type="package" method="upgrade">
+    <name>Akeeba Social Login package</name>
+    <version>##VERSION##</version>
+    <creationDate>##DATE##</creationDate>
+
+    <author>Akeeba Ltd</author>
+    <authorEmail>no-reply@akeebabackup.com</authorEmail>
+    <authorUrl>https://www.akeebabackup.com</authorUrl>
+
+    <packagename>sociallogin</packagename>
+    <url>https://www.akeebabackup.com</url>
+    <packager>Akeeba Ltd</packager>
+    <packagerurl>https://www.akeebabackup.com</packagerurl>
+
+    <copyright>Copyright (c)2016-2017 Akeeba Ltd</copyright>
+    <license>GNU GPL v3 or later</license>
+
+    <description>Akeeba Social Login installation package v.##VERSION##</description>
+
+    <!-- List of extensions to install -->
+    <files>
+        <!-- Component -->
+        <file type="component" id="com_sociallogin">com_sociallogin.zip</file>
+
+        <!-- Plugins: sociallogin -->
+        <file type="plugin" group="sociallogin" id="facebook">plg_sociallogin_facebook.zip</file>
+
+        <!-- Plugins: user -->
+        <file type="plugin" group="user" id="sociallogin">plg_user_sociallogin.zip</file>
+    </files>
+
+    <!-- Installation script -->
+    <scriptfile>script.sociallogin.php</scriptfile>
+
+    <!-- Update servers -->
+    <updateservers>
+        <server type="extension" priority="1" name="Akeeba Social Login Updates">https://raw.githubusercontent.com/akeeba/sociallogin/master/update/pkg_sociallogin_updates.xml</server>
+    </updateservers>
+</extension>
