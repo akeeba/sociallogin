@@ -10,6 +10,11 @@ defined('_JEXEC') or die();
 
 use Joomla\Registry\Registry;
 
+if (!class_exists('SocialLoginHelperLogin', true))
+{
+	JLoader::register('SocialLoginHelperLogin', JPATH_SITE . '/components/com_sociallogin/helpers/login.php');
+}
+
 /**
  * Akeeba Social Login plugin for Facebook integration
  */
@@ -331,8 +336,8 @@ class plgSocialloginFacebook extends JPlugin
 			// Get information about the user from Big Brother... er... Facebook.
 			$options = new Registry();
 			$options->set('api.url', 'https://graph.facebook.com/v2.7/');
-			$fbUserApi    = new JFacebookUser($options, null, $facebookOauth);
-			$fbUserFields = $fbUserApi->getUser('me?fields=id,name,email,verified,timezone');
+			$fbUserApi       = new JFacebookUser($options, null, $facebookOauth);
+			$fbUserFields    = $fbUserApi->getUser('me?fields=id,name,email,verified,timezone');
 			$fullName        = $fbUserFields->name;
 			$fbUserId        = $fbUserFields->id;
 			$fbUserEmail     = $fbUserFields->email;
@@ -342,11 +347,12 @@ class plgSocialloginFacebook extends JPlugin
 		catch (Exception $e)
 		{
 			// Log failed login
-			$response = SocialLoginHelperLogin::getAuthenticationResponseObject();
-			$response->status = JAuthentication::STATUS_UNKNOWN;
+			$response                = SocialLoginHelperLogin::getAuthenticationResponseObject();
+			$response->status        = JAuthentication::STATUS_UNKNOWN;
 			$response->error_message = JText::sprintf('JGLOBAL_AUTH_FAILED', $e->getMessage());
 			SocialLoginHelperLogin::processLoginFailure($response);
 			$app->redirect($failureUrl);
+
 			return;
 		}
 
@@ -380,6 +386,7 @@ class plgSocialloginFacebook extends JPlugin
 				$response->error_message = JText::sprintf('JGLOBAL_AUTH_FAILED', JText::_('PLG_SOCIALLOGIN_FACEBOOK_ERROR_LOCAL_NOT_FOUND'));
 				SocialLoginHelperLogin::processLoginFailure($response);
 				$app->redirect($failureUrl);
+
 				return;
 			}
 
@@ -395,6 +402,7 @@ class plgSocialloginFacebook extends JPlugin
 				$response->error_message = JText::sprintf('PLG_SOCIALLOGIN_FACEBOOK_ERROR_CANNOT_CREATE', JText::_('PLG_SOCIALLOGIN_FACEBOOK_ERROR_LOCAL_USERNAME_CONFLICT'));
 				SocialLoginHelperLogin::processLoginFailure($response);
 				$app->redirect($failureUrl);
+
 				return;
 			}
 			catch (RuntimeException $e)
@@ -405,6 +413,7 @@ class plgSocialloginFacebook extends JPlugin
 				$response->error_message = JText::sprintf('PLG_SOCIALLOGIN_FACEBOOK_ERROR_CANNOT_CREATE', $e->getMessage());
 				SocialLoginHelperLogin::processLoginFailure($response);
 				$app->redirect($failureUrl);
+
 				return;
 			}
 
@@ -415,6 +424,7 @@ class plgSocialloginFacebook extends JPlugin
 				$message = JText::_('PLG_SOCIALLOGIN_FACEBOOK_NOTICE_' . $userId);
 				$app->enqueueMessage($message, 'info');
 				$app->redirect($failureUrl);
+
 				return;
 			}
 		}
@@ -430,14 +440,17 @@ class plgSocialloginFacebook extends JPlugin
 		}
 
 		// Log in the user
-		if (SocialLoginHelperLogin::loginUser($userId))
+		try
 		{
+			SocialLoginHelperLogin::loginUser($userId);
+
 			$app->redirect($loginUrl);
-
-			return;
 		}
-
-		$app->redirect($failureUrl);
+		catch (RuntimeException $e)
+		{
+			$app->enqueueMessage($e->getMessage(), 'error');
+			$app->redirect($failureUrl);
+		}
 	}
 
 	/**

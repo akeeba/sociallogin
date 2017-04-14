@@ -133,6 +133,69 @@ abstract class SocialLoginHelperLogin
 	}
 
 	/**
+	 * Logs in a user to the site, bypassing the authentication plugins.
+	 *
+	 * @param   int  $userId  The user ID to log in
+	 */
+	public static function loginUser($userId)
+	{
+		// Trick the class auto-loader into loading the necessary classes
+		JLoader::import('joomla.user.authentication');
+		JLoader::import('joomla.plugin.helper');
+		JLoader::import('joomla.user.helper');
+		class_exists('JAuthentication', true);
+
+		// Fake a successful login message
+		$app     = JFactory::getApplication();
+		$isAdmin = method_exists($app, 'isClient') ? $app->isClient('administrator') : $app->isAdmin();
+		$user    = JFactory::getUser($userId);
+
+		$response                = new JAuthenticationResponse();
+		$response->status        = JAuthentication::STATUS_SUCCESS;
+		$response->username      = $user->username;
+		$response->fullname      = $user->name;
+		$response->error_message = '';
+		$response->language      = $user->getParam('language');
+		$response->type          = 'SocialLogin';
+
+		if ($isAdmin)
+		{
+			$response->language = $user->getParam('admin_language');
+		}
+
+		// We force Remember Me when the user uses social login.
+		$options = array('remember' => true);
+
+		// Run the user plugins. They CAN block login by returning boolean false and setting $response->error_message.
+		JPluginHelper::importPlugin('user');
+		$results = self::runPlugins('onUserLogin', array((array) $response, $options));
+
+		// If there is no boolean FALSE result from any plugin the login is successful.
+		if (in_array(false, $results, true) == false)
+		{
+			// Set the user in the session, letting Joomla! know that we are logged in.
+			$session = \JFactory::getSession();
+			$session->set('user', $user);
+
+			// Trigger the onUserAfterLogin event
+			$options['user']         = $user;
+			$options['responseType'] = $response->type;
+
+			// The user is successfully logged in. Run the after login events
+			$app->triggerEvent('onUserAfterLogin', array($options));
+		}
+
+		// If we are here the plugins marked a login failure. Trigger the onUserLoginFailure Event.
+		$app->triggerEvent('onUserLoginFailure', array((array) $response));
+
+		// Log the failure
+		JLog::add($response->error_message, JLog::WARNING, 'jerror');
+
+		// Throw an exception to let the caller know that the login failed
+		throw new RuntimeException($response->error_message);
+	}
+
+	/**
 	 * Method to register a new user account. Based on UsersModelRegistration::register().
 	 *
 	 * @param   array  $data                The user data to save.
@@ -474,4 +537,23 @@ abstract class SocialLoginHelperLogin
 			return $user->id;
 		}
 	}
+
+	/**
+	 * Execute a plugin event and return the results
+	 *
+	 * @param   string  $event  The plugin event to trigger
+	 * @param   array   $data   The data to pass to the event handlers
+	 *
+	 * @return  array  The plugin responses
+	 */
+	private static function runPlugins($event, $data)
+	{
+		if (class_exists('JEventDispatcher'))
+		{
+			return \JEventDispatcher::getInstance()->trigger($event, $data);
+		}
+
+		return \JFactory::getApplication()->triggerEvent($event, $data);
+	}
+
 }
