@@ -30,6 +30,32 @@
         <fields name="params">
             <fieldset name="basic">
                 <field
+                        name="appid"
+                        type="text"
+                        label="PLG_SOCIALLOGIN_FACEBOOK_FIELD_APPID_LABEL"
+                        description="PLG_SOCIALLOGIN_FACEBOOK_FIELD_APPID_DESC"
+                />
+
+                <field
+                        name="appsecret"
+                        type="password"
+                        label="PLG_SOCIALLOGIN_FACEBOOK_FIELD_APPSECRET_LABEL"
+                        description="PLG_SOCIALLOGIN_FACEBOOK_FIELD_APPSECRET_DESC"
+                />
+
+                <field
+                        name="createnew"
+                        type="radio"
+                        label="PLG_SOCIALLOGIN_FACEBOOK_FIELD_CREATENEW_LABEL"
+                        description="PLG_SOCIALLOGIN_FACEBOOK_FIELD_CREATENEW_DESC"
+                        default="1"
+                        class="btn-group btn-group-yesno"
+                >
+                    <option value="1">JYES</option>
+                    <option value="0">JNO</option>
+                </field>
+
+                <field
                         name="helpurl"
                         type="text"
                         label="PLG_SOCIALLOGIN_FACEBOOK_CONFIG_HELPURL_LABEL"
