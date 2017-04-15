@@ -21,4 +21,31 @@
 		<language tag="en-GB">en-GB/en-GB.plg_system_sociallogin.sys.ini</language>
 	</languages>
 
+	<config>
+		<fields name="params">
+			<fieldset name="basic">
+				<field
+						name="loginmodules"
+						type="text"
+						label="PLG_SYSTEM_SOCIALLOGIN_CONFIG_LOGINMODULES_LABEL"
+						description="PLG_SYSTEM_SOCIALLOGIN_CONFIG_LOGINMODULES_DESC"
+						default="mod_login"
+				/>
+
+				<field
+						name="interceptlogin"
+						type="radio"
+						label="PLG_SYSTEM_SOCIALLOGIN_CONFIG_INTERCEPTLOGIN_LABEL"
+						description="PLG_SYSTEM_SOCIALLOGIN_CONFIG_INTERCEPTLOGIN_DESC"
+						default="1"
+						class="btn-group btn-group-yesno"
+				>
+					<option value="1">JYES</option>
+					<option value="0">JNO</option>
+				</field>
+
+			</fieldset>
+		</fields>
+	</config>
+
 </extension>
