@@ -53,9 +53,15 @@ class plgSystemSociallogin extends JPlugin
 	{
 		parent::__construct($subject, $config);
 
+		// Register helper classes
 		if (!class_exists('SocialLoginHelperLogin', true))
 		{
 			JLoader::register('SocialLoginHelperLogin', __DIR__ . '/helper/login.php');
+		}
+
+		if (!class_exists('SocialLoginHelperIntegrations', true))
+		{
+			JLoader::register('SocialLoginHelperIntegrations', __DIR__ . '/helper/integrations.php');
 		}
 
 		// Am I enabled?
@@ -270,8 +276,10 @@ class plgSystemSociallogin extends JPlugin
 	{
 		if (is_null($this->cachedSocialLoginButtons))
 		{
-			// TODO
-			$this->cachedSocialLoginButtons = "<h1>Social login buttons placeholder</h1>";
+			$baseLayoutPath = JPATH_SITE . '/plugins/system/sociallogin/layout';
+			$layoutFileName = 'akeeba.sociallogin.button';
+
+			$this->cachedSocialLoginButtons = JLayoutHelper::render($layoutFileName, array(), $baseLayoutPath);
 		}
 
 		return $this->cachedSocialLoginButtons;

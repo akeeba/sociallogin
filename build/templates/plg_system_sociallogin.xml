@@ -16,6 +16,7 @@
 	<files>
 		<filename plugin="sociallogin">sociallogin.php</filename>
 		<folder>helper</folder>
+		<folder>layout</folder>
 	</files>
 	<languages folder="language">
 		<language tag="en-GB">en-GB/en-GB.plg_system_sociallogin.ini</language>
@@ -44,7 +45,6 @@
 					<option value="1">JYES</option>
 					<option value="0">JNO</option>
 				</field>
-
 			</fieldset>
 		</fields>
 	</config>
