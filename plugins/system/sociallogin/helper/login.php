@@ -19,6 +19,7 @@ abstract class SocialLoginHelperLogin
 	public static function getAuthenticationResponseObject()
 	{
 		// Force the class auto-loader to load the JAuthentication class
+		JLoader::import('joomla.user.authentication');
 		class_exists('JAuthentication', true);
 
 		return new JAuthenticationResponse();
