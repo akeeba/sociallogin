@@ -35,13 +35,6 @@ class plgSystemSociallogin extends JPlugin
 	private $enabled = true;
 
 	/**
-	 * Cached copy of the social login buttons' HTML
-	 *
-	 * @var   string
-	 */
-	private $cachedSocialLoginButtons = null;
-
-	/**
 	 * Constructor
 	 *
 	 * @param   object  &$subject  The object to observe
@@ -54,15 +47,9 @@ class plgSystemSociallogin extends JPlugin
 		parent::__construct($subject, $config);
 
 		// Register helper classes
-		if (!class_exists('SocialLoginHelperLogin', true))
-		{
-			JLoader::register('SocialLoginHelperLogin', __DIR__ . '/helper/login.php');
-		}
-
-		if (!class_exists('SocialLoginHelperIntegrations', true))
-		{
-			JLoader::register('SocialLoginHelperIntegrations', __DIR__ . '/helper/integrations.php');
-		}
+		JLoader::register('SocialLoginHelperAjax', __DIR__ . '/helper/ajax.php');
+		JLoader::register('SocialLoginHelperIntegrations', __DIR__ . '/helper/integrations.php');
+		JLoader::register('SocialLoginHelperLogin', __DIR__ . '/helper/login.php');
 
 		// Am I enabled?
 		$this->enabled = $this->isEnabled();
@@ -122,8 +109,8 @@ class plgSystemSociallogin extends JPlugin
 	    }
 
 	    // Append the social login buttons content
-		$socialLoginButtons = $this->getSocialLoginButtons();
-		$module->content    .= "<div class=\"akeeba-social-login-buttons\">$socialLoginButtons</div>";
+		$socialLoginButtons = SocialLoginHelperIntegrations::getSocialLoginButtons();
+		$module->content    .= $socialLoginButtons;
 	}
 
 	/**
@@ -161,7 +148,7 @@ class plgSystemSociallogin extends JPlugin
 				return;
 			}
 
-			$socialLoginButtons = $this->getSocialLoginButtons();
+			$socialLoginButtons = SocialLoginHelperIntegrations::getSocialLoginButtons();
 
 			$buffer = preg_replace('/{socialloginbuttons(\s)?}/', $socialLoginButtons, $buffer);
 			$jDocument->setBuffer($buffer);
@@ -187,7 +174,7 @@ class plgSystemSociallogin extends JPlugin
 		}
 
 		// New Joomla! versions, buffer is a 3D array
-		$socialLoginButtons = $this->getSocialLoginButtons();
+		$socialLoginButtons = SocialLoginHelperIntegrations::getSocialLoginButtons();
 
 		foreach ($buffer as $type => $subBuffer1)
 		{
@@ -232,24 +219,6 @@ class plgSystemSociallogin extends JPlugin
 		return true;
 	}
 
-	/**
-	 * Gets the Social Login buttons placeholder
-	 *
-	 * @return  string
-	 */
-	private function getSocialLoginButtons()
-	{
-		if (is_null($this->cachedSocialLoginButtons))
-		{
-			$baseLayoutPath = JPATH_SITE . '/plugins/system/sociallogin/layout';
-			$layoutFileName = 'akeeba.sociallogin.button';
-
-			// TODO Loop all buttons
-			$this->cachedSocialLoginButtons = JLayoutHelper::render($layoutFileName, array(), $baseLayoutPath);
-		}
-
-		return $this->cachedSocialLoginButtons;
-	}
 
 	/**
 	 * Processes the callbacks from social login buttons.

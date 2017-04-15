@@ -155,21 +155,15 @@ class plgSocialloginFacebook extends JPlugin
 	/**
 	 * Get the information required to render a login / link account button
 	 *
-	 * @param   string  $slug        The slug of the integration we are checking against
 	 * @param   string  $loginURL    The URL to be redirected to upon successful login / account link
 	 * @param   string  $failureURL  The URL to be redirected to on error
 	 *
 	 * @return  array
 	 */
-	public function onSocialLoginGetLoginButton($slug, $loginURL = null, $failureURL = null)
+	public function onSocialLoginGetLoginButton($loginURL = null, $failureURL = null)
 	{
 		// Make sure we are properly set up
 		if (!$this->isProperlySetUp())
-		{
-			return array();
-		}
-
-		if ($slug != $this->integrationName)
 		{
 			return array();
 		}
@@ -196,18 +190,16 @@ class plgSocialloginFacebook extends JPlugin
 		$url       = $connector->createUrl();
 
 		return array(
-			// How to render the button. "anchor" (HTML <a> tag) or "custom" (custom HTML)
-			'field_type' => 'anchor',
+			// The name of the plugin rendering this button. Used for customized JLayouts.
+			'slug'       => $this->integrationName,
 			// The href attribute for the anchor tag.
 			'link'       => $url,
 			// The tooltip of the anchor tag.
-			'tooltip'    => JText::_('PLG_SOCIALLOGIN_FACEBOOK_SHORTINFO'),
+			'tooltip'    => JText::_('PLG_SOCIALLOGIN_FACEBOOK_LOGIN_DESC'),
 			// What to put inside the anchor tag. Leave empty to put the image returned by onSocialLoginGetIntegration.
-			'label'      => JText::_('PLG_SOCIALLOGIN_FACEBOOK_LBLDISPLAYEDAS'),
+			'label'      => JText::_('PLG_SOCIALLOGIN_FACEBOOK_LOGIN_LABEL'),
 			// An icon class for the span before the label inside the anchor tag. Nothing is shown if this is blank.
-		    'icon_class' => 'icon-facebook-sign',
-			// Custom HTML for rendering the login / link field. Only used when field_type = custom.
-			'html'       => '',
+		    'icon_class' => 'icon-facebook',
 		);
 	}
 
@@ -252,8 +244,8 @@ class plgSocialloginFacebook extends JPlugin
 
 			// Render an unlink button
 			return array(
-				// How to render the button. "anchor" (HTML <a> tag) or "custom" (custom HTML)
-				'field_type' => 'anchor',
+				// The name of the plugin rendering this button. Used for customized JLayouts.
+				'slug'       => $this->integrationName,
 				// The href attribute for the anchor tag.
 				'link'       => $unlinkURL,
 				// The tooltip of the anchor tag.
@@ -262,8 +254,6 @@ class plgSocialloginFacebook extends JPlugin
 				'label'      => JText::_('PLG_SOCIALLOGIN_FACEBOOK_UNLINK_DESC'),
 				// An icon class for the span before the label inside the anchor tag. Nothing is shown if this is blank.
 				'icon_class' => 'icon-facebook-sign',
-				// Custom HTML for rendering the login / link field. Only used when field_type = custom.
-				'html'       => '',
 			);
 		}
 
@@ -272,18 +262,16 @@ class plgSocialloginFacebook extends JPlugin
 		$url       = $connector->createUrl();
 
 		return array(
-			// How to render the button. "anchor" (HTML <a> tag) or "custom" (custom HTML)
-			'field_type' => 'anchor',
+			// The name of the plugin rendering this button. Used for customized JLayouts.
+			'slug'       => $this->integrationName,
 			// The href attribute for the anchor tag.
 			'link'       => $url,
 			// The tooltip of the anchor tag.
-			'tooltip'    => JText::_('PLG_SOCIALLOGIN_FACEBOOK_SHORTINFO'),
+			'tooltip'    => JText::_('PLG_SOCIALLOGIN_FACEBOOK_LINK_DESC'),
 			// What to put inside the anchor tag. Leave empty to put the image returned by onSocialLoginGetIntegration.
-			'label'      => JText::_('PLG_SOCIALLOGIN_FACEBOOK_LBLDISPLAYEDAS'),
+			'label'      => JText::_('PLG_SOCIALLOGIN_FACEBOOK_LINK_LABEL'),
 			// An icon class for the span before the label inside the anchor tag. Nothing is shown if this is blank.
 			'icon_class' => 'icon-facebook-sign',
-			// Custom HTML for rendering the login / link field. Only used when field_type = custom.
-			'html'       => '',
 		);
 	}
 

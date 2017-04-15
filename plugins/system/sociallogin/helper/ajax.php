@@ -26,7 +26,7 @@ final class SocialLoginHelperAjax
 	{
 		if (!($app instanceof JApplicationCms))
 		{
-			return;
+			return null;
 		}
 
 		$input    = $app->input;
