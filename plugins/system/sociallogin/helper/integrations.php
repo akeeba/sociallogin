@@ -9,7 +9,7 @@
 defined('_JEXEC') or die();
 
 /**
- * Helper class for managing Joomla! user login
+ * Helper class for managing integrations
  */
 abstract class SocialLoginHelperIntegrations
 {

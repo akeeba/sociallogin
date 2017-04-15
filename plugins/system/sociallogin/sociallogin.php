@@ -217,41 +217,6 @@ class plgSystemSociallogin extends JPlugin
 	}
 
 	/**
-	 * Recursively replace the placeholder in the buffer text
-	 *
-	 * @param   string $buffer
-	 *
-	 * @return  string
-	 */
-	private function replacePlaceholderRecursive($buffer)
-	{
-		if (is_array($buffer))
-		{
-			$temp = array();
-
-			foreach ($buffer as $k => $v)
-			{
-				$temp[$k] = $this->replacePlaceholderRecursive($v);
-			}
-
-			return $temp;
-		}
-
-		if (!is_string($buffer))
-		{
-			return $buffer;
-		}
-
-		if (strpos($buffer, '{socialloginbuttons') === false)
-		{
-			return $buffer;
-		}
-
-		$socialLoginButtons = $this->getSocialLoginButtons();
-		return preg_replace('/{socialloginbuttons(\s)?}/', $socialLoginButtons, $buffer);
-	}
-
-	/**
 	 * Should I enable the substitutions performed by this plugin?
 	 *
 	 * @return  bool
@@ -279,9 +244,85 @@ class plgSystemSociallogin extends JPlugin
 			$baseLayoutPath = JPATH_SITE . '/plugins/system/sociallogin/layout';
 			$layoutFileName = 'akeeba.sociallogin.button';
 
+			// TODO Loop all buttons
 			$this->cachedSocialLoginButtons = JLayoutHelper::render($layoutFileName, array(), $baseLayoutPath);
 		}
 
 		return $this->cachedSocialLoginButtons;
+	}
+
+	/**
+	 * Processes the callbacks from social login buttons.
+	 *
+	 * Note: this method is called from Joomla's com_ajax, not com_sociallogin itself
+	 *
+	 * @return  void
+	 */
+	public function onAjaxSociallogin()
+	{
+		$ajax  = new SocialLoginHelperAjax();
+		$app   = JFactory::getApplication();
+		$input = $app->input;
+
+		// Get the return URL from the session
+		$session = JFactory::getSession();
+		$returnURL = $session->get('returnUrl', JUri::base(), 'plg_system_sociallogin');
+		$session->set('returnUrl', null, 'plg_system_sociallogin');
+		$result = null;
+
+		try
+		{
+			$result = $ajax->handle($app);
+		}
+		catch (Exception $e)
+		{
+			$app->enqueueMessage($e->getMessage(), 'error');
+			$app->redirect($returnURL);
+
+			return;
+		}
+
+		if ($result != null)
+		{
+			switch ($input->getCmd('encoding', 'json'))
+			{
+				default:
+				case 'json':
+					echo json_encode($result);
+
+					break;
+
+				case 'jsonhash':
+					echo '###' . json_encode($result) . '###';
+
+					break;
+
+				case 'raw':
+					echo $result;
+
+					break;
+
+				case 'redirect':
+					if (isset($result['message']))
+					{
+						$type = isset($result['type']) ? $result['type'] : 'info';
+						$app->enqueueMessage($result['message'], $type);
+					}
+
+					if (isset($result['url']))
+					{
+						$app->redirect($result['url']);
+					}
+
+					$app->redirect($result);
+
+					return;
+					break;
+			}
+
+			$app->close(200);
+		}
+
+		$app->redirect($returnURL);
 	}
 }

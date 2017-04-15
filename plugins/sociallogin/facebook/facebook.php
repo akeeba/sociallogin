@@ -28,13 +28,6 @@ class plgSocialloginFacebook extends JPlugin
 	private $integrationName = 'facebook';
 
 	/**
-	 * The URL for the help content
-	 *
-	 * @var   string
-	 */
-	private $helpURL = '';
-
-	/**
 	 * Can I use this integration to create new user accounts?
 	 *
 	 * @var   bool
@@ -77,7 +70,6 @@ class plgSocialloginFacebook extends JPlugin
 		$this->loadLanguage();
 
 		// Load options
-		$this->helpURL = $this->params->get('helpurl', 'https://github.com/akeeba/sociallogin/wiki/Facebook');
 		$this->canCreate = $this->params->get('createnew', true);
 		$this->appId = $this->params->get('appid', '');
 		$this->appSecret = $this->params->get('appsecret', '');
@@ -114,53 +106,15 @@ class plgSocialloginFacebook extends JPlugin
 		return $this->connector;
 	}
 
-
-	/**
-	 * Gets the identity of this social login integration
-	 *
-	 * @return  array|false
-	 */
-	public function onSocialLoginGetIntegration()
-	{
-		if (!$this->isProperlySetUp())
-		{
-			return false;
-		}
-
-		return array(
-			// Slug for referencing this integration
-			'name'       => $this->integrationName,
-			// Human readable display title for this integration
-			'display'    => JText::_('PLG_SOCIALLOGIN_FACEBOOK_LBLDISPLAYEDAS'),
-			// Human readable short description of this integration
-			'shortinfo'  => JText::_('PLG_SOCIALLOGIN_FACEBOOK_SHORTINFO'),
-			// URL to the logo image for this integration
-			'image'      => 'media/plg_sociallogin_facebook/images/facebook.png',
-			// Are we allowed to disable (unlink) it after it's set up?
-			'canDisable' => true,
-			// Can it be used to create user accounts?
-			'canCreate'  => $this->canCreate,
-			// URL for help content
-			'help_url'   => $this->helpURL,
-		);
-	}
-
 	/**
 	 * Is the user linked to the social login account?
 	 *
-	 * @param   string  $slug  The slug of the integration we are checking against
 	 * @param   JUser   $user  The user account we are checking
 	 *
 	 * @return  bool
 	 */
-	public function onSocialLoginIsLinked($slug, JUser $user = null)
+	private function isLinked(JUser $user = null)
 	{
-		// Only respond to requests about our integration
-		if ($slug != $this->integrationName)
-		{
-			return false;
-		}
-
 		// Make sure we are set up
 		if (!$this->isProperlySetUp())
 		{
@@ -207,7 +161,7 @@ class plgSocialloginFacebook extends JPlugin
 	 *
 	 * @return  array
 	 */
-	public function onSocialLoginGetButton($slug, $loginURL = null, $failureURL = null)
+	public function onSocialLoginGetLoginButton($slug, $loginURL = null, $failureURL = null)
 	{
 		// Make sure we are properly set up
 		if (!$this->isProperlySetUp())
@@ -246,16 +200,90 @@ class plgSocialloginFacebook extends JPlugin
 			'field_type' => 'anchor',
 			// The href attribute for the anchor tag.
 			'link'       => $url,
-			// The tooltip of the anchor tag. Null for "Login with <Method Display Name>" or "Link <Method Display Name>"
-			'tooltip'    => '',
-			// The class attribute for the anchor tag. Leave empty for the defaults (typically it's something like "btn btn-default")
-			'class'      => '',
+			// The tooltip of the anchor tag.
+			'tooltip'    => JText::_('PLG_SOCIALLOGIN_FACEBOOK_SHORTINFO'),
 			// What to put inside the anchor tag. Leave empty to put the image returned by onSocialLoginGetIntegration.
-			'label'      => '',
+			'label'      => JText::_('PLG_SOCIALLOGIN_FACEBOOK_LBLDISPLAYEDAS'),
+			// An icon class for the span before the label inside the anchor tag. Nothing is shown if this is blank.
+		    'icon_class' => 'icon-facebook-sign',
 			// Custom HTML for rendering the login / link field. Only used when field_type = custom.
 			'html'       => '',
-			// URL for help content
-			'help_url'   => $this->helpURL,
+		);
+	}
+
+	/**
+	 * Get the information required to render a link / unlink account button
+	 *
+	 * @param   string  $slug        The slug of the integration we are checking against
+	 * @param   JUser   $user        The user to be linked / unlinked
+	 *
+	 * @return  array
+	 */
+	public function onSocialLoginGetLinkButton($slug, JUser $user = null)
+	{
+		// Make sure we are properly set up
+		if (!$this->isProperlySetUp())
+		{
+			return array();
+		}
+
+		if ($slug != $this->integrationName)
+		{
+			return array();
+		}
+
+		if (empty($user))
+		{
+			$user = JFactory::getUser();
+		}
+
+		// Get the return URL
+		$returnURL = JUri::getInstance()->toString(array('scheme', 'user', 'pass', 'host', 'port', 'path', 'query', 'fragment'));
+
+		// Save the return URL and user ID into the session
+		$session = JFactory::getSession();
+		$session->set('returnUrl', $returnURL, 'plg_system_sociallogin');
+		$session->set('userID', $user->id, 'plg_system_sociallogin');
+
+		if ($this->isLinked($user))
+		{
+			$token = $session->getToken();
+			$unlinkURL = JUri::base() . 'index.php?option=com_ajax&group=system&plugin=sociallogin&format=raw&akaction=unlink&slug=facebook&' . $token . '=1';
+
+			// Render an unlink button
+			return array(
+				// How to render the button. "anchor" (HTML <a> tag) or "custom" (custom HTML)
+				'field_type' => 'anchor',
+				// The href attribute for the anchor tag.
+				'link'       => $unlinkURL,
+				// The tooltip of the anchor tag.
+				'tooltip'    => JText::_('PLG_SOCIALLOGIN_FACEBOOK_UNLINK_LABEL'),
+				// What to put inside the anchor tag. Leave empty to put the image returned by onSocialLoginGetIntegration.
+				'label'      => JText::_('PLG_SOCIALLOGIN_FACEBOOK_UNLINK_DESC'),
+				// An icon class for the span before the label inside the anchor tag. Nothing is shown if this is blank.
+				'icon_class' => 'icon-facebook-sign',
+				// Custom HTML for rendering the login / link field. Only used when field_type = custom.
+				'html'       => '',
+			);
+		}
+
+		// Get a Facebook OAUth2 connector object and retrieve the URL
+		$connector = $this->getFacebookOauth();
+		$url       = $connector->createUrl();
+
+		return array(
+			// How to render the button. "anchor" (HTML <a> tag) or "custom" (custom HTML)
+			'field_type' => 'anchor',
+			// The href attribute for the anchor tag.
+			'link'       => $url,
+			// The tooltip of the anchor tag.
+			'tooltip'    => JText::_('PLG_SOCIALLOGIN_FACEBOOK_SHORTINFO'),
+			// What to put inside the anchor tag. Leave empty to put the image returned by onSocialLoginGetIntegration.
+			'label'      => JText::_('PLG_SOCIALLOGIN_FACEBOOK_LBLDISPLAYEDAS'),
+			// An icon class for the span before the label inside the anchor tag. Nothing is shown if this is blank.
+			'icon_class' => 'icon-facebook-sign',
+			// Custom HTML for rendering the login / link field. Only used when field_type = custom.
+			'html'       => '',
 		);
 	}
 
