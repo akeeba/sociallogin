@@ -12,7 +12,7 @@ use Joomla\Registry\Registry;
 
 if (!class_exists('SocialLoginHelperLogin', true))
 {
-	JLoader::register('SocialLoginHelperLogin', JPATH_SITE . '/components/com_sociallogin/helpers/login.php');
+	return;
 }
 
 /**

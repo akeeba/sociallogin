@@ -53,6 +53,11 @@ class plgSystemSociallogin extends JPlugin
 	{
 		parent::__construct($subject, $config);
 
+		if (!class_exists('SocialLoginHelperLogin', true))
+		{
+			JLoader::register('SocialLoginHelperLogin', __DIR__ . '/helper/login.php');
+		}
+
 		// Am I enabled?
 		$this->enabled = $this->isEnabled();
 

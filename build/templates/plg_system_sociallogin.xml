@@ -15,6 +15,7 @@
 
 	<files>
 		<filename plugin="sociallogin">sociallogin.php</filename>
+		<folder>helper</folder>
 	</files>
 	<languages folder="language">
 		<language tag="en-GB">en-GB/en-GB.plg_system_sociallogin.ini</language>
