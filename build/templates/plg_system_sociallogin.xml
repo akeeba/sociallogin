@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension version="3.4.0" type="plugin" group="system" method="upgrade">
+	<name>PLG_SYSTEM_SOCIALLOGIN</name>
+	<version>##VERSION##</version>
+	<creationDate>##DATE##</creationDate>
+
+	<author>Akeeba Ltd</author>
+	<authorEmail>no-reply@akeebabackup.com</authorEmail>
+	<authorUrl>https://www.akeebabackup.com</authorUrl>
+
+	<copyright>Copyright (c)2016-2017 Akeeba Ltd</copyright>
+	<license>GNU GPL v3 or later</license>
+
+	<description>PLG_SYSTEM_SOCIALLOGIN_DESCRIPTION</description>
+
+	<files>
+		<filename plugin="sociallogin">sociallogin.php</filename>
+	</files>
+	<languages folder="language">
+		<language tag="en-GB">en-GB/en-GB.plg_system_sociallogin.ini</language>
+		<language tag="en-GB">en-GB/en-GB.plg_system_sociallogin.sys.ini</language>
+	</languages>
+
+</extension>

@@ -20,11 +20,11 @@
 
     <!-- List of extensions to install -->
     <files>
-        <!-- Component -->
-        <file type="component" id="com_sociallogin">com_sociallogin.zip</file>
-
         <!-- Plugins: sociallogin -->
         <file type="plugin" group="sociallogin" id="facebook">plg_sociallogin_facebook.zip</file>
+
+        <!-- Plugins: system -->
+        <file type="plugin" group="system" id="sociallogin">plg_system_sociallogin.zip</file>
 
         <!-- Plugins: user -->
         <file type="plugin" group="user" id="sociallogin">plg_user_sociallogin.zip</file>

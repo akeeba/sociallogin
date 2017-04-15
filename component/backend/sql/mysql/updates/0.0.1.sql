@@ -1,1 +1,0 @@
--- Empty file to satisfy Joomla updates management

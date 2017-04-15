@@ -2,22 +2,6 @@
 <project name="AkeebaSocialLogin" description="Akeeba Social Login" default="git" >
 	<import file="${phing.dir}/../../buildfiles/phing/common.xml" />
 
-	<!-- Fileset for building the component ZIP -->
-	<fileset dir="${dirs.component}" id="component">
-		<include name="backend/**" />
-		<include name="frontend/**" />
-		<include name="language/**" />
-		<include name="media/**" />
-
-		<include name="*" />
-
-		<!-- Exclude uncompressed CSS and JS -->
-		<exclude name="media/uncompressed/**" />
-
-		<!-- Exclude the script used by the package -->
-		<exclude name="script.sociallogin.php" />
-	</fileset>
-
 	<!-- Fileset for building the package ZIP -->
 	<fileset dir="${dirs.release}" id="package">
 		<include name="com_*.zip" />
@@ -35,6 +19,10 @@
 	====================================================================================================
 	-->
 	<target name="component-packages" depends="plugin-manifests,package-pkg" />
+
+	<target name="package-com" description="Builds the component">
+		<echo>This is a plugins only solution.</echo>
+	</target>
 
 	<target name="plugin-manifests" depends="setup-properties">
 		<copy file="${phing.dir}/templates/plg_user_sociallogin.xml" tofile="${dirs.plugins}/user/sociallogin/sociallogin.xml" overwrite="true">

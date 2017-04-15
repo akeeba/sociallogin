@@ -17,10 +17,6 @@
         <filename plugin="facebook">facebook.php</filename>
     </files>
 
-    <media folder="media" destination="plg_sociallogin_facebook">
-        <folder>images</folder>
-    </media>
-
     <languages folder="language">
         <language tag="en-GB">en-GB/en-GB.plg_sociallogin_facebook.ini</language>
         <language tag="en-GB">en-GB/en-GB.plg_sociallogin_facebook.sys.ini</language>
