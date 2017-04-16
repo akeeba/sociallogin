@@ -204,23 +204,6 @@ class plgSystemSociallogin extends JPlugin
 	}
 
 	/**
-	 * Should I enable the substitutions performed by this plugin?
-	 *
-	 * @return  bool
-	 */
-	private function isEnabled()
-	{
-		// It only make sense to let people log in when they are not already logged in ;)
-		if (!JFactory::getUser()->guest)
-		{
-			return false;
-		}
-
-		return true;
-	}
-
-
-	/**
 	 * Processes the callbacks from social login buttons.
 	 *
 	 * Note: this method is called from Joomla's com_ajax, not com_sociallogin itself
@@ -293,5 +276,124 @@ class plgSystemSociallogin extends JPlugin
 		}
 
 		$app->redirect($returnURL);
+	}
+
+	/**
+	 * Adds additional fields to the user editing form
+	 *
+	 * @param   JForm  $form  The form to be altered.
+	 * @param   mixed  $data  The associated data for the form.
+	 *
+	 * @return  boolean
+	 */
+	public function onContentPrepareForm($form, $data)
+	{
+		if (!($form instanceof JForm))
+		{
+			throw new InvalidArgumentException('JERROR_NOT_A_FORM');
+		}
+
+		// Check we are manipulating a valid form.
+		$name = $form->getName();
+
+		if (!in_array($name, array('com_admin.profile', 'com_users.user', 'com_users.profile', 'com_users.registration')))
+		{
+			return true;
+		}
+
+		if (!SocialLoginHelperLogin::isAdminPage() && (JFactory::getApplication()->input->getCmd('layout', 'default') != 'edit'))
+		{
+			return true;
+		}
+
+		// Get the user ID
+		$id = null;
+
+		if (is_array($data))
+		{
+			$id = isset($data['id']) ? $data['id'] : null;
+		}
+		elseif (is_object($data) && is_null($data) && ($data instanceof JRegistry))
+		{
+			$id = $data->get('id');
+		}
+		elseif (is_object($data) && !is_null($data))
+		{
+			$id = isset($data->id) ? $data->id : null;
+		}
+
+		$user = JFactory::getUser($id);
+
+		// Make sure the loaded user is the correct one
+		if ($user->id != $id)
+		{
+			return true;
+		}
+
+		// Make sure I am either editing myself OR I am a Super User AND I'm not editing another Super User
+		if (!SocialLoginHelperLogin::canEditUser($user))
+		{
+			return true;
+		}
+
+		// Add the fields to the form.
+		$this->loadLanguage();
+		JForm::addFormPath(dirname(__FILE__) . '/fields');
+		$form->loadFile('sociallogin', false);
+
+		return true;
+	}
+
+	/**
+	 * Remove all user profile information for the given user ID
+	 *
+	 * Method is called after user data is deleted from the database
+	 *
+	 * @param   array   $user     Holds the user data
+	 * @param   bool    $success  True if user was successfully stored in the database
+	 * @param   string  $msg      Message
+	 *
+	 * @return  bool
+	 *
+	 * @throws  Exception
+	 */
+	public function onUserAfterDelete($user, $success, $msg)
+	{
+		if (!$success)
+		{
+			return false;
+		}
+
+		$userId	= JArrayHelper::getValue($user, 'id', 0, 'int');
+
+		if ($userId)
+		{
+			$db = JFactory::getDbo();
+
+			$query = $db->getQuery(true)
+			            ->delete($db->qn('#__user_profiles'))
+			            ->where($db->qn('user_id').' = '.$db->q($userId))
+			            ->where($db->qn('profile_key').' LIKE '.$db->q('sociallogin.%', false));
+
+			$db->setQuery($query)->execute();
+		}
+
+		return true;
+	}
+
+	/**
+	 * Should I enable the substitutions performed by this plugin?
+	 *
+	 * @return  bool
+	 */
+	private function isEnabled()
+	{
+		// It only make sense to let people log in when they are not already logged in ;)
+		if (!JFactory::getUser()->guest)
+		{
+			return false;
+		}
+
+		return true;
 	}
 }

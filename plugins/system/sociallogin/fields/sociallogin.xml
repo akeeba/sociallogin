@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <form>
-	<fields name="sociallogin" addfieldpath="plugins/user/sociallogin/fields">
+	<fields name="loginguard" addfieldpath="plugins/system/sociallogin/fields">
 		<fieldset name="sociallogin"
-			label="PLG_USER_SOCIALLOGIN_HEADER"
+			label="PLG_SYSTEM_SOCIALLOGIN_HEADER"
 		>
 			<field
 				name="sociallogin"
 				type="sociallogin"
-				label="PLG_USER_SOCIALLOGIN_FIELD_LABEL"
-				description="PLG_USER_SOCIALLOGIN_FIELD_DESC"
+				label="PLG_SYSTEM_SOCIALLOGIN_FIELD_LABEL"
+				description="PLG_SYSTEM_SOCIALLOGIN_FIELD_DESC"
 				required="false"
 				readonly="false"
 				default=""

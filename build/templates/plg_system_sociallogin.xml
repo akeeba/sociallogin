@@ -15,6 +15,7 @@
 
 	<files>
 		<filename plugin="sociallogin">sociallogin.php</filename>
+		<folder>fields</folder>
 		<folder>helper</folder>
 		<folder>layout</folder>
 	</files>
