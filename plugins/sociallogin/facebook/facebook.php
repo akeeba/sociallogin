@@ -44,6 +44,15 @@ class plgSocialloginFacebook extends JPlugin
 	private $canCreateNewUsers = false;
 
 	/**
+	 * Allow the plugin to override Joomla's new user account registration flag. This is useful to prevent new user
+	 * accounts from being created _unless_ they have a Facebook account and use it on your site (force new users to
+	 * link their social media accounts).
+	 *
+	 * @var   bool
+	 */
+	private $canCreateAlways = false;
+
+	/**
 	 * When creating new users, am I allowed to bypass email verification if Facebook reports the user as verified on
 	 * their end?
 	 *
@@ -95,6 +104,7 @@ class plgSocialloginFacebook extends JPlugin
 		$this->appSecret           = $this->params->get('appsecret', '');
 		$this->canLoginUnlinked    = $this->params->get('loginunlinked', false);
 		$this->canCreateNewUsers   = $this->params->get('createnew', false);
+		$this->canCreateAlways     = $this->params->get('forcenew', true);
 		$this->canBypassValidation = $this->params->get('bypassvalidation', true);
 	}
 
@@ -536,10 +546,13 @@ class plgSocialloginFacebook extends JPlugin
 			$usersConfig           = JComponentHelper::getParams('com_users');
 			$allowUserRegistration = $usersConfig->get('allowUserRegistration');
 
-			// TODO Add a switch in the plugin allowing it to override the global Joomla! user creation switch
+			/**
+			 * User not found and user registration is disabled OR create new users is not allowed. Note that if the
+			 * canCreateAlways flag is set we override Joomla's user registration preference. This can be used to force
+			 * new account registrations to take place only through social media logins.
+			 */
 
-			// User not found and user registration is disabled OR create new users is not allowed
-			if (($allowUserRegistration == 0) || !$this->canCreateNewUsers)
+			if ((($allowUserRegistration == 0) && !$this->canCreateAlways) || !$this->canCreateNewUsers)
 			{
 				throw new plgSocialloginFacebookLoginException(JText::_('PLG_SOCIALLOGIN_FACEBOOK_ERROR_LOCAL_NOT_FOUND'));
 			}
