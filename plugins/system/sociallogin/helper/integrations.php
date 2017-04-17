@@ -225,12 +225,12 @@ abstract class SocialLoginHelperIntegrations
 
 		foreach ($data as $key => $value)
 		{
-			$insertData[] = '(' . $db->q($userId) . ', ' . $db->q($slug . '.' . $key) . ', ' . $db->q($value) . ')';
+			$insertData[] = $db->q($userId) . ', ' . $db->q($slug . '.' . $key) . ', ' . $db->q($value);
 		}
 
 		$query = $db->getQuery(true)
 			->insert($db->qn('#__user_profiles'))
-			->columns('(' . $db->qn('user_id') . ', ' . $db->qn('profile_key') . ', ' . $db->qn('profile_value') . ')')
+			->columns($db->qn('user_id') . ', ' . $db->qn('profile_key') . ', ' . $db->qn('profile_value'))
 			->values($insertData);
 		$db->setQuery($query)->execute();
 	}
