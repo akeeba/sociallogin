@@ -400,15 +400,62 @@ class plgSocialloginFacebook extends JPlugin
 		 */
 		try
 		{
-			$this->handleLogin($oauthConnector);
+			try
+			{
+				$token = $oauthConnector->authenticate();
+
+				if ($token === false)
+				{
+					throw new SocialLoginFailedLoginException(JText::_('PLG_SOCIALLOGIN_FACEBOOK_ERROR_NOT_LOGGED_IN_FB'));
+				}
+
+				// Get information about the user from Big Brother... er... Facebook.
+				$options = new Registry();
+				$options->set('api.url', 'https://graph.facebook.com/v2.7/');
+				$fbUserApi       = new JFacebookUser($options, null, $oauthConnector);
+				$fbUserFields    = $fbUserApi->getUser('me?fields=id,name,email,verified,timezone');
+			}
+			catch (Exception $e)
+			{
+				throw new SocialLoginFailedLoginException($e->getMessage());
+			}
+
+			// The data used to login or create a user
+			$userData = new SocialLoginUserData;
+			$userData->name = $fbUserFields->name;
+			$userData->id = $fbUserFields->id;
+			$userData->email = $fbUserFields->email;
+			$userData->verified = $fbUserFields->verified;
+			$userData->timezone = $fbUserFields->timezone;
+
+			// Options which control login and user account creation
+			$pluginConfiguration = new SocialLoginPluginConfiguration;
+			$pluginConfiguration ->canLoginUnlinked = $this->canLoginUnlinked;
+			$pluginConfiguration ->canCreateAlways = $this->canCreateAlways;
+			$pluginConfiguration ->canCreateNewUsers = $this->canCreateNewUsers;
+			$pluginConfiguration ->canBypassValidation = $this->canBypassValidation;
+
+			/**
+			 * Data to save to the user profile. The first row is the primary key which links the Joomla! user account to
+			 * the social media account.
+			 */
+			$userProfileData = array(
+				'userid' => $userData->id,
+				'token' => json_encode($token),
+			);
+
+			SocialLoginHelperIntegrations::handleSocialLogin($this->integrationName, $pluginConfiguration, $userData, $userProfileData);
 		}
 		catch (SocialLoginFailedLoginException $e)
 		{
 			// Log failed login
 			$response                = SocialLoginHelperLogin::getAuthenticationResponseObject();
 			$response->status        = JAuthentication::STATUS_UNKNOWN;
-			$response->error_message = JText::sprintf('JGLOBAL_AUTH_FAILED', $e->getMessage());
+			$response->error_message = $e->getMessage();
+
 			SocialLoginHelperLogin::processLoginFailure($response);
+
+			$app->enqueueMessage($response->error_message, 'error');
 			$app->redirect($failureUrl);
 
 			return;
@@ -426,28 +473,14 @@ class plgSocialloginFacebook extends JPlugin
 	}
 
 	/**
-	 * Links the user account to the Facebook account through User Profile fields
-	 *
-	 * @param   int    $userId   The Joomla! user ID
-	 * @param   int    $fbUserId The Facebook user ID
-	 * @param   string $token    The Facebook OAuth token
+	 * Adds custom CSS to the page's head unless we're explicitly told not to. The CSS helps render the buttons with the
+	 * correct branding color.
 	 *
 	 * @return  void
-	 *
-	 * @since   3.7
 	 */
-	private function linkToFacebook($userId, $fbUserId, $token)
-	{
-		$data = array(
-			'userid' => $fbUserId,
-			'token' => json_encode($token),
-		);
-
-		SocialLoginHelperIntegrations::insertUserProfileData($userId, 'sociallogin.facebook', $data);
-	}
-
 	private function addCustomCSS()
 	{
+		// Make sure we only output the custom CSS once
 		static $hasOutputCustomCSS = false;
 
 		if ($hasOutputCustomCSS)
@@ -479,60 +512,5 @@ CSS;
 
 
 		$jDocument->addStyleDeclaration($css);
-	}
-
-	/**
-	 * Handle the Facebook login callback
-	 *
-	 * @param   JFacebookOAuth  $facebookOauth  The Facebook OAuth object, used to retrieve the user data
-	 *
-	 * @throws  SocialLoginFailedLoginException  when a login error occurs
-	 * @throws  SocialLoginGenericMessageException  when we need to tell the user to do something more to log in to the site
-	 */
-	private function handleLogin(JFacebookOAuth $facebookOauth)
-	{
-		// Options which control login and user account creation
-		$pluginConfiguration = new SocialLoginPluginConfiguration;
-		$pluginConfiguration ->canLoginUnlinked = $this->canLoginUnlinked;
-		$pluginConfiguration ->canCreateAlways = $this->canCreateAlways;
-		$pluginConfiguration ->canCreateNewUsers = $this->canCreateNewUsers;
-		$pluginConfiguration ->canBypassValidation = $this->canBypassValidation;
-
-		try
-		{
-			$token = $facebookOauth->authenticate();
-
-			if ($token === false)
-			{
-				throw new SocialLoginFailedLoginException(JText::_('PLG_SOCIALLOGIN_FACEBOOK_ERROR_NOT_LOGGED_IN_FB'));
-			}
-
-			// Get information about the user from Big Brother... er... Facebook.
-			$options = new Registry();
-			$options->set('api.url', 'https://graph.facebook.com/v2.7/');
-			$fbUserApi       = new JFacebookUser($options, null, $facebookOauth);
-			$fbUserFields    = $fbUserApi->getUser('me?fields=id,name,email,verified,timezone');
-
-			// The data used to login or create a user
-			$userData = array(
-				'fullName' => $fbUserFields->name,
-				'socialUserId' => $fbUserFields->id,
-				'socialUserEmail' => $fbUserFields->email,
-				'socialVerified' => $fbUserFields->verified,
-				'socialTimezone' => $fbUserFields->timezone,
-			);
-
-			// Data to save to the user profile
-			$userProfileData = array(
-				'userid' => $userData['socialUserId'],
-				'token' => json_encode($token),
-			);
-		}
-		catch (Exception $e)
-		{
-			throw new SocialLoginFailedLoginException($e->getMessage());
-		}
-
-		SocialLoginHelperIntegrations::handleSocialLogin($this->integrationName, $pluginConfiguration, $userData, $userProfileData);
 	}
 }

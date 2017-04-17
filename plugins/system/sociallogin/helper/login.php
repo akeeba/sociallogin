@@ -103,7 +103,7 @@ abstract class SocialLoginHelperLogin
 	 * @param   string  $email          The email address of the user to create
 	 * @param   string  $name           The full name of the user
 	 * @param   bool    $emailVerified  Is the email already verified?
-	 * @param   string  $timezone       The user's timezone, either as a GMT offset ("e.g. +2") or as a proper timezone (e.g. "Asia/Nicosia")
+	 * @param   string  $timezone       The user's timezone
 	 *
 	 * @return  mixed  The user id on success, 'useractivate' or 'adminactivate' if activation is required
 	 *
@@ -116,9 +116,6 @@ abstract class SocialLoginHelperLogin
 		{
 			throw new UnexpectedValueException();
 		}
-
-		// Normalize the timezone
-		$timezone = self::normalizeTimezone($timezone);
 
 		// Try to create a username from the full name
 		$username = preg_replace('/[^\w]/us', '.', $name);
@@ -656,62 +653,5 @@ abstract class SocialLoginHelperLogin
 
 		// I am a Super User editing another user. That's allowed.
 		return true;
-	}
-
-	/**
-	 * Normalize the timezone. The provided value can be a timezone (e.g. Europe/Paris), an abbreviated timezone (e.g.
-	 * CET), a GMT offset with or without prefix, either in HH:MM, integer or float (e.g. GMT+1, GMT+1.00, GMT+1:00, +1,
-	 * +1.00 or +1:00). You will get back either a normalized timezone (e.g. Europe/Paris) or "UTC".
-	 *
-	 * @param   string  $timezone  See above
-	 *
-	 * @return  string
-	 */
-	private static function normalizeTimezone($timezone)
-	{
-		// If there is a forward slash in the name it's already a timezone name, e.g. Asia/Nicosia. Return it.
-		if (is_string($timezone) && (strpos($timezone, '/') !== false))
-		{
-			return $timezone;
-		}
-
-		// If it's the literal string "UTC" or "GMT" return "UTC"
-		if (($timezone === 'UTC') || ($timezone === 'GMT'))
-		{
-			return 'UTC';
-		}
-
-		// If there's a "GMT+" or "GMT-" prefix remove it
-		$potentialPrefix = strtoupper(substr($timezone, 4));
-
-		if (in_array($potentialPrefix, array('GMT+', 'GMT-')))
-		{
-			$timezone = substr($timezone, 3);
-		}
-
-		// If it's in the form +1:30 or -2:00 convert to float
-		if (strpos($timezone, ':'))
-		{
-			list($hours, $minutes) = explode(':', $timezone, 2);
-
-			$timezone = (float) ($hours + $minutes / 60);
-		}
-
-		/**
-		 * If the timezone is a float we need to process it. The if-block makes sure that something like EST5EDT or CET
-		 * is not mistakenly recognized as a float.
-		 */
-		if (is_numeric(substr($timezone, 0, 3)))
-		{
-			$seconds = (int)(3600 * (float) $timezone);
-			$timezone = timezone_name_from_abbr('', $seconds, 0);
-
-			if (empty($timezone))
-			{
-				$timezone = 'UTC';
-			}
-		}
-
-		return $timezone;
 	}
 }

@@ -329,12 +329,10 @@ abstract class SocialLoginHelperIntegrations
 	 * information from the social network. At this point we are simply checking if we can log in the user, create a
 	 * new user account or report a login error.
 	 *
-	 * @param   string  $socialNetworkSlug    The slug of the social network plugin, e.g. 'facebook', 'twitter',
-	 *                                        'mycustomthingie'. Used to construct the names of the profile keys in the
-	 *                                        #__user_profiles table.
-	 * @param   SocialLoginPluginConfiguration  $pluginConfiguration  The configuration information of the plugin.
-	 * @param   array   $userData             The social network user account data.
-	 * @param   array   $userProfileData      The data to save in the #__user_profiles table.
+	 * @param   string                          $slug             The slug of the social network plugin, e.g. 'facebook'.
+	 * @param   SocialLoginPluginConfiguration  $config           The configuration information of the plugin.
+	 * @param   SocialLoginUserData             $userData         The social network user account data.
+	 * @param   array                           $userProfileData  The data to save in the #__user_profiles table.
 	 *
 	 * @return  void
 	 *
@@ -342,16 +340,12 @@ abstract class SocialLoginHelperIntegrations
 	 * @throws  SocialLoginGenericMessageException  When there is no login error but we need to report a message to the
 	 *                                              user, e.g. to tell them they need to click on the activation email.
 	 */
-	public static function handleSocialLogin($socialNetworkSlug, SocialLoginPluginConfiguration $pluginConfiguration, array $userData, array $userProfileData)
+	public static function handleSocialLogin($slug, SocialLoginPluginConfiguration $config, SocialLoginUserData $userData, array $userProfileData)
 	{
-		$fullName        = $userData['fullName'];
-		$socialUserId    = $userData['socialUserId'];
-		$socialUserEmail = $userData['socialUserEmail'];
-		$socialVerified  = $userData['socialVerified'];
-		$socialTimezone  = $userData['socialTimezone'];
-
 		// Look for a local user account with the social network user ID
-		$userId = SocialLoginHelperIntegrations::getUserIdByProfileData('sociallogin.' . $socialNetworkSlug . '.userid', $socialUserId);
+		$profileKeys = array_keys($userProfileData);
+		$primaryKey  = $profileKeys[0];
+		$userId      = SocialLoginHelperIntegrations::getUserIdByProfileData('sociallogin.' . $slug . '.' . $primaryKey, $userData->id);
 
 		/**
 		 * If a user is not linked to this social network account we are going to look for a user account that has the
@@ -366,14 +360,14 @@ abstract class SocialLoginHelperIntegrations
 		 */
 		if (empty($userId))
 		{
-			$userId = SocialLoginHelperLogin::getUserIdByEmail($socialUserEmail);
+			$userId = SocialLoginHelperLogin::getUserIdByEmail($userData->email);
 
 			/**
 			 * The social network user is not verified. That's a possible security issue so let's pretend we can't find a match.
 			 */
-			if (!$socialVerified)
+			if (!$userData->verified)
 			{
-				throw new SocialLoginFailedLoginException(JText::_('PLG_SOCIALLOGIN_' . $socialNetworkSlug . '_ERROR_LOCAL_NOT_FOUND'));
+				throw new SocialLoginFailedLoginException(JText::_('PLG_SOCIALLOGIN_' . $slug . '_ERROR_LOCAL_NOT_FOUND'));
 			}
 
 			/**
@@ -382,9 +376,9 @@ abstract class SocialLoginHelperIntegrations
 			 * error. Otherwise, if "Create new users" is allowed we will be trying to create a user account with an
 			 * email address which already exists, leading to failure with a message that makes no sense to the user.
 			 */
-			if (!$pluginConfiguration->canLoginUnlinked && !empty($userId))
+			if (!$config->canLoginUnlinked && !empty($userId))
 			{
-				throw new SocialLoginFailedLoginException(JText::_('PLG_SOCIALLOGIN_' . $socialNetworkSlug . '_ERROR_LOCAL_USERNAME_CONFLICT'));
+				throw new SocialLoginFailedLoginException(JText::_('PLG_SOCIALLOGIN_' . $slug . '_ERROR_LOCAL_USERNAME_CONFLICT'));
 			}
 		}
 
@@ -399,9 +393,9 @@ abstract class SocialLoginHelperIntegrations
 			 * new account registrations to take place only through social media logins.
 			 */
 
-			if ((($allowUserRegistration == 0) && !$pluginConfiguration->canCreateAlways) || !$pluginConfiguration->canCreateNewUsers)
+			if ((($allowUserRegistration == 0) && !$config->canCreateAlways) || !$config->canCreateNewUsers)
 			{
-				throw new SocialLoginFailedLoginException(JText::_('PLG_SOCIALLOGIN_' . $socialNetworkSlug . '_ERROR_LOCAL_NOT_FOUND'));
+				throw new SocialLoginFailedLoginException(JText::_('PLG_SOCIALLOGIN_' . $slug . '_ERROR_LOCAL_NOT_FOUND'));
 			}
 
 			try
@@ -411,23 +405,23 @@ abstract class SocialLoginHelperIntegrations
 				 * users" option is enabled in the plugin options we tell the helper to not send user
 				 * verification emails, immediately activating the user.
 				 */
-				$bypassVerification = $socialVerified && $pluginConfiguration->canBypassValidation;
-				$userId             = SocialLoginHelperLogin::createUser($socialUserEmail, $fullName, $bypassVerification, $socialTimezone);
+				$bypassVerification = $userData->verified && $config->canBypassValidation;
+				$userId             = SocialLoginHelperLogin::createUser($userData->email, $userData->name, $bypassVerification, $userData->timezone);
 			}
 			catch (UnexpectedValueException $e)
 			{
-				throw new SocialLoginFailedLoginException(JText::sprintf('PLG_SOCIALLOGIN_' . $socialNetworkSlug . '_ERROR_CANNOT_CREATE', JText::_('PLG_SOCIALLOGIN_' . $socialNetworkSlug . '_ERROR_LOCAL_USERNAME_CONFLICT')));
+				throw new SocialLoginFailedLoginException(JText::sprintf('PLG_SOCIALLOGIN_' . $slug . '_ERROR_CANNOT_CREATE', JText::_('PLG_SOCIALLOGIN_' . $slug . '_ERROR_LOCAL_USERNAME_CONFLICT')));
 			}
 			catch (RuntimeException $e)
 			{
-				throw new SocialLoginFailedLoginException(JText::sprintf('PLG_SOCIALLOGIN_' . $socialNetworkSlug . '_ERROR_CANNOT_CREATE', $e->getMessage()));
+				throw new SocialLoginFailedLoginException(JText::sprintf('PLG_SOCIALLOGIN_' . $slug . '_ERROR_CANNOT_CREATE', $e->getMessage()));
 			}
 
 			// Does the account need user or administrator verification?
 			if (in_array($userId, array('useractivate', 'adminactivate')))
 			{
 				// Do NOT go through processLoginFailure. This is NOT a login failure.
-				throw new SocialLoginGenericMessageException(JText::_('PLG_SOCIALLOGIN_' . $socialNetworkSlug . '_NOTICE_' . $userId));
+				throw new SocialLoginGenericMessageException(JText::_('PLG_SOCIALLOGIN_' . $slug . '_NOTICE_' . $userId));
 			}
 		}
 
@@ -437,13 +431,13 @@ abstract class SocialLoginHelperIntegrations
 		 */
 		if (empty($userId))
 		{
-			throw new SocialLoginFailedLoginException(JText::_('PLG_SOCIALLOGIN_' . $socialNetworkSlug . '_ERROR_LOCAL_NOT_FOUND'));
+			throw new SocialLoginFailedLoginException(JText::_('PLG_SOCIALLOGIN_' . $slug . '_ERROR_LOCAL_NOT_FOUND'));
 		}
 
 		// Attach the social network link information to the user's profile
 		try
 		{
-			SocialLoginHelperIntegrations::insertUserProfileData($userId, 'sociallogin.' . $socialNetworkSlug, $userProfileData);
+			SocialLoginHelperIntegrations::insertUserProfileData($userId, 'sociallogin.' . $slug, $userProfileData);
 		}
 		catch (Exception $e)
 		{
@@ -565,4 +559,160 @@ final class SocialLoginPluginConfiguration
 	}
 
 
+}
+/**
+ * Information about the user account returned by the social media API
+ *
+ * @property   string  $id        A unique identifier of the social media user.
+ * @property   string  $name      Full (real) name of the social media user.
+ * @property   string  $email     The email address of the social media user.
+ * @property   bool    $verified  Does the social media report the user as verified?
+ * @property   string  $timezone  Timezone of the user, as reported by the social media site.
+ */
+final class SocialLoginUserData
+{
+	/**
+	 * A unique identifier of the social media user.
+	 *
+	 * @var   string
+	 */
+	private $id = '';
+
+	/**
+	 * Full (real) name of the social media user.
+	 *
+	 * @var   string
+	 */
+	private $name = '';
+
+	/**
+	 * The email address of the social media user.
+	 *
+	 * @var   string
+	 */
+	private $email = '';
+
+	/**
+	 * Does the social media report the user as verified?
+	 *
+	 * @var   bool
+	 */
+	private $verified = false;
+
+	/**
+	 * Timezone of the user, as reported by the social media site.
+	 *
+	 * @var   string
+	 */
+	private $timezone = 'UTC';
+
+
+	/**
+	 * Magic getter. Returns the stored, sanitized property values.
+	 *
+	 * @param   string  $name  The name of the property to read.
+	 *
+	 * @return  mixed
+	 */
+	function __get($name)
+	{
+		switch ($name)
+		{
+			case 'id':
+			case 'name':
+			case 'email':
+			case 'timezone':
+			case 'verified':
+				return $this->{$name};
+				break;
+
+			default:
+				return null;
+		}
+	}
+
+	/**
+	 * Magic setter. Stores a sanitized property value.
+	 *
+	 * @param   string  $name   The name of the property to set
+	 * @param   mixed   $value  The value to set the property to
+	 *
+	 * @return  void
+	 */
+	function __set($name, $value)
+	{
+		switch ($name)
+		{
+			case 'id':
+			case 'name':
+			case 'email':
+				$this->{$name} = $value . '';
+				break;
+
+			case 'timezone':
+				$this->timezone = $this->normalizeTimezone($value);
+				break;
+
+			case 'verified':
+				$this->{$name} = (bool) $value;
+				break;
+		}
+	}
+
+	/**
+	 * Normalize the timezone. The provided value can be a timezone (e.g. Europe/Paris), an abbreviated timezone (e.g.
+	 * CET), a GMT offset with or without prefix, either in HH:MM, integer or float (e.g. GMT+1, GMT+1.00, GMT+1:00, +1,
+	 * +1.00 or +1:00). You will get back either a normalized timezone (e.g. Europe/Paris) or "UTC".
+	 *
+	 * @param   string  $timezone  See above
+	 *
+	 * @return  string
+	 */
+	private function normalizeTimezone($timezone)
+	{
+		// If there is a forward slash in the name it's already a timezone name, e.g. Asia/Nicosia. Return it.
+		if (is_string($timezone) && (strpos($timezone, '/') !== false))
+		{
+			return $timezone;
+		}
+
+		// If it's the literal string "UTC" or "GMT" return "UTC"
+		if (($timezone === 'UTC') || ($timezone === 'GMT'))
+		{
+			return 'UTC';
+		}
+
+		// If there's a "GMT+" or "GMT-" prefix remove it
+		$potentialPrefix = strtoupper(substr($timezone, 4));
+
+		if (in_array($potentialPrefix, array('GMT+', 'GMT-')))
+		{
+			$timezone = substr($timezone, 3);
+		}
+
+		// If it's in the form +1:30 or -2:00 convert to float
+		if (strpos($timezone, ':'))
+		{
+			list($hours, $minutes) = explode(':', $timezone, 2);
+
+			$timezone = (float) ($hours + $minutes / 60);
+		}
+
+		/**
+		 * If the timezone is a float we need to process it. The if-block makes sure that something like EST5EDT or CET
+		 * is not mistakenly recognized as a float.
+		 */
+		if (is_numeric(substr($timezone, 0, 3)))
+		{
+			$seconds = (int)(3600 * (float) $timezone);
+			$timezone = timezone_name_from_abbr('', $seconds, 0);
+
+			if (empty($timezone))
+			{
+				$timezone = 'UTC';
+			}
+		}
+
+		return $timezone;
+	}
 }
