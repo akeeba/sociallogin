@@ -40,10 +40,34 @@
                 />
 
                 <field
+                        name="loginunlinked"
+                        type="radio"
+                        label="PLG_SOCIALLOGIN_FACEBOOK_FIELD_LOGINUNLINKED_LABEL"
+                        description="PLG_SOCIALLOGIN_FACEBOOK_FIELD_LOGINUNLINKED_DESC"
+                        default="0"
+                        class="btn-group btn-group-yesno"
+                >
+                    <option value="1">JYES</option>
+                    <option value="0">JNO</option>
+                </field>
+
+                <field
                         name="createnew"
                         type="radio"
                         label="PLG_SOCIALLOGIN_FACEBOOK_FIELD_CREATENEW_LABEL"
                         description="PLG_SOCIALLOGIN_FACEBOOK_FIELD_CREATENEW_DESC"
+                        default="0"
+                        class="btn-group btn-group-yesno"
+                >
+                    <option value="1">JYES</option>
+                    <option value="0">JNO</option>
+                </field>
+
+                <field
+                        name="bypassvalidation"
+                        type="radio"
+                        label="PLG_SOCIALLOGIN_FACEBOOK_FIELD_BYPASSVALIDATION_LABEL"
+                        description="PLG_SOCIALLOGIN_FACEBOOK_FIELD_BYPASSVALIDATION_DESC"
                         default="1"
                         class="btn-group btn-group-yesno"
                 >

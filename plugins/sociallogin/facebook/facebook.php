@@ -28,11 +28,28 @@ class plgSocialloginFacebook extends JPlugin
 	private $integrationName = 'facebook';
 
 	/**
-	 * Can I use this integration to create new user accounts?
+	 * Should I log in users who have not yet linked their Facebook account to their site account? THIS MAY BE DANGEROUS
+	 * (impersonation risk), therefore it is disabled by default.
 	 *
 	 * @var   bool
 	 */
-	private $canCreate = true;
+	private $canLoginUnlinked = false;
+
+	/**
+	 * Can I use this integration to create new user accounts? This will happen when someone tries to login through
+	 * Facebook but their Facebook account is not linked to a user account yet.
+	 *
+	 * @var   bool
+	 */
+	private $canCreateNewUsers = false;
+
+	/**
+	 * When creating new users, am I allowed to bypass email verification if Facebook reports the user as verified on
+	 * their end?
+	 *
+	 * @var   bool
+	 */
+	private $canBypassValidation = true;
 
 	/**
 	 * Facebook App ID
@@ -70,9 +87,11 @@ class plgSocialloginFacebook extends JPlugin
 		$this->loadLanguage();
 
 		// Load options
-		$this->canCreate = $this->params->get('createnew', true);
-		$this->appId = $this->params->get('appid', '');
-		$this->appSecret = $this->params->get('appsecret', '');
+		$this->appId               = $this->params->get('appid', '');
+		$this->appSecret           = $this->params->get('appsecret', '');
+		$this->canLoginUnlinked    = $this->params->get('loginunlinked', false);
+		$this->canCreateNewUsers   = $this->params->get('createnew', false);
+		$this->canBypassValidation = $this->params->get('bypassvalidation', true);
 	}
 
 	/**
@@ -338,6 +357,7 @@ class plgSocialloginFacebook extends JPlugin
 		$facebookOauth = $this->getFacebookOauth();
 		$app           = JFactory::getApplication();
 
+		// TODO Export all of the code below to a method. Wrap in a try-catch block. If a plgSocialloginFacebookLoginException is raised process a login failure and redirect to the failure page. If a plgSocialloginFacebookGenericException is raised just redirect to the failure page.
 		try
 		{
 			$token = $facebookOauth->authenticate();
@@ -384,6 +404,8 @@ class plgSocialloginFacebook extends JPlugin
 		if ($fbUserVerified && ($userId == 0))
 		{
 			$userId = SocialLoginHelperLogin::getUserIdByEmail($fbUserEmail);
+
+			// TODO If "Allow social login to non-linked accounts" is disabled AND the userId is not null stop with an error. Otherwise, if "Create new users" is allowed we will be trying to create a user account with an email address which already exists, leading to failure.
 		}
 
 		if (empty($userId))
@@ -391,8 +413,9 @@ class plgSocialloginFacebook extends JPlugin
 			$usersConfig           = JComponentHelper::getParams('com_users');
 			$allowUserRegistration = $usersConfig->get('allowUserRegistration');
 
-			// User not found and user registration is disabled
-			if ($allowUserRegistration == 0)
+			// TODO Add a switch in the plugin allowing it to override the global Joomla! user creation switch
+			// User not found and user registration is disabled OR create new users is not allowed
+			if (($allowUserRegistration == 0) || !$this->canCreateNewUsers)
 			{
 				// Log failed login
 				$response                = SocialLoginHelperLogin::getAuthenticationResponseObject();
@@ -406,7 +429,13 @@ class plgSocialloginFacebook extends JPlugin
 
 			try
 			{
-				$userId = SocialLoginHelperLogin::createUser($fbUserEmail, $fullName, $fbUserVerified, $fbUserGMTOffset);
+				/**
+				 * If Facebook reports the user as verified and the "Bypass user validation for verified Facebook users"
+				 * option is enabled in the plugin options we tell the helper to not send user verification emails,
+				 * immediately activating the user.
+				 */
+				$bypassVerification = $fbUserVerified && $this->canBypassValidation;
+				$userId = SocialLoginHelperLogin::createUser($fbUserEmail, $fullName, $bypassVerification, $fbUserGMTOffset);
 			}
 			catch (UnexpectedValueException $e)
 			{
@@ -480,6 +509,8 @@ class plgSocialloginFacebook extends JPlugin
 	 */
 	private function linkToFacebook($userId, $fbUserId, $token)
 	{
+		// TODO Make sure we delete social login links to the same $fbUserId in other users. Scenario: I have registered on the site as bill@example.com but my Facebook is using the address william@example.net. This means that trying to login without linking the accounts creates a new user account with my FB email address. But I don't want it! I log out, log back into my regular account and try to link my Facebook. If this code doesn't delete the previous account link we will end up with TWO user accounts linked to the same Facebook account. Trying to log in would pick the "first" one, where "first" is something decided by the database and most likely NOT what we want.
+
 		// Load the profile data from the database.
 		$db     = JFactory::getDbo();
 		$query  = $db->getQuery(true)
