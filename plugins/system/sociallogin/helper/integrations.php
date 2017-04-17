@@ -323,4 +323,246 @@ abstract class SocialLoginHelperIntegrations
 			return 0;
 		}
 	}
+
+	/**
+	 * Handle the login callback from a social network. This is called after the plugin code has fetched the account
+	 * information from the social network. At this point we are simply checking if we can log in the user, create a
+	 * new user account or report a login error.
+	 *
+	 * @param   string  $socialNetworkSlug    The slug of the social network plugin, e.g. 'facebook', 'twitter',
+	 *                                        'mycustomthingie'. Used to construct the names of the profile keys in the
+	 *                                        #__user_profiles table.
+	 * @param   SocialLoginPluginConfiguration  $pluginConfiguration  The configuration information of the plugin.
+	 * @param   array   $userData             The social network user account data.
+	 * @param   array   $userProfileData      The data to save in the #__user_profiles table.
+	 *
+	 * @return  void
+	 *
+	 * @throws  SocialLoginFailedLoginException     When a login error occurs (must report the login error to Joomla!).
+	 * @throws  SocialLoginGenericMessageException  When there is no login error but we need to report a message to the
+	 *                                              user, e.g. to tell them they need to click on the activation email.
+	 */
+	public static function handleSocialLogin($socialNetworkSlug, SocialLoginPluginConfiguration $pluginConfiguration, array $userData, array $userProfileData)
+	{
+		$fullName        = $userData['fullName'];
+		$socialUserId    = $userData['socialUserId'];
+		$socialUserEmail = $userData['socialUserEmail'];
+		$socialVerified  = $userData['socialVerified'];
+		$socialTimezone  = $userData['socialTimezone'];
+
+		// Look for a local user account with the social network user ID
+		$userId = SocialLoginHelperIntegrations::getUserIdByProfileData('sociallogin.' . $socialNetworkSlug . '.userid', $socialUserId);
+
+		/**
+		 * If a user is not linked to this social network account we are going to look for a user account that has the
+		 * same email address as the social network user.
+		 *
+		 * We only allow that for verified accounts, i.e. people who have already verified that they have control of
+		 * their stated email address and / or phone with the socual network and only if the "Allow social login to
+		 * non-linked accounts" switch is enabled in the plugin. If a user exists with the same email when either of
+		 * these conditions is false we raise a login failure. This is a security measure! It prevents someone from
+		 * registering a social network account under your email address and use it to login into the Joomla site
+		 * impersonating you.
+		 */
+		if (empty($userId))
+		{
+			$userId = SocialLoginHelperLogin::getUserIdByEmail($socialUserEmail);
+
+			/**
+			 * The social network user is not verified. That's a possible security issue so let's pretend we can't find a match.
+			 */
+			if (!$socialVerified)
+			{
+				throw new SocialLoginFailedLoginException(JText::_('PLG_SOCIALLOGIN_' . $socialNetworkSlug . '_ERROR_LOCAL_NOT_FOUND'));
+			}
+
+			/**
+			 * This is a verified social network user and we found a user account with the same email address on our
+			 * site. If "Allow social login to non-linked accounts" is disabled AND the userId is not null stop with an
+			 * error. Otherwise, if "Create new users" is allowed we will be trying to create a user account with an
+			 * email address which already exists, leading to failure with a message that makes no sense to the user.
+			 */
+			if (!$pluginConfiguration->canLoginUnlinked && !empty($userId))
+			{
+				throw new SocialLoginFailedLoginException(JText::_('PLG_SOCIALLOGIN_' . $socialNetworkSlug . '_ERROR_LOCAL_USERNAME_CONFLICT'));
+			}
+		}
+
+		if (empty($userId))
+		{
+			$usersConfig           = JComponentHelper::getParams('com_users');
+			$allowUserRegistration = $usersConfig->get('allowUserRegistration');
+
+			/**
+			 * User not found and user registration is disabled OR create new users is not allowed. Note that if the
+			 * canCreateAlways flag is set we override Joomla's user registration preference. This can be used to force
+			 * new account registrations to take place only through social media logins.
+			 */
+
+			if ((($allowUserRegistration == 0) && !$pluginConfiguration->canCreateAlways) || !$pluginConfiguration->canCreateNewUsers)
+			{
+				throw new SocialLoginFailedLoginException(JText::_('PLG_SOCIALLOGIN_' . $socialNetworkSlug . '_ERROR_LOCAL_NOT_FOUND'));
+			}
+
+			try
+			{
+				/**
+				 * If the social network reports the user as verified and the "Bypass user validation for verified
+				 * users" option is enabled in the plugin options we tell the helper to not send user
+				 * verification emails, immediately activating the user.
+				 */
+				$bypassVerification = $socialVerified && $pluginConfiguration->canBypassValidation;
+				$userId             = SocialLoginHelperLogin::createUser($socialUserEmail, $fullName, $bypassVerification, $socialTimezone);
+			}
+			catch (UnexpectedValueException $e)
+			{
+				throw new SocialLoginFailedLoginException(JText::sprintf('PLG_SOCIALLOGIN_' . $socialNetworkSlug . '_ERROR_CANNOT_CREATE', JText::_('PLG_SOCIALLOGIN_' . $socialNetworkSlug . '_ERROR_LOCAL_USERNAME_CONFLICT')));
+			}
+			catch (RuntimeException $e)
+			{
+				throw new SocialLoginFailedLoginException(JText::sprintf('PLG_SOCIALLOGIN_' . $socialNetworkSlug . '_ERROR_CANNOT_CREATE', $e->getMessage()));
+			}
+
+			// Does the account need user or administrator verification?
+			if (in_array($userId, array('useractivate', 'adminactivate')))
+			{
+				// Do NOT go through processLoginFailure. This is NOT a login failure.
+				throw new SocialLoginGenericMessageException(JText::_('PLG_SOCIALLOGIN_' . $socialNetworkSlug . '_NOTICE_' . $userId));
+			}
+		}
+
+		/**
+		 * Catch still empty user ID. This means we cannot find any matching user for this social network account and we
+		 * are not allowed to create new users. As a result we have to give up and tell the user we can't log them in.
+		 */
+		if (empty($userId))
+		{
+			throw new SocialLoginFailedLoginException(JText::_('PLG_SOCIALLOGIN_' . $socialNetworkSlug . '_ERROR_LOCAL_NOT_FOUND'));
+		}
+
+		// Attach the social network link information to the user's profile
+		try
+		{
+			SocialLoginHelperIntegrations::insertUserProfileData($userId, 'sociallogin.' . $socialNetworkSlug, $userProfileData);
+		}
+		catch (Exception $e)
+		{
+			// Ignore database exceptions at this point
+		}
+
+		// Log in the user
+		try
+		{
+			SocialLoginHelperLogin::loginUser($userId);
+		}
+		catch (Exception $e)
+		{
+			throw new SocialLoginFailedLoginException($e->getMessage());
+		}
+	}
+
+}
+
+/**
+ * Exception thrown when a login error occurs. The application must go through the failed login user plugin handlers.
+ */
+class SocialLoginFailedLoginException extends RuntimeException {}
+
+/**
+ * Exception thrown when a generic error occurs. The application must redirect to the error page WITHOUT going through
+ * the login failure handlers of the user plugins.
+ */
+class SocialLoginGenericMessageException extends RuntimeException {}
+
+/**
+ * Configuration parameters of a social media integration plugin, used during login.
+ *
+ * @property   bool  $canLoginUnlinked     Should I log in users who have not yet linked their social network account to
+ *                                         their site account?
+ * @property   bool  $canCreateNewUsers    Can I use this integration to create new user accounts?
+ * @property   bool  $canCreateAlways      Allow the plugin to override Joomla's new user account registration flag?
+ * @property   bool  $canBypassValidation  Am I allowed to bypass user verification if the social network reports the
+ *                                         user verified on their end?
+ */
+final class SocialLoginPluginConfiguration
+{
+	/**
+	 * Should I log in users who have not yet linked their social network account to their site account? THIS MAY BE
+	 * DANGEROUS (impersonation risk), therefore it is disabled by default.
+	 *
+	 * @var   bool
+	 */
+	private $canLoginUnlinked = false;
+
+	/**
+	 * Can I use this integration to create new user accounts? This will happen when someone tries to login through
+	 * the social network but their social network account is not linked to a user account yet.
+	 *
+	 * @var   bool
+	 */
+	private $canCreateNewUsers = false;
+
+	/**
+	 * Allow the plugin to override Joomla's new user account registration flag. This is useful to prevent new user
+	 * accounts from being created _unless_ they have a social media account and use it on your site (force new users to
+	 * link their social media accounts).
+	 *
+	 * @var   bool
+	 */
+	private $canCreateAlways = false;
+
+	/**
+	 * When creating new users, am I allowed to bypass email verification if the social network reports the user as
+	 * verified on their end?
+	 *
+	 * @var   bool
+	 */
+	private $canBypassValidation = true;
+
+	/**
+	 * Magic getter. Returns the stored, sanitized property values.
+	 *
+	 * @param   string  $name  The name of the property to read.
+	 *
+	 * @return  mixed
+	 */
+	function __get($name)
+	{
+		switch ($name)
+		{
+			case 'canLoginUnlinked':
+			case 'canCreateNewUsers':
+			case 'canCreateAlways':
+			case 'canByPassValidation':
+				return $this->{$name};
+				break;
+
+			default:
+				return null;
+		}
+	}
+
+	/**
+	 * Magic setter. Stores a sanitized property value.
+	 *
+	 * @param   string  $name   The name of the property to set
+	 * @param   mixed   $value  The value to set the property to
+	 *
+	 * @return  void
+	 */
+	function __set($name, $value)
+	{
+		switch ($name)
+		{
+			case 'canLoginUnlinked':
+			case 'canCreateNewUsers':
+			case 'canCreateAlways':
+			case 'canByPassValidation':
+				$this->{$name} = (bool) $value;
+				break;
+		}
+
+	}
+
+
 }
