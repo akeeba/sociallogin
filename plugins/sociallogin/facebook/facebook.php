@@ -61,6 +61,13 @@ class plgSocialloginFacebook extends JPlugin
 	private $canBypassValidation = true;
 
 	/**
+	 * Should I output inline custom CSS in the page header to style this plugin's login, link and unlink buttons?
+	 *
+	 * @var bool|mixed
+	 */
+	private $useCustomCSS = true;
+
+	/**
 	 * Facebook App ID
 	 *
 	 * @var   string
@@ -106,6 +113,7 @@ class plgSocialloginFacebook extends JPlugin
 		$this->canCreateNewUsers   = $this->params->get('createnew', false);
 		$this->canCreateAlways     = $this->params->get('forcenew', true);
 		$this->canBypassValidation = $this->params->get('bypassvalidation', true);
+		$this->useCustomCSS        = $this->params->get('customcss', true);
 	}
 
 	/**
@@ -222,6 +230,9 @@ class plgSocialloginFacebook extends JPlugin
 		$connector = $this->getConnector();
 		$url       = $connector->createUrl();
 
+		// Add custom CSS
+		$this->addCustomCSS();
+
 		return array(
 			// The name of the plugin rendering this button. Used for customized JLayouts.
 			'slug'       => $this->integrationName,
@@ -269,6 +280,9 @@ class plgSocialloginFacebook extends JPlugin
 			$token = $session->getToken();
 			$unlinkURL = JUri::base() . 'index.php?option=com_ajax&group=system&plugin=sociallogin&format=raw&akaction=unlink&slug=' . $this->integrationName . '&' . $token . '=1';
 
+			// Add custom CSS
+			$this->addCustomCSS();
+
 			// Render an unlink button
 			return array(
 				// The name of the plugin rendering this button. Used for customized JLayouts.
@@ -289,6 +303,9 @@ class plgSocialloginFacebook extends JPlugin
 		// Get a Facebook OAUth2 connector object and retrieve the URL
 		$connector = $this->getConnector();
 		$url       = $connector->createUrl();
+
+		// Add custom CSS
+		$this->addCustomCSS();
 
 		return array(
 			// The name of the plugin rendering this button. Used for customized JLayouts.
@@ -431,6 +448,8 @@ class plgSocialloginFacebook extends JPlugin
 	 */
 	private function getUserIdByFacebookId($fbUserId)
 	{
+		// TODO Generalize in the helper
+
 		$db    = JFactory::getDbo();
 		$query = $db->getQuery(true)
 		            ->select(array(
@@ -466,6 +485,40 @@ class plgSocialloginFacebook extends JPlugin
 		{
 			return 0;
 		}
+	}
+
+	private function addCustomCSS()
+	{
+		static $hasOutputCustomCSS = false;
+
+		if ($hasOutputCustomCSS)
+		{
+			return;
+		}
+
+		$hasOutputCustomCSS = true;
+
+		// Am I allowed to add my custom CSS?
+		if (!$this->useCustomCSS)
+		{
+			return;
+		}
+
+		$jDocument = JFactory::getApplication()->getDocument();
+
+		if (empty($jDocument) || !is_object($jDocument) || !($jDocument instanceof JDocumentHtml))
+		{
+			return;
+		}
+
+		$css = /** @lang CSS */
+			<<< CSS
+.akeeba-sociallogin-link-button-facebook, .akeeba-sociallogin-unlink-button-facebook, .akeeba-sociallogin-button-facebook { background-color: #3B5998; color: #ffffff; transition-duration: 0.33s }
+.akeeba-sociallogin-link-button-facebook:hover, .akeeba-sociallogin-unlink-button-facebook:hover, .akeeba-sociallogin-button-facebook:hover { background-color: #8B9DC3; color: #ffffff; transition-duration: 0.33s }
+CSS;
+
+
+		$jDocument->addStyleDeclaration($css);
 	}
 
 	/**

@@ -88,13 +88,16 @@
                 </field>
 
                 <field
-                        name="helpurl"
-                        type="text"
-                        label="PLG_SOCIALLOGIN_FACEBOOK_CONFIG_HELPURL_LABEL"
-                        description="PLG_SOCIALLOGIN_FACEBOOK_CONFIG_HELPURL_DESC"
-                        default=""
-                        filter="url"
-                />
+                        name="customcss"
+                        type="radio"
+                        label="PLG_SOCIALLOGIN_FACEBOOK_FIELD_CUSTOMCSS_LABEL"
+                        description="PLG_SOCIALLOGIN_FACEBOOK_FIELD_CUSTOMCSS_DESC"
+                        default="1"
+                        class="btn-group btn-group-yesno"
+                >
+                    <option value="1">JYES</option>
+                    <option value="0">JNO</option>
+                </field>
             </fieldset>
         </fields>
     </config>
