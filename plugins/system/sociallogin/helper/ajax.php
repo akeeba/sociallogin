@@ -53,7 +53,7 @@ final class SocialLoginHelperAjax
 			throw new RuntimeException(JText::_('PLG_SYSTEM_SOCIALLOGIN_ERR_AJAX_INVALIDACTION'));
 		}
 
-		return call_user_func($method_name, $app);
+		return call_user_func(array($this, $method_name), $app);
 	}
 
 	/**
