@@ -274,11 +274,13 @@ class plgSocialloginFacebook extends JPlugin
 				// The href attribute for the anchor tag.
 				'link'       => $unlinkURL,
 				// The tooltip of the anchor tag.
-				'tooltip'    => JText::_('PLG_SOCIALLOGIN_FACEBOOK_UNLINK_LABEL'),
+				'tooltip'    => JText::_('PLG_SOCIALLOGIN_FACEBOOK_UNLINK_DESC'),
 				// What to put inside the anchor tag. Leave empty to put the image returned by onSocialLoginGetIntegration.
-				'label'      => JText::_('PLG_SOCIALLOGIN_FACEBOOK_UNLINK_DESC'),
+				'label'      => JText::_('PLG_SOCIALLOGIN_FACEBOOK_UNLINK_LABEL'),
+				// The image to use if there is no icon class
+				'img'        => JHtml::image('plg_sociallogin_facebook/fb_white_29.png', '', array(), true),
 				// An icon class for the span before the label inside the anchor tag. Nothing is shown if this is blank.
-				'icon_class' => 'icon-facebook-sign',
+				'icon_class' => $this->iconClass,
 			);
 		}
 
@@ -306,8 +308,10 @@ class plgSocialloginFacebook extends JPlugin
 			'tooltip'    => JText::_('PLG_SOCIALLOGIN_FACEBOOK_LINK_DESC'),
 			// What to put inside the anchor tag. Leave empty to put the image returned by onSocialLoginGetIntegration.
 			'label'      => JText::_('PLG_SOCIALLOGIN_FACEBOOK_LINK_LABEL'),
+			// The image to use if there is no icon class
+			'img'        => JHtml::image('plg_sociallogin_facebook/fb_white_29.png', '', array(), true),
 			// An icon class for the span before the label inside the anchor tag. Nothing is shown if this is blank.
-			'icon_class' => 'icon-facebook-sign',
+			'icon_class' => $this->iconClass,
 		);
 	}
 
