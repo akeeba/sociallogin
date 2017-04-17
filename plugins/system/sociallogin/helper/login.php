@@ -191,9 +191,6 @@ abstract class SocialLoginHelperLogin
 			JLog::add($response->error_message, JLog::WARNING, 'jerror');
 		}
 
-		// Enqueue the error message
-		JFactory::getApplication()->enqueueMessage($response->error_message, 'error');
-
 		return false;
 	}
 
