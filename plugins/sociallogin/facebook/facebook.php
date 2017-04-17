@@ -251,7 +251,7 @@ class plgSocialloginFacebook extends JPlugin
 			// What to put inside the anchor tag. Leave empty to put the image returned by onSocialLoginGetIntegration.
 			'label'      => JText::_('PLG_SOCIALLOGIN_FACEBOOK_LOGIN_LABEL'),
 			// The image to use if there is no icon class
-			'img'        => 'media/plg_sociallogin_facebook/images/fb_white_29.png',
+			'img'        => JHtml::image('plg_sociallogin_facebook/fb_white_29.png', '', array(), true),
 			// An icon class for the span before the label inside the anchor tag. Nothing is shown if this is blank.
 		    'icon_class' => $this->iconClass,
 		);

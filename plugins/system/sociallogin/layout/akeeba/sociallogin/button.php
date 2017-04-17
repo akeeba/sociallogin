@@ -24,7 +24,7 @@ defined('_JEXEC') or die();
  * @var   string       $tooltip     Tooltip to show on the button
  * @var   string       $label       Text content of the button
  * @var   string       $icon_class  An icon class for the span inside the button
- * @var   string       $img         Relative path to an icon image file, used when $icon_class is not provided
+ * @var   string       $img         An <img> (or other) tag to use inside the button when $icon_class is empty
  */
 
 // Extract the data. Do not remove until the unset() line.
@@ -44,7 +44,7 @@ extract(array_merge(array(
     <?php if (!empty($icon_class)): ?>
     <span class="<?php echo $icon_class ?>"></span>
     <?php else: ?>
-    <img src="<?php echo $img ?>" border="0" />
+    <?php echo $img ?>
     <?php endif; ?>
     <?php echo $label ?>
 </a>
