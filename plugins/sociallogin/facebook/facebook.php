@@ -282,6 +282,12 @@ class plgSocialloginFacebook extends JPlugin
 			);
 		}
 
+		// Make sure we return to the same profile edit page
+		$loginURL = JUri::getInstance()->toString(array('scheme', 'user', 'pass', 'host', 'port', 'path', 'query', 'fragment'));
+		$session = JFactory::getSession();
+		$session->set('loginUrl', $loginURL, 'plg_sociallogin_facebook');
+		$session->set('failureUrl', $loginURL, 'plg_sociallogin_facebook');
+
 		// Get a Facebook OAUth2 connector object and retrieve the URL
 		$connector = $this->getConnector();
 		$url       = $connector->createUrl();

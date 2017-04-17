@@ -31,10 +31,16 @@ abstract class SocialLoginHelperLogin
 	 */
 	public static function handleSocialLogin($slug, SocialLoginPluginConfiguration $config, SocialLoginUserData $userData, array $userProfileData)
 	{
-		// Look for a local user account with the social network user ID
+		// Look for a local user account with the social network user ID _unless_ we are already logged in.
 		$profileKeys = array_keys($userProfileData);
 		$primaryKey  = $profileKeys[0];
-		$userId      = SocialLoginHelperIntegrations::getUserIdByProfileData('sociallogin.' . $slug . '.' . $primaryKey, $userData->id);
+		$currentUser = JFactory::getUser();
+		$userId      = $currentUser->id;
+
+		if ($currentUser->guest)
+		{
+			$userId      = SocialLoginHelperIntegrations::getUserIdByProfileData('sociallogin.' . $slug . '.' . $primaryKey, $userData->id);
+		}
 
 		/**
 		 * If a user is not linked to this social network account we are going to look for a user account that has the
@@ -136,7 +142,10 @@ abstract class SocialLoginHelperLogin
 		// Log in the user
 		try
 		{
-			SocialLoginHelperLogin::loginUser($userId);
+			if ($currentUser->guest)
+			{
+				SocialLoginHelperLogin::loginUser($userId);
+			}
 		}
 		catch (Exception $e)
 		{
