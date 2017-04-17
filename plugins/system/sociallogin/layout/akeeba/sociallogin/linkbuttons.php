@@ -9,9 +9,9 @@
 defined('_JEXEC') or die();
 
 /**
- * Renders a list of Social Login buttons. The HTML of each button is rendered with the akeeba.sociallogin.button layout
- * using the information from the `onSocialLoginGetLoginButton` method of each `sociallogin` plugin. This is typically
- * used in login modules.
+ * Renders a list of Social Login user account to social network link / unlink buttons. The HTML of each button
+ * is rendered with the akeeba.sociallogin.linkbutton layout using the information from the `onSocialLoginGetLinkButton`
+ * method of each `sociallogin` plugin. This is typically used in the user account edit page.
  *
  * Generic data
  *
@@ -30,7 +30,7 @@ extract(array_merge(array(
 
 // Start writing your template override code below this line
 ?>
-<div class="akeeba-sociallogin-buttons">
+<div class="akeeba-sociallogin-linkunlink-buttons">
 <?php foreach ($buttons as $button): ?>
     <?php echo $button; ?>
 <?php endforeach; ?>

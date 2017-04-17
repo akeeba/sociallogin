@@ -28,8 +28,7 @@ class JFormFieldSociallogin extends JFormField
 
 		$user = JFactory::getUser($user_id);
 
-		// TODO Render fields
-
-		return '<h1>TODO Render fields</h1>';
+		// Render and return buttons
+		return SocialLoginHelperIntegrations::getSocialLinkButtons($user);
 	}
 }

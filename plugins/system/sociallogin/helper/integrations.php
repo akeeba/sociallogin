@@ -46,10 +46,10 @@ abstract class SocialLoginHelperIntegrations
 	}
 
 	/**
-	 * Gets the Social Login buttons placeholder
+	 * Gets the Social Login buttons for logging into the site (typically used in login modules)
 	 *
 	 * @param   string  $loginURL       The URL to return to upon successful login. Current URL if omitted.
-	 * @param   string  $failureURL     The URL to return to on login error. Set to $loginURL if omitted.
+	 * @param   string  $failureURL     The URL to return to on login error. It's set automatically to $loginURL if omitted.
 	 * @param   string  $buttonLayout   JLayout for rendering a single login button
 	 * @param   string  $buttonsLayout  JLayout for rendering all the login buttons
 	 *
@@ -75,6 +75,45 @@ abstract class SocialLoginHelperIntegrations
 				}
 
 				$includePath = JPATH_SITE . '/plugins/sociallogin/' . $buttonDefinition['slug'] . '/layout';
+
+				// TODO First try layout "$buttonLayout.{$buttonDefinition['slug']}"
+				$buttonsHTML[] = self::renderLayout($buttonLayout, $buttonDefinition, $includePath);
+			}
+
+			self::$cachedSocialLoginButtons = self::renderLayout($buttonsLayout, array('buttons' => $buttonsHTML));
+		}
+
+		return self::$cachedSocialLoginButtons;
+	}
+
+	/**
+	 * Gets the Social Login buttons for linking and unlinking accounts (typically used in the My Account page).
+	 *
+	 * @param   JUser   $user           The Joomla! user object for which to get the buttons. Omit to use the currently logged in user.
+	 * @param   string  $buttonLayout   JLayout for rendering a single login button
+	 * @param   string  $buttonsLayout  JLayout for rendering all the login buttons
+	 *
+	 * @return  string  The rendered HTML of the login buttons
+	 */
+	public static function getSocialLinkButtons(JUser $user = null, $buttonLayout = 'akeeba.sociallogin.linkbutton', $buttonsLayout  = 'akeeba.sociallogin.linkbuttons')
+	{
+		if (is_null(self::$cachedSocialLoginButtons))
+		{
+			JPluginHelper::importPlugin('sociallogin');
+
+			$buttonDefinitions = JFactory::$application->triggerEvent('onSocialLoginGetLinkButton', array($user));
+			$buttonsHTML       = array();
+
+			foreach ($buttonDefinitions as $buttonDefinition)
+			{
+				if (empty($buttonDefinition))
+				{
+					continue;
+				}
+
+				$includePath = JPATH_SITE . '/plugins/sociallogin/' . $buttonDefinition['slug'] . '/layout';
+
+				// TODO First try layout "$buttonLayout.{$buttonDefinition['slug']}"
 				$buttonsHTML[] = self::renderLayout($buttonLayout, $buttonDefinition, $includePath);
 			}
 

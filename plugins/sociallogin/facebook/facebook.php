@@ -206,20 +206,14 @@ class plgSocialloginFacebook extends JPlugin
 	/**
 	 * Get the information required to render a link / unlink account button
 	 *
-	 * @param   string  $slug        The slug of the integration we are checking against
 	 * @param   JUser   $user        The user to be linked / unlinked
 	 *
 	 * @return  array
 	 */
-	public function onSocialLoginGetLinkButton($slug, JUser $user = null)
+	public function onSocialLoginGetLinkButton(JUser $user = null)
 	{
 		// Make sure we are properly set up
 		if (!$this->isProperlySetUp())
-		{
-			return array();
-		}
-
-		if ($slug != $this->integrationName)
 		{
 			return array();
 		}
@@ -246,6 +240,8 @@ class plgSocialloginFacebook extends JPlugin
 			return array(
 				// The name of the plugin rendering this button. Used for customized JLayouts.
 				'slug'       => $this->integrationName,
+				// The type of the button: 'link' or 'unlink'
+				'type'       => 'unlink',
 				// The href attribute for the anchor tag.
 				'link'       => $unlinkURL,
 				// The tooltip of the anchor tag.
@@ -264,6 +260,8 @@ class plgSocialloginFacebook extends JPlugin
 		return array(
 			// The name of the plugin rendering this button. Used for customized JLayouts.
 			'slug'       => $this->integrationName,
+			// The type of the button: 'link' or 'unlink'
+			'type'       => 'link',
 			// The href attribute for the anchor tag.
 			'link'       => $url,
 			// The tooltip of the anchor tag.

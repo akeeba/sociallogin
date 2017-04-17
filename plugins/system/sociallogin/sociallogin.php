@@ -28,6 +28,13 @@ class plgSystemSociallogin extends JPlugin
 	private $interceptLogin = true;
 
 	/**
+	 * Should I add link/unlink buttons in the Edit User Profile page of com_users?
+	 *
+	 * @var   bool
+	 */
+	private $addLinkUnlinkButtons = true;
+
+	/**
 	 * Are the substitutions enabled?
 	 *
 	 * @var   bool
@@ -70,7 +77,8 @@ class plgSystemSociallogin extends JPlugin
 		$this->loginModules = array_map('trim', $loginModules);
 
 		// Load the other plugin parameters
-		$this->interceptLogin = $this->params->get('itnerceptlogin', 1);
+		$this->interceptLogin = $this->params->get('interceptlogin', 1);
+		$this->addLinkUnlinkButtons = $this->params->get('linkunlinkbuttons', 1);
 	}
 
 	/**
@@ -111,96 +119,6 @@ class plgSystemSociallogin extends JPlugin
 	    // Append the social login buttons content
 		$socialLoginButtons = SocialLoginHelperIntegrations::getSocialLoginButtons();
 		$module->content    .= $socialLoginButtons;
-	}
-
-	/**
-	 * Replaces the special placeholder {socialloginbuttons} with the social login buttons.
-	 */
-	public function onBeforeRender()
-	{
-		// Are we enabled?
-		if (!$this->enabled)
-		{
-			return;
-		}
-
-		// Is the document type REALLY 'html'?
-		$app       = JFactory::getApplication();
-		$jDocument = $app->getDocument();
-
-		if (!is_object($jDocument) || !($jDocument instanceof JDocument))
-		{
-			return;
-		}
-
-		if ($jDocument->getType() != 'html')
-		{
-			return;
-		}
-
-		$buffer = $jDocument->getBuffer();
-
-		// Old Joomla! versions, buffer is a string. We cannot intercept com_users.
-		if (is_string($buffer))
-		{
-			if (strpos($buffer, '{socialloginbuttons') === false)
-			{
-				return;
-			}
-
-			$socialLoginButtons = SocialLoginHelperIntegrations::getSocialLoginButtons();
-
-			$buffer = preg_replace('/{socialloginbuttons(\s)?}/', $socialLoginButtons, $buffer);
-			$jDocument->setBuffer($buffer);
-
-			return;
-		}
-
-		// Am I intercepting com_users?
-		$interceptingLogin = false;
-
-		if ($this->interceptLogin)
-		{
-			$option = $app->input->getCmd('option');
-			$view = $app->input->getCmd('view');
-
-			if ($option == 'com_users')
-			{
-				if (empty($view) || ($view == 'login'))
-				{
-					$interceptingLogin = true;
-				}
-			}
-		}
-
-		// New Joomla! versions, buffer is a 3D array
-		$socialLoginButtons = SocialLoginHelperIntegrations::getSocialLoginButtons();
-
-		foreach ($buffer as $type => $subBuffer1)
-		{
-			foreach ($subBuffer1 as $name => $subBuffer2)
-			{
-				foreach ($subBuffer2 as $title => $content)
-				{
-					if ($interceptingLogin && ($type == 'component'))
-					{
-						$content .= '{socialloginbuttons}';
-					}
-
-					if (strpos($content, '{socialloginbuttons') === false)
-					{
-						return;
-					}
-
-					$content = preg_replace('/{socialloginbuttons(\s)?}/', $socialLoginButtons, $content);
-					$jDocument->setBuffer($content, array(
-						'type' => $type,
-						'name' => $name,
-						'title' => $title,
-					));
-				}
-			}
-		}
 	}
 
 	/**
@@ -288,12 +206,17 @@ class plgSystemSociallogin extends JPlugin
 	 */
 	public function onContentPrepareForm($form, $data)
 	{
-		if (!($form instanceof JForm))
+		if (!$this->addLinkUnlinkButtons)
 		{
-			throw new InvalidArgumentException('JERROR_NOT_A_FORM');
+			return true;
 		}
 
 		// Check we are manipulating a valid form.
+		if (!($form instanceof JForm))
+		{
+			return true;
+		}
+
 		$name = $form->getName();
 
 		if (!in_array($name, array('com_admin.profile', 'com_users.user', 'com_users.profile', 'com_users.registration')))
@@ -330,13 +253,13 @@ class plgSystemSociallogin extends JPlugin
 			return true;
 		}
 
-		// Make sure I am either editing myself OR I am a Super User AND I'm not editing another Super User
+		// Make sure I am either editing myself OR I am a Super User
 		if (!SocialLoginHelperLogin::canEditUser($user))
 		{
 			return true;
 		}
 
-		// Add the fields to the form.
+		// Add the fields to the form. The custom Sociallogin field uses the SocialLoginHelperIntegrations to render the buttons.
 		$this->loadLanguage();
 		JForm::addFormPath(dirname(__FILE__) . '/fields');
 		$form->loadFile('sociallogin', false);

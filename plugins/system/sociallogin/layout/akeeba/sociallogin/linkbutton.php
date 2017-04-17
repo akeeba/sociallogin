@@ -9,8 +9,9 @@
 defined('_JEXEC') or die();
 
 /**
- * Renders a social login button, allowing the user to log into Joomla! using their social media presence. This is
- * typically used in login modules.
+ * Renders a social account link / unlink button. Lets the user link their Joomla! user account with a social network
+ * or, if it's already linked, unlink their user account from their social network presence. This is typically used in
+ * the user account edit page.
  *
  * Generic data
  *
@@ -20,6 +21,9 @@ defined('_JEXEC') or die();
  * Layout specific data
  *
  * @var   string       $slug        The name of the button being rendered, e.g. facebook
+ * @var   string       $type        The type of the button being rendered: 'link' (user has not linked to this social
+ *                                  network before) or 'unlink' (user is already linked to this social network, clicking
+ *                                  this button will _unlink_ their user account from it).
  * @var   string       $link        URL for the button (href)
  * @var   string       $tooltip     Tooltip to show on the button
  * @var   string       $label       Text content of the button
@@ -29,6 +33,7 @@ defined('_JEXEC') or die();
 // Extract the data. Do not remove until the unset() line.
 extract(array_merge(array(
 	'slug'       => '',
+	'type'       => 'link',
 	'link'       => '',
 	'tooltip'    => '',
 	'label'      => '',
@@ -37,7 +42,7 @@ extract(array_merge(array(
 
 // Start writing your template override code below this line
 ?>
-<a class="btn btn-default akeeba-sociallogin-button akeeba-sociallogin-button-<?php echo $slug?> hasTooltip"
+<a class="btn btn-default akeeba-sociallogin-linkunlink-button akeeba-sociallogin-<?php echo $type?>-button akeeba-sociallogin-<?php echo $type?>-button-<?php echo $slug?> hasTooltip"
    href="<?php echo $link?>"  title="<?php echo $tooltip ?>">
     <?php if (!empty($icon_class)): ?>
     <span class="<?php echo $icon_class ?>"></span>
