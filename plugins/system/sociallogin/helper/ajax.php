@@ -16,7 +16,7 @@ final class SocialLoginHelperAjax
 	/**
 	 * Handle an AJAX request
 	 *
-	 * @param   JApplicationBase  $input  The application
+	 * @param   JApplicationBase  $app  The application
 	 *
 	 * @return  mixed
 	 *

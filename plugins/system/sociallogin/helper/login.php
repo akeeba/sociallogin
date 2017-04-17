@@ -250,9 +250,9 @@ abstract class SocialLoginHelperLogin
 		// Initialise some variables
 		$db = JFactory::getDbo();
 		$query = $db->getQuery(true)
-		            ->select($db->quoteName('id'))
-		            ->from($db->quoteName('#__users'))
-		            ->where($db->quoteName('email') . ' = ' . $db->quote($email));
+		            ->select($db->qn('id'))
+		            ->from($db->qn('#__users'))
+		            ->where($db->qn('email') . ' = ' . $db->q($email));
 		$db->setQuery($query, 0, 1);
 
 		return $db->loadResult();

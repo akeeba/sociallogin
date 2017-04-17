@@ -193,7 +193,7 @@ abstract class SocialLoginHelperIntegrations
 
 			foreach ($allUserIDs as $id)
 			{
-				if ($id = $userId)
+				if ($id == $userId)
 				{
 					continue;
 				}
