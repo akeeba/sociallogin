@@ -167,6 +167,18 @@ abstract class SocialLoginHelperLogin
 		$isAdmin = method_exists($app, 'isClient') ? $app->isClient('administrator') : $app->isAdmin();
 		$user    = JFactory::getUser($userId);
 
+		// Does the user account have a pending activation?
+		if (!empty($user->activation))
+		{
+			throw new RuntimeException(JText::_('JGLOBAL_AUTH_ACCESS_DENIED'));
+		}
+
+		// Is the user account blocked?
+		if ($user->block)
+		{
+			throw new RuntimeException(JText::_('JGLOBAL_AUTH_ACCESS_DENIED'));
+		}
+
 		$response                = new JAuthenticationResponse();
 		$response->status        = JAuthentication::STATUS_SUCCESS;
 		$response->username      = $user->username;

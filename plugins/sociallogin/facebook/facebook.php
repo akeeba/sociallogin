@@ -25,7 +25,7 @@ class plgSocialloginFacebook extends JPlugin
 	 *
 	 * @var   string
 	 */
-	private $integrationName = 'facebook';
+	private $integrationName = '';
 
 	/**
 	 * Should I log in users who have not yet linked their Facebook account to their site account? THIS MAY BE DANGEROUS
@@ -84,9 +84,13 @@ class plgSocialloginFacebook extends JPlugin
 	{
 		parent::__construct($subject, $config);
 
+		// Load the language files
 		$this->loadLanguage();
 
-		// Load options
+		// Set the integration name from the plugin name (without the plg_system_ part, of course)
+		$this->integrationName = $this->_name;
+
+		// Load the plugin options into properties
 		$this->appId               = $this->params->get('appid', '');
 		$this->appSecret           = $this->params->get('appsecret', '');
 		$this->canLoginUnlinked    = $this->params->get('loginunlinked', false);
@@ -109,14 +113,14 @@ class plgSocialloginFacebook extends JPlugin
 	 *
 	 * @return  JFacebookOAuth
 	 */
-	private function getFacebookOauth()
+	private function getConnector()
 	{
 		if (is_null($this->connector))
 		{
 			$options = new Registry(array(
 				'clientid'     => $this->appId,
 				'clientsecret' => $this->appSecret,
-				'redirecturi'  => JUri::base() . 'index.php?option=com_ajax&group=sociallogin&plugin=facebook&format=raw'
+				'redirecturi'  => JUri::base() . 'index.php?option=com_ajax&group=sociallogin&plugin=' . $this->integrationName . '&format=raw'
 			));
 			$this->connector = new JFacebookOAuth($options);
 			$this->connector->setScope('public_profile,email');
@@ -205,7 +209,7 @@ class plgSocialloginFacebook extends JPlugin
 		$session->set('failureUrl', $failureURL, 'plg_sociallogin_facebook');
 
 		// Get a Facebook OAUth2 connector object and retrieve the URL
-		$connector = $this->getFacebookOauth();
+		$connector = $this->getConnector();
 		$url       = $connector->createUrl();
 
 		return array(
@@ -253,7 +257,7 @@ class plgSocialloginFacebook extends JPlugin
 		if ($this->isLinked($user))
 		{
 			$token = $session->getToken();
-			$unlinkURL = JUri::base() . 'index.php?option=com_ajax&group=system&plugin=sociallogin&format=raw&akaction=unlink&slug=facebook&' . $token . '=1';
+			$unlinkURL = JUri::base() . 'index.php?option=com_ajax&group=system&plugin=sociallogin&format=raw&akaction=unlink&slug=' . $this->integrationName . '&' . $token . '=1';
 
 			// Render an unlink button
 			return array(
@@ -273,7 +277,7 @@ class plgSocialloginFacebook extends JPlugin
 		}
 
 		// Get a Facebook OAUth2 connector object and retrieve the URL
-		$connector = $this->getFacebookOauth();
+		$connector = $this->getConnector();
 		$url       = $connector->createUrl();
 
 		return array(
@@ -354,31 +358,26 @@ class plgSocialloginFacebook extends JPlugin
 		$session->set('failureUrl', null, 'plg_sociallogin_facebook');
 
 		// Try to exchange the code with a token
-		$facebookOauth = $this->getFacebookOauth();
-		$app           = JFactory::getApplication();
+		$oauthConnector = $this->getConnector();
+		$app            = JFactory::getApplication();
 
-		// TODO Export all of the code below to a method. Wrap in a try-catch block. If a plgSocialloginFacebookLoginException is raised process a login failure and redirect to the failure page. If a plgSocialloginFacebookGenericException is raised just redirect to the failure page.
+		/**
+		 * Handle the login callback from Facebook. There are three possibilities:
+		 *
+		 * 1. plgSocialloginFacebookLoginException exception is thrown. We must go through Joomla's user plugins and let
+		 *    them handle the login failure. They MAY change the error response. Then we report that error reponse to
+		 *    the user while redirecting them to the error handler page.
+		 *
+		 * 2. plgSocialloginFacebookGenericMessageException exception is thrown. We must NOT go through the user
+		 *    plugins, this is not a login error. Most likely we have to tell the user to validate their account.
+		 *
+		 * 3. No exception is thrown. Proceed to the login success page ($loginUrl).
+		 */
 		try
 		{
-			$token = $facebookOauth->authenticate();
-
-			if ($token === false)
-			{
-				throw new RuntimeException(JText::_('PLG_SOCIALLOGIN_FACEBOOK_ERROR_NOT_LOGGED_IN_FB'));
-			}
-
-			// Get information about the user from Big Brother... er... Facebook.
-			$options = new Registry();
-			$options->set('api.url', 'https://graph.facebook.com/v2.7/');
-			$fbUserApi       = new JFacebookUser($options, null, $facebookOauth);
-			$fbUserFields    = $fbUserApi->getUser('me?fields=id,name,email,verified,timezone');
-			$fullName        = $fbUserFields->name;
-			$fbUserId        = $fbUserFields->id;
-			$fbUserEmail     = $fbUserFields->email;
-			$fbUserVerified  = $fbUserFields->verified;
-			$fbUserGMTOffset = $fbUserFields->timezone;
+			$this->handleLogin($oauthConnector);
 		}
-		catch (Exception $e)
+		catch (plgSocialloginFacebookLoginException $e)
 		{
 			// Log failed login
 			$response                = SocialLoginHelperLogin::getAuthenticationResponseObject();
@@ -389,111 +388,16 @@ class plgSocialloginFacebook extends JPlugin
 
 			return;
 		}
-
-		// Look for a local user account with the Facebook user ID
-		$userId = $this->getUserIdByFacebookId($fbUserId);
-
-		/**
-		 * Does a user exist with the same email as the Facebook email?
-		 *
-		 * We only do that for verified Facebook users, i.e. people who have already verified that they have control of
-		 * their stated email address and / or phone with Facebook. This is a security measure! It prevents someone from
-		 * registering a Facebook account under your email address (without verifying that email address) and use it to
-		 * login into the Joomla site impersonating you.
-		 */
-		if ($fbUserVerified && ($userId == 0))
+		catch (plgSocialloginFacebookGenericMessageException $e)
 		{
-			$userId = SocialLoginHelperLogin::getUserIdByEmail($fbUserEmail);
-
-			// TODO If "Allow social login to non-linked accounts" is disabled AND the userId is not null stop with an error. Otherwise, if "Create new users" is allowed we will be trying to create a user account with an email address which already exists, leading to failure.
-		}
-
-		if (empty($userId))
-		{
-			$usersConfig           = JComponentHelper::getParams('com_users');
-			$allowUserRegistration = $usersConfig->get('allowUserRegistration');
-
-			// TODO Add a switch in the plugin allowing it to override the global Joomla! user creation switch
-			// User not found and user registration is disabled OR create new users is not allowed
-			if (($allowUserRegistration == 0) || !$this->canCreateNewUsers)
-			{
-				// Log failed login
-				$response                = SocialLoginHelperLogin::getAuthenticationResponseObject();
-				$response->status        = JAuthentication::STATUS_UNKNOWN;
-				$response->error_message = JText::sprintf('JGLOBAL_AUTH_FAILED', JText::_('PLG_SOCIALLOGIN_FACEBOOK_ERROR_LOCAL_NOT_FOUND'));
-				SocialLoginHelperLogin::processLoginFailure($response);
-				$app->redirect($failureUrl);
-
-				return;
-			}
-
-			try
-			{
-				/**
-				 * If Facebook reports the user as verified and the "Bypass user validation for verified Facebook users"
-				 * option is enabled in the plugin options we tell the helper to not send user verification emails,
-				 * immediately activating the user.
-				 */
-				$bypassVerification = $fbUserVerified && $this->canBypassValidation;
-				$userId = SocialLoginHelperLogin::createUser($fbUserEmail, $fullName, $bypassVerification, $fbUserGMTOffset);
-			}
-			catch (UnexpectedValueException $e)
-			{
-				// Log failure to create user (username already exists)
-				$response                = SocialLoginHelperLogin::getAuthenticationResponseObject();
-				$response->status        = JAuthentication::STATUS_UNKNOWN;
-				$response->error_message = JText::sprintf('PLG_SOCIALLOGIN_FACEBOOK_ERROR_CANNOT_CREATE', JText::_('PLG_SOCIALLOGIN_FACEBOOK_ERROR_LOCAL_USERNAME_CONFLICT'));
-				SocialLoginHelperLogin::processLoginFailure($response);
-				$app->redirect($failureUrl);
-
-				return;
-			}
-			catch (RuntimeException $e)
-			{
-				// Log failure to create user (other internal error, check the model error message returned in the exception)
-				$response                = SocialLoginHelperLogin::getAuthenticationResponseObject();
-				$response->status        = JAuthentication::STATUS_UNKNOWN;
-				$response->error_message = JText::sprintf('PLG_SOCIALLOGIN_FACEBOOK_ERROR_CANNOT_CREATE', $e->getMessage());
-				SocialLoginHelperLogin::processLoginFailure($response);
-				$app->redirect($failureUrl);
-
-				return;
-			}
-
-			// Does the account need user or administrator verification?
-			if (in_array($userId, array('useractivate', 'adminactivate')))
-			{
-				// Do NOT go through processLoginFailure. This is NOT a login failure.
-				$message = JText::_('PLG_SOCIALLOGIN_FACEBOOK_NOTICE_' . $userId);
-				$app->enqueueMessage($message, 'info');
-				$app->redirect($failureUrl);
-
-				return;
-			}
-		}
-
-		// Attach the Facebook user ID and token to the user's profile
-		try
-		{
-			$this->linkToFacebook($userId, $fbUserId, $token);
-		}
-		catch (Exception $e)
-		{
-			// Ignore database exceptions at this point
-		}
-
-		// Log in the user
-		try
-		{
-			SocialLoginHelperLogin::loginUser($userId);
-
-			$app->redirect($loginUrl);
-		}
-		catch (RuntimeException $e)
-		{
-			$app->enqueueMessage($e->getMessage(), 'error');
+			// Do NOT go through processLoginFailure. This is NOT a login failure.
+			$app->enqueueMessage($e->getMessage(), 'info');
 			$app->redirect($failureUrl);
+
+			return;
 		}
+
+		$app->redirect($loginUrl);
 	}
 
 	/**
@@ -614,4 +518,158 @@ class plgSocialloginFacebook extends JPlugin
 			return 0;
 		}
 	}
+
+	/**
+	 * Handle the Facebook login callback
+	 *
+	 * @param   JFacebookOAuth  $facebookOauth  The Facebook OAuth object, used to retrieve the user data
+	 *
+	 * @throws  plgSocialloginFacebookLoginException  when a login error occurs
+	 * @throws  plgSocialloginFacebookGenericMessageException  when we need to tell the user to do something more to log in to the site
+	 */
+	private function handleLogin(JFacebookOAuth $facebookOauth)
+	{
+		try
+		{
+			$token = $facebookOauth->authenticate();
+
+			if ($token === false)
+			{
+				throw new plgSocialloginFacebookLoginException(JText::_('PLG_SOCIALLOGIN_FACEBOOK_ERROR_NOT_LOGGED_IN_FB'));
+			}
+
+			// Get information about the user from Big Brother... er... Facebook.
+			$options = new Registry();
+			$options->set('api.url', 'https://graph.facebook.com/v2.7/');
+			$fbUserApi       = new JFacebookUser($options, null, $facebookOauth);
+			$fbUserFields    = $fbUserApi->getUser('me?fields=id,name,email,verified,timezone');
+			$fullName        = $fbUserFields->name;
+			$fbUserId        = $fbUserFields->id;
+			$fbUserEmail     = $fbUserFields->email;
+			$fbUserVerified  = $fbUserFields->verified;
+			$fbUserGMTOffset = $fbUserFields->timezone;
+		}
+		catch (Exception $e)
+		{
+			throw new plgSocialloginFacebookLoginException($e->getMessage());
+		}
+
+		// Look for a local user account with the Facebook user ID
+		$userId = $this->getUserIdByFacebookId($fbUserId);
+
+		/**
+		 * If a user is not linked to this Facebook account we are going to look for a user account that has the same
+		 * email address as the Facebook user.
+		 *
+		 * We only allow that for verified Facebook users, i.e. people who have already verified that they have control
+		 * of their stated email address and / or phone with Facebook and only if the "Allow social login to non-linked
+		 * accounts" switch is enabled in the plugin. If a user exists with the same email when either of these
+		 * conditions is false we raise a login failure. This is a security measure! It prevents someone from
+		 * registering a Facebook account under your email address and use it to login into the Joomla site
+		 * impersonating you.
+		 */
+		if (empty($userId))
+		{
+			$userId = SocialLoginHelperLogin::getUserIdByEmail($fbUserEmail);
+
+			/**
+			 * The Facebook user is not verified. That's a possible security issue so let's pretend we can't find a match.
+			 */
+			if (!$fbUserVerified)
+			{
+				throw new plgSocialloginFacebookLoginException(JText::_('PLG_SOCIALLOGIN_FACEBOOK_ERROR_LOCAL_NOT_FOUND'));
+			}
+
+			/**
+			 * This is a verified Facebook user and we found a user account with the same email address on our site. If
+			 * "Allow social login to non-linked accounts" is disabled AND the userId is not null stop with an error.
+			 * Otherwise, if "Create new users" is allowed we will be trying to create a user account with an email
+			 * address which already exists, leading to failure with a message that makes no sense to the user.
+			 */
+			if (!$this->canLoginUnlinked && !empty($userId))
+			{
+				throw new plgSocialloginFacebookLoginException(JText::_('PLG_SOCIALLOGIN_FACEBOOK_ERROR_LOCAL_USERNAME_CONFLICT'));
+			}
+		}
+
+		if (empty($userId))
+		{
+			$usersConfig           = JComponentHelper::getParams('com_users');
+			$allowUserRegistration = $usersConfig->get('allowUserRegistration');
+
+			// TODO Add a switch in the plugin allowing it to override the global Joomla! user creation switch
+
+			// User not found and user registration is disabled OR create new users is not allowed
+			if (($allowUserRegistration == 0) || !$this->canCreateNewUsers)
+			{
+				throw new plgSocialloginFacebookLoginException(JText::_('PLG_SOCIALLOGIN_FACEBOOK_ERROR_LOCAL_NOT_FOUND'));
+			}
+
+			try
+			{
+				/**
+				 * If Facebook reports the user as verified and the "Bypass user validation for verified Facebook users"
+				 * option is enabled in the plugin options we tell the helper to not send user verification emails,
+				 * immediately activating the user.
+				 */
+				$bypassVerification = $fbUserVerified && $this->canBypassValidation;
+				$userId             = SocialLoginHelperLogin::createUser($fbUserEmail, $fullName, $bypassVerification, $fbUserGMTOffset);
+			}
+			catch (UnexpectedValueException $e)
+			{
+				throw new plgSocialloginFacebookLoginException(JText::sprintf('PLG_SOCIALLOGIN_FACEBOOK_ERROR_CANNOT_CREATE', JText::_('PLG_SOCIALLOGIN_FACEBOOK_ERROR_LOCAL_USERNAME_CONFLICT')));
+			}
+			catch (RuntimeException $e)
+			{
+				throw new plgSocialloginFacebookLoginException(JText::sprintf('PLG_SOCIALLOGIN_FACEBOOK_ERROR_CANNOT_CREATE', $e->getMessage()));
+			}
+
+			// Does the account need user or administrator verification?
+			if (in_array($userId, array('useractivate', 'adminactivate')))
+			{
+				// Do NOT go through processLoginFailure. This is NOT a login failure.
+				throw new plgSocialloginFacebookGenericMessageException(JText::_('PLG_SOCIALLOGIN_FACEBOOK_NOTICE_' . $userId));
+			}
+		}
+
+		/**
+		 * Catch still empty user ID. This means we cannot find any matching user for this Facebook login and we are not
+		 * allowed to create new users. As a result we have to give up and tell the user we can't log them in.
+		 */
+		if (empty($userId))
+		{
+			throw new plgSocialloginFacebookLoginException(JText::_('PLG_SOCIALLOGIN_FACEBOOK_ERROR_LOCAL_NOT_FOUND'));
+		}
+
+		// Attach the Facebook user ID and token to the user's profile
+		try
+		{
+			$this->linkToFacebook($userId, $fbUserId, $token);
+		}
+		catch (Exception $e)
+		{
+			// Ignore database exceptions at this point
+		}
+
+		// Log in the user
+		try
+		{
+			SocialLoginHelperLogin::loginUser($userId);
+		}
+		catch (Exception $e)
+		{
+			throw new plgSocialloginFacebookLoginException($e->getMessage());
+		}
+	}
 }
+
+/**
+ * Exception thrown when a login error occurs. The application must go through the failed login user plugin handlers.
+ */
+class plgSocialloginFacebookLoginException extends RuntimeException {}
+
+/**
+ * Exception thrown when a generic error occurs. The application must redirect to the error page WITHOUT going through
+ * the login failure handlers of the user plugins.
+ */
+class plgSocialloginFacebookGenericMessageException extends RuntimeException {}
