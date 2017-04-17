@@ -188,6 +188,7 @@ abstract class SocialLoginHelperLogin
 		// If status is success, any error will have been raised by the user plugin
 		if ($response->status !== JAuthentication::STATUS_SUCCESS)
 		{
+			// Everything logged in the 'jerror' category ends up being enqueued in the application message queue.
 			JLog::add($response->error_message, JLog::WARNING, 'jerror');
 		}
 

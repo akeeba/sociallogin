@@ -425,9 +425,9 @@ class plgSocialloginFacebook extends JPlugin
 			$response->status        = JAuthentication::STATUS_UNKNOWN;
 			$response->error_message = $e->getMessage();
 
+			// This also enqueues the login failure message for display after redirection. Look for JLog in that method.
 			SocialLoginHelperLogin::processLoginFailure($response);
 
-			$app->enqueueMessage($response->error_message, 'error');
 			$app->redirect($failureUrl);
 
 			return;
