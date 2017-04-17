@@ -24,6 +24,7 @@ defined('_JEXEC') or die();
  * @var   string       $tooltip     Tooltip to show on the button
  * @var   string       $label       Text content of the button
  * @var   string       $icon_class  An icon class for the span inside the button
+ * @var   string       $img         Relative path to an icon image file, used when $icon_class is not provided
  */
 
 // Extract the data. Do not remove until the unset() line.
@@ -33,6 +34,7 @@ extract(array_merge(array(
 	'tooltip'    => '',
 	'label'      => '',
 	'icon_class' => '',
+	'img'        => '',
 ), $displayData));
 
 // Start writing your template override code below this line
@@ -41,6 +43,8 @@ extract(array_merge(array(
    href="<?php echo $link?>"  title="<?php echo $tooltip ?>">
     <?php if (!empty($icon_class)): ?>
     <span class="<?php echo $icon_class ?>"></span>
+    <?php else: ?>
+    <img src="<?php echo $img ?>" border="0" />
     <?php endif; ?>
     <?php echo $label ?>
 </a>

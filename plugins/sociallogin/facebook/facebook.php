@@ -63,9 +63,16 @@ class plgSocialloginFacebook extends JPlugin
 	/**
 	 * Should I output inline custom CSS in the page header to style this plugin's login, link and unlink buttons?
 	 *
-	 * @var bool|mixed
+	 * @var   bool
 	 */
 	private $useCustomCSS = true;
+
+	/**
+	 * The icon class to be used in the buttons
+	 *
+	 * @var   string
+	 */
+	private $iconClass = '';
 
 	/**
 	 * Facebook App ID
@@ -114,6 +121,7 @@ class plgSocialloginFacebook extends JPlugin
 		$this->canCreateAlways     = $this->params->get('forcenew', true);
 		$this->canBypassValidation = $this->params->get('bypassvalidation', true);
 		$this->useCustomCSS        = $this->params->get('customcss', true);
+		$this->iconClass           = $this->params->get('icon_class', '');
 	}
 
 	/**
@@ -242,8 +250,10 @@ class plgSocialloginFacebook extends JPlugin
 			'tooltip'    => JText::_('PLG_SOCIALLOGIN_FACEBOOK_LOGIN_DESC'),
 			// What to put inside the anchor tag. Leave empty to put the image returned by onSocialLoginGetIntegration.
 			'label'      => JText::_('PLG_SOCIALLOGIN_FACEBOOK_LOGIN_LABEL'),
+			// The image to use if there is no icon class
+			'img'        => 'media/plugins/plg_sociallogin_facebook/images/fb_white_29.png',
 			// An icon class for the span before the label inside the anchor tag. Nothing is shown if this is blank.
-		    'icon_class' => 'icon-facebook',
+		    'icon_class' => $this->iconClass,
 		);
 	}
 
@@ -514,6 +524,7 @@ class plgSocialloginFacebook extends JPlugin
 		$css = /** @lang CSS */
 			<<< CSS
 .akeeba-sociallogin-link-button-facebook, .akeeba-sociallogin-unlink-button-facebook, .akeeba-sociallogin-button-facebook { background-color: #3B5998; color: #ffffff; transition-duration: 0.33s }
+.akeeba-sociallogin-link-button-facebook img, .akeeba-sociallogin-unlink-button-facebook img, .akeeba-sociallogin-button-facebook img { width: 16px; height: 16px; margin: 0 0.33em 0.1em 0; padding: 0; }
 .akeeba-sociallogin-link-button-facebook:hover, .akeeba-sociallogin-unlink-button-facebook:hover, .akeeba-sociallogin-button-facebook:hover { background-color: #8B9DC3; color: #ffffff; transition-duration: 0.33s }
 CSS;
 
