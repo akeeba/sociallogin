@@ -162,18 +162,22 @@ abstract class SocialLoginHelperLogin
 	 * Have Joomla! process a login failure
 	 *
 	 * @param   JAuthenticationResponse  $response  The Joomla! auth response object
+	 * @param   JApplicationBase         $app       The application we are running in. Skip to auto-detect (recommended).
 	 *
 	 * @return  bool
 	 */
-	public static function processLoginFailure(JAuthenticationResponse $response)
+	public static function processLoginFailure(JAuthenticationResponse $response, JApplicationBase $app = null)
 	{
 		// Import the user plugin group.
-		JPluginHelper::importPlugin('user');
+		SocialLoginHelperJoomla::importPlugins('user');
 
-		$app = JFactory::getApplication();
+		if (!is_object($app))
+		{
+			$app = JFactory::getApplication();
+		}
 
 		// Trigger onUserLoginFailure Event.
-		$app->triggerEvent('onUserLoginFailure', array((array) $response));
+		SocialLoginHelperJoomla::runPlugins('onUserLoginFailure', array((array) $response), $app);
 
 		// If silent is set, just return false.
 		if (isset($options['silent']) && $options['silent'])
@@ -320,9 +324,10 @@ abstract class SocialLoginHelperLogin
 	/**
 	 * Logs in a user to the site, bypassing the authentication plugins.
 	 *
-	 * @param   int  $userId  The user ID to log in
+	 * @param   int               $userId  The user ID to log in
+	 * @param   JApplicationBase  $app     The application we are running in. Skip to auto-detect (recommended).
 	 */
-	private static function loginUser($userId)
+	private static function loginUser($userId, JApplicationBase $app = null)
 	{
 		// Trick the class auto-loader into loading the necessary classes
 		JLoader::import('joomla.user.authentication');
@@ -331,7 +336,11 @@ abstract class SocialLoginHelperLogin
 		class_exists('JAuthentication', true);
 
 		// Fake a successful login message
-		$app     = JFactory::getApplication();
+		if (!is_object($app))
+		{
+			$app = JFactory::getApplication();
+		}
+
 		$isAdmin = method_exists($app, 'isClient') ? $app->isClient('administrator') : $app->isAdmin();
 		$user    = JFactory::getUser($userId);
 
@@ -364,8 +373,8 @@ abstract class SocialLoginHelperLogin
 		$options = array('remember' => true);
 
 		// Run the user plugins. They CAN block login by returning boolean false and setting $response->error_message.
-		JPluginHelper::importPlugin('user');
-		$results = self::runPlugins('onUserLogin', array((array) $response, $options));
+		SocialLoginHelperJoomla::importPlugins('user');
+		$results = SocialLoginHelperJoomla::runPlugins('onUserLogin', array((array) $response, $options), $app);
 
 		// If there is no boolean FALSE result from any plugin the login is successful.
 		if (in_array(false, $results, true) == false)
@@ -379,11 +388,11 @@ abstract class SocialLoginHelperLogin
 			$options['responseType'] = $response->type;
 
 			// The user is successfully logged in. Run the after login events
-			$app->triggerEvent('onUserAfterLogin', array($options));
+			SocialLoginHelperJoomla::runPlugins('onUserAfterLogin', array($options), $app);
 		}
 
 		// If we are here the plugins marked a login failure. Trigger the onUserLoginFailure Event.
-		$app->triggerEvent('onUserLoginFailure', array((array) $response));
+		SocialLoginHelperJoomla::runPlugins('onUserLoginFailure', array((array) $response), $app);
 
 		// Log the failure
 		JLog::add($response->error_message, JLog::WARNING, 'jerror');
@@ -395,14 +404,20 @@ abstract class SocialLoginHelperLogin
 	/**
 	 * Method to register a new user account. Based on UsersModelRegistration::register().
 	 *
-	 * @param   array  $data                The user data to save.
-	 * @param   array  $userParams          User parameters to save with the user account
-	 * @param   bool   $skipUserActivation  Should I forcibly skip user activation?
+	 * @param   array             $data                The user data to save.
+	 * @param   array             $userParams          User parameters to save with the user account
+	 * @param   bool              $skipUserActivation  Should I forcibly skip user activation?
+	 * @param   JApplicationBase  $app                 The application we are running in. Skip to auto-detect (recommended).
 	 *
 	 * @return  mixed  The user id on success, 'useractivate' or 'adminactivate' if activation is required
 	 */
-	private static function register(array $data, array $userParams = array(), $skipUserActivation = false)
+	private static function register(array $data, array $userParams = array(), $skipUserActivation = false, JApplicationBase $app = null)
 	{
+		if (!is_object($app))
+		{
+			$app = JFactory::getApplication();
+		}
+
 		$params = JComponentHelper::getParams('com_users');
 
 		$data = array_merge(array(
@@ -428,14 +443,29 @@ abstract class SocialLoginHelperLogin
 		// Get the groups the user should be added to after registration.
 		$data['groups']   = array($params->get('new_usertype', 2));
 
-		// Get the dispatcher and load the users plugins.
+		/**
+		 * Get the dispatcher and load the users plugins.
+		 *
+		 * IMPORTANT: We cannot go through the JApplicationCms object directly since user plugins will set the error
+		 * message on the dispatcher instead of throwing an exception. See the plugins/user/profile/profile.php plugin
+		 * file's onContentPrepareData method to understand this questionable approach. Until Joomla! stops supporting
+		 * legacy error handling we cannot switch to SocialLoginHelperJoomla::runPlugins and a regular exceptions
+		 * handler around it :(
+		 */
 		$dispatcher = JEventDispatcher::getInstance();
-		JPluginHelper::importPlugin('user');
+		SocialLoginHelperJoomla::importPlugins('user');
 
 		// Trigger the data preparation event.
-		$results = $dispatcher->trigger('onContentPrepareData', array('com_users.registration', $data));
+		try
+		{
+			$results = $dispatcher->trigger('onContentPrepareData', array('com_users.registration', $data));
+		}
+		catch (Exception $e)
+		{
+			throw new RuntimeException($e->getMessage());
+		}
 
-		// Check for errors encountered while preparing the data.
+		// Check for errors encountered while preparing the data. YOU CANNOT REMOVE THIS. READ THE BIG COMMENT ABOVE.
 		if (count($results) && in_array(false, $results, true))
 		{
 			throw new RuntimeException($dispatcher->getError());
@@ -469,7 +499,7 @@ abstract class SocialLoginHelperLogin
 		}
 
 		// Load the users plugin group.
-		JPluginHelper::importPlugin('user');
+		SocialLoginHelperJoomla::importPlugins('user');
 
 		// Store the data.
 		if (!$user->save())
@@ -737,23 +767,5 @@ abstract class SocialLoginHelperLogin
 		{
 			return $user->id;
 		}
-	}
-
-	/**
-	 * Execute a plugin event and return the results
-	 *
-	 * @param   string  $event  The plugin event to trigger
-	 * @param   array   $data   The data to pass to the event handlers
-	 *
-	 * @return  array  The plugin responses
-	 */
-	private static function runPlugins($event, $data)
-	{
-		if (class_exists('JEventDispatcher'))
-		{
-			return \JEventDispatcher::getInstance()->trigger($event, $data);
-		}
-
-		return \JFactory::getApplication()->triggerEvent($event, $data);
 	}
 }

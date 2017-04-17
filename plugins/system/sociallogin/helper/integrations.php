@@ -23,23 +23,29 @@ abstract class SocialLoginHelperIntegrations
 	/**
 	 * Gets the Social Login buttons for logging into the site (typically used in login modules)
 	 *
-	 * @param   string  $loginURL       The URL to return to upon successful login. Current URL if omitted.
-	 * @param   string  $failureURL     The URL to return to on login error. It's set automatically to $loginURL if omitted.
-	 * @param   string  $buttonLayout   JLayout for rendering a single login button
-	 * @param   string  $buttonsLayout  JLayout for rendering all the login buttons
+	 * @param   string            $loginURL       The URL to return to upon successful login. Current URL if omitted.
+	 * @param   string            $failureURL     The URL to return to on login error. It's set automatically to $loginURL if omitted.
+	 * @param   string            $buttonLayout   JLayout for rendering a single login button
+	 * @param   string            $buttonsLayout  JLayout for rendering all the login buttons
+	 * @param   JApplicationBase  $app            The application we are running in. Skip to auto-detect (recommended).
 	 *
 	 * @return  string  The rendered HTML of the login buttons
 	 */
-	public static function getSocialLoginButtons($loginURL = null, $failureURL = null, $buttonLayout = 'akeeba.sociallogin.button', $buttonsLayout  = 'akeeba.sociallogin.buttons')
+	public static function getSocialLoginButtons($loginURL = null, $failureURL = null, $buttonLayout = 'akeeba.sociallogin.button', $buttonsLayout  = 'akeeba.sociallogin.buttons', JApplicationBase $app = null)
 	{
+		if (!is_object($app))
+		{
+			$app = JFactory::getApplication();
+		}
+
 		if (is_null(self::$cachedSocialLoginButtons))
 		{
-			JPluginHelper::importPlugin('sociallogin');
+			SocialLoginHelperJoomla::importPlugins('sociallogin');
 
-			$buttonDefinitions = JFactory::$application->triggerEvent('onSocialLoginGetLoginButton', array(
+			$buttonDefinitions = SocialLoginHelperJoomla::runPlugins('onSocialLoginGetLoginButton', array(
 				$loginURL,
 				$failureURL
-			));
+			), $app);
 			$buttonsHTML       = array();
 
 			foreach ($buttonDefinitions as $buttonDefinition)
@@ -52,17 +58,17 @@ abstract class SocialLoginHelperIntegrations
 				$includePath = JPATH_SITE . '/plugins/sociallogin/' . $buttonDefinition['slug'] . '/layout';
 
 				// First try the plugin-specific layout
-				$html = self::renderLayout("$buttonLayout.{$buttonDefinition['slug']}", $buttonDefinition, $includePath);
+				$html = SocialLoginHelperJoomla::renderLayout("$buttonLayout.{$buttonDefinition['slug']}", $buttonDefinition, $includePath);
 
 				if (empty($html))
 				{
-					$html          = self::renderLayout($buttonLayout, $buttonDefinition, $includePath);
+					$html          = SocialLoginHelperJoomla::renderLayout($buttonLayout, $buttonDefinition, $includePath);
 				}
 
 				$buttonsHTML[] = $html;
 			}
 
-			self::$cachedSocialLoginButtons = self::renderLayout($buttonsLayout, array('buttons' => $buttonsHTML));
+			self::$cachedSocialLoginButtons = SocialLoginHelperJoomla::renderLayout($buttonsLayout, array('buttons' => $buttonsHTML));
 		}
 
 		return self::$cachedSocialLoginButtons;
@@ -71,19 +77,26 @@ abstract class SocialLoginHelperIntegrations
 	/**
 	 * Gets the Social Login buttons for linking and unlinking accounts (typically used in the My Account page).
 	 *
-	 * @param   JUser   $user           The Joomla! user object for which to get the buttons. Omit to use the currently logged in user.
-	 * @param   string  $buttonLayout   JLayout for rendering a single login button
-	 * @param   string  $buttonsLayout  JLayout for rendering all the login buttons
+	 * @param   JUser             $user           The Joomla! user object for which to get the buttons. Omit to use the currently logged in user.
+	 * @param   string            $buttonLayout   JLayout for rendering a single login button
+	 * @param   string            $buttonsLayout  JLayout for rendering all the login buttons
+	 * @param   JApplicationBase  $app            The application we are running in. Skip to auto-detect (recommended).
+	 *
 	 *
 	 * @return  string  The rendered HTML of the login buttons
 	 */
-	public static function getSocialLinkButtons(JUser $user = null, $buttonLayout = 'akeeba.sociallogin.linkbutton', $buttonsLayout  = 'akeeba.sociallogin.linkbuttons')
+	public static function getSocialLinkButtons(JUser $user = null, $buttonLayout = 'akeeba.sociallogin.linkbutton', $buttonsLayout  = 'akeeba.sociallogin.linkbuttons', JApplicationBase $app = null)
 	{
+		if (!is_object($app))
+		{
+			$app = JFactory::getApplication();
+		}
+
 		if (is_null(self::$cachedSocialLoginButtons))
 		{
-			JPluginHelper::importPlugin('sociallogin');
+			SocialLoginHelperJoomla::importPlugins('sociallogin');
 
-			$buttonDefinitions = JFactory::$application->triggerEvent('onSocialLoginGetLinkButton', array($user));
+			$buttonDefinitions = SocialLoginHelperJoomla::runPlugins('onSocialLoginGetLinkButton', array($user), $app);
 			$buttonsHTML       = array();
 
 			foreach ($buttonDefinitions as $buttonDefinition)
@@ -96,17 +109,17 @@ abstract class SocialLoginHelperIntegrations
 				$includePath = JPATH_SITE . '/plugins/sociallogin/' . $buttonDefinition['slug'] . '/layout';
 
 				// First try the plugin-specific layout
-				$html = self::renderLayout("$buttonLayout.{$buttonDefinition['slug']}", $buttonDefinition, $includePath);
+				$html = SocialLoginHelperJoomla::renderLayout("$buttonLayout.{$buttonDefinition['slug']}", $buttonDefinition, $includePath);
 
 				if (empty($html))
 				{
-					$html          = self::renderLayout($buttonLayout, $buttonDefinition, $includePath);
+					$html          = SocialLoginHelperJoomla::renderLayout($buttonLayout, $buttonDefinition, $includePath);
 				}
 
 				$buttonsHTML[] = $html;
 			}
 
-			self::$cachedSocialLoginButtons = self::renderLayout($buttonsLayout, array('buttons' => $buttonsHTML));
+			self::$cachedSocialLoginButtons = SocialLoginHelperJoomla::renderLayout($buttonsLayout, array('buttons' => $buttonsHTML));
 		}
 
 		return self::$cachedSocialLoginButtons;
@@ -299,26 +312,4 @@ abstract class SocialLoginHelperIntegrations
 		}
 	}
 
-	/**
-	 * Helper method to render a JLayout.
-	 *
-	 * @param   string  $layoutFile   Dot separated path to the layout file, relative to base path (plugins/system/sociallogin/layout)
-	 * @param   object  $displayData  Object which properties are used inside the layout file to build displayed output
-	 * @param   string  $includePath  Additional path holding layout files
-	 * @param   mixed   $options      Optional custom options to load. Registry or array format. Set 'debug'=>true to output debug information.
-	 *
-	 * @return  string
-	 */
-	private static function renderLayout($layoutFile, $displayData = null, $includePath = '', $options = null)
-	{
-		$basePath = JPATH_SITE . '/plugins/system/sociallogin/layout';
-		$layout = new JLayoutFile($layoutFile, $basePath, $options);
-
-		if (!empty($includePath))
-		{
-			$layout->addIncludePath($includePath);
-		}
-
-		return $layout->render($displayData);
-	}
 }

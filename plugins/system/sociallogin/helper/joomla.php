@@ -81,5 +81,69 @@ class SocialLoginHelperJoomla
 		return true;
 	}
 
+	/**
+	 * Helper method to render a JLayout.
+	 *
+	 * @param   string  $layoutFile   Dot separated path to the layout file, relative to base path (plugins/system/sociallogin/layout)
+	 * @param   object  $displayData  Object which properties are used inside the layout file to build displayed output
+	 * @param   string  $includePath  Additional path holding layout files
+	 * @param   mixed   $options      Optional custom options to load. Registry or array format. Set 'debug'=>true to output debug information.
+	 *
+	 * @return  string
+	 */
+	public static function renderLayout($layoutFile, $displayData = null, $includePath = '', $options = null)
+	{
+		$basePath = JPATH_SITE . '/plugins/system/sociallogin/layout';
+		$layout = new JLayoutFile($layoutFile, $basePath, $options);
 
+		if (!empty($includePath))
+		{
+			$layout->addIncludePath($includePath);
+		}
+
+		return $layout->render($displayData);
+	}
+
+	/**
+	 * Execute a plugin event and return the results
+	 *
+	 * @param   string            $event  The plugin event to trigger.
+	 * @param   array             $data   The data to pass to the event handlers.
+	 * @param   JApplicationBase  $app    The application to run plugins against, default the currently loaded application.
+	 *
+	 * @return  array  The plugin responses
+	 */
+	public static function runPlugins($event, $data, JApplicationBase $app = null)
+	{
+		if (!is_object($app))
+		{
+			$app = \JFactory::getApplication();
+		}
+
+		if (method_exists($app, 'triggerEvent'))
+		{
+			return $app->triggerEvent($event, $data);
+		}
+
+		if (class_exists('JEventDispatcher'))
+		{
+			return \JEventDispatcher::getInstance()->trigger($event, $data);
+		}
+
+		throw new RuntimeException('Cannot run plugins');
+	}
+
+	/**
+	 * Tells Joomla! to load a plugin group.
+	 *
+	 * This is just a wrapper around JPluginHelper. We use our own helper method for future-proofing...
+	 *
+	 * @param   string  $group  The plugin group to import
+	 *
+	 * @return  void
+	 */
+	public static function importPlugins($group)
+	{
+		JPluginHelper::importPlugin($group);
+	}
 }
