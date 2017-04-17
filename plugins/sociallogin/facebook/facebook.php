@@ -446,57 +446,6 @@ class plgSocialloginFacebook extends JPlugin
 		SocialLoginHelperIntegrations::insertUserProfileData($userId, 'sociallogin.facebook', $data);
 	}
 
-	/**
-	 * Gets the Joomla! user ID that corresponds to a Facebook user ID. Of course that implies that the user has logged
-	 * in to the Joomla! site through Facebook in the past or he has otherwise linked his user account to Facebook.
-	 *
-	 * @param   string $fbUserId The Facebook User ID.
-	 *
-	 * @return  int  The corresponding user ID or 0 if no user is found
-	 *
-	 * @since   3.7
-	 */
-	private function getUserIdByFacebookId($fbUserId)
-	{
-		// TODO Generalize in the helper
-
-		$db    = JFactory::getDbo();
-		$query = $db->getQuery(true)
-		            ->select(array(
-			            $db->qn('user_id'),
-		            ))->from($db->qn('#__user_profiles'))
-		            ->where($db->qn('profile_key') . ' = ' . $db->q('sociallogin.facebook.userid'))
-		            ->where($db->qn('profile_value') . ' = ' . $db->q($fbUserId));
-
-		try
-		{
-			$id = $db->setQuery($query, 0, 1)->loadResult();
-
-			// Not found?
-			if (empty($id))
-			{
-				return 0;
-			}
-
-			/**
-			 * If you delete a user its profile fields are left behind and confuse our code. Therefore we have to check
-			 * if the user *really* exists. However we can't just go through JFactory::getUser() because if the user
-			 * does not exist we'll end up with an ugly Warning on our page with a text similar to "JUser: :_load:
-			 * Unable to load user with ID: 1234". This cannot be disabled so we have to be, um, a bit creative :/
-			 */
-			$db    = JFactory::getDbo();
-			$query = $db->getQuery(true)
-			            ->select('COUNT(*)')->from($db->qn('#__users'))
-			            ->where($db->qn('id') . ' = ' . $db->q($id));
-			$userExists = $db->setQuery($query)->loadResult();
-			return ($userExists == 0) ? 0 : $id;
-		}
-		catch (Exception $e)
-		{
-			return 0;
-		}
-	}
-
 	private function addCustomCSS()
 	{
 		static $hasOutputCustomCSS = false;
@@ -568,7 +517,7 @@ CSS;
 		}
 
 		// Look for a local user account with the Facebook user ID
-		$userId = $this->getUserIdByFacebookId($fbUserId);
+		$userId = SocialLoginHelperIntegrations::getUserIdByProfileData('sociallogin.facebook.userid', $fbUserId);
 
 		/**
 		 * If a user is not linked to this Facebook account we are going to look for a user account that has the same
