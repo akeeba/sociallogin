@@ -14,11 +14,135 @@ defined('_JEXEC') or die();
 abstract class SocialLoginHelperLogin
 {
 	/**
-	 * Are we inside the administrator application
+	 * Handle the login callback from a social network. This is called after the plugin code has fetched the account
+	 * information from the social network. At this point we are simply checking if we can log in the user, create a
+	 * new user account or report a login error.
 	 *
-	 * @var   bool
+	 * @param   string                          $slug             The slug of the social network plugin, e.g. 'facebook'.
+	 * @param   SocialLoginPluginConfiguration  $config           The configuration information of the plugin.
+	 * @param   SocialLoginUserData             $userData         The social network user account data.
+	 * @param   array                           $userProfileData  The data to save in the #__user_profiles table.
+	 *
+	 * @return  void
+	 *
+	 * @throws  SocialLoginFailedLoginException     When a login error occurs (must report the login error to Joomla!).
+	 * @throws  SocialLoginGenericMessageException  When there is no login error but we need to report a message to the
+	 *                                              user, e.g. to tell them they need to click on the activation email.
 	 */
-	protected static $isAdmin = null;
+	public static function handleSocialLogin($slug, SocialLoginPluginConfiguration $config, SocialLoginUserData $userData, array $userProfileData)
+	{
+		// Look for a local user account with the social network user ID
+		$profileKeys = array_keys($userProfileData);
+		$primaryKey  = $profileKeys[0];
+		$userId      = SocialLoginHelperIntegrations::getUserIdByProfileData('sociallogin.' . $slug . '.' . $primaryKey, $userData->id);
+
+		/**
+		 * If a user is not linked to this social network account we are going to look for a user account that has the
+		 * same email address as the social network user.
+		 *
+		 * We only allow that for verified accounts, i.e. people who have already verified that they have control of
+		 * their stated email address and / or phone with the socual network and only if the "Allow social login to
+		 * non-linked accounts" switch is enabled in the plugin. If a user exists with the same email when either of
+		 * these conditions is false we raise a login failure. This is a security measure! It prevents someone from
+		 * registering a social network account under your email address and use it to login into the Joomla site
+		 * impersonating you.
+		 */
+		if (empty($userId))
+		{
+			$userId = SocialLoginHelperLogin::getUserIdByEmail($userData->email);
+
+			/**
+			 * The social network user is not verified. That's a possible security issue so let's pretend we can't find a match.
+			 */
+			if (!$userData->verified)
+			{
+				throw new SocialLoginFailedLoginException(JText::_('PLG_SOCIALLOGIN_' . $slug . '_ERROR_LOCAL_NOT_FOUND'));
+			}
+
+			/**
+			 * This is a verified social network user and we found a user account with the same email address on our
+			 * site. If "Allow social login to non-linked accounts" is disabled AND the userId is not null stop with an
+			 * error. Otherwise, if "Create new users" is allowed we will be trying to create a user account with an
+			 * email address which already exists, leading to failure with a message that makes no sense to the user.
+			 */
+			if (!$config->canLoginUnlinked && !empty($userId))
+			{
+				throw new SocialLoginFailedLoginException(JText::_('PLG_SOCIALLOGIN_' . $slug . '_ERROR_LOCAL_USERNAME_CONFLICT'));
+			}
+		}
+
+		if (empty($userId))
+		{
+			$usersConfig           = JComponentHelper::getParams('com_users');
+			$allowUserRegistration = $usersConfig->get('allowUserRegistration');
+
+			/**
+			 * User not found and user registration is disabled OR create new users is not allowed. Note that if the
+			 * canCreateAlways flag is set we override Joomla's user registration preference. This can be used to force
+			 * new account registrations to take place only through social media logins.
+			 */
+
+			if ((($allowUserRegistration == 0) && !$config->canCreateAlways) || !$config->canCreateNewUsers)
+			{
+				throw new SocialLoginFailedLoginException(JText::_('PLG_SOCIALLOGIN_' . $slug . '_ERROR_LOCAL_NOT_FOUND'));
+			}
+
+			try
+			{
+				/**
+				 * If the social network reports the user as verified and the "Bypass user validation for verified
+				 * users" option is enabled in the plugin options we tell the helper to not send user
+				 * verification emails, immediately activating the user.
+				 */
+				$bypassVerification = $userData->verified && $config->canBypassValidation;
+				$userId             = SocialLoginHelperLogin::createUser($userData->email, $userData->name, $bypassVerification, $userData->timezone);
+			}
+			catch (UnexpectedValueException $e)
+			{
+				throw new SocialLoginFailedLoginException(JText::sprintf('PLG_SOCIALLOGIN_' . $slug . '_ERROR_CANNOT_CREATE', JText::_('PLG_SOCIALLOGIN_' . $slug . '_ERROR_LOCAL_USERNAME_CONFLICT')));
+			}
+			catch (RuntimeException $e)
+			{
+				throw new SocialLoginFailedLoginException(JText::sprintf('PLG_SOCIALLOGIN_' . $slug . '_ERROR_CANNOT_CREATE', $e->getMessage()));
+			}
+
+			// Does the account need user or administrator verification?
+			if (in_array($userId, array('useractivate', 'adminactivate')))
+			{
+				// Do NOT go through processLoginFailure. This is NOT a login failure.
+				throw new SocialLoginGenericMessageException(JText::_('PLG_SOCIALLOGIN_' . $slug . '_NOTICE_' . $userId));
+			}
+		}
+
+		/**
+		 * Catch still empty user ID. This means we cannot find any matching user for this social network account and we
+		 * are not allowed to create new users. As a result we have to give up and tell the user we can't log them in.
+		 */
+		if (empty($userId))
+		{
+			throw new SocialLoginFailedLoginException(JText::_('PLG_SOCIALLOGIN_' . $slug . '_ERROR_LOCAL_NOT_FOUND'));
+		}
+
+		// Attach the social network link information to the user's profile
+		try
+		{
+			SocialLoginHelperIntegrations::insertUserProfileData($userId, 'sociallogin.' . $slug, $userProfileData);
+		}
+		catch (Exception $e)
+		{
+			// Ignore database exceptions at this point
+		}
+
+		// Log in the user
+		try
+		{
+			SocialLoginHelperLogin::loginUser($userId);
+		}
+		catch (Exception $e)
+		{
+			throw new SocialLoginFailedLoginException($e->getMessage());
+		}
+	}
 
 	/**
 	 * Returns a (blank) Joomla! authentication response
@@ -70,13 +194,54 @@ abstract class SocialLoginHelperLogin
 	}
 
 	/**
+	 * Is the user linked to the social login account?
+	 *
+	 * @param   string  $slug  The slug of the social media integration plugin, e.g. 'facebook'
+	 * @param   JUser   $user  The user account we are checking
+	 *
+	 * @return  bool
+	 */
+	public static function isLinkedUser($slug, JUser $user = null)
+	{
+		// Make sure there's a user to check for
+		if (empty($user) || !is_object($user) || !($user instanceof JUser))
+		{
+			$user = JFactory::getUser();
+		}
+
+		// Make sure there's a valid user
+		if ($user->guest || empty ($user->id))
+		{
+			return false;
+		}
+
+		$db    = JFactory::getDbo();
+		$query = $db->getQuery(true)
+		            ->select('COUNT(*)')
+		            ->from($db->qn('#__user_profiles'))
+		            ->where($db->qn('user_id') . ' = ' . $db->q($user->id))
+		            ->where($db->qn('profile_key') . ' LIKE ' . $db->q('sociallogin.' . $slug . '.%'));
+
+		try
+		{
+			$count = $db->setQuery($query)->loadResult();
+
+			return $count != 0;
+		}
+		catch (Exception $e)
+		{
+			return false;
+		}
+	}
+
+	/**
 	 * Returns the user ID, if a user exists, given an email address.
 	 *
 	 * @param   string  $email  The email to search on.
 	 *
 	 * @return  integer  The user id or 0 if not found.
 	 */
-	public static function getUserIdByEmail($email)
+	private static function getUserIdByEmail($email)
 	{
 		// Initialise some variables
 		$db = JFactory::getDbo();
@@ -109,7 +274,7 @@ abstract class SocialLoginHelperLogin
 	 *
 	 * @throws  UnexpectedValueException  If the email or username already exists
 	 */
-	public static function createUser($email, $name, $emailVerified, $timezone)
+	private static function createUser($email, $name, $emailVerified, $timezone)
 	{
 		// Does the email already exist?
 		if (empty($email) || self::getUserIdByEmail($email))
@@ -157,7 +322,7 @@ abstract class SocialLoginHelperLogin
 	 *
 	 * @param   int  $userId  The user ID to log in
 	 */
-	public static function loginUser($userId)
+	private static function loginUser($userId)
 	{
 		// Trick the class auto-loader into loading the necessary classes
 		JLoader::import('joomla.user.authentication');
@@ -590,68 +755,5 @@ abstract class SocialLoginHelperLogin
 		}
 
 		return \JFactory::getApplication()->triggerEvent($event, $data);
-	}
-
-	/**
-	 * Are we inside an administrator page?
-	 *
-	 * @param   JApplicationCms  $app  The current CMS application which tells us if we are inside an admin page
-	 *
-	 * @return  bool
-	 */
-	public static function isAdminPage(JApplicationCms $app = null)
-	{
-		if (is_null(self::$isAdmin))
-		{
-			if (is_null($app))
-			{
-				$app = JFactory::getApplication();
-			}
-
-			self::$isAdmin = version_compare(JVERSION, '3.7.0', 'ge') ? $app->isClient('administrator') : $app->isAdmin();
-		}
-
-		return self::$isAdmin;
-	}
-
-	/**
-	 * Is the current user allowed to edit the social login configuration of $user? To do so I must either be editing my
-	 * own account OR I have to be a Super User.
-	 *
-	 * @param   JUser  $user  The user you want to know if we're allowed to edit
-	 *
-	 * @return  bool
-	 */
-	public static function canEditUser(JUser $user = null)
-	{
-		// I can edit myself
-		if (empty($user))
-		{
-			return true;
-		}
-
-		// Guests can't have social logins associated
-		if ($user->guest)
-		{
-			return false;
-		}
-
-		// Get the currently logged in used
-		$myUser = JFactory::getUser();
-
-		// Same user? I can edit myself
-		if ($myUser->id == $user->id)
-		{
-			return true;
-		}
-
-		// To edit a different user I must be a Super User myself. If I'm not, I can't edit another user!
-		if (!$myUser->authorise('core.admin'))
-		{
-			return false;
-		}
-
-		// I am a Super User editing another user. That's allowed.
-		return true;
 	}
 }

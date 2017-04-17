@@ -170,35 +170,7 @@ class plgSocialloginFacebook extends JPlugin
 			return false;
 		}
 
-		// Make sure there's a user to check for
-		if (empty($user) || !is_object($user) || !($user instanceof JUser))
-		{
-			$user = JFactory::getUser();
-		}
-
-		// Make sure there's a valid user
-		if ($user->guest || empty ($user->id))
-		{
-			return false;
-		}
-
-		$db    = JFactory::getDbo();
-		$query = $db->getQuery(true)
-		            ->select('COUNT(*)')
-		            ->from($db->qn('#__user_profiles'))
-		            ->where($db->qn('user_id') . ' = ' . $db->q($user->id))
-		            ->where($db->qn('profile_key') . ' = ' . $db->q('sociallogin.facebook.userid'));
-
-		try
-		{
-			$count = $db->setQuery($query)->loadResult();
-
-			return $count != 0;
-		}
-		catch (Exception $e)
-		{
-			return false;
-		}
+		return SocialLoginHelperLogin::isLinkedUser($this->integrationName, $user);
 	}
 
 	/**
@@ -444,7 +416,7 @@ class plgSocialloginFacebook extends JPlugin
 				'token' => json_encode($token),
 			);
 
-			SocialLoginHelperIntegrations::handleSocialLogin($this->integrationName, $pluginConfiguration, $userData, $userProfileData);
+			SocialLoginHelperLogin::handleSocialLogin($this->integrationName, $pluginConfiguration, $userData, $userProfileData);
 		}
 		catch (SocialLoginFailedLoginException $e)
 		{
