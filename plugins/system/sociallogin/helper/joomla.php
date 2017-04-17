@@ -34,7 +34,7 @@ class SocialLoginHelperJoomla
 				$app = JFactory::getApplication();
 			}
 
-			self::$isAdmin = version_compare(JVERSION, '3.7.0', 'ge') ? $app->isClient('administrator') : $app->isAdmin();
+			self::$isAdmin = method_exists($app, 'isClient') ? $app->isClient('administrator') : $app->isAdmin();
 		}
 
 		return self::$isAdmin;
