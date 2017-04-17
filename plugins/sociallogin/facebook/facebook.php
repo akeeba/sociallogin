@@ -324,19 +324,7 @@ class plgSocialloginFacebook extends JPlugin
 			$user = JFactory::getUser();
 		}
 
-		// Cannot unlink a guest user!
-		if ($user->guest || empty($user->id))
-		{
-			return;
-		}
-
-		$db     = JFactory::getDbo();
-		$query  = $db->getQuery(true)
-		             ->delete($db->qn('#__user_profiles'))
-		             ->where($db->qn('user_id') . ' = ' . $db->q((int) $user->id))
-		             ->where($db->qn('profile_key') . ' LIKE ' . $db->q('sociallogin.facebook.%'));
-
-		$db->setQuery($query)->execute();
+		SocialLoginHelperIntegrations::removeUserProfileData($user->id, 'sociallogin.facebook');
 	}
 
 	/**
@@ -413,61 +401,12 @@ class plgSocialloginFacebook extends JPlugin
 	 */
 	private function linkToFacebook($userId, $fbUserId, $token)
 	{
-		// TODO Make sure we delete social login links to the same $fbUserId in other users. Scenario: I have registered on the site as bill@example.com but my Facebook is using the address william@example.net. This means that trying to login without linking the accounts creates a new user account with my FB email address. But I don't want it! I log out, log back into my regular account and try to link my Facebook. If this code doesn't delete the previous account link we will end up with TWO user accounts linked to the same Facebook account. Trying to log in would pick the "first" one, where "first" is something decided by the database and most likely NOT what we want.
+		$data = array(
+			'userid' => $fbUserId,
+			'token' => json_encode($token),
+		);
 
-		// Load the profile data from the database.
-		$db     = JFactory::getDbo();
-		$query  = $db->getQuery(true)
-		             ->select(array(
-			             $db->qn('profile_key'),
-			             $db->qn('profile_value'),
-		             ))->from($db->qn('#__user_profiles'))
-		             ->where($db->qn('user_id') . ' = ' . $db->q((int) $userId))
-		             ->where($db->qn('profile_key') . ' LIKE ' . $db->q('sociallogin.facebook.%'))
-		             ->order($db->qn('ordering'));
-		$fields = $db->setQuery($query)->loadAssocList('profile_key', 'profile_value');
-
-		if (!isset($fields['sociallogin.facebook.userid']))
-		{
-			$newField = (object) array(
-				'user_id'       => $userId,
-				'profile_key'   => 'sociallogin.facebook.userid',
-				'profile_value' => $fbUserId,
-				'ordering'      => 0
-			);
-			$db->insertObject('#__user_profiles', $newField);
-		}
-		elseif ($fields['sociallogin.facebook.userid'] != $fbUserId)
-		{
-			$query = $db->getQuery(true)
-						->update($db->qn('#__user_profiles'))
-			            ->set($db->qn('profile_value') . ' = ' . $db->q($fbUserId))
-			            ->where($db->qn('user_id') . ' = ' . $db->q((int) $userId))
-			            ->where($db->qn('profile_key') . ' = ' . $db->q('sociallogin.facebook.userid'));
-			$db->setQuery($query)->execute();
-		}
-
-		$token = json_encode($token);
-
-		if (!isset($fields['sociallogin.facebook.token']))
-		{
-			$newField = (object) array(
-				'user_id'       => $userId,
-				'profile_key'   => 'sociallogin.facebook.token',
-				'profile_value' => $token,
-				'ordering'      => 0
-			);
-			$db->insertObject('#__user_profiles', $newField);
-		}
-		elseif ($fields['sociallogin.facebook.token'] != $token)
-		{
-			$query = $db->getQuery(true)
-			            ->update($db->qn('#__user_profiles'))
-			            ->set($db->qn('profile_value') . ' = ' . $db->q($token))
-			            ->where($db->qn('user_id') . ' = ' . $db->q((int) $userId))
-			            ->where($db->qn('profile_key') . ' = ' . $db->q('sociallogin.facebook.token'));
-			$db->setQuery($query)->execute();
-		}
+		SocialLoginHelperIntegrations::insertUserProfileData($userId, 'sociallogin.facebook', $data);
 	}
 
 	/**
