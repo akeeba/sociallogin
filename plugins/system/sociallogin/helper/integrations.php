@@ -76,8 +76,15 @@ abstract class SocialLoginHelperIntegrations
 
 				$includePath = JPATH_SITE . '/plugins/sociallogin/' . $buttonDefinition['slug'] . '/layout';
 
-				// TODO First try layout "$buttonLayout.{$buttonDefinition['slug']}"
-				$buttonsHTML[] = self::renderLayout($buttonLayout, $buttonDefinition, $includePath);
+				// First try the plugin-specific layout
+				$html = self::renderLayout("$buttonLayout.{$buttonDefinition['slug']}", $buttonDefinition, $includePath);
+
+				if (empty($html))
+				{
+					$html          = self::renderLayout($buttonLayout, $buttonDefinition, $includePath);
+				}
+
+				$buttonsHTML[] = $html;
 			}
 
 			self::$cachedSocialLoginButtons = self::renderLayout($buttonsLayout, array('buttons' => $buttonsHTML));
@@ -113,8 +120,15 @@ abstract class SocialLoginHelperIntegrations
 
 				$includePath = JPATH_SITE . '/plugins/sociallogin/' . $buttonDefinition['slug'] . '/layout';
 
-				// TODO First try layout "$buttonLayout.{$buttonDefinition['slug']}"
-				$buttonsHTML[] = self::renderLayout($buttonLayout, $buttonDefinition, $includePath);
+				// First try the plugin-specific layout
+				$html = self::renderLayout("$buttonLayout.{$buttonDefinition['slug']}", $buttonDefinition, $includePath);
+
+				if (empty($html))
+				{
+					$html          = self::renderLayout($buttonLayout, $buttonDefinition, $includePath);
+				}
+
+				$buttonsHTML[] = $html;
 			}
 
 			self::$cachedSocialLoginButtons = self::renderLayout($buttonsLayout, array('buttons' => $buttonsHTML));
