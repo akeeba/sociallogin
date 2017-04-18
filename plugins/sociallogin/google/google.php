@@ -151,6 +151,8 @@ class plgSocialloginGoogle extends JPlugin
 		if (is_null($this->connector))
 		{
 			$options = new Registry(array(
+				'authurl'       => 'https://accounts.google.com/o/oauth2/auth',
+				'tokenurl'      => 'https://accounts.google.com/o/oauth2/token',
 				'clientid'      => $this->clientId,
 				'clientsecret'  => $this->clientSecret,
 				'redirecturi'   => JUri::base() . 'index.php?option=com_ajax&group=sociallogin&plugin=' . $this->integrationName . '&format=raw',

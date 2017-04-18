@@ -37,6 +37,9 @@
 		<copy file="${phing.dir}/templates/plg_sociallogin_facebook.xml" tofile="${dirs.plugins}/sociallogin/facebook/facebook.xml" overwrite="true">
 			<filterchain refid="manifest-replace-tokens" />
 		</copy>
+		<copy file="${phing.dir}/templates/plg_sociallogin_google.xml" tofile="${dirs.plugins}/sociallogin/google/google.xml" overwrite="true">
+			<filterchain refid="manifest-replace-tokens" />
+		</copy>
 	</target>
 
 	<!--
