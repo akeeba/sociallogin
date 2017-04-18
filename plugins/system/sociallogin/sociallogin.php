@@ -75,7 +75,8 @@ class plgSystemSociallogin extends JPlugin
 		$this->loadLanguage();
 
 		// Get the configured list of login modules and convert it to an actual array
-		$loginModules = $this->params->get('loginmodules', 'mod_login');
+		$loginModulesParameter = SocialLoginHelperJoomla::isAdminPage() ? 'backendloginmodules' : 'loginmodules';
+		$loginModules = $this->params->get($loginModulesParameter);
 		$loginModules = trim($loginModules);
 		$loginModules = empty($loginModules) ? 'mod_login' : $loginModules;
 		$loginModules = explode(',', $loginModules);
