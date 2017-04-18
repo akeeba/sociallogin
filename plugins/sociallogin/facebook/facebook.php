@@ -260,7 +260,7 @@ class plgSocialloginFacebook extends JPlugin
 		if ($this->isLinked($user))
 		{
 			$token = $session->getToken();
-			$unlinkURL = JUri::base() . 'index.php?option=com_ajax&group=system&plugin=sociallogin&format=raw&akaction=unlink&slug=' . $this->integrationName . '&' . $token . '=1';
+			$unlinkURL = JUri::base() . 'index.php?option=com_ajax&group=system&plugin=sociallogin&format=raw&akaction=unlink&encoding=redirect&slug=' . $this->integrationName . '&' . $token . '=1';
 
 			// Add custom CSS
 			$this->addCustomCSS();
@@ -357,8 +357,11 @@ class plgSocialloginFacebook extends JPlugin
 	{
 		// Get the return URLs from the session
 		$session    = JFactory::getSession();
-		$loginUrl   = $session->get('loginUrl', null, 'plg_sociallogin_facebook');
-		$failureUrl = $session->get('failureUrl', null, 'plg_sociallogin_facebook');
+		// This is the return URL used by the Link button
+		$returnURL  = $session->get('returnUrl', JUri::base(), 'plg_system_sociallogin');
+		// And this is the login success URL used by the Login button
+		$loginUrl   = $session->get('loginUrl', $returnURL, 'plg_sociallogin_facebook');
+		$failureUrl = $session->get('failureUrl', $loginUrl, 'plg_sociallogin_facebook');
 
 		// Remove the return URLs from the session
 		$session->set('loginUrl', null, 'plg_sociallogin_facebook');
