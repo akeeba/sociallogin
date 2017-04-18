@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension version="3.4.0" type="plugin" group="sociallogin" method="upgrade">
+    <name>PLG_SOCIALLOGIN_GOOGLE</name>
+    <version>##VERSION##</version>
+    <creationDate>##DATE##</creationDate>
+
+    <author>Akeeba Ltd</author>
+    <authorEmail>no-reply@akeebabackup.com</authorEmail>
+    <authorUrl>https://www.akeebabackup.com</authorUrl>
+
+    <copyright>Copyright (c)2016-2017 Akeeba Ltd</copyright>
+    <license>GNU GPL v3 or later</license>
+
+    <description>PLG_SOCIALLOGIN_GOOGLE_DESCRIPTION</description>
+
+    <files>
+        <filename plugin="google">google.php</filename>
+    </files>
+
+    <media folder="media" destination="plg_sociallogin_google">
+        <folder>images</folder>
+    </media>
+
+    <languages folder="language">
+        <language tag="en-GB">en-GB/en-GB.plg_sociallogin_google.ini</language>
+        <language tag="en-GB">en-GB/en-GB.plg_sociallogin_google.sys.ini</language>
+    </languages>
+
+    <config>
+        <fields name="params">
+            <fieldset name="basic">
+                <field
+                        name="appid"
+                        type="text"
+                        label="PLG_SOCIALLOGIN_GOOGLE_FIELD_APPID_LABEL"
+                        description="PLG_SOCIALLOGIN_GOOGLE_FIELD_APPID_DESC"
+                        default=""
+                />
+
+                <field
+                        name="appsecret"
+                        type="password"
+                        label="PLG_SOCIALLOGIN_GOOGLE_FIELD_APPSECRET_LABEL"
+                        description="PLG_SOCIALLOGIN_GOOGLE_FIELD_APPSECRET_DESC"
+                        default=""
+                />
+
+                <field
+                        name="loginunlinked"
+                        type="radio"
+                        label="PLG_SOCIALLOGIN_GOOGLE_FIELD_LOGINUNLINKED_LABEL"
+                        description="PLG_SOCIALLOGIN_GOOGLE_FIELD_LOGINUNLINKED_DESC"
+                        default="0"
+                        class="btn-group btn-group-yesno"
+                >
+                    <option value="1">JYES</option>
+                    <option value="0">JNO</option>
+                </field>
+
+                <field
+                        name="createnew"
+                        type="radio"
+                        label="PLG_SOCIALLOGIN_GOOGLE_FIELD_CREATENEW_LABEL"
+                        description="PLG_SOCIALLOGIN_GOOGLE_FIELD_CREATENEW_DESC"
+                        default="0"
+                        class="btn-group btn-group-yesno"
+                >
+                    <option value="1">JYES</option>
+                    <option value="0">JNO</option>
+                </field>
+
+                <field
+                        name="forcenew"
+                        type="radio"
+                        label="PLG_SOCIALLOGIN_GOOGLE_FIELD_FORCENEW_LABEL"
+                        description="PLG_SOCIALLOGIN_GOOGLE_FIELD_FORCENEW_DESC"
+                        default="0"
+                        class="btn-group btn-group-yesno"
+                >
+                    <option value="1">JYES</option>
+                    <option value="0">JNO</option>
+                </field>
+
+                <field
+                        name="bypassvalidation"
+                        type="radio"
+                        label="PLG_SOCIALLOGIN_GOOGLE_FIELD_BYPASSVALIDATION_LABEL"
+                        description="PLG_SOCIALLOGIN_GOOGLE_FIELD_BYPASSVALIDATION_DESC"
+                        default="1"
+                        class="btn-group btn-group-yesno"
+                >
+                    <option value="1">JYES</option>
+                    <option value="0">JNO</option>
+                </field>
+
+                <field
+                        name="customcss"
+                        type="radio"
+                        label="PLG_SOCIALLOGIN_GOOGLE_FIELD_CUSTOMCSS_LABEL"
+                        description="PLG_SOCIALLOGIN_GOOGLE_FIELD_CUSTOMCSS_DESC"
+                        default="1"
+                        class="btn-group btn-group-yesno"
+                >
+                    <option value="1">JYES</option>
+                    <option value="0">JNO</option>
+                </field>
+
+                <field
+                        name="icon_class"
+                        type="text"
+                        label="PLG_SOCIALLOGIN_GOOGLE_FIELD_ICONCLASS_LABEL"
+                        description="PLG_SOCIALLOGIN_GOOGLE_FIELD_ICONCLASS_DESC"
+                        default=""
+                />
+            </fieldset>
+        </fields>
+    </config>
+
+</extension>
