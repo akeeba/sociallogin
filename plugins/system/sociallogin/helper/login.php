@@ -376,8 +376,28 @@ abstract class SocialLoginHelperLogin
 			$response->language = $user->getParam('admin_language');
 		}
 
-		// We force Remember Me when the user uses social login.
-		$options = array('remember' => true);
+		/**
+		 * Set up the login options.
+		 *
+		 * The 'remember' element forces the use of the Remember Me feature when logging in with social media, as the
+		 * users would expect.
+		 *
+		 * The 'action' element is actually required by plg_user_joomla. It is the core ACL action the logged in user
+		 * must be allowed for the login to succeed. Please note that front-end and back-end logins use a different
+		 * action. This allows us to provide the social login button on both front- and back-end and be sure that if a
+		 * used with no backend access tries to use it to log in Joomla! will just slap him with an error message about
+		 * insufficient privileges - the same thing that'd happen if you tried to use your front-end only username and
+		 * password in a back-end login form.
+		 */
+		$options = array(
+			'remember' => true,
+		    'action' => 'core.login',
+		);
+
+		if (SocialLoginHelperJoomla::isAdminPage())
+		{
+			$options['action'] = 'core.login.admin';
+		}
 
 		// Run the user plugins. They CAN block login by returning boolean false and setting $response->error_message.
 		SocialLoginHelperJoomla::importPlugins('user');

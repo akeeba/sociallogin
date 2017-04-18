@@ -88,9 +88,56 @@ class plgSystemSociallogin extends JPlugin
 	}
 
 	/**
+	 * We need to log into the backend BUT com_ajax is not accessible unless we are already logged in. Moreover, since
+	 * the backend is a separate application from the frontend we cannot share the user session between them. Meanwhile
+	 * we need to leave the site, go to a social network and have the social network post back the OAuth2 code to our
+	 * site. So how am I going to retrieve the code from the OAuth2 response if I can't run com_ajax before logging in?
+	 * Yes, you guessed it right. I AM GOING TO ABUSE onAfterInitialize. Pay attention, kids, that's how grown-ups make
+	 * Joomla submit to their will.
+	 *
+	 * @return  void
+	 */
+	public function onAfterInitialise()
+	{
+		// Make sure this is the backend of the site...
+		if (!SocialLoginHelperJoomla::isAdminPage())
+		{
+			return;
+		}
+
+		// ...and we are not already logged in...
+		if (!JFactory::getUser()->guest)
+		{
+			return;
+		}
+
+		$input = JFactory::getApplication()->input;
+
+		// ...and this is a request to com_ajax...
+		if ($input->getCmd('option', '') != 'com_ajax')
+		{
+			return;
+		}
+
+		// ...about a sociallogin plugin.
+		if ($input->getCmd('group', '') != 'sociallogin')
+		{
+			return;
+		}
+
+		// Load the plugin and execute the AJAX method
+		$plugin = $input->getCmd('plugin', '');
+
+		JPluginHelper::importPlugin('sociallogin', $plugin);
+		$methodName = 'onAjax' . ucfirst($plugin);
+
+		JFactory::getApplication()->triggerEvent($methodName);
+	}
+
+	/**
 	 * Intercepts module rendering, appending the Social Login buttons to the configured login modules.
 	 *
-	 * @param   object  $module   The module being renderd
+	 * @param   object  $module   The module being rendered
 	 * @param   object  $attribs  The module rendering attributes
 	 */
 	public function onRenderModule(&$module, &$attribs)
