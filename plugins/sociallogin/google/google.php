@@ -157,8 +157,7 @@ class plgSocialloginGoogle extends JPlugin
 				'clientsecret'  => $this->clientSecret,
 				'redirecturi'   => JUri::base() . 'index.php?option=com_ajax&group=sociallogin&plugin=' . $this->integrationName . '&format=raw',
 				/**
-				 * Maybe I also need:
-				 * https://www.googleapis.com/auth/plus.profile.emails.read for reading all of the other email addresses
+				 * Authorization scopes, space separated.
 				 *
 				 * @see https://developers.google.com/+/web/api/rest/oauth#authorization-scopes
 				 */
@@ -403,8 +402,22 @@ class plgSocialloginGoogle extends JPlugin
 		$session->set('failureUrl', null, 'plg_sociallogin_google');
 
 		// Try to exchange the code with a token
-		$oauthConnector = $this->getConnector();
-		$app            = JFactory::getApplication();
+		$connector    = $this->getConnector();
+		$app          = JFactory::getApplication();
+
+		/**
+		 * I have to do this because Joomla's Google OAUth2 connector is buggy :@ The googlize() method assumes that
+		 * the requestparams option is an array. However, when you construct the object Joomla! will "helpfully" convert
+		 * your original array into an object. Therefore trying to later access it as an array causes a PHP Fatal Error
+		 * about trying to access an stdClass object as an array...!
+		 */
+		$connector->setOption('requestparams', array(
+			'access_type'            => 'online',
+			'include_granted_scopes' => 'true',
+			'prompt'                 => 'select_account',
+		));
+
+		//var_dump($connector);die;
 
 		/**
 		 * Handle the login callback from Google. There are three possibilities:
@@ -422,7 +435,7 @@ class plgSocialloginGoogle extends JPlugin
 		{
 			try
 			{
-				$token = $oauthConnector->authenticate();
+				$token = $connector->authenticate();
 
 				if ($token === false)
 				{
@@ -433,9 +446,9 @@ class plgSocialloginGoogle extends JPlugin
 				// See https://developers.google.com/+/web/api/rest/oauth
 				// See https://developers.google.com/+/web/api/rest/latest/people/get#response
 				$options = new Registry();
-				$options->set('api.url', 'https://www.googleapis.com/plus/v1/', 'emails,id,name');
-				$googleUserApi = new JGoogleDataPlusPeople($options, $oauthConnector);
-				$googleFields  = $googleUserApi->getPeople('me');
+				$options->set('api.url', 'https://www.googleapis.com/plus/v1/');
+				$googleUserApi = new JGoogleDataPlusPeople($options, $connector);
+				$googleFields  = $googleUserApi->getPeople('me', 'emails,id,name');
 			}
 			catch (Exception $e)
 			{
@@ -444,7 +457,27 @@ class plgSocialloginGoogle extends JPlugin
 
 			// The data used to login or create a user
 			$userData = new SocialLoginUserData;
-			$userData->name = $googleFields['name']['formatted'];
+			$userData->name = '';
+
+			$name = '';
+
+			if (isset($googleFields['name']['givenName']))
+			{
+				$name .= $googleFields['name']['givenName'];
+			}
+
+			if (isset($googleFields['name']['familyName']))
+			{
+				$name .= ' ' . $googleFields['name']['familyName'];
+			}
+
+			if (isset($googleFields['name']['formatted']))
+			{
+				$name = $googleFields['name']['formatted'];
+			}
+
+			$userData->name = $name;
+
 			$userData->id = $googleFields['id'];
 			$userData->email = '';
 			$userData->verified = false;
