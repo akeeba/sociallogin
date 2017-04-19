@@ -98,4 +98,33 @@ final class SocialLoginHelperAjax
 		SocialLoginHelperJoomla::importPlugins('sociallogin');
 		SocialLoginHelperJoomla::runPlugins('onSocialLoginUnlink', array($slug, $user), $app);
 	}
+
+	/**
+	 * Initiate a user authentication against a remote server. Your plugin is supposed to perform a redirection to the
+	 * remote server or throw a RuntimeException in case of an error.
+	 *
+	 * @param   JApplicationBase  $app  The application
+	 */
+	protected function ajaxAuthenticate(JApplicationBase $app)
+	{
+		if (!($app instanceof JApplicationCms))
+		{
+			return;
+		}
+
+		$input   = $app->input;
+		$slug    = $input->getCmd('slug');
+		$session = $app->getSession();
+
+		// No slug? No good.
+		if (empty($slug))
+		{
+			throw new RuntimeException(JText::_('PLG_SYSTEM_SOCIALLOGIN_ERR_AJAX_INVALIDSLUG'));
+		}
+
+		// Call the plugin events to unlink the user
+		SocialLoginHelperJoomla::importPlugins('sociallogin');
+		SocialLoginHelperJoomla::runPlugins('onSocialLoginAuthenticate', array($slug), $app);
+	}
+
 }

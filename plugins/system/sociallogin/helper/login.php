@@ -39,7 +39,7 @@ abstract class SocialLoginHelperLogin
 
 		if ($currentUser->guest)
 		{
-			$userId      = SocialLoginHelperIntegrations::getUserIdByProfileData('sociallogin.' . $slug . '.' . $primaryKey, $userData->id);
+			$userId = SocialLoginHelperIntegrations::getUserIdByProfileData('sociallogin.' . $slug . '.' . $primaryKey, $userData->id);
 		}
 
 		/**
@@ -53,7 +53,7 @@ abstract class SocialLoginHelperLogin
 		 * registering a social network account under your email address and use it to login into the Joomla site
 		 * impersonating you.
 		 */
-		if (empty($userId))
+		if (empty($userId) && !empty($userData->email))
 		{
 			$userId = SocialLoginHelperLogin::getUserIdByEmail($userData->email);
 
@@ -77,6 +77,7 @@ abstract class SocialLoginHelperLogin
 			}
 		}
 
+		// Try to subscribe a new user
 		if (empty($userId))
 		{
 			$usersConfig           = JComponentHelper::getParams('com_users');
@@ -88,7 +89,7 @@ abstract class SocialLoginHelperLogin
 			 * new account registrations to take place only through social media logins.
 			 */
 
-			if ((($allowUserRegistration == 0) && !$config->canCreateAlways) || !$config->canCreateNewUsers)
+			if ((($allowUserRegistration == 0) && !$config->canCreateAlways) || !$config->canCreateNewUsers || empty($userData->email))
 			{
 				throw new SocialLoginFailedLoginException(JText::_('PLG_SOCIALLOGIN_' . $slug . '_ERROR_LOCAL_NOT_FOUND'));
 			}
