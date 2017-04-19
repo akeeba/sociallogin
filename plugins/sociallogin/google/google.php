@@ -572,8 +572,8 @@ class plgSocialloginGoogle extends JPlugin
 
 		$css = /** @lang CSS */
 			<<< CSS
-.akeeba-sociallogin-link-button-google, .akeeba-sociallogin-unlink-button-google, .akeeba-sociallogin-button-google { background-color: #3B5998; color: #ffffff; transition-duration: 0.33s; background-image: none; border-color: #23355b; }
-.akeeba-sociallogin-link-button-google:hover, .akeeba-sociallogin-unlink-button-google:hover, .akeeba-sociallogin-button-google:hover { background-color: #8B9DC3; color: #ffffff; transition-duration: 0.33s; border-color: #3B5998; }
+.akeeba-sociallogin-link-button-google, .akeeba-sociallogin-unlink-button-google, .akeeba-sociallogin-button-google { background-color: #DD4B39; color: #ffffff; transition-duration: 0.33s; background-image: none; border-color: #6e251c; }
+.akeeba-sociallogin-link-button-google:hover, .akeeba-sociallogin-unlink-button-google:hover, .akeeba-sociallogin-button-google:hover { background-color: #9a3427; color: #ffffff; transition-duration: 0.33s; border-color: #3B5998; }
 .akeeba-sociallogin-link-button-google img, .akeeba-sociallogin-unlink-button-google img, .akeeba-sociallogin-button-google img { width: 16px; height: 16px; margin: 0 0.33em 0.1em 0; padding: 0 }
 
 CSS;
