@@ -147,6 +147,7 @@ class plgSocialloginTwitter extends JPlugin
 				'callback'        => JUri::base() . 'index.php?option=com_ajax&group=sociallogin&plugin=' . $this->integrationName . '&format=raw',
 				'consumer_key'    => $this->clientId,
 				'consumer_secret' => $this->clientSecret,
+			    'sendheaders'     => true,
 			));
 
 			$this->connector = new JTwitterOAuth($options);
