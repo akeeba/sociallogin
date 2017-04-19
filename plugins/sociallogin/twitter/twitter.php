@@ -430,7 +430,7 @@ class plgSocialloginTwitter extends JPlugin
 
 				// Get information about the user from Twitter.
 				$parameters    = array(
-					'oauth_token' => $token,
+					'oauth_token' => $token['key'],
 				);
 				$data          = array(
 					'skip_status'   => 'true',
