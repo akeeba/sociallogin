@@ -114,7 +114,6 @@ final class SocialLoginHelperAjax
 
 		$input   = $app->input;
 		$slug    = $input->getCmd('slug');
-		$session = $app->getSession();
 
 		// No slug? No good.
 		if (empty($slug))
