@@ -12,3 +12,8 @@ We strongly recommend using the latest published Joomla! version and PHP 7.0 or 
 
 ## Changelog
 
+**New features**
+
+* Login to Joomla! using your Facebook account
+* Login to Joomla! using your Google account
+* Login to Joomla! using your Twitter account
