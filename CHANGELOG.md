@@ -4,6 +4,7 @@
 
 * Cannot create user account from social network login
 * Email verification sent with unusable, untranslated strings
+* Cannot log in under Joomla! 3.7
 
 # 1.0.0
 

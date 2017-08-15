@@ -389,7 +389,7 @@ abstract class SocialLoginHelperLogin
 		 */
 		$options = array(
 			'remember' => true,
-		    'action' => 'core.login',
+		    'action' => 'core.login.site',
 		);
 
 		if (SocialLoginHelperJoomla::isAdminPage())
@@ -414,6 +414,8 @@ abstract class SocialLoginHelperLogin
 
 			// The user is successfully logged in. Run the after login events
 			SocialLoginHelperJoomla::runPlugins('onUserAfterLogin', array($options), $app);
+
+			return;
 		}
 
 		// If we are here the plugins marked a login failure. Trigger the onUserLoginFailure Event.
