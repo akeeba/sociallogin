@@ -192,12 +192,6 @@ abstract class SocialLoginHelperLogin
 		// Trigger onUserLoginFailure Event.
 		SocialLoginHelperJoomla::runPlugins('onUserLoginFailure', array((array) $response), $app);
 
-		// If silent is set, just return false.
-		if (isset($options['silent']) && $options['silent'])
-		{
-			return false;
-		}
-
 		// If status is success, any error will have been raised by the user plugin
 		if ($response->status !== JAuthentication::STATUS_SUCCESS)
 		{
