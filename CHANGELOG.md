@@ -3,6 +3,7 @@
 **Bug fixes**
 
 * Cannot create user account from social network login
+* Email verification sent with unusable, untranslated strings
 
 # 1.0.0
 

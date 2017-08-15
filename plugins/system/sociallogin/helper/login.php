@@ -443,6 +443,13 @@ abstract class SocialLoginHelperLogin
 			$app = JFactory::getApplication();
 		}
 
+		// Load com_users language files
+		$lang = $app->getLanguage();
+		$lang->load('com_users', JPATH_BASE . '/components/com_users', 'en-GB', false, false);
+		$lang->load('com_users', JPATH_BASE, 'en-GB', false, false);
+		$lang->load('com_users', JPATH_BASE . '/components/com_users', null, false, false);
+		$lang->load('com_users', JPATH_BASE, null, false, false);
+
 		$params = JComponentHelper::getParams('com_users');
 
 		$data = array_merge(array(
