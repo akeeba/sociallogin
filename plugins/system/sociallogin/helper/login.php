@@ -42,6 +42,9 @@ abstract class SocialLoginHelperLogin
 			$userId = SocialLoginHelperIntegrations::getUserIdByProfileData('sociallogin.' . $slug . '.' . $primaryKey, $userData->id);
 		}
 
+		// We need to extract this value since empty() cannot work on properties accessed with magic __get
+		$email = $userData->email;
+
 		/**
 		 * If a user is not linked to this social network account we are going to look for a user account that has the
 		 * same email address as the social network user.
@@ -53,9 +56,9 @@ abstract class SocialLoginHelperLogin
 		 * registering a social network account under your email address and use it to login into the Joomla site
 		 * impersonating you.
 		 */
-		if (empty($userId) && !empty($userData->email))
+		if (empty($userId) && !empty($email))
 		{
-			$userId = SocialLoginHelperLogin::getUserIdByEmail($userData->email);
+			$userId = SocialLoginHelperLogin::getUserIdByEmail($email);
 
 			/**
 			 * The social network user is not verified. That's a possible security issue so let's pretend we can't find a match.
@@ -89,7 +92,7 @@ abstract class SocialLoginHelperLogin
 			 * new account registrations to take place only through social media logins.
 			 */
 
-			if ((($allowUserRegistration == 0) && !$config->canCreateAlways) || !$config->canCreateNewUsers || empty($userData->email))
+			if ((($allowUserRegistration == 0) && !$config->canCreateAlways) || !$config->canCreateNewUsers || empty($email))
 			{
 				throw new SocialLoginFailedLoginException(JText::_('PLG_SOCIALLOGIN_' . $slug . '_ERROR_LOCAL_NOT_FOUND'));
 			}
@@ -102,7 +105,7 @@ abstract class SocialLoginHelperLogin
 				 * verification emails, immediately activating the user.
 				 */
 				$bypassVerification = $userData->verified && $config->canBypassValidation;
-				$userId             = SocialLoginHelperLogin::createUser($userData->email, $userData->name, $bypassVerification, $userData->timezone);
+				$userId             = SocialLoginHelperLogin::createUser($email, $userData->name, $bypassVerification, $userData->timezone);
 			}
 			catch (UnexpectedValueException $e)
 			{
