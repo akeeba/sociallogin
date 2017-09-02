@@ -1,3 +1,9 @@
+# 1.0.2
+
+**Bug fixes**
+
+* gh-15 Twitter and Google plugins are not installed
+
 # 1.0.1
 
 **Bug fixes**
