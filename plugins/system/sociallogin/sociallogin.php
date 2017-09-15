@@ -75,12 +75,14 @@ class plgSystemSociallogin extends JPlugin
 		$this->loadLanguage();
 
 		// Get the configured list of login modules and convert it to an actual array
-		$loginModulesParameter = SocialLoginHelperJoomla::isAdminPage() ? 'backendloginmodules' : 'loginmodules';
+		$isAdminPage           = SocialLoginHelperJoomla::isAdminPage();
+		$loginModulesParameter = $isAdminPage ? 'backendloginmodules' : 'loginmodules';
+		$defaultModules        = $isAdminPage ? 'none' : 'mod_login';
 		$loginModules = $this->params->get($loginModulesParameter);
-		$loginModules = trim($loginModules);
-		$loginModules = empty($loginModules) ? 'mod_login' : $loginModules;
-		$loginModules = explode(',', $loginModules);
-		$this->loginModules = array_map('trim', $loginModules);
+		$loginModules          = trim($loginModules);
+		$loginModules          = empty($loginModules) ? $defaultModules : $loginModules;
+		$loginModules          = explode(',', $loginModules);
+		$this->loginModules    = array_map('trim', $loginModules);
 
 		// Load the other plugin parameters
 		$this->interceptLogin = $this->params->get('interceptlogin', 1);

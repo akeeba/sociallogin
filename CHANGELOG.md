@@ -1,3 +1,9 @@
+# 1.0.3
+
+**Bug fixes**
+
+* gh-16 The buttons should not appear in the back-end of the site by default 
+
 # 1.0.2
 
 **Bug fixes**

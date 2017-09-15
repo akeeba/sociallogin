@@ -40,7 +40,7 @@
 						type="text"
 						label="PLG_SYSTEM_SOCIALLOGIN_CONFIG_BACKENDLOGINMODULES_LABEL"
 						description="PLG_SYSTEM_SOCIALLOGIN_CONFIG_BACKENDLOGINMODULES_DESC"
-						default=""
+						default="none"
 				/>
 
 				<field
