@@ -67,7 +67,7 @@ final class SocialLoginPluginConfiguration
 			case 'canLoginUnlinked':
 			case 'canCreateNewUsers':
 			case 'canCreateAlways':
-			case 'canByPassValidation':
+			case 'canBypassValidation':
 				return $this->{$name};
 				break;
 
