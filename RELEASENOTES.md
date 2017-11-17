@@ -8,6 +8,10 @@ Akeeba Social Login is compatible with Joomla! 3.4, 3.5, 3.6, 3.7 and 3.8. It re
 
 We strongly recommend using the latest published Joomla! version and PHP 7.0 or 7.1 later _for optimal security of your site_.
 
+## Language files
+
+Akeeba SocialLogin comes with English (Great Britain) language built-in. Installation packages for other languages are available [on our language download page](https://cdn.akeebabackup.com/language/sociallogin/index.html).
+
 ## Changelog
 
 **Bug fixes**
