@@ -155,7 +155,8 @@ class plgSystemSociallogin extends JPlugin
 
 		if (is_null($docType))
 		{
-			$docType = JFactory::getApplication()->getDocument()->getType();
+			$document = JFactory::getApplication()->getDocument();
+			$docType  = (is_null($document)) ? 'error' : $document->getType();
 
 			if ($docType != 'html')
 			{

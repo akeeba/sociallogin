@@ -4,6 +4,7 @@
 
 * gh-16 The buttons should not appear in the back-end of the site by default 
 * gh-24 Validated user accounts still result in Joomla! email validation email being sent  
+* Fatal error displaying the site's error page
 
 # 1.0.2
 
