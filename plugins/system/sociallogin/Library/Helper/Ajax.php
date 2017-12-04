@@ -9,9 +9,8 @@ namespace Akeeba\SocialLogin\Library\Helper;
 
 // Protect from unauthorized access
 use Exception;
-use JApplicationBase;
 use Joomla\CMS\Application\BaseApplication;
-use JUser;
+use Joomla\CMS\User\User;
 use RuntimeException;
 
 defined('_JEXEC') or die();
@@ -24,7 +23,7 @@ final class Ajax
 	/**
 	 * Handle an AJAX request
 	 *
-	 * @param   JApplicationBase|BaseApplication $app The application
+	 * @param   BaseApplication  $app  The application
 	 *
 	 * @return  mixed
 	 *
@@ -39,7 +38,7 @@ final class Ajax
 
 		$input    = $app->input;
 		$akaction = $input->getCmd('akaction');
-		$token = Joomla::getToken();
+		$token    = Joomla::getToken();
 
 		if ($input->getInt($token, 0) != 1)
 		{
@@ -66,7 +65,7 @@ final class Ajax
 	/**
 	 * Unlink a user account from its social media presence
 	 *
-	 * @param   JApplicationBase|BaseApplication  $app  The application
+	 * @param   BaseApplication  $app  The application
 	 *
 	 * @throws  Exception
 	 */
@@ -77,8 +76,8 @@ final class Ajax
 			return;
 		}
 
-		$input   = $app->input;
-		$slug    = $input->getCmd('slug');
+		$input = $app->input;
+		$slug  = $input->getCmd('slug');
 
 		// No slug? No good.
 		if (empty($slug))
@@ -90,7 +89,7 @@ final class Ajax
 		$userId = Joomla::getSessionVar('userID', null, 'plg_system_sociallogin');
 		Joomla::setSessionVar('userID', null, 'plg_system_sociallogin');
 
-		/** @var   JUser  $myUser  Currently logged in user */
+		/** @var   User $myUser Currently logged in user */
 		$myUser = Joomla::getSessionVar('user');
 
 		// Make sure we are unlinking our own user or we are Super Users
@@ -111,7 +110,7 @@ final class Ajax
 	 * Initiate a user authentication against a remote server. Your plugin is supposed to perform a redirection to the
 	 * remote server or throw a RuntimeException in case of an error.
 	 *
-	 * @param   JApplicationBase|BaseApplication  $app  The application
+	 * @param   BaseApplication  $app  The application
 	 *
 	 * @throws  Exception
 	 */

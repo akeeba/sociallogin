@@ -8,10 +8,8 @@
 namespace Akeeba\SocialLogin\Library\Helper;
 
 use Exception;
-use JApplicationBase;
 use Joomla\CMS\Application\BaseApplication;
 use Joomla\CMS\User\User;
-use JUser;
 
 // Protect from unauthorized access
 defined('_JEXEC') or die();
@@ -31,11 +29,11 @@ abstract class Integrations
 	/**
 	 * Gets the Social Login buttons for logging into the site (typically used in login modules)
 	 *
-	 * @param   string                            $loginURL       The URL to return to upon successful login. Current URL if omitted.
-	 * @param   string                            $failureURL     The URL to return to on login error. It's set automatically to $loginURL if omitted.
-	 * @param   string                            $buttonLayout   JLayout for rendering a single login button
-	 * @param   string                            $buttonsLayout  JLayout for rendering all the login buttons
-	 * @param   JApplicationBase|BaseApplication  $app            The application we are running in. Skip to auto-detect (recommended).
+	 * @param   string           $loginURL       The URL to return to upon successful login. Current URL if omitted.
+	 * @param   string           $failureURL     The URL to return to on login error. It's set automatically to $loginURL if omitted.
+	 * @param   string           $buttonLayout   JLayout for rendering a single login button
+	 * @param   string           $buttonsLayout  JLayout for rendering all the login buttons
+	 * @param   BaseApplication  $app            The application we are running in. Skip to auto-detect (recommended).
 	 *
 	 * @return  string  The rendered HTML of the login buttons
 	 *
@@ -87,10 +85,10 @@ abstract class Integrations
 	/**
 	 * Gets the Social Login buttons for linking and unlinking accounts (typically used in the My Account page).
 	 *
-	 * @param   JUser|User                        $user           The Joomla! user object for which to get the buttons. Omit to use the currently logged in user.
-	 * @param   string                            $buttonLayout   JLayout for rendering a single login button
-	 * @param   string                            $buttonsLayout  JLayout for rendering all the login buttons
-	 * @param   JApplicationBase|BaseApplication  $app            The application we are running in. Skip to auto-detect (recommended).
+	 * @param   User             $user           The Joomla! user object for which to get the buttons. Omit to use the currently logged in user.
+	 * @param   string           $buttonLayout   JLayout for rendering a single login button
+	 * @param   string           $buttonsLayout  JLayout for rendering all the login buttons
+	 * @param   BaseApplication  $app            The application we are running in. Skip to auto-detect (recommended).
 	 *
 	 *
 	 * @return  string  The rendered HTML of the login buttons

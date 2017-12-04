@@ -30,7 +30,6 @@ use JUri;
 use JUser;
 use JUserHelper;
 use RuntimeException;
-use SocialLoginHelperIntegrations;
 use UnexpectedValueException;
 
 // Protect from unauthorized access

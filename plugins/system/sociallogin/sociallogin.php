@@ -9,6 +9,7 @@
 use Akeeba\SocialLogin\Library\Helper\Ajax;
 use Akeeba\SocialLogin\Library\Helper\Integrations;
 use Akeeba\SocialLogin\Library\Helper\Joomla;
+use Joomla\Utilities\ArrayHelper;
 
 defined('_JEXEC') or die;
 
@@ -85,14 +86,14 @@ class plgSystemSociallogin extends AkeebaSocialLoginJPlugin
 		$isAdminPage           = Joomla::isAdminPage();
 		$loginModulesParameter = $isAdminPage ? 'backendloginmodules' : 'loginmodules';
 		$defaultModules        = $isAdminPage ? 'none' : 'mod_login';
-		$loginModules = $this->params->get($loginModulesParameter);
+		$loginModules          = $this->params->get($loginModulesParameter);
 		$loginModules          = trim($loginModules);
 		$loginModules          = empty($loginModules) ? $defaultModules : $loginModules;
 		$loginModules          = explode(',', $loginModules);
 		$this->loginModules    = array_map('trim', $loginModules);
 
 		// Load the other plugin parameters
-		$this->interceptLogin = $this->params->get('interceptlogin', 1);
+		$this->interceptLogin       = $this->params->get('interceptlogin', 1);
 		$this->addLinkUnlinkButtons = $this->params->get('linkunlinkbuttons', 1);
 	}
 
@@ -166,8 +167,16 @@ class plgSystemSociallogin extends AkeebaSocialLoginJPlugin
 
 		if (is_null($docType))
 		{
-			$document = Joomla::getApplication()->getDocument();
-			$docType  = (is_null($document)) ? 'error' : $document->getType();
+			try
+			{
+				$document = Joomla::getApplication()->getDocument();
+			}
+			catch (Exception $e)
+			{
+				$document = null;
+			}
+
+			$docType = (is_null($document)) ? 'error' : $document->getType();
 
 			if ($docType != 'html')
 			{
@@ -179,11 +188,11 @@ class plgSystemSociallogin extends AkeebaSocialLoginJPlugin
 
 		// If it's not a module I need to intercept bail out
 		if (!in_array($module->module, $this->loginModules))
-	    {
-	        return;
-	    }
+		{
+			return;
+		}
 
-	    // Append the social login buttons content
+		// Append the social login buttons content
 		$socialLoginButtons = Integrations::getSocialLoginButtons();
 		$module->content    .= $socialLoginButtons;
 	}
@@ -357,7 +366,14 @@ class plgSystemSociallogin extends AkeebaSocialLoginJPlugin
 			return false;
 		}
 
-		$userId	= JArrayHelper::getValue($user, 'id', 0, 'int');
+		if (class_exists('Joomla\\Utilities\\ArrayHelper'))
+		{
+			$userId = ArrayHelper::getValue($user, 'id', 0, 'int');
+		}
+		else
+		{
+			$userId	= JArrayHelper::getValue($user, 'id', 0, 'int');
+		}
 
 		if ($userId)
 		{
