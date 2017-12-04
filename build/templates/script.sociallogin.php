@@ -29,7 +29,7 @@ class Pkg_SocialloginInstallerScript
 	 *
 	 * @var   string
 	 */
-	protected $maximumJoomlaVersion = '3.9.999';
+	protected $maximumJoomlaVersion = '4.0.999';
 
 	/**
 	 * A list of extensions (modules, plugins) to enable after installation. Each item has four values, in this order:
