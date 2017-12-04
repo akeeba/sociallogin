@@ -6,6 +6,7 @@
  */
 
 // Prevent direct access
+use Akeeba\SocialLogin\Library\Helper\Integrations;
 use Akeeba\SocialLogin\Library\Helper\Joomla;
 
 defined('_JEXEC') or die;
@@ -36,6 +37,6 @@ class JFormFieldSociallogin extends AkeebaSocialLoginJFormFieldParent
 		$user = Joomla::getUser($user_id);
 
 		// Render and return buttons
-		return SocialLoginHelperIntegrations::getSocialLinkButtons($user);
+		return Integrations::getSocialLinkButtons($user);
 	}
 }

@@ -7,6 +7,7 @@
 
 // Prevent direct access
 use Akeeba\SocialLogin\Library\Helper\Ajax;
+use Akeeba\SocialLogin\Library\Helper\Integrations;
 use Akeeba\SocialLogin\Library\Helper\Joomla;
 
 defined('_JEXEC') or die;
@@ -175,7 +176,7 @@ class plgSystemSociallogin extends JPlugin
 	    }
 
 	    // Append the social login buttons content
-		$socialLoginButtons = SocialLoginHelperIntegrations::getSocialLoginButtons();
+		$socialLoginButtons = Integrations::getSocialLoginButtons();
 		$module->content    .= $socialLoginButtons;
 	}
 
@@ -320,7 +321,7 @@ class plgSystemSociallogin extends JPlugin
 			return true;
 		}
 
-		// Add the fields to the form. The custom Sociallogin field uses the SocialLoginHelperIntegrations to render the buttons.
+		// Add the fields to the form. The custom Sociallogin field uses the Integrations to render the buttons.
 		$this->loadLanguage();
 		JForm::addFormPath(dirname(__FILE__) . '/fields');
 		$form->loadFile('sociallogin', false);

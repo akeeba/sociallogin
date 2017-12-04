@@ -5,16 +5,23 @@
  * @license   GNU General Public License version 3, or later
  */
 
-// Protect from unauthorized access
-use Akeeba\SocialLogin\Library\Helper\Joomla;
-use Joomla\CMS\Application\BaseApplication;
+namespace Akeeba\SocialLogin\Library\Helper;
 
+use Akeeba\SocialLogin\Library\Helper\Joomla;
+use Exception;
+use JApplicationBase;
+use JFactory;
+use Joomla\CMS\Application\BaseApplication;
+use Joomla\CMS\User\User;
+use JUser;
+
+// Protect from unauthorized access
 defined('_JEXEC') or die();
 
 /**
  * Helper class for managing integrations
  */
-abstract class SocialLoginHelperIntegrations
+abstract class Integrations
 {
 	/**
 	 * Cached copy of the social login buttons' HTML
@@ -82,7 +89,7 @@ abstract class SocialLoginHelperIntegrations
 	/**
 	 * Gets the Social Login buttons for linking and unlinking accounts (typically used in the My Account page).
 	 *
-	 * @param   JUser                             $user           The Joomla! user object for which to get the buttons. Omit to use the currently logged in user.
+	 * @param   JUser|User                        $user           The Joomla! user object for which to get the buttons. Omit to use the currently logged in user.
 	 * @param   string                            $buttonLayout   JLayout for rendering a single login button
 	 * @param   string                            $buttonsLayout  JLayout for rendering all the login buttons
 	 * @param   JApplicationBase|BaseApplication  $app            The application we are running in. Skip to auto-detect (recommended).
@@ -92,7 +99,7 @@ abstract class SocialLoginHelperIntegrations
 	 *
 	 * @throws  Exception
 	 */
-	public static function getSocialLinkButtons(JUser $user = null, $buttonLayout = 'akeeba.sociallogin.linkbutton', $buttonsLayout  = 'akeeba.sociallogin.linkbuttons', $app = null)
+	public static function getSocialLinkButtons($user = null, $buttonLayout = 'akeeba.sociallogin.linkbutton', $buttonsLayout  = 'akeeba.sociallogin.linkbuttons', $app = null)
 	{
 		if (!is_object($app))
 		{

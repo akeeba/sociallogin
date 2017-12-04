@@ -67,7 +67,7 @@ abstract class Login
 
 		if ($currentUser->guest)
 		{
-			$userId = SocialLoginHelperIntegrations::getUserIdByProfileData('sociallogin.' . $slug . '.' . $primaryKey, $userData->id);
+			$userId = Integrations::getUserIdByProfileData('sociallogin.' . $slug . '.' . $primaryKey, $userData->id);
 		}
 
 		// We need to extract this value since empty() cannot work on properties accessed with magic __get
@@ -164,7 +164,7 @@ abstract class Login
 		// Attach the social network link information to the user's profile
 		try
 		{
-			SocialLoginHelperIntegrations::insertUserProfileData($userId, 'sociallogin.' . $slug, $userProfileData);
+			Integrations::insertUserProfileData($userId, 'sociallogin.' . $slug, $userProfileData);
 		}
 		catch (Exception $e)
 		{

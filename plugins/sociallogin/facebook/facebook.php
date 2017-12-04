@@ -12,6 +12,7 @@ use Akeeba\SocialLogin\Library\Data\PluginConfiguration;
 use Akeeba\SocialLogin\Library\Data\UserData;
 use Akeeba\SocialLogin\Library\Exception\Login\GenericMessage;
 use Akeeba\SocialLogin\Library\Exception\Login\LoginError;
+use Akeeba\SocialLogin\Library\Helper\Integrations;
 use Akeeba\SocialLogin\Library\Helper\Joomla;
 use Akeeba\SocialLogin\Library\Helper\Login;
 use Joomla\Registry\Registry;
@@ -346,7 +347,7 @@ class plgSocialloginFacebook extends JPlugin
 			$user = Joomla::getUser();
 		}
 
-		SocialLoginHelperIntegrations::removeUserProfileData($user->id, 'sociallogin.facebook');
+		Integrations::removeUserProfileData($user->id, 'sociallogin.facebook');
 	}
 
 	/**
