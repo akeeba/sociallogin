@@ -34,7 +34,7 @@ defined('_JEXEC') or die();
 /**
  * A helper class for abstracting core features in Joomla! 3.4 and later, including 4.x
  */
-class Joomla
+abstract class Joomla
 {
 	/**
 	 * A fake session storage for CLI apps. Since CLI applications cannot have a session we are using a Registry object

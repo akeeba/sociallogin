@@ -5,21 +5,41 @@
  * @license   GNU General Public License version 3, or later
  */
 
-// Protect from unauthorized access
+namespace Akeeba\SocialLogin\Library\Helper;
+
 use Akeeba\SocialLogin\Library\Data\PluginConfiguration;
 use Akeeba\SocialLogin\Library\Data\UserData;
 use Akeeba\SocialLogin\Library\Exception\Login\GenericMessage;
 use Akeeba\SocialLogin\Library\Exception\Login\LoginError;
-use Akeeba\SocialLogin\Library\Helper\Joomla;
+use Exception;
+use JApplicationBase;
+use JApplicationHelper;
+use JAuthentication;
+use JAuthenticationResponse;
+use JComponentHelper;
+use JDate;
+use JEventDispatcher;
+use JFactory;
+use JLoader;
+use JLog;
 use Joomla\CMS\Application\BaseApplication;
 use Joomla\CMS\Authentication\AuthenticationResponse;
+use JStringPunycode;
+use JText;
+use JUri;
+use JUser;
+use JUserHelper;
+use RuntimeException;
+use SocialLoginHelperIntegrations;
+use UnexpectedValueException;
 
+// Protect from unauthorized access
 defined('_JEXEC') or die();
 
 /**
  * Helper class for managing Joomla! user login
  */
-abstract class SocialLoginHelperLogin
+abstract class Login
 {
 	/**
 	 * Handle the login callback from a social network. This is called after the plugin code has fetched the account
@@ -66,7 +86,7 @@ abstract class SocialLoginHelperLogin
 		 */
 		if (empty($userId) && !empty($email))
 		{
-			$userId = SocialLoginHelperLogin::getUserIdByEmail($email);
+			$userId = self::getUserIdByEmail($email);
 
 			/**
 			 * The social network user is not verified. That's a possible security issue so let's pretend we can't find a match.
@@ -113,7 +133,7 @@ abstract class SocialLoginHelperLogin
 				 * verification emails, immediately activating the user.
 				 */
 				$bypassVerification = $userData->verified && $config->canBypassValidation;
-				$userId             = SocialLoginHelperLogin::createUser($email, $userData->name, $bypassVerification, $userData->timezone);
+				$userId             = self::createUser($email, $userData->name, $bypassVerification, $userData->timezone);
 			}
 			catch (UnexpectedValueException $e)
 			{
@@ -156,7 +176,7 @@ abstract class SocialLoginHelperLogin
 		{
 			if ($currentUser->guest)
 			{
-				SocialLoginHelperLogin::loginUser($userId);
+				self::loginUser($userId);
 			}
 		}
 		catch (Exception $e)

@@ -13,9 +13,10 @@ use Akeeba\SocialLogin\Library\Data\UserData;
 use Akeeba\SocialLogin\Library\Exception\Login\GenericMessage;
 use Akeeba\SocialLogin\Library\Exception\Login\LoginError;
 use Akeeba\SocialLogin\Library\Helper\Joomla;
+use Akeeba\SocialLogin\Library\Helper\Login;
 use Joomla\Registry\Registry;
 
-if (!class_exists('SocialLoginHelperLogin', true))
+if (!class_exists('Akeeba\\SocialLogin\\Library\\Helper\\Login', true))
 {
 	return;
 }
@@ -211,7 +212,7 @@ class plgSocialloginGoogle extends JPlugin
 			return false;
 		}
 
-		return SocialLoginHelperLogin::isLinkedUser($this->integrationName, $user);
+		return Login::isLinkedUser($this->integrationName, $user);
 	}
 
 	/**
@@ -513,17 +514,17 @@ class plgSocialloginGoogle extends JPlugin
 				'token'  => json_encode($token),
 			);
 
-			SocialLoginHelperLogin::handleSocialLogin($this->integrationName, $pluginConfiguration, $userData, $userProfileData);
+			Login::handleSocialLogin($this->integrationName, $pluginConfiguration, $userData, $userProfileData);
 		}
 		catch (LoginError $e)
 		{
 			// Log failed login
-			$response                = SocialLoginHelperLogin::getAuthenticationResponseObject();
+			$response                = Login::getAuthenticationResponseObject();
 			$response->status        = JAuthentication::STATUS_UNKNOWN;
 			$response->error_message = $e->getMessage();
 
 			// This also enqueues the login failure message for display after redirection. Look for JLog in that method.
-			SocialLoginHelperLogin::processLoginFailure($response);
+			Login::processLoginFailure($response);
 
 			$app->redirect($failureUrl);
 
