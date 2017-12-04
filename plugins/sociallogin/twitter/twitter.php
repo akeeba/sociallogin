@@ -8,6 +8,8 @@
 // Protect from unauthorized access
 defined('_JEXEC') or die();
 
+use Akeeba\SocialLogin\Library\Exception\Login\GenericMessage;
+use Akeeba\SocialLogin\Library\Exception\Login\LoginError;
 use Akeeba\SocialLogin\Library\Helper\Joomla;
 use Joomla\Registry\Registry;
 
@@ -406,11 +408,11 @@ class plgSocialloginTwitter extends JPlugin
 		/**
 		 * Handle the login callback from Twitter. There are three possibilities:
 		 *
-		 * 1. SocialLoginFailedLoginException exception is thrown. We must go through Joomla's user plugins and let
+		 * 1. LoginError exception is thrown. We must go through Joomla's user plugins and let
 		 *    them handle the login failure. They MAY change the error response. Then we report that error reponse to
 		 *    the user while redirecting them to the error handler page.
 		 *
-		 * 2. SocialLoginGenericMessageException exception is thrown. We must NOT go through the user
+		 * 2. GenericMessage exception is thrown. We must NOT go through the user
 		 *    plugins, this is not a login error. Most likely we have to tell the user to validate their account.
 		 *
 		 * 3. No exception is thrown. Proceed to the login success page ($loginUrl).
@@ -423,7 +425,7 @@ class plgSocialloginTwitter extends JPlugin
 
 				if ($token === false)
 				{
-					throw new SocialLoginFailedLoginException(JText::_('PLG_SOCIALLOGIN_TWITTER_ERROR_NOT_LOGGED_IN_TWITTER'));
+					throw new LoginError(JText::_('PLG_SOCIALLOGIN_TWITTER_ERROR_NOT_LOGGED_IN_TWITTER'));
 				}
 
 				// Get information about the user from Twitter.
@@ -440,12 +442,12 @@ class plgSocialloginTwitter extends JPlugin
 
 				if ($response->code != 200)
 				{
-					throw new SocialLoginFailedLoginException(JText::_('PLG_SOCIALLOGIN_TWITTER_ERROR_NOT_LOGGED_IN_TWITTER'));
+					throw new LoginError(JText::_('PLG_SOCIALLOGIN_TWITTER_ERROR_NOT_LOGGED_IN_TWITTER'));
 				}
 			}
 			catch (Exception $e)
 			{
-				throw new SocialLoginFailedLoginException($e->getMessage());
+				throw new LoginError($e->getMessage());
 			}
 
 			// The data used to login or create a user
@@ -480,7 +482,7 @@ class plgSocialloginTwitter extends JPlugin
 
 			SocialLoginHelperLogin::handleSocialLogin($this->integrationName, $pluginConfiguration, $userData, $userProfileData);
 		}
-		catch (SocialLoginFailedLoginException $e)
+		catch (LoginError $e)
 		{
 			// Log failed login
 			$response                = SocialLoginHelperLogin::getAuthenticationResponseObject();
@@ -494,7 +496,7 @@ class plgSocialloginTwitter extends JPlugin
 
 			return;
 		}
-		catch (SocialLoginGenericMessageException $e)
+		catch (GenericMessage $e)
 		{
 			// Do NOT go through processLoginFailure. This is NOT a login failure.
 			$app->enqueueMessage($e->getMessage(), 'info');

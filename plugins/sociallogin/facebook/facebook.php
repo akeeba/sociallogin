@@ -8,6 +8,8 @@
 // Protect from unauthorized access
 defined('_JEXEC') or die();
 
+use Akeeba\SocialLogin\Library\Exception\Login\GenericMessage;
+use Akeeba\SocialLogin\Library\Exception\Login\LoginError;
 use Akeeba\SocialLogin\Library\Helper\Joomla;
 use Joomla\Registry\Registry;
 
@@ -372,11 +374,11 @@ class plgSocialloginFacebook extends JPlugin
 		/**
 		 * Handle the login callback from Facebook. There are three possibilities:
 		 *
-		 * 1. SocialLoginFailedLoginException exception is thrown. We must go through Joomla's user plugins and let
+		 * 1. LoginError exception is thrown. We must go through Joomla's user plugins and let
 		 *    them handle the login failure. They MAY change the error response. Then we report that error reponse to
 		 *    the user while redirecting them to the error handler page.
 		 *
-		 * 2. SocialLoginGenericMessageException exception is thrown. We must NOT go through the user
+		 * 2. GenericMessage exception is thrown. We must NOT go through the user
 		 *    plugins, this is not a login error. Most likely we have to tell the user to validate their account.
 		 *
 		 * 3. No exception is thrown. Proceed to the login success page ($loginUrl).
@@ -389,7 +391,7 @@ class plgSocialloginFacebook extends JPlugin
 
 				if ($token === false)
 				{
-					throw new SocialLoginFailedLoginException(JText::_('PLG_SOCIALLOGIN_FACEBOOK_ERROR_NOT_LOGGED_IN_FB'));
+					throw new LoginError(JText::_('PLG_SOCIALLOGIN_FACEBOOK_ERROR_NOT_LOGGED_IN_FB'));
 				}
 
 				// Get information about the user from Big Brother... er... Facebook.
@@ -400,7 +402,7 @@ class plgSocialloginFacebook extends JPlugin
 			}
 			catch (Exception $e)
 			{
-				throw new SocialLoginFailedLoginException($e->getMessage());
+				throw new LoginError($e->getMessage());
 			}
 
 			// The data used to login or create a user
@@ -429,7 +431,7 @@ class plgSocialloginFacebook extends JPlugin
 
 			SocialLoginHelperLogin::handleSocialLogin($this->integrationName, $pluginConfiguration, $userData, $userProfileData);
 		}
-		catch (SocialLoginFailedLoginException $e)
+		catch (LoginError  $e)
 		{
 			// Log failed login
 			$response                = SocialLoginHelperLogin::getAuthenticationResponseObject();
@@ -443,7 +445,7 @@ class plgSocialloginFacebook extends JPlugin
 
 			return;
 		}
-		catch (SocialLoginGenericMessageException $e)
+		catch (GenericMessage $e)
 		{
 			// Do NOT go through processLoginFailure. This is NOT a login failure.
 			$app->enqueueMessage($e->getMessage(), 'info');

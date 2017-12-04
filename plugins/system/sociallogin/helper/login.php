@@ -6,6 +6,8 @@
  */
 
 // Protect from unauthorized access
+use Akeeba\SocialLogin\Library\Exception\Login\GenericMessage;
+use Akeeba\SocialLogin\Library\Exception\Login\LoginError;
 use Akeeba\SocialLogin\Library\Helper\Joomla;
 use Joomla\CMS\Application\BaseApplication;
 use Joomla\CMS\Authentication\AuthenticationResponse;
@@ -29,9 +31,9 @@ abstract class SocialLoginHelperLogin
 	 *
 	 * @return  void
 	 *
-	 * @throws  SocialLoginFailedLoginException     When a login error occurs (must report the login error to Joomla!).
-	 * @throws  SocialLoginGenericMessageException  When there is no login error but we need to report a message to the
-	 *                                              user, e.g. to tell them they need to click on the activation email.
+	 * @throws  LoginError      When a login error occurs (must report the login error to Joomla!).
+	 * @throws  GenericMessage  When there is no login error but we need to report a message to the user, e.g. to tell
+	 *                          them they need to click on the activation email.
 	 */
 	public static function handleSocialLogin($slug, SocialLoginPluginConfiguration $config, SocialLoginUserData $userData, array $userProfileData)
 	{
@@ -69,7 +71,7 @@ abstract class SocialLoginHelperLogin
 			 */
 			if (!$userData->verified)
 			{
-				throw new SocialLoginFailedLoginException(JText::_('PLG_SOCIALLOGIN_' . $slug . '_ERROR_LOCAL_NOT_FOUND'));
+				throw new LoginError(JText::_('PLG_SOCIALLOGIN_' . $slug . '_ERROR_LOCAL_NOT_FOUND'));
 			}
 
 			/**
@@ -80,7 +82,7 @@ abstract class SocialLoginHelperLogin
 			 */
 			if (!$config->canLoginUnlinked && !empty($userId))
 			{
-				throw new SocialLoginFailedLoginException(JText::_('PLG_SOCIALLOGIN_' . $slug . '_ERROR_LOCAL_USERNAME_CONFLICT'));
+				throw new LoginError(JText::_('PLG_SOCIALLOGIN_' . $slug . '_ERROR_LOCAL_USERNAME_CONFLICT'));
 			}
 		}
 
@@ -98,7 +100,7 @@ abstract class SocialLoginHelperLogin
 
 			if ((($allowUserRegistration == 0) && !$config->canCreateAlways) || !$config->canCreateNewUsers || empty($email))
 			{
-				throw new SocialLoginFailedLoginException(JText::_('PLG_SOCIALLOGIN_' . $slug . '_ERROR_LOCAL_NOT_FOUND'));
+				throw new LoginError(JText::_('PLG_SOCIALLOGIN_' . $slug . '_ERROR_LOCAL_NOT_FOUND'));
 			}
 
 			try
@@ -113,18 +115,18 @@ abstract class SocialLoginHelperLogin
 			}
 			catch (UnexpectedValueException $e)
 			{
-				throw new SocialLoginFailedLoginException(JText::sprintf('PLG_SOCIALLOGIN_' . $slug . '_ERROR_CANNOT_CREATE', JText::_('PLG_SOCIALLOGIN_' . $slug . '_ERROR_LOCAL_USERNAME_CONFLICT')));
+				throw new LoginError(JText::sprintf('PLG_SOCIALLOGIN_' . $slug . '_ERROR_CANNOT_CREATE', JText::_('PLG_SOCIALLOGIN_' . $slug . '_ERROR_LOCAL_USERNAME_CONFLICT')));
 			}
 			catch (RuntimeException $e)
 			{
-				throw new SocialLoginFailedLoginException(JText::sprintf('PLG_SOCIALLOGIN_' . $slug . '_ERROR_CANNOT_CREATE', $e->getMessage()));
+				throw new LoginError(JText::sprintf('PLG_SOCIALLOGIN_' . $slug . '_ERROR_CANNOT_CREATE', $e->getMessage()));
 			}
 
 			// Does the account need user or administrator verification?
 			if (in_array($userId, array('useractivate', 'adminactivate')))
 			{
 				// Do NOT go through processLoginFailure. This is NOT a login failure.
-				throw new SocialLoginGenericMessageException(JText::_('PLG_SOCIALLOGIN_' . $slug . '_NOTICE_' . $userId));
+				throw new GenericMessage(JText::_('PLG_SOCIALLOGIN_' . $slug . '_NOTICE_' . $userId));
 			}
 		}
 
@@ -134,7 +136,7 @@ abstract class SocialLoginHelperLogin
 		 */
 		if (empty($userId))
 		{
-			throw new SocialLoginFailedLoginException(JText::_('PLG_SOCIALLOGIN_' . $slug . '_ERROR_LOCAL_NOT_FOUND'));
+			throw new LoginError(JText::_('PLG_SOCIALLOGIN_' . $slug . '_ERROR_LOCAL_NOT_FOUND'));
 		}
 
 		// Attach the social network link information to the user's profile
@@ -157,7 +159,7 @@ abstract class SocialLoginHelperLogin
 		}
 		catch (Exception $e)
 		{
-			throw new SocialLoginFailedLoginException($e->getMessage());
+			throw new LoginError($e->getMessage());
 		}
 	}
 
