@@ -8,7 +8,12 @@
 // Prevent direct access
 defined('_JEXEC') or die;
 
-class JFormFieldSociallogin extends JFormField
+if (!defined('_AkeebaSocialLoginJFormFieldParent_'))
+{
+	require_once __DIR__ . '/abstraction.php';
+}
+
+class JFormFieldSociallogin extends AkeebaSocialLoginJFormFieldParent
 {
 	/**
 	 * Element name
