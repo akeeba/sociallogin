@@ -8,6 +8,8 @@
 // Protect from unauthorized access
 defined('_JEXEC') or die();
 
+use Akeeba\SocialLogin\Library\Data\PluginConfiguration;
+use Akeeba\SocialLogin\Library\Data\UserData;
 use Akeeba\SocialLogin\Library\Exception\Login\GenericMessage;
 use Akeeba\SocialLogin\Library\Exception\Login\LoginError;
 use Akeeba\SocialLogin\Library\Helper\Joomla;
@@ -406,7 +408,7 @@ class plgSocialloginFacebook extends JPlugin
 			}
 
 			// The data used to login or create a user
-			$userData = new SocialLoginUserData;
+			$userData = new UserData();
 			$userData->name = $fbUserFields->name;
 			$userData->id = $fbUserFields->id;
 			$userData->email = $fbUserFields->email;
@@ -414,7 +416,7 @@ class plgSocialloginFacebook extends JPlugin
 			$userData->timezone = $fbUserFields->timezone;
 
 			// Options which control login and user account creation
-			$pluginConfiguration = new SocialLoginPluginConfiguration;
+			$pluginConfiguration = new PluginConfiguration;
 			$pluginConfiguration ->canLoginUnlinked = $this->canLoginUnlinked;
 			$pluginConfiguration ->canCreateAlways = $this->canCreateAlways;
 			$pluginConfiguration ->canCreateNewUsers = $this->canCreateNewUsers;

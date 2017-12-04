@@ -5,6 +5,8 @@
  * @license   GNU General Public License version 3, or later
  */
 
+namespace Akeeba\SocialLogin\Library\Data;
+
 // Protect from unauthorized access
 defined('_JEXEC') or die();
 
@@ -17,7 +19,7 @@ defined('_JEXEC') or die();
  * @property   bool    $verified  Does the social media report the user as verified?
  * @property   string  $timezone  Timezone of the user, as reported by the social media site.
  */
-final class SocialLoginUserData
+final class UserData
 {
 	/**
 	 * A unique identifier of the social media user.

@@ -6,6 +6,8 @@
  */
 
 // Protect from unauthorized access
+use Akeeba\SocialLogin\Library\Data\PluginConfiguration;
+use Akeeba\SocialLogin\Library\Data\UserData;
 use Akeeba\SocialLogin\Library\Exception\Login\GenericMessage;
 use Akeeba\SocialLogin\Library\Exception\Login\LoginError;
 use Akeeba\SocialLogin\Library\Helper\Joomla;
@@ -24,10 +26,10 @@ abstract class SocialLoginHelperLogin
 	 * information from the social network. At this point we are simply checking if we can log in the user, create a
 	 * new user account or report a login error.
 	 *
-	 * @param   string                          $slug             The slug of the social network plugin, e.g. 'facebook'.
-	 * @param   SocialLoginPluginConfiguration  $config           The configuration information of the plugin.
-	 * @param   SocialLoginUserData             $userData         The social network user account data.
-	 * @param   array                           $userProfileData  The data to save in the #__user_profiles table.
+	 * @param   string               $slug             The slug of the social network plugin, e.g. 'facebook'.
+	 * @param   PluginConfiguration  $config           The configuration information of the plugin.
+	 * @param   UserData             $userData         The social network user account data.
+	 * @param   array                $userProfileData  The data to save in the #__user_profiles table.
 	 *
 	 * @return  void
 	 *
@@ -35,7 +37,7 @@ abstract class SocialLoginHelperLogin
 	 * @throws  GenericMessage  When there is no login error but we need to report a message to the user, e.g. to tell
 	 *                          them they need to click on the activation email.
 	 */
-	public static function handleSocialLogin($slug, SocialLoginPluginConfiguration $config, SocialLoginUserData $userData, array $userProfileData)
+	public static function handleSocialLogin($slug, PluginConfiguration $config, UserData $userData, array $userProfileData)
 	{
 		// Look for a local user account with the social network user ID _unless_ we are already logged in.
 		$profileKeys = array_keys($userProfileData);

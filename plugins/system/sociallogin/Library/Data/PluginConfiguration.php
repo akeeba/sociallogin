@@ -5,6 +5,8 @@
  * @license   GNU General Public License version 3, or later
  */
 
+namespace Akeeba\SocialLogin\Library\Data;
+
 // Protect from unauthorized access
 defined('_JEXEC') or die();
 
@@ -18,7 +20,7 @@ defined('_JEXEC') or die();
  * @property   bool  $canBypassValidation  Am I allowed to bypass user verification if the social network reports the
  *                                         user verified on their end?
  */
-final class SocialLoginPluginConfiguration
+final class PluginConfiguration
 {
 	/**
 	 * Should I log in users who have not yet linked their social network account to their site account? THIS MAY BE
