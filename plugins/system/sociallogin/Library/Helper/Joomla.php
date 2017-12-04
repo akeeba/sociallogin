@@ -557,10 +557,10 @@ abstract class Joomla
 	{
 		if (class_exists('Joomla\\CMS\\Language\\Text'))
 		{
-			return call_user_func_array(array('Joomla\\CMS\\Language\\Text', '_'), $string);
+			return call_user_func_array(array('Joomla\\CMS\\Language\\Text', '_'), array($string));
 		}
 
-		return call_user_func_array(array('JText', '_'), $string);
+		return call_user_func_array(array('JText', '_'), array($string));
 	}
 
 	/**
