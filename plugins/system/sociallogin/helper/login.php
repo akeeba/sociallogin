@@ -7,6 +7,8 @@
 
 // Protect from unauthorized access
 use Akeeba\SocialLogin\Library\Helper\Joomla;
+use Joomla\CMS\Application\BaseApplication;
+use Joomla\CMS\Authentication\AuthenticationResponse;
 
 defined('_JEXEC') or die();
 
@@ -176,21 +178,21 @@ abstract class SocialLoginHelperLogin
 	/**
 	 * Have Joomla! process a login failure
 	 *
-	 * @param   JAuthenticationResponse  $response  The Joomla! auth response object
-	 * @param   JApplicationBase         $app       The application we are running in. Skip to auto-detect (recommended).
+	 * @param   JAuthenticationResponse|AuthenticationResponse  $response  The Joomla! auth response object
+	 * @param   JApplicationBase|BaseApplication                $app       The application we are running in. Skip to auto-detect (recommended).
 	 *
 	 * @return  bool
 	 *
 	 * @throws  Exception
 	 */
-	public static function processLoginFailure(JAuthenticationResponse $response, JApplicationBase $app = null)
+	public static function processLoginFailure($response, $app = null)
 	{
 		// Import the user plugin group.
 		Joomla::importPlugins('user');
 
 		if (!is_object($app))
 		{
-			$app = JFactory::getApplication();
+			$app = Joomla::getApplication();
 		}
 
 		// Trigger onUserLoginFailure Event.
@@ -333,12 +335,12 @@ abstract class SocialLoginHelperLogin
 	/**
 	 * Logs in a user to the site, bypassing the authentication plugins.
 	 *
-	 * @param   int               $userId  The user ID to log in
-	 * @param   JApplicationBase  $app     The application we are running in. Skip to auto-detect (recommended).
+	 * @param   int                              $userId The user ID to log in
+	 * @param   JApplicationBase|BaseApplication $app    The application we are running in. Skip to auto-detect (recommended).
 	 *
 	 * @throws  Exception
 	 */
-	private static function loginUser($userId, JApplicationBase $app = null)
+	private static function loginUser($userId, $app = null)
 	{
 		// Trick the class auto-loader into loading the necessary classes
 		JLoader::import('joomla.user.authentication');
@@ -436,16 +438,16 @@ abstract class SocialLoginHelperLogin
 	/**
 	 * Method to register a new user account. Based on UsersModelRegistration::register().
 	 *
-	 * @param   array             $data                The user data to save.
-	 * @param   array             $userParams          User parameters to save with the user account
-	 * @param   bool              $skipUserActivation  Should I forcibly skip user activation?
-	 * @param   JApplicationBase  $app                 The application we are running in. Skip to auto-detect (recommended).
+	 * @param   array                            $data               The user data to save.
+	 * @param   array                            $userParams         User parameters to save with the user account
+	 * @param   bool                             $skipUserActivation Should I forcibly skip user activation?
+	 * @param   JApplicationBase|BaseApplication $app                The application we are running in. Skip to auto-detect (recommended).
 	 *
 	 * @return  mixed  The user id on success, 'useractivate' or 'adminactivate' if activation is required
 	 *
 	 * @throws  Exception
 	 */
-	private static function register(array $data, array $userParams = array(), $skipUserActivation = false, JApplicationBase $app = null)
+	private static function register(array $data, array $userParams = array(), $skipUserActivation = false, $app = null)
 	{
 		if (!is_object($app))
 		{
@@ -526,7 +528,7 @@ abstract class SocialLoginHelperLogin
 		// Check if the user needs to activate their account.
 		if (($userActivation == 1) || ($userActivation == 2))
 		{
-			$data['activation'] = JApplicationHelper::getHash(JUserHelper::genRandomPassword());
+			$data['activation'] = JApplicationHelper::getHash(Joomla::generateRandom(32));
 			$data['block']      = 1;
 		}
 

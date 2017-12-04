@@ -449,4 +449,25 @@ class Joomla
 		return JUserHelper::genRandomPassword($length);
 	}
 
+	/**
+	 * Is the variable an CMS application object?
+	 *
+	 * @param   mixed  $app
+	 *
+	 * @return  bool
+	 */
+	public static function isCmsApplication($app)
+	{
+		if (!is_object($app))
+		{
+			return false;
+		}
+
+		if (class_exists('Joomla\\CMS\\Application\\CMSApplication'))
+		{
+			return $app instanceof CMSApplication;
+		}
+
+		return $app instanceof JApplicationCms;
+	}
 }
