@@ -6,6 +6,8 @@
  */
 
 // Protect from unauthorized access
+use Akeeba\SocialLogin\Library\Helper\Joomla;
+
 defined('_JEXEC') or die();
 
 /**
@@ -30,6 +32,8 @@ abstract class SocialLoginHelperIntegrations
 	 * @param   JApplicationBase  $app            The application we are running in. Skip to auto-detect (recommended).
 	 *
 	 * @return  string  The rendered HTML of the login buttons
+	 *
+	 * @throws  Exception
 	 */
 	public static function getSocialLoginButtons($loginURL = null, $failureURL = null, $buttonLayout = 'akeeba.sociallogin.button', $buttonsLayout  = 'akeeba.sociallogin.buttons', JApplicationBase $app = null)
 	{
@@ -40,9 +44,9 @@ abstract class SocialLoginHelperIntegrations
 
 		if (is_null(self::$cachedSocialLoginButtons))
 		{
-			SocialLoginHelperJoomla::importPlugins('sociallogin');
+			Joomla::importPlugins('sociallogin');
 
-			$buttonDefinitions = SocialLoginHelperJoomla::runPlugins('onSocialLoginGetLoginButton', array(
+			$buttonDefinitions = Joomla::runPlugins('onSocialLoginGetLoginButton', array(
 				$loginURL,
 				$failureURL
 			), $app);
@@ -58,17 +62,17 @@ abstract class SocialLoginHelperIntegrations
 				$includePath = JPATH_SITE . '/plugins/sociallogin/' . $buttonDefinition['slug'] . '/layout';
 
 				// First try the plugin-specific layout
-				$html = SocialLoginHelperJoomla::renderLayout("$buttonLayout.{$buttonDefinition['slug']}", $buttonDefinition, $includePath);
+				$html = Joomla::renderLayout("$buttonLayout.{$buttonDefinition['slug']}", $buttonDefinition, $includePath);
 
 				if (empty($html))
 				{
-					$html          = SocialLoginHelperJoomla::renderLayout($buttonLayout, $buttonDefinition, $includePath);
+					$html          = Joomla::renderLayout($buttonLayout, $buttonDefinition, $includePath);
 				}
 
 				$buttonsHTML[] = $html;
 			}
 
-			self::$cachedSocialLoginButtons = SocialLoginHelperJoomla::renderLayout($buttonsLayout, array('buttons' => $buttonsHTML));
+			self::$cachedSocialLoginButtons = Joomla::renderLayout($buttonsLayout, array('buttons' => $buttonsHTML));
 		}
 
 		return self::$cachedSocialLoginButtons;
@@ -84,6 +88,8 @@ abstract class SocialLoginHelperIntegrations
 	 *
 	 *
 	 * @return  string  The rendered HTML of the login buttons
+	 *
+	 * @throws  Exception
 	 */
 	public static function getSocialLinkButtons(JUser $user = null, $buttonLayout = 'akeeba.sociallogin.linkbutton', $buttonsLayout  = 'akeeba.sociallogin.linkbuttons', JApplicationBase $app = null)
 	{
@@ -94,9 +100,9 @@ abstract class SocialLoginHelperIntegrations
 
 		if (is_null(self::$cachedSocialLoginButtons))
 		{
-			SocialLoginHelperJoomla::importPlugins('sociallogin');
+			Joomla::importPlugins('sociallogin');
 
-			$buttonDefinitions = SocialLoginHelperJoomla::runPlugins('onSocialLoginGetLinkButton', array($user), $app);
+			$buttonDefinitions = Joomla::runPlugins('onSocialLoginGetLinkButton', array($user), $app);
 			$buttonsHTML       = array();
 
 			foreach ($buttonDefinitions as $buttonDefinition)
@@ -109,17 +115,17 @@ abstract class SocialLoginHelperIntegrations
 				$includePath = JPATH_SITE . '/plugins/sociallogin/' . $buttonDefinition['slug'] . '/layout';
 
 				// First try the plugin-specific layout
-				$html = SocialLoginHelperJoomla::renderLayout("$buttonLayout.{$buttonDefinition['slug']}", $buttonDefinition, $includePath);
+				$html = Joomla::renderLayout("$buttonLayout.{$buttonDefinition['slug']}", $buttonDefinition, $includePath);
 
 				if (empty($html))
 				{
-					$html          = SocialLoginHelperJoomla::renderLayout($buttonLayout, $buttonDefinition, $includePath);
+					$html          = Joomla::renderLayout($buttonLayout, $buttonDefinition, $includePath);
 				}
 
 				$buttonsHTML[] = $html;
 			}
 
-			self::$cachedSocialLoginButtons = SocialLoginHelperJoomla::renderLayout($buttonsLayout, array('buttons' => $buttonsHTML));
+			self::$cachedSocialLoginButtons = Joomla::renderLayout($buttonsLayout, array('buttons' => $buttonsHTML));
 		}
 
 		return self::$cachedSocialLoginButtons;

@@ -6,6 +6,8 @@
  */
 
 // Protect from unauthorized access
+use Akeeba\SocialLogin\Library\Helper\Joomla;
+
 defined('_JEXEC') or die();
 
 /**
@@ -178,11 +180,13 @@ abstract class SocialLoginHelperLogin
 	 * @param   JApplicationBase         $app       The application we are running in. Skip to auto-detect (recommended).
 	 *
 	 * @return  bool
+	 *
+	 * @throws  Exception
 	 */
 	public static function processLoginFailure(JAuthenticationResponse $response, JApplicationBase $app = null)
 	{
 		// Import the user plugin group.
-		SocialLoginHelperJoomla::importPlugins('user');
+		Joomla::importPlugins('user');
 
 		if (!is_object($app))
 		{
@@ -190,7 +194,7 @@ abstract class SocialLoginHelperLogin
 		}
 
 		// Trigger onUserLoginFailure Event.
-		SocialLoginHelperJoomla::runPlugins('onUserLoginFailure', array((array) $response), $app);
+		Joomla::runPlugins('onUserLoginFailure', array((array) $response), $app);
 
 		// If status is success, any error will have been raised by the user plugin
 		if ($response->status !== JAuthentication::STATUS_SUCCESS)
@@ -331,6 +335,8 @@ abstract class SocialLoginHelperLogin
 	 *
 	 * @param   int               $userId  The user ID to log in
 	 * @param   JApplicationBase  $app     The application we are running in. Skip to auto-detect (recommended).
+	 *
+	 * @throws  Exception
 	 */
 	private static function loginUser($userId, JApplicationBase $app = null)
 	{
@@ -392,14 +398,14 @@ abstract class SocialLoginHelperLogin
 		    'action' => 'core.login.site',
 		);
 
-		if (SocialLoginHelperJoomla::isAdminPage())
+		if (Joomla::isAdminPage())
 		{
 			$options['action'] = 'core.login.admin';
 		}
 
 		// Run the user plugins. They CAN block login by returning boolean false and setting $response->error_message.
-		SocialLoginHelperJoomla::importPlugins('user');
-		$results = SocialLoginHelperJoomla::runPlugins('onUserLogin', array((array) $response, $options), $app);
+		Joomla::importPlugins('user');
+		$results = Joomla::runPlugins('onUserLogin', array((array) $response, $options), $app);
 
 		// If there is no boolean FALSE result from any plugin the login is successful.
 		if (in_array(false, $results, true) == false)
@@ -413,13 +419,13 @@ abstract class SocialLoginHelperLogin
 			$options['responseType'] = $response->type;
 
 			// The user is successfully logged in. Run the after login events
-			SocialLoginHelperJoomla::runPlugins('onUserAfterLogin', array($options), $app);
+			Joomla::runPlugins('onUserAfterLogin', array($options), $app);
 
 			return;
 		}
 
 		// If we are here the plugins marked a login failure. Trigger the onUserLoginFailure Event.
-		SocialLoginHelperJoomla::runPlugins('onUserLoginFailure', array((array) $response), $app);
+		Joomla::runPlugins('onUserLoginFailure', array((array) $response), $app);
 
 		// Log the failure
 		JLog::add($response->error_message, JLog::WARNING, 'jerror');
@@ -437,6 +443,8 @@ abstract class SocialLoginHelperLogin
 	 * @param   JApplicationBase  $app                 The application we are running in. Skip to auto-detect (recommended).
 	 *
 	 * @return  mixed  The user id on success, 'useractivate' or 'adminactivate' if activation is required
+	 *
+	 * @throws  Exception
 	 */
 	private static function register(array $data, array $userParams = array(), $skipUserActivation = false, JApplicationBase $app = null)
 	{
@@ -483,11 +491,11 @@ abstract class SocialLoginHelperLogin
 		 * IMPORTANT: We cannot go through the JApplicationCms object directly since user plugins will set the error
 		 * message on the dispatcher instead of throwing an exception. See the plugins/user/profile/profile.php plugin
 		 * file's onContentPrepareData method to understand this questionable approach. Until Joomla! stops supporting
-		 * legacy error handling we cannot switch to SocialLoginHelperJoomla::runPlugins and a regular exceptions
+		 * legacy error handling we cannot switch to Joomla::runPlugins and a regular exceptions
 		 * handler around it :(
 		 */
 		$dispatcher = JEventDispatcher::getInstance();
-		SocialLoginHelperJoomla::importPlugins('user');
+		Joomla::importPlugins('user');
 
 		// Trigger the data preparation event.
 		try
@@ -533,7 +541,7 @@ abstract class SocialLoginHelperLogin
 		}
 
 		// Load the users plugin group.
-		SocialLoginHelperJoomla::importPlugins('user');
+		Joomla::importPlugins('user');
 
 		// Store the data.
 		if (!$user->save())

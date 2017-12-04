@@ -6,6 +6,8 @@
  */
 
 // Protect from unauthorized access
+use Akeeba\SocialLogin\Library\Helper\Joomla;
+
 defined('_JEXEC') or die();
 
 /**
@@ -60,6 +62,8 @@ final class SocialLoginHelperAjax
 	 * Unlink a user account from its social media presence
 	 *
 	 * @param   JApplicationBase  $app  The application
+	 *
+	 * @throws  Exception
 	 */
 	protected function ajaxUnlink(JApplicationBase $app)
 	{
@@ -95,8 +99,8 @@ final class SocialLoginHelperAjax
 		$user = JFactory::getUser($userId);
 
 		// Call the plugin events to unlink the user
-		SocialLoginHelperJoomla::importPlugins('sociallogin');
-		SocialLoginHelperJoomla::runPlugins('onSocialLoginUnlink', array($slug, $user), $app);
+		Joomla::importPlugins('sociallogin');
+		Joomla::runPlugins('onSocialLoginUnlink', array($slug, $user), $app);
 	}
 
 	/**
@@ -104,6 +108,8 @@ final class SocialLoginHelperAjax
 	 * remote server or throw a RuntimeException in case of an error.
 	 *
 	 * @param   JApplicationBase  $app  The application
+	 *
+	 * @throws  Exception
 	 */
 	protected function ajaxAuthenticate(JApplicationBase $app)
 	{
@@ -122,8 +128,8 @@ final class SocialLoginHelperAjax
 		}
 
 		// Call the plugin events to unlink the user
-		SocialLoginHelperJoomla::importPlugins('sociallogin');
-		SocialLoginHelperJoomla::runPlugins('onSocialLoginAuthenticate', array($slug), $app);
+		Joomla::importPlugins('sociallogin');
+		Joomla::runPlugins('onSocialLoginAuthenticate', array($slug), $app);
 	}
 
 }

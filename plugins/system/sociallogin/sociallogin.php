@@ -6,6 +6,8 @@
  */
 
 // Prevent direct access
+use Akeeba\SocialLogin\Library\Helper\Joomla;
+
 defined('_JEXEC') or die;
 
 /**
@@ -48,20 +50,15 @@ class plgSystemSociallogin extends JPlugin
 	 * @param   array   $config    An optional associative array of configuration settings.
 	 *                             Recognized key values include 'name', 'group', 'params', 'language'
 	 *                             (this list is not meant to be comprehensive).
+	 *
+	 * @throws  Exception
 	 */
 	public function __construct(& $subject, $config)
 	{
 		parent::__construct($subject, $config);
 
-		// Register helper classes
-		JLoader::register('SocialLoginHelperAjax', __DIR__ . '/helper/ajax.php');
-		JLoader::register('SocialLoginHelperIntegrations', __DIR__ . '/helper/integrations.php');
-		JLoader::register('SocialLoginHelperJoomla', __DIR__ . '/helper/joomla.php');
-		JLoader::register('SocialLoginHelperLogin', __DIR__ . '/helper/login.php');
-		JLoader::register('SocialLoginFailedLoginException', __DIR__ . '/helper/exception/login.php');
-		JLoader::register('SocialLoginGenericMessageException', __DIR__ . '/helper/exception/generic.php');
-		JLoader::register('SocialLoginPluginConfiguration', __DIR__ . '/helper/data/pluginconfig.php');
-		JLoader::register('SocialLoginUserData', __DIR__ . '/helper/data/userdata.php');
+		// Register the autoloader
+		JLoader::registerNamespace('Akeeba\\SocialLogin\\Library', __DIR__ . '/Library', false, false, 'psr4');
 
 		// Am I enabled?
 		$this->enabled = $this->isEnabled();
@@ -75,7 +72,7 @@ class plgSystemSociallogin extends JPlugin
 		$this->loadLanguage();
 
 		// Get the configured list of login modules and convert it to an actual array
-		$isAdminPage           = SocialLoginHelperJoomla::isAdminPage();
+		$isAdminPage           = Joomla::isAdminPage();
 		$loginModulesParameter = $isAdminPage ? 'backendloginmodules' : 'loginmodules';
 		$defaultModules        = $isAdminPage ? 'none' : 'mod_login';
 		$loginModules = $this->params->get($loginModulesParameter);
@@ -98,11 +95,13 @@ class plgSystemSociallogin extends JPlugin
 	 * Joomla submit to their will.
 	 *
 	 * @return  void
+	 *
+	 * @throws  Exception
 	 */
 	public function onAfterInitialise()
 	{
 		// Make sure this is the backend of the site...
-		if (!SocialLoginHelperJoomla::isAdminPage())
+		if (!Joomla::isAdminPage())
 		{
 			return;
 		}
@@ -259,6 +258,8 @@ class plgSystemSociallogin extends JPlugin
 	 * @param   mixed  $data  The associated data for the form.
 	 *
 	 * @return  boolean
+	 *
+	 * @throws  Exception
 	 */
 	public function onContentPrepareForm($form, $data)
 	{
@@ -280,7 +281,7 @@ class plgSystemSociallogin extends JPlugin
 			return true;
 		}
 
-		if (!SocialLoginHelperJoomla::isAdminPage() && (JFactory::getApplication()->input->getCmd('layout', 'default') != 'edit'))
+		if (!Joomla::isAdminPage() && (JFactory::getApplication()->input->getCmd('layout', 'default') != 'edit'))
 		{
 			return true;
 		}
@@ -310,7 +311,7 @@ class plgSystemSociallogin extends JPlugin
 		}
 
 		// Make sure I am either editing myself OR I am a Super User
-		if (!SocialLoginHelperJoomla::canEditUser($user))
+		if (!Joomla::canEditUser($user))
 		{
 			return true;
 		}
