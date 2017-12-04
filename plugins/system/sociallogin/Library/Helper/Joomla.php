@@ -19,6 +19,7 @@ use Joomla\CMS\Application\CliApplication;
 use Joomla\CMS\Application\CMSApplication;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Layout\FileLayout;
+use Joomla\CMS\Mail\Mail;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\User\User;
 use Joomla\CMS\User\UserHelper;
@@ -484,5 +485,85 @@ abstract class Joomla
 		}
 
 		return JFactory::getDbo();
+	}
+
+	/**
+	 * Get the Joomla! global configuration object
+	 *
+	 * @return JRegistry|Registry
+	 */
+	public static function getConfig()
+	{
+		if (class_exists('Joomla\\CMS\\Factory'))
+		{
+			return Factory::getConfig();
+		}
+
+		return JFactory::getConfig();
+	}
+
+	/**
+	 * Get the Joomla! mailer object
+	 *
+	 * @return \JMail|Mail
+	 */
+	public static function getMailer()
+	{
+		if (class_exists('Joomla\\CMS\\Factory'))
+		{
+			return Factory::getMailer();
+		}
+
+		return JFactory::getMailer();
+	}
+
+	/**
+	 * Return a translated string
+	 *
+	 * @param   string  $string  The translation key
+	 *
+	 * @return  string
+	 */
+	public static function _($string)
+	{
+		if (class_exists('Joomla\\CMS\\Language\\Text'))
+		{
+			return call_user_func_array(array('Joomla\\CMS\\Language\\Text', '_'), $string);
+		}
+
+		return call_user_func_array(array('JText', '_'), $string);
+	}
+
+	/**
+	 * Passes a string thru a sprintf.
+	 *
+	 * Note that this method can take a mixed number of arguments as for the sprintf function.
+	 *
+	 * The last argument can take an array of options:
+	 *
+	 * array('jsSafe'=>boolean, 'interpretBackSlashes'=>boolean, 'script'=>boolean)
+	 *
+	 * where:
+	 *
+	 * jsSafe is a boolean to generate a javascript safe strings.
+	 * interpretBackSlashes is a boolean to interpret backslashes \\->\, \n->new line, \t->tabulation.
+	 * script is a boolean to indicate that the string will be push in the javascript language store.
+	 *
+	 * @param   string  $string  The format string.
+	 *
+	 * @return  string
+	 *
+	 * @see     Text::sprintf().
+	 */
+	public static function sprintf($string)
+	{
+		$args = func_get_args();
+
+		if (class_exists('Joomla\\CMS\\Language\\Text'))
+		{
+			return call_user_func_array(array('Joomla\\CMS\\Language\\Text', 'sprintf'), $args);
+		}
+
+		return call_user_func_array(array('JText', 'sprintf'), $args);
 	}
 }

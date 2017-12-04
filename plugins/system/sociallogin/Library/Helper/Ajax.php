@@ -11,7 +11,6 @@ namespace Akeeba\SocialLogin\Library\Helper;
 use Exception;
 use JApplicationBase;
 use Joomla\CMS\Application\BaseApplication;
-use JText;
 use JUser;
 use RuntimeException;
 
@@ -44,13 +43,13 @@ final class Ajax
 
 		if ($input->getInt($token, 0) != 1)
 		{
-			throw new RuntimeException(JText::_('JERROR_ALERTNOAUTHOR'));
+			throw new RuntimeException(Joomla::_('JERROR_ALERTNOAUTHOR'));
 		}
 
 		// Empty action? No bueno.
 		if (empty($akaction))
 		{
-			throw new RuntimeException(JText::_('PLG_SYSTEM_SOCIALLOGIN_ERR_AJAX_INVALIDACTION'));
+			throw new RuntimeException(Joomla::_('PLG_SYSTEM_SOCIALLOGIN_ERR_AJAX_INVALIDACTION'));
 		}
 
 		// A method ajaxSomething must exist.
@@ -58,7 +57,7 @@ final class Ajax
 
 		if (!method_exists($this, $method_name))
 		{
-			throw new RuntimeException(JText::_('PLG_SYSTEM_SOCIALLOGIN_ERR_AJAX_INVALIDACTION'));
+			throw new RuntimeException(Joomla::_('PLG_SYSTEM_SOCIALLOGIN_ERR_AJAX_INVALIDACTION'));
 		}
 
 		return call_user_func(array($this, $method_name), $app);
@@ -84,7 +83,7 @@ final class Ajax
 		// No slug? No good.
 		if (empty($slug))
 		{
-			throw new RuntimeException(JText::_('PLG_SYSTEM_SOCIALLOGIN_ERR_AJAX_INVALIDSLUG'));
+			throw new RuntimeException(Joomla::_('PLG_SYSTEM_SOCIALLOGIN_ERR_AJAX_INVALIDSLUG'));
 		}
 
 		// Get the user ID and make sure it's ours or we are Super Users
@@ -97,7 +96,7 @@ final class Ajax
 		// Make sure we are unlinking our own user or we are Super Users
 		if (empty($userId) || (!$myUser->authorise('core.manage') && ($myUser->id != $userId)))
 		{
-			throw new RuntimeException(JText::_('PLG_SYSTEM_SOCIALLOGIN_ERR_AJAX_INVALIDUSER'));
+			throw new RuntimeException(Joomla::_('PLG_SYSTEM_SOCIALLOGIN_ERR_AJAX_INVALIDUSER'));
 		}
 
 		// Get the user to unlink
@@ -129,7 +128,7 @@ final class Ajax
 		// No slug? No good.
 		if (empty($slug))
 		{
-			throw new RuntimeException(JText::_('PLG_SYSTEM_SOCIALLOGIN_ERR_AJAX_INVALIDSLUG'));
+			throw new RuntimeException(Joomla::_('PLG_SYSTEM_SOCIALLOGIN_ERR_AJAX_INVALIDSLUG'));
 		}
 
 		// Call the plugin events to unlink the user

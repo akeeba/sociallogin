@@ -225,9 +225,9 @@ class plgSocialloginFacebook extends JPlugin
 			// The href attribute for the anchor tag.
 			'link'       => $url,
 			// The tooltip of the anchor tag.
-			'tooltip'    => JText::_('PLG_SOCIALLOGIN_FACEBOOK_LOGIN_DESC'),
+			'tooltip'    => Joomla::_('PLG_SOCIALLOGIN_FACEBOOK_LOGIN_DESC'),
 			// What to put inside the anchor tag. Leave empty to put the image returned by onSocialLoginGetIntegration.
-			'label'      => JText::_('PLG_SOCIALLOGIN_FACEBOOK_LOGIN_LABEL'),
+			'label'      => Joomla::_('PLG_SOCIALLOGIN_FACEBOOK_LOGIN_LABEL'),
 			// The image to use if there is no icon class
 			'img'        => JHtml::image('plg_sociallogin_facebook/fb_white_29.png', '', array(), true),
 			// An icon class for the span before the label inside the anchor tag. Nothing is shown if this is blank.
@@ -279,9 +279,9 @@ class plgSocialloginFacebook extends JPlugin
 				// The href attribute for the anchor tag.
 				'link'       => $unlinkURL,
 				// The tooltip of the anchor tag.
-				'tooltip'    => JText::_('PLG_SOCIALLOGIN_FACEBOOK_UNLINK_DESC'),
+				'tooltip'    => Joomla::_('PLG_SOCIALLOGIN_FACEBOOK_UNLINK_DESC'),
 				// What to put inside the anchor tag. Leave empty to put the image returned by onSocialLoginGetIntegration.
-				'label'      => JText::_('PLG_SOCIALLOGIN_FACEBOOK_UNLINK_LABEL'),
+				'label'      => Joomla::_('PLG_SOCIALLOGIN_FACEBOOK_UNLINK_LABEL'),
 				// The image to use if there is no icon class
 				'img'        => JHtml::image('plg_sociallogin_facebook/fb_white_29.png', '', array(), true),
 				// An icon class for the span before the label inside the anchor tag. Nothing is shown if this is blank.
@@ -309,9 +309,9 @@ class plgSocialloginFacebook extends JPlugin
 			// The href attribute for the anchor tag.
 			'link'       => $url,
 			// The tooltip of the anchor tag.
-			'tooltip'    => JText::_('PLG_SOCIALLOGIN_FACEBOOK_LINK_DESC'),
+			'tooltip'    => Joomla::_('PLG_SOCIALLOGIN_FACEBOOK_LINK_DESC'),
 			// What to put inside the anchor tag. Leave empty to put the image returned by onSocialLoginGetIntegration.
-			'label'      => JText::_('PLG_SOCIALLOGIN_FACEBOOK_LINK_LABEL'),
+			'label'      => Joomla::_('PLG_SOCIALLOGIN_FACEBOOK_LINK_LABEL'),
 			// The image to use if there is no icon class
 			'img'        => JHtml::image('plg_sociallogin_facebook/fb_white_29.png', '', array(), true),
 			// An icon class for the span before the label inside the anchor tag. Nothing is shown if this is blank.
@@ -395,7 +395,7 @@ class plgSocialloginFacebook extends JPlugin
 
 				if ($token === false)
 				{
-					throw new LoginError(JText::_('PLG_SOCIALLOGIN_FACEBOOK_ERROR_NOT_LOGGED_IN_FB'));
+					throw new LoginError(Joomla::_('PLG_SOCIALLOGIN_FACEBOOK_ERROR_NOT_LOGGED_IN_FB'));
 				}
 
 				// Get information about the user from Big Brother... er... Facebook.

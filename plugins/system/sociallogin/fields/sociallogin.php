@@ -31,7 +31,7 @@ class JFormFieldSociallogin extends AkeebaSocialLoginJFormFieldParent
 
 		if (is_null($user_id))
 		{
-			return JText::_('PLG_SYSTEM_SOCIALLOGIN_ERR_NOUSER');
+			return Joomla::_('PLG_SYSTEM_SOCIALLOGIN_ERR_NOUSER');
 		}
 
 		$user = Joomla::getUser($user_id);

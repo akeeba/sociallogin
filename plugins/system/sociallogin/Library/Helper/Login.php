@@ -24,8 +24,8 @@ use JLoader;
 use JLog;
 use Joomla\CMS\Application\BaseApplication;
 use Joomla\CMS\Authentication\AuthenticationResponse;
+use JRoute;
 use JStringPunycode;
-use JText;
 use JUri;
 use JUser;
 use JUserHelper;
@@ -93,7 +93,7 @@ abstract class Login
 			 */
 			if (!$userData->verified)
 			{
-				throw new LoginError(JText::_('PLG_SOCIALLOGIN_' . $slug . '_ERROR_LOCAL_NOT_FOUND'));
+				throw new LoginError(Joomla::_('PLG_SOCIALLOGIN_' . $slug . '_ERROR_LOCAL_NOT_FOUND'));
 			}
 
 			/**
@@ -104,7 +104,7 @@ abstract class Login
 			 */
 			if (!$config->canLoginUnlinked && !empty($userId))
 			{
-				throw new LoginError(JText::_('PLG_SOCIALLOGIN_' . $slug . '_ERROR_LOCAL_USERNAME_CONFLICT'));
+				throw new LoginError(Joomla::_('PLG_SOCIALLOGIN_' . $slug . '_ERROR_LOCAL_USERNAME_CONFLICT'));
 			}
 		}
 
@@ -122,7 +122,7 @@ abstract class Login
 
 			if ((($allowUserRegistration == 0) && !$config->canCreateAlways) || !$config->canCreateNewUsers || empty($email))
 			{
-				throw new LoginError(JText::_('PLG_SOCIALLOGIN_' . $slug . '_ERROR_LOCAL_NOT_FOUND'));
+				throw new LoginError(Joomla::_('PLG_SOCIALLOGIN_' . $slug . '_ERROR_LOCAL_NOT_FOUND'));
 			}
 
 			try
@@ -137,18 +137,18 @@ abstract class Login
 			}
 			catch (UnexpectedValueException $e)
 			{
-				throw new LoginError(JText::sprintf('PLG_SOCIALLOGIN_' . $slug . '_ERROR_CANNOT_CREATE', JText::_('PLG_SOCIALLOGIN_' . $slug . '_ERROR_LOCAL_USERNAME_CONFLICT')));
+				throw new LoginError(Joomla::sprintf('PLG_SOCIALLOGIN_' . $slug . '_ERROR_CANNOT_CREATE', Joomla::_('PLG_SOCIALLOGIN_' . $slug . '_ERROR_LOCAL_USERNAME_CONFLICT')));
 			}
 			catch (RuntimeException $e)
 			{
-				throw new LoginError(JText::sprintf('PLG_SOCIALLOGIN_' . $slug . '_ERROR_CANNOT_CREATE', $e->getMessage()));
+				throw new LoginError(Joomla::sprintf('PLG_SOCIALLOGIN_' . $slug . '_ERROR_CANNOT_CREATE', $e->getMessage()));
 			}
 
 			// Does the account need user or administrator verification?
 			if (in_array($userId, array('useractivate', 'adminactivate')))
 			{
 				// Do NOT go through processLoginFailure. This is NOT a login failure.
-				throw new GenericMessage(JText::_('PLG_SOCIALLOGIN_' . $slug . '_NOTICE_' . $userId));
+				throw new GenericMessage(Joomla::_('PLG_SOCIALLOGIN_' . $slug . '_NOTICE_' . $userId));
 			}
 		}
 
@@ -158,7 +158,7 @@ abstract class Login
 		 */
 		if (empty($userId))
 		{
-			throw new LoginError(JText::_('PLG_SOCIALLOGIN_' . $slug . '_ERROR_LOCAL_NOT_FOUND'));
+			throw new LoginError(Joomla::_('PLG_SOCIALLOGIN_' . $slug . '_ERROR_LOCAL_NOT_FOUND'));
 		}
 
 		// Attach the social network link information to the user's profile
@@ -384,13 +384,13 @@ abstract class Login
 		// Does the user account have a pending activation?
 		if (!empty($user->activation))
 		{
-			throw new RuntimeException(JText::_('JGLOBAL_AUTH_ACCESS_DENIED'));
+			throw new RuntimeException(Joomla::_('JGLOBAL_AUTH_ACCESS_DENIED'));
 		}
 
 		// Is the user account blocked?
 		if ($user->block)
 		{
-			throw new RuntimeException(JText::_('JGLOBAL_AUTH_ACCESS_DENIED'));
+			throw new RuntimeException(Joomla::_('JGLOBAL_AUTH_ACCESS_DENIED'));
 		}
 
 		$response                = new JAuthenticationResponse();
@@ -562,7 +562,7 @@ abstract class Login
 		// Bind the data.
 		if (!$user->bind($data))
 		{
-			throw new RuntimeException(JText::sprintf('COM_USERS_REGISTRATION_BIND_FAILED', $user->getError()));
+			throw new RuntimeException(Joomla::sprintf('COM_USERS_REGISTRATION_BIND_FAILED', $user->getError()));
 		}
 
 		// Load the users plugin group.
@@ -571,10 +571,10 @@ abstract class Login
 		// Store the data.
 		if (!$user->save())
 		{
-			throw new RuntimeException(JText::sprintf('COM_USERS_REGISTRATION_SAVE_FAILED', $user->getError()));
+			throw new RuntimeException(Joomla::sprintf('COM_USERS_REGISTRATION_SAVE_FAILED', $user->getError()));
 		}
 
-		$config = JFactory::getConfig();
+		$config = Joomla::getConfig();
 		$db     = Joomla::getDbo();
 		$query  = $db->getQuery(true);
 
@@ -606,13 +606,13 @@ abstract class Login
 					$data['activate'] = substr_replace($data['activate'], '', $adminPos, 14);
 				}
 
-				$emailSubject = JText::sprintf(
+				$emailSubject = Joomla::sprintf(
 					'COM_USERS_EMAIL_ACCOUNT_DETAILS',
 					$data['name'],
 					$data['sitename']
 				);
 
-				$emailBody = JText::sprintf(
+				$emailBody = Joomla::sprintf(
 					'COM_USERS_EMAIL_REGISTERED_WITH_ADMIN_ACTIVATION_BODY_NOPW',
 					$data['name'],
 					$data['sitename'],
@@ -623,7 +623,7 @@ abstract class Login
 
 				if ($sendPassword)
 				{
-					$emailBody = JText::sprintf(
+					$emailBody = Joomla::sprintf(
 						'COM_USERS_EMAIL_REGISTERED_WITH_ADMIN_ACTIVATION_BODY',
 						$data['name'],
 						$data['sitename'],
@@ -649,13 +649,13 @@ abstract class Login
 					$data['activate'] = substr_replace($data['activate'], '', $adminPos, 14);
 				}
 
-				$emailSubject = JText::sprintf(
+				$emailSubject = Joomla::sprintf(
 					'COM_USERS_EMAIL_ACCOUNT_DETAILS',
 					$data['name'],
 					$data['sitename']
 				);
 
-				$emailBody = JText::sprintf(
+				$emailBody = Joomla::sprintf(
 					'COM_USERS_EMAIL_REGISTERED_WITH_ACTIVATION_BODY_NOPW',
 					$data['name'],
 					$data['sitename'],
@@ -666,7 +666,7 @@ abstract class Login
 
 				if ($sendPassword)
 				{
-					$emailBody = JText::sprintf(
+					$emailBody = Joomla::sprintf(
 						'COM_USERS_EMAIL_REGISTERED_WITH_ACTIVATION_BODY',
 						$data['name'],
 						$data['sitename'],
@@ -681,13 +681,13 @@ abstract class Login
 
 			// No activation required
 			case 0:
-				$emailSubject = JText::sprintf(
+				$emailSubject = Joomla::sprintf(
 					'COM_USERS_EMAIL_ACCOUNT_DETAILS',
 					$data['name'],
 					$data['sitename']
 				);
 
-				$emailBody = JText::sprintf(
+				$emailBody = Joomla::sprintf(
 					'COM_USERS_EMAIL_REGISTERED_BODY_NOPW',
 					$data['name'],
 					$data['sitename'],
@@ -696,7 +696,7 @@ abstract class Login
 
 				if ($sendPassword)
 				{
-					$emailBody = JText::sprintf(
+					$emailBody = Joomla::sprintf(
 						'COM_USERS_EMAIL_REGISTERED_BODY',
 						$data['name'],
 						$data['sitename'],
@@ -710,19 +710,19 @@ abstract class Login
 		}
 
 		// Send the registration email.
-		$return = JFactory::getMailer()
+		$return = Joomla::getMailer()
 		                  ->sendMail($data['mailfrom'], $data['fromname'], $data['email'], $emailSubject, $emailBody);
 
 		// Send Notification mail to administrators
 		if (($userActivation < 2) && ($sendEmailToAdmin == 1))
 		{
-			$emailSubject = JText::sprintf(
+			$emailSubject = Joomla::sprintf(
 				'COM_USERS_EMAIL_ACCOUNT_DETAILS',
 				$data['name'],
 				$data['sitename']
 			);
 
-			$emailBodyAdmin = JText::sprintf(
+			$emailBodyAdmin = Joomla::sprintf(
 				'COM_USERS_EMAIL_REGISTERED_NOTIFICATION_TO_ADMIN_BODY',
 				$data['name'],
 				$data['username'],
@@ -744,19 +744,19 @@ abstract class Login
 			}
 			catch (RuntimeException $e)
 			{
-				throw new RuntimeException(JText::sprintf('COM_USERS_DATABASE_ERROR', $e->getMessage()), 500);
+				throw new RuntimeException(Joomla::sprintf('COM_USERS_DATABASE_ERROR', $e->getMessage()), 500);
 			}
 
 			// Send mail to all Super Users
 			foreach ($rows as $row)
 			{
-				$return = JFactory::getMailer()
+				$return = Joomla::getMailer()
 				                  ->sendMail($data['mailfrom'], $data['fromname'], $row->email, $emailSubject, $emailBodyAdmin);
 
 				// Check for an error.
 				if ($return !== true)
 				{
-					throw new RuntimeException(JText::_('COM_USERS_REGISTRATION_ACTIVATION_NOTIFY_SEND_MAIL_FAILED'));
+					throw new RuntimeException(Joomla::_('COM_USERS_REGISTRATION_ACTIVATION_NOTIFY_SEND_MAIL_FAILED'));
 				}
 			}
 		}
@@ -779,7 +779,7 @@ abstract class Login
 			}
 			catch (RuntimeException $e)
 			{
-				throw new RuntimeException(JText::sprintf('COM_USERS_DATABASE_ERROR', $e->getMessage()), 500);
+				throw new RuntimeException(Joomla::sprintf('COM_USERS_DATABASE_ERROR', $e->getMessage()), 500);
 			}
 
 			if (count($userids) > 0)
@@ -793,8 +793,8 @@ abstract class Login
 						$db->quote($userid),
 						$db->quote($userid),
 						$db->quote($jdate->toSql()),
-						$db->quote(JText::_('COM_USERS_MAIL_SEND_FAILURE_SUBJECT')),
-						$db->quote(JText::sprintf('COM_USERS_MAIL_SEND_FAILURE_BODY', $return, $data['username']))
+						$db->quote(Joomla::_('COM_USERS_MAIL_SEND_FAILURE_SUBJECT')),
+						$db->quote(Joomla::sprintf('COM_USERS_MAIL_SEND_FAILURE_BODY', $return, $data['username']))
 					);
 					$query->clear()
 					      ->insert($db->quoteName('#__messages'))
@@ -814,12 +814,12 @@ abstract class Login
 					}
 					catch (RuntimeException $e)
 					{
-						throw new RuntimeException(JText::sprintf('COM_USERS_DATABASE_ERROR', $e->getMessage()), 500);
+						throw new RuntimeException(Joomla::sprintf('COM_USERS_DATABASE_ERROR', $e->getMessage()), 500);
 					}
 				}
 			}
 
-			throw new RuntimeException(JText::_('COM_USERS_REGISTRATION_SEND_MAIL_FAILED'));
+			throw new RuntimeException(Joomla::_('COM_USERS_REGISTRATION_SEND_MAIL_FAILED'));
 		}
 
 		if ($userActivation == 1)
