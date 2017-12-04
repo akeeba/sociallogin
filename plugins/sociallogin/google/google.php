@@ -17,6 +17,14 @@ use Akeeba\SocialLogin\Library\Helper\Joomla;
 use Akeeba\SocialLogin\Library\Helper\Login;
 use Joomla\Registry\Registry;
 
+if (!class_exists('AkeebaSocialLoginJPlugin'))
+{
+	if (!include_once (JPATH_PLUGINS . '/system/sociallogin/abstraction.php'))
+	{
+		return;
+	}
+}
+
 if (!class_exists('Akeeba\\SocialLogin\\Library\\Helper\\Login', true))
 {
 	return;
@@ -25,7 +33,7 @@ if (!class_exists('Akeeba\\SocialLogin\\Library\\Helper\\Login', true))
 /**
  * Akeeba Social Login plugin for Google integration
  */
-class plgSocialloginGoogle extends JPlugin
+class plgSocialloginGoogle extends AkeebaSocialLoginJPlugin
 {
 	/**
 	 * The integration slug used by this plugin

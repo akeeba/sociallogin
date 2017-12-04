@@ -12,10 +12,18 @@ use Akeeba\SocialLogin\Library\Helper\Joomla;
 
 defined('_JEXEC') or die;
 
+if (!class_exists('AkeebaSocialLoginJPlugin'))
+{
+	if (!include_once (__DIR__ . '/abstraction.php'))
+	{
+		return;
+	}
+}
+
 /**
  * SocialLogin System Plugin
  */
-class plgSystemSociallogin extends JPlugin
+class plgSystemSociallogin extends AkeebaSocialLoginJPlugin
 {
 	/**
 	 * The names of the login modules to intercept. Default: mod_login
