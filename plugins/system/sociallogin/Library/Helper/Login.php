@@ -12,23 +12,24 @@ use Akeeba\SocialLogin\Library\Data\UserData;
 use Akeeba\SocialLogin\Library\Exception\Login\GenericMessage;
 use Akeeba\SocialLogin\Library\Exception\Login\LoginError;
 use Exception;
-use JApplicationBase;
 use JApplicationHelper;
 use JAuthentication;
 use JAuthenticationResponse;
 use JComponentHelper;
 use JDate;
 use JEventDispatcher;
-use JFactory;
 use JLoader;
 use JLog;
+use Joomla\CMS\Application\ApplicationHelper;
 use Joomla\CMS\Application\BaseApplication;
+use Joomla\CMS\Authentication\Authentication;
 use Joomla\CMS\Authentication\AuthenticationResponse;
+use Joomla\CMS\Component\ComponentHelper;
+use Joomla\Event\Event;
+use Joomla\Registry\Registry;
 use JRoute;
-use JStringPunycode;
 use JUri;
 use JUser;
-use JUserHelper;
 use RuntimeException;
 use UnexpectedValueException;
 
@@ -110,7 +111,7 @@ abstract class Login
 		// Try to subscribe a new user
 		if (empty($userId))
 		{
-			$usersConfig           = JComponentHelper::getParams('com_users');
+			$usersConfig           = self::getUsersParams();
 			$allowUserRegistration = $usersConfig->get('allowUserRegistration');
 
 			/**
@@ -187,7 +188,7 @@ abstract class Login
 	/**
 	 * Returns a (blank) Joomla! authentication response
 	 *
-	 * @return  JAuthenticationResponse
+	 * @return  JAuthenticationResponse|AuthenticationResponse
 	 */
 	public static function getAuthenticationResponseObject()
 	{
@@ -195,14 +196,19 @@ abstract class Login
 		JLoader::import('joomla.user.authentication');
 		class_exists('JAuthentication', true);
 
+		if (class_exists('Joomla\\CMS\\Authentication\\AuthenticationResponse'))
+		{
+			return new AuthenticationResponse();
+		}
+
 		return new JAuthenticationResponse();
 	}
 
 	/**
 	 * Have Joomla! process a login failure
 	 *
-	 * @param   JAuthenticationResponse|AuthenticationResponse  $response  The Joomla! auth response object
-	 * @param   JApplicationBase|BaseApplication                $app       The application we are running in. Skip to auto-detect (recommended).
+	 * @param   AuthenticationResponse  $response  The Joomla! auth response object
+	 * @param   BaseApplication         $app       The application we are running in. Skip to auto-detect (recommended).
 	 *
 	 * @return  bool
 	 *
@@ -222,7 +228,16 @@ abstract class Login
 		Joomla::runPlugins('onUserLoginFailure', array((array) $response), $app);
 
 		// If status is success, any error will have been raised by the user plugin
-		if ($response->status !== JAuthentication::STATUS_SUCCESS)
+		if (class_exists('Joomla\CMS\Authentication\Authentication'))
+		{
+			$expectedStatus = Authentication::STATUS_SUCCESS;
+		}
+		else
+		{
+			$expectedStatus = JAuthentication::STATUS_SUCCESS;
+		}
+
+		if ($response->status !== $expectedStatus)
 		{
 			// Everything logged in the 'jerror' category ends up being enqueued in the application message queue.
 			JLog::add($response->error_message, JLog::WARNING, 'jerror');
@@ -311,6 +326,7 @@ abstract class Login
 	 * @return  mixed  The user id on success, 'useractivate' or 'adminactivate' if activation is required
 	 *
 	 * @throws  UnexpectedValueException  If the email or username already exists
+	 * @throws  Exception                 If user registration fails
 	 */
 	private static function createUser($email, $name, $emailVerified, $timezone)
 	{
@@ -330,12 +346,12 @@ abstract class Login
 		}
 
 		// If the username already exists try using the email as the username
-		if (JUserHelper::getUserId($username))
+		if (Joomla::getUserId($username))
 		{
 			$username = $email;
 
 			// If that exists too throw an exception
-			if (JUserHelper::getUserId($username))
+			if (Joomla::getUserId($username))
 			{
 				throw new UnexpectedValueException();
 			}
@@ -358,8 +374,8 @@ abstract class Login
 	/**
 	 * Logs in a user to the site, bypassing the authentication plugins.
 	 *
-	 * @param   int                              $userId The user ID to log in
-	 * @param   JApplicationBase|BaseApplication $app    The application we are running in. Skip to auto-detect (recommended).
+	 * @param   int              $userId  The user ID to log in
+	 * @param   BaseApplication  $app     The application we are running in. Skip to auto-detect (recommended).
 	 *
 	 * @throws  Exception
 	 */
@@ -370,6 +386,7 @@ abstract class Login
 		JLoader::import('joomla.plugin.helper');
 		JLoader::import('joomla.user.helper');
 		class_exists('JAuthentication', true);
+		class_exists('Joomla\\CMS\\Authentication\\Authentication', true);
 
 		// Fake a successful login message
 		if (!is_object($app))
@@ -392,8 +409,17 @@ abstract class Login
 			throw new RuntimeException(Joomla::_('JGLOBAL_AUTH_ACCESS_DENIED'));
 		}
 
-		$response                = new JAuthenticationResponse();
-		$response->status        = JAuthentication::STATUS_SUCCESS;
+		if (class_exists('Joomla\CMS\Authentication\Authentication'))
+		{
+			$statusSuccess = Authentication::STATUS_SUCCESS;
+		}
+		else
+		{
+			$statusSuccess = JAuthentication::STATUS_SUCCESS;
+		}
+
+		$response                = self::getAuthenticationResponseObject();
+		$response->status        = $statusSuccess;
 		$response->username      = $user->username;
 		$response->fullname      = $user->name;
 		$response->error_message = '';
@@ -461,10 +487,10 @@ abstract class Login
 	/**
 	 * Method to register a new user account. Based on UsersModelRegistration::register().
 	 *
-	 * @param   array                            $data               The user data to save.
-	 * @param   array                            $userParams         User parameters to save with the user account
-	 * @param   bool                             $skipUserActivation Should I forcibly skip user activation?
-	 * @param   JApplicationBase|BaseApplication $app                The application we are running in. Skip to auto-detect (recommended).
+	 * @param   array            $data                The user data to save.
+	 * @param   array            $userParams          User parameters to save with the user account
+	 * @param   bool             $skipUserActivation  Should I forcibly skip user activation?
+	 * @param   BaseApplication  $app                 The application we are running in. Skip to auto-detect (recommended).
 	 *
 	 * @return  mixed  The user id on success, 'useractivate' or 'adminactivate' if activation is required
 	 *
@@ -484,7 +510,7 @@ abstract class Login
 		$lang->load('com_users', JPATH_BASE . '/components/com_users', null, false, false);
 		$lang->load('com_users', JPATH_BASE, null, false, false);
 
-		$params = JComponentHelper::getParams('com_users');
+		$params = self::getUsersParams();
 
 		$data = array_merge(array(
 			'name'     => '',
@@ -500,11 +526,11 @@ abstract class Login
 		// If no password was specified create a random one
 		if (!isset($data['password']) || empty($data['password']))
 		{
-			$data['password'] = JUserHelper::genRandomPassword(24);
+			$data['password'] = Joomla::generateRandom(24);
 		}
 
 		// Convert the email to punycode if necessary
-		$data['email']    = JStringPunycode::emailToPunycode($data['email']);
+		$data['email']    = Joomla::emailToPunycode($data['email']);
 
 		// Get the groups the user should be added to after registration.
 		$data['groups']   = array($params->get('new_usertype', 2));
@@ -518,13 +544,31 @@ abstract class Login
 		 * legacy error handling we cannot switch to Joomla::runPlugins and a regular exceptions
 		 * handler around it :(
 		 */
-		$dispatcher = JEventDispatcher::getInstance();
-		Joomla::importPlugins('user');
+		$eventName = 'onContentPrepareData';
 
-		// Trigger the data preparation event.
 		try
 		{
-			$results = $dispatcher->trigger('onContentPrepareData', array('com_users.registration', $data));
+			if (version_compare(JVERSION, '3.99999.99999', 'lt'))
+			{
+				// Joomla! 3 method, using JEventDispatcher
+				$dispatcher = JEventDispatcher::getInstance();
+				Joomla::importPlugins('user');
+
+				// Trigger the data preparation event.
+				$results = $dispatcher->trigger($eventName, array('com_users.registration', $data));
+			}
+			else
+			{
+				// Joomla! 4 method, using DispatcherInterface from the Events package
+				$appDispatcher = $app->getDispatcher();
+				$dispatcher    = clone $appDispatcher;
+
+				Joomla::importPlugins('user');
+
+				$event       = new Event($eventName, array('com_users.registration', $data));
+				$eventReturn = $dispatcher->dispatch($eventName, $event);
+				$results     = !isset($eventReturn['result']) || is_null($eventReturn['result']) ? array() : $eventReturn['result'];
+			}
 		}
 		catch (Exception $e)
 		{
@@ -551,7 +595,15 @@ abstract class Login
 		// Check if the user needs to activate their account.
 		if (($userActivation == 1) || ($userActivation == 2))
 		{
-			$data['activation'] = JApplicationHelper::getHash(Joomla::generateRandom(32));
+			if (class_exists('Joomla\\CMS\\Application\\ApplicationHelper'))
+			{
+				$data['activation'] = ApplicationHelper::getHash(Joomla::generateRandom(32));
+			}
+			else
+			{
+				$data['activation'] = JApplicationHelper::getHash(Joomla::generateRandom(32));
+			}
+
 			$data['block']      = 1;
 		}
 
@@ -834,4 +886,20 @@ abstract class Login
 			return $user->id;
 		}
 	}
+
+	/**
+	 * Get the com_users options
+	 *
+	 * @return Registry
+	 */
+	protected static function getUsersParams()
+	{
+		if (class_exists('Joomla\\CMS\\Component\\ComponentHelper'))
+		{
+			return ComponentHelper::getParams('com_users');
+		}
+
+		return JComponentHelper::getParams('com_users');
+	}
+
 }

@@ -21,6 +21,7 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Layout\FileLayout;
 use Joomla\CMS\Mail\Mail;
 use Joomla\CMS\Plugin\PluginHelper;
+use Joomla\CMS\String\PunycodeHelper;
 use Joomla\CMS\User\User;
 use Joomla\CMS\User\UserHelper;
 use Joomla\Database\DatabaseDriver;
@@ -28,6 +29,7 @@ use Joomla\Registry\Registry;
 use JPluginHelper;
 use JRegistry;
 use JSession;
+use JStringPunycode;
 use JUser;
 use JUserHelper;
 use RuntimeException;
@@ -453,6 +455,23 @@ abstract class Joomla
 	}
 
 	/**
+	 * Converts an email to punycode
+	 *
+	 * @param   string  $email  The original email, with Unicode characters
+	 *
+	 * @return  string  The punycode-transcribed email address
+	 */
+	public static function emailToPunycode($email)
+	{
+		if (class_exists('Joomla\\CMS\\String\\PunycodeHelper'))
+		{
+			return PunycodeHelper::emailToPunycode($email);
+		}
+
+		return JStringPunycode::emailToPunycode($email);
+	}
+
+	/**
 	 * Is the variable an CMS application object?
 	 *
 	 * @param   mixed  $app
@@ -515,6 +534,16 @@ abstract class Joomla
 		}
 
 		return JFactory::getMailer();
+	}
+
+	public static function getUserId($username)
+	{
+		if (class_exists('Joomla\\CMS\\User\\UserHelper'))
+		{
+			return UserHelper::getUserId($username);
+		}
+
+		return JUserHelper::getUserId($username);
 	}
 
 	/**
