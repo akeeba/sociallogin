@@ -36,7 +36,7 @@ abstract class SocialLoginHelperLogin
 		// Look for a local user account with the social network user ID _unless_ we are already logged in.
 		$profileKeys = array_keys($userProfileData);
 		$primaryKey  = $profileKeys[0];
-		$currentUser = JFactory::getUser();
+		$currentUser = Joomla::getUser();
 		$userId      = $currentUser->id;
 
 		if ($currentUser->guest)
@@ -219,7 +219,7 @@ abstract class SocialLoginHelperLogin
 		// Make sure there's a user to check for
 		if (empty($user) || !is_object($user) || !($user instanceof JUser))
 		{
-			$user = JFactory::getUser();
+			$user = Joomla::getUser();
 		}
 
 		// Make sure there's a valid user
@@ -349,11 +349,11 @@ abstract class SocialLoginHelperLogin
 		// Fake a successful login message
 		if (!is_object($app))
 		{
-			$app = JFactory::getApplication();
+			$app = Joomla::getApplication();
 		}
 
 		$isAdmin = method_exists($app, 'isClient') ? $app->isClient('administrator') : $app->isAdmin();
-		$user    = JFactory::getUser($userId);
+		$user    = Joomla::getUser($userId);
 
 		// Does the user account have a pending activation?
 		if (!empty($user->activation))
@@ -450,7 +450,7 @@ abstract class SocialLoginHelperLogin
 	{
 		if (!is_object($app))
 		{
-			$app = JFactory::getApplication();
+			$app = Joomla::getApplication();
 		}
 
 		// Load com_users language files
@@ -561,7 +561,7 @@ abstract class SocialLoginHelperLogin
 		$data['siteurl']  = JUri::root();
 
 		// Handle account activation/confirmation emails.
-		$app = JFactory::getApplication();
+		$app = Joomla::getApplication();
 		$isAdmin = method_exists($app, 'isClient') ? $app->isClient('administrator') : $app->isAdmin();
 
 		switch ($userActivation)

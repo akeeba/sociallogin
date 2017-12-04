@@ -8,6 +8,7 @@
 // Protect from unauthorized access
 defined('_JEXEC') or die();
 
+use Akeeba\SocialLogin\Library\Helper\Joomla;
 use Joomla\Registry\Registry;
 
 if (!class_exists('SocialLoginHelperLogin', true))
@@ -276,7 +277,7 @@ class plgSocialloginTwitter extends JPlugin
 
 		if (empty($user))
 		{
-			$user = JFactory::getUser();
+			$user = Joomla::getUser();
 		}
 
 		// Get the return URL
@@ -374,7 +375,7 @@ class plgSocialloginTwitter extends JPlugin
 		// Make sure we have a user
 		if (is_null($user))
 		{
-			$user = JFactory::getUser();
+			$user = Joomla::getUser();
 		}
 
 		SocialLoginHelperIntegrations::removeUserProfileData($user->id, 'sociallogin.twitter');
@@ -386,6 +387,8 @@ class plgSocialloginTwitter extends JPlugin
 	 * Note: this method is called from Joomla's com_ajax, not com_sociallogin itself
 	 *
 	 * @return  void
+	 *
+	 * @throws  Exception
 	 */
 	public function onAjaxTwitter()
 	{
@@ -403,7 +406,7 @@ class plgSocialloginTwitter extends JPlugin
 
 		// Try to exchange the code with a token
 		$connector    = $this->getClient();
-		$app          = JFactory::getApplication();
+		$app          = Joomla::getApplication();
 
 		/**
 		 * Handle the login callback from Twitter. There are three possibilities:
@@ -513,6 +516,8 @@ class plgSocialloginTwitter extends JPlugin
 	 * correct branding color.
 	 *
 	 * @return  void
+	 *
+	 * @throws  Exception
 	 */
 	private function addCustomCSS()
 	{
@@ -532,7 +537,7 @@ class plgSocialloginTwitter extends JPlugin
 			return;
 		}
 
-		$jDocument = JFactory::getApplication()->getDocument();
+		$jDocument = Joomla::getApplication()->getDocument();
 
 		if (empty($jDocument) || !is_object($jDocument) || !($jDocument instanceof JDocumentHtml))
 		{

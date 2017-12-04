@@ -96,7 +96,7 @@ final class SocialLoginHelperAjax
 		}
 
 		// Get the user to unlink
-		$user = JFactory::getUser($userId);
+		$user = Joomla::getUser($userId);
 
 		// Call the plugin events to unlink the user
 		Joomla::importPlugins('sociallogin');

@@ -8,6 +8,7 @@
 // Protect from unauthorized access
 defined('_JEXEC') or die();
 
+use Akeeba\SocialLogin\Library\Helper\Joomla;
 use Joomla\Registry\Registry;
 
 if (!class_exists('SocialLoginHelperLogin', true))
@@ -281,7 +282,7 @@ class plgSocialloginGoogle extends JPlugin
 
 		if (empty($user))
 		{
-			$user = JFactory::getUser();
+			$user = Joomla::getUser();
 		}
 
 		// Get the return URL
@@ -374,7 +375,7 @@ class plgSocialloginGoogle extends JPlugin
 		// Make sure we have a user
 		if (is_null($user))
 		{
-			$user = JFactory::getUser();
+			$user = Joomla::getUser();
 		}
 
 		SocialLoginHelperIntegrations::removeUserProfileData($user->id, 'sociallogin.google');
@@ -386,6 +387,8 @@ class plgSocialloginGoogle extends JPlugin
 	 * Note: this method is called from Joomla's com_ajax, not com_sociallogin itself
 	 *
 	 * @return  void
+	 *
+	 * @throws  Exception
 	 */
 	public function onAjaxGoogle()
 	{
@@ -403,7 +406,7 @@ class plgSocialloginGoogle extends JPlugin
 
 		// Try to exchange the code with a token
 		$connector    = $this->getConnector();
-		$app          = JFactory::getApplication();
+		$app          = Joomla::getApplication();
 
 		/**
 		 * I have to do this because Joomla's Google OAUth2 connector is buggy :@ The googlize() method assumes that
@@ -544,6 +547,8 @@ class plgSocialloginGoogle extends JPlugin
 	 * correct branding color.
 	 *
 	 * @return  void
+	 *
+	 * @throws  Exception
 	 */
 	private function addCustomCSS()
 	{
@@ -563,7 +568,7 @@ class plgSocialloginGoogle extends JPlugin
 			return;
 		}
 
-		$jDocument = JFactory::getApplication()->getDocument();
+		$jDocument = Joomla::getApplication()->getDocument();
 
 		if (empty($jDocument) || !is_object($jDocument) || !($jDocument instanceof JDocumentHtml))
 		{

@@ -8,6 +8,7 @@
 // Protect from unauthorized access
 defined('_JEXEC') or die();
 
+use Akeeba\SocialLogin\Library\Helper\Joomla;
 use Joomla\Registry\Registry;
 
 if (!class_exists('SocialLoginHelperLogin', true))
@@ -246,7 +247,7 @@ class plgSocialloginFacebook extends JPlugin
 
 		if (empty($user))
 		{
-			$user = JFactory::getUser();
+			$user = Joomla::getUser();
 		}
 
 		// Get the return URL
@@ -340,7 +341,7 @@ class plgSocialloginFacebook extends JPlugin
 		// Make sure we have a user
 		if (is_null($user))
 		{
-			$user = JFactory::getUser();
+			$user = Joomla::getUser();
 		}
 
 		SocialLoginHelperIntegrations::removeUserProfileData($user->id, 'sociallogin.facebook');
@@ -352,6 +353,8 @@ class plgSocialloginFacebook extends JPlugin
 	 * Note: this method is called from Joomla's com_ajax, not com_sociallogin itself
 	 *
 	 * @return  void
+	 *
+	 * @throws  Exception
 	 */
 	public function onAjaxFacebook()
 	{
@@ -369,7 +372,7 @@ class plgSocialloginFacebook extends JPlugin
 
 		// Try to exchange the code with a token
 		$oauthConnector = $this->getConnector();
-		$app            = JFactory::getApplication();
+		$app            = Joomla::getApplication();
 
 		/**
 		 * Handle the login callback from Facebook. There are three possibilities:
@@ -462,6 +465,8 @@ class plgSocialloginFacebook extends JPlugin
 	 * correct branding color.
 	 *
 	 * @return  void
+	 *
+	 * @throws  Exception
 	 */
 	private function addCustomCSS()
 	{
@@ -481,7 +486,7 @@ class plgSocialloginFacebook extends JPlugin
 			return;
 		}
 
-		$jDocument = JFactory::getApplication()->getDocument();
+		$jDocument = Joomla::getApplication()->getDocument();
 
 		if (empty($jDocument) || !is_object($jDocument) || !($jDocument instanceof JDocumentHtml))
 		{

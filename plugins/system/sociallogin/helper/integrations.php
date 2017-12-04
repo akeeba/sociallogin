@@ -39,7 +39,7 @@ abstract class SocialLoginHelperIntegrations
 	{
 		if (!is_object($app))
 		{
-			$app = JFactory::getApplication();
+			$app = Joomla::getApplication();
 		}
 
 		if (is_null(self::$cachedSocialLoginButtons))
@@ -95,7 +95,7 @@ abstract class SocialLoginHelperIntegrations
 	{
 		if (!is_object($app))
 		{
-			$app = JFactory::getApplication();
+			$app = Joomla::getApplication();
 		}
 
 		if (is_null(self::$cachedSocialLoginButtons))
@@ -143,7 +143,7 @@ abstract class SocialLoginHelperIntegrations
 	public static function insertUserProfileData($userId, $slug, array $data)
 	{
 		// Make sure we have a user
-		$user = JFactory::getUser($userId);
+		$user = Joomla::getUser($userId);
 
 		// Cannot link data to a guest user
 		if ($user->guest || empty($user->id))
@@ -250,7 +250,7 @@ abstract class SocialLoginHelperIntegrations
 	public static function removeUserProfileData($userId, $slug)
 	{
 		// Make sure we have a user
-		$user = JFactory::getUser($userId);
+		$user = Joomla::getUser($userId);
 
 		// Cannot unlink data from a guest user
 		if ($user->guest || empty($user->id))
@@ -300,7 +300,7 @@ abstract class SocialLoginHelperIntegrations
 
 			/**
 			 * If you delete a user its profile fields are left behind and confuse our code. Therefore we have to check
-			 * if the user *really* exists. However we can't just go through JFactory::getUser() because if the user
+			 * if the user *really* exists. However we can't just go through Factory::getUser() because if the user
 			 * does not exist we'll end up with an ugly Warning on our page with a text similar to "JUser: :_load:
 			 * Unable to load user with ID: 1234". This cannot be disabled so we have to be, um, a bit creative :/
 			 */

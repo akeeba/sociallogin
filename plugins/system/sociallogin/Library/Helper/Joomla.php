@@ -163,20 +163,21 @@ class Joomla
 	 *
 	 * This is just a wrapper around JPluginHelper. We use our own helper method for future-proofing...
 	 *
-	 * @param   string $group The plugin group to import
+	 * @param   string       $group   The plugin group to import
+	 * @param   string|null  $plugin  The specific plugin to import
 	 *
 	 * @return  void
 	 */
-	public static function importPlugins($group)
+	public static function importPlugins($group, $plugin = null)
 	{
 		if (class_exists('Joomla\\CMS\\Plugin\\PluginHelper'))
 		{
-			PluginHelper::importPlugin($group);
+			PluginHelper::importPlugin($group, $plugin);
 
 			return;
 		}
 
-		JPluginHelper::importPlugin($group);
+		JPluginHelper::importPlugin($group, $plugin);
 	}
 
 	/**

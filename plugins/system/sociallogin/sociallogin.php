@@ -107,12 +107,12 @@ class plgSystemSociallogin extends JPlugin
 		}
 
 		// ...and we are not already logged in...
-		if (!JFactory::getUser()->guest)
+		if (!Joomla::getUser()->guest)
 		{
 			return;
 		}
 
-		$input = JFactory::getApplication()->input;
+		$input = Joomla::getApplication()->input;
 
 		// ...and this is a request to com_ajax...
 		if ($input->getCmd('option', '') != 'com_ajax')
@@ -129,10 +129,10 @@ class plgSystemSociallogin extends JPlugin
 		// Load the plugin and execute the AJAX method
 		$plugin = $input->getCmd('plugin', '');
 
-		JPluginHelper::importPlugin('sociallogin', $plugin);
+		Joomla::importPlugins('sociallogin', $plugin);
 		$methodName = 'onAjax' . ucfirst($plugin);
 
-		JFactory::getApplication()->triggerEvent($methodName);
+		Joomla::getApplication()->triggerEvent($methodName);
 	}
 
 	/**
@@ -140,6 +140,8 @@ class plgSystemSociallogin extends JPlugin
 	 *
 	 * @param   object  $module   The module being rendered
 	 * @param   object  $attribs  The module rendering attributes
+	 *
+	 * @throws  Exception
 	 */
 	public function onRenderModule(&$module, &$attribs)
 	{
@@ -154,7 +156,7 @@ class plgSystemSociallogin extends JPlugin
 
 		if (is_null($docType))
 		{
-			$document = JFactory::getApplication()->getDocument();
+			$document = Joomla::getApplication()->getDocument();
 			$docType  = (is_null($document)) ? 'error' : $document->getType();
 
 			if ($docType != 'html')
@@ -182,11 +184,13 @@ class plgSystemSociallogin extends JPlugin
 	 * Note: this method is called from Joomla's com_ajax, not com_sociallogin itself
 	 *
 	 * @return  void
+	 *
+	 * @throws  Exception
 	 */
 	public function onAjaxSociallogin()
 	{
 		$ajax  = new SocialLoginHelperAjax();
-		$app   = JFactory::getApplication();
+		$app   = Joomla::getApplication();
 		$input = $app->input;
 
 		// Get the return URL from the session
@@ -281,7 +285,7 @@ class plgSystemSociallogin extends JPlugin
 			return true;
 		}
 
-		if (!Joomla::isAdminPage() && (JFactory::getApplication()->input->getCmd('layout', 'default') != 'edit'))
+		if (!Joomla::isAdminPage() && (Joomla::getApplication()->input->getCmd('layout', 'default') != 'edit'))
 		{
 			return true;
 		}
@@ -302,7 +306,7 @@ class plgSystemSociallogin extends JPlugin
 			$id = isset($data->id) ? $data->id : null;
 		}
 
-		$user = JFactory::getUser($id);
+		$user = Joomla::getUser($id);
 
 		// Make sure the loaded user is the correct one
 		if ($user->id != $id)
@@ -369,7 +373,7 @@ class plgSystemSociallogin extends JPlugin
 	private function isEnabled()
 	{
 		// It only make sense to let people log in when they are not already logged in ;)
-		if (!JFactory::getUser()->guest)
+		if (!Joomla::getUser()->guest)
 		{
 			return false;
 		}
