@@ -194,9 +194,8 @@ class plgSystemSociallogin extends JPlugin
 		$input = $app->input;
 
 		// Get the return URL from the session
-		$session = JFactory::getSession();
-		$returnURL = $session->get('returnUrl', JUri::base(), 'plg_system_sociallogin');
-		$session->set('returnUrl', null, 'plg_system_sociallogin');
+		$returnURL = Joomla::getSessionVar('returnUrl', JUri::base(), 'plg_system_sociallogin');
+		Joomla::setSessionVar('returnUrl', null, 'plg_system_sociallogin');
 		$result = null;
 
 		try

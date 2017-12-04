@@ -14,13 +14,19 @@ use JApplicationCms;
 use JFactory;
 use JLayoutFile;
 use Joomla\CMS\Application\BaseApplication;
+use Joomla\CMS\Application\CliApplication;
 use Joomla\CMS\Application\CMSApplication;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Layout\FileLayout;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\User\User;
+use Joomla\CMS\User\UserHelper;
+use Joomla\Registry\Registry;
 use JPluginHelper;
+use JRegistry;
+use JSession;
 use JUser;
+use JUserHelper;
 use RuntimeException;
 
 defined('_JEXEC') or die();
@@ -31,11 +37,26 @@ defined('_JEXEC') or die();
 class Joomla
 {
 	/**
+	 * A fake session storage for CLI apps. Since CLI applications cannot have a session we are using a Registry object
+	 * we manage internally.
+	 *
+	 * @var   JRegistry|Registry
+	 */
+	protected static $fakeSession = null;
+
+	/**
 	 * Are we inside the administrator application
 	 *
 	 * @var   bool
 	 */
 	protected static $isAdmin = null;
+
+	/**
+	 * Are we inside a CLI application
+	 *
+	 * @var   bool
+	 */
+	protected static $isCli = null;
 
 	/**
 	 * Are we inside an administrator page?
@@ -59,6 +80,53 @@ class Joomla
 		}
 
 		return self::$isAdmin;
+	}
+
+	/**
+	 * Are we inside a CLI application
+	 *
+	 * @param   \JApplicationCms|CMSApplication $app The current CMS application which tells us if we are inside an admin page
+	 *
+	 * @return  bool
+	 */
+	public static function isCli($app = null)
+	{
+		if (is_null(self::$isCli))
+		{
+			if (is_null($app))
+			{
+				try
+				{
+					$app = self::getApplication();
+				}
+				catch (Exception $e)
+				{
+					$app = null;
+				}
+			}
+
+			if (is_null($app))
+			{
+				self::$isCli = true;
+			}
+
+			if (is_object($app))
+			{
+				self::$isCli = $app instanceof \Exception;
+
+				if (class_exists('JApplicationCli'))
+				{
+					self::$isCli = self::$isCli || $app instanceof \JApplicationCli;
+				}
+
+				if (class_exists('Joomla\\CMS\\Application\\CliApplication'))
+				{
+					self::$isCli = self::$isCli || $app instanceof CliApplication;
+				}
+			}
+		}
+
+		return self::$isCli;
 	}
 
 	/**
@@ -215,6 +283,21 @@ class Joomla
 	}
 
 	/**
+	 * Get the Joomla! session
+	 *
+	 * @return JSession|\Joomla\CMS\Session\Session
+	 */
+	protected static function getSession()
+	{
+		if (class_exists('Joomla\\CMS\\Factory'))
+		{
+			return Factory::getSession();
+		}
+
+		return JFactory::getSession();
+	}
+
+	/**
 	 * Return a Joomla! layout object, creating from a layout file
 	 *
 	 * @param   string  $layoutFile  Path to the layout file
@@ -232,4 +315,138 @@ class Joomla
 
 		return new JLayoutFile($layoutFile, $basePath, $options);
 	}
+
+	/**
+	 * Set a variable in the user session
+	 *
+	 * @param   string  $name       The name of the variable to set
+	 * @param   string  $value      (optional) The value to set it to, default is null
+	 * @param   string  $namespace  (optional) The variable's namespace e.g. the component name. Default: 'default'
+	 *
+	 * @return  void
+	 */
+	public static function setSessionVar($name, $value = null, $namespace = 'default')
+	{
+		$qualifiedKey = "$namespace.$name";
+
+		if (self::isCli())
+		{
+			self::getFakeSession()->set($qualifiedKey, $value);
+
+			return;
+		}
+
+		if (version_compare(JVERSION, '3.99999.99999', 'lt'))
+		{
+			self::getSession()->set($name, $value, $namespace);
+
+			return;
+		}
+
+		self::getSession()->set($qualifiedKey, $value);
+	}
+
+	/**
+	 * Get a variable from the user session
+	 *
+	 * @param   string  $name       The name of the variable to set
+	 * @param   string  $default    (optional) The default value to return if the variable does not exit, default: null
+	 * @param   string  $namespace  (optional) The variable's namespace e.g. the component name. Default: 'default'
+	 *
+	 * @return  mixed
+	 */
+	public static function getSessionVar($name, $default = null, $namespace = 'default')
+	{
+		$qualifiedKey = "$namespace.$name";
+
+		if (self::isCli())
+		{
+			return self::getFakeSession()->get("$namespace.$name", $default);
+		}
+
+		if (version_compare(JVERSION, '3.99999.99999', 'lt'))
+		{
+			return self::getSession()->get($name, $default, $namespace);
+		}
+
+		return self::getSession()->get($qualifiedKey, $default);
+	}
+
+	/**
+	 * Unset a variable from the user session
+	 *
+	 * @param   string  $name       The name of the variable to unset
+	 * @param   string  $namespace  (optional) The variable's namespace e.g. the component name. Default: 'default'
+	 *
+	 * @return  void
+	 */
+	public static function unsetSessionVar($name, $namespace = 'default')
+	{
+		self::setSessionVar($name, null, $namespace);
+	}
+
+	/**
+	 * @return Registry|JRegistry
+	 */
+	protected static function getFakeSession()
+	{
+		if (!is_object(self::$fakeSession))
+		{
+			if (class_exists('Joomla\\Registry\\Registry'))
+			{
+				self::$fakeSession = new Registry();
+			}
+
+			self::$fakeSession = new JRegistry();
+		}
+
+		return self::$fakeSession;
+	}
+
+	/**
+	 * Return the session token. Two types of tokens can be returned:
+	 *
+	 * @return  mixed
+	 */
+	public static function getToken()
+	{
+		// For CLI apps we implement our own fake token system
+		if (self::isCli())
+		{
+			$token = self::getSessionVar('session.token');
+
+			// Create a token
+			if (is_null($token))
+			{
+				$token = self::generateRandom(32);
+
+				self::setSessionVar('session.token', $token);
+			}
+
+			return $token;
+		}
+
+		// Web application, go through the regular Joomla! API.
+		$session = self::getSession();
+
+		return $session->getToken();
+	}
+
+	/**
+	 * Generate a random string
+	 *
+	 * @param   int  $length  Random string length
+	 *
+	 * @return  string
+	 */
+	public static function generateRandom($length)
+	{
+		if (class_exists('Joomla\\CMS\\User\\UserHelper'))
+		{
+			return UserHelper::genRandomPassword($length);
+		}
+
+		return JUserHelper::genRandomPassword($length);
+	}
+
 }

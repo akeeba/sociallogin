@@ -33,8 +33,7 @@ final class SocialLoginHelperAjax
 
 		$input    = $app->input;
 		$akaction = $input->getCmd('akaction');
-		$session  = $app->getSession();
-		$token = $session->getToken();
+		$token = Joomla::getToken();
 
 		if ($input->getInt($token, 0) != 1)
 		{
@@ -74,7 +73,6 @@ final class SocialLoginHelperAjax
 
 		$input   = $app->input;
 		$slug    = $input->getCmd('slug');
-		$session = $app->getSession();
 
 		// No slug? No good.
 		if (empty($slug))
@@ -83,11 +81,11 @@ final class SocialLoginHelperAjax
 		}
 
 		// Get the user ID and make sure it's ours or we are Super Users
-		$userId = $session->get('userID', null, 'plg_system_sociallogin');
-		$session->set('userID', null, 'plg_system_sociallogin');
+		$userId = Joomla::getSessionVar('userID', null, 'plg_system_sociallogin');
+		Joomla::setSessionVar('userID', null, 'plg_system_sociallogin');
 
 		/** @var   JUser  $myUser  Currently logged in user */
-		$myUser = $session->get('user');
+		$myUser = Joomla::getSessionVar('user');
 
 		// Make sure we are unlinking our own user or we are Super Users
 		if (empty($userId) || (!$myUser->authorise('core.manage') && ($myUser->id != $userId)))

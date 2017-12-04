@@ -203,9 +203,8 @@ class plgSocialloginFacebook extends JPlugin
 		}
 
 		// Save the return URLs into the session
-		$session = JFactory::getSession();
-		$session->set('loginUrl', $loginURL, 'plg_sociallogin_facebook');
-		$session->set('failureUrl', $failureURL, 'plg_sociallogin_facebook');
+		Joomla::setSessionVar('loginUrl', $loginURL, 'plg_sociallogin_facebook');
+		Joomla::setSessionVar('failureUrl', $failureURL, 'plg_sociallogin_facebook');
 
 		// Get a Facebook OAUth2 connector object and retrieve the URL
 		$connector = $this->getConnector();
@@ -254,13 +253,12 @@ class plgSocialloginFacebook extends JPlugin
 		$returnURL = JUri::getInstance()->toString(array('scheme', 'user', 'pass', 'host', 'port', 'path', 'query', 'fragment'));
 
 		// Save the return URL and user ID into the session
-		$session = JFactory::getSession();
-		$session->set('returnUrl', $returnURL, 'plg_system_sociallogin');
-		$session->set('userID', $user->id, 'plg_system_sociallogin');
+		Joomla::setSessionVar('returnUrl', $returnURL, 'plg_system_sociallogin');
+		Joomla::setSessionVar('userID', $user->id, 'plg_system_sociallogin');
 
 		if ($this->isLinked($user))
 		{
-			$token = $session->getToken();
+			$token = Joomla::getToken();
 			$unlinkURL = JUri::base() . 'index.php?option=com_ajax&group=system&plugin=sociallogin&format=raw&akaction=unlink&encoding=redirect&slug=' . $this->integrationName . '&' . $token . '=1';
 
 			// Add custom CSS
@@ -287,9 +285,8 @@ class plgSocialloginFacebook extends JPlugin
 
 		// Make sure we return to the same profile edit page
 		$loginURL = JUri::getInstance()->toString(array('scheme', 'user', 'pass', 'host', 'port', 'path', 'query', 'fragment'));
-		$session = JFactory::getSession();
-		$session->set('loginUrl', $loginURL, 'plg_sociallogin_facebook');
-		$session->set('failureUrl', $loginURL, 'plg_sociallogin_facebook');
+		Joomla::setSessionVar('loginUrl', $loginURL, 'plg_sociallogin_facebook');
+		Joomla::setSessionVar('failureUrl', $loginURL, 'plg_sociallogin_facebook');
 
 		// Get a Facebook OAUth2 connector object and retrieve the URL
 		$connector = $this->getConnector();
@@ -358,17 +355,15 @@ class plgSocialloginFacebook extends JPlugin
 	 */
 	public function onAjaxFacebook()
 	{
-		// Get the return URLs from the session
-		$session    = JFactory::getSession();
 		// This is the return URL used by the Link button
-		$returnURL  = $session->get('returnUrl', JUri::base(), 'plg_system_sociallogin');
+		$returnURL  = Joomla::getSessionVar('returnUrl', JUri::base(), 'plg_system_sociallogin');
 		// And this is the login success URL used by the Login button
-		$loginUrl   = $session->get('loginUrl', $returnURL, 'plg_sociallogin_facebook');
-		$failureUrl = $session->get('failureUrl', $loginUrl, 'plg_sociallogin_facebook');
+		$loginUrl   = Joomla::getSessionVar('loginUrl', $returnURL, 'plg_sociallogin_facebook');
+		$failureUrl = Joomla::getSessionVar('failureUrl', $loginUrl, 'plg_sociallogin_facebook');
 
 		// Remove the return URLs from the session
-		$session->set('loginUrl', null, 'plg_sociallogin_facebook');
-		$session->set('failureUrl', null, 'plg_sociallogin_facebook');
+		Joomla::setSessionVar('loginUrl', null, 'plg_sociallogin_facebook');
+		Joomla::setSessionVar('failureUrl', null, 'plg_sociallogin_facebook');
 
 		// Try to exchange the code with a token
 		$oauthConnector = $this->getConnector();
