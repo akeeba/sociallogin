@@ -7,10 +7,8 @@
 
 namespace Akeeba\SocialLogin\Library\Helper;
 
-use Akeeba\SocialLogin\Library\Helper\Joomla;
 use Exception;
 use JApplicationBase;
-use JFactory;
 use Joomla\CMS\Application\BaseApplication;
 use Joomla\CMS\User\User;
 use JUser;
@@ -159,7 +157,7 @@ abstract class Integrations
 			return;
 		}
 
-		$db = JFactory::getDbo();
+		$db = Joomla::getDbo();
 
 		/**
 		 * The first item in $data is the unique key. No other user accounts can share it. For example, for the Facebook
@@ -267,7 +265,7 @@ abstract class Integrations
 		}
 
 
-		$db = JFactory::getDbo();
+		$db = Joomla::getDbo();
 
 		$query = $db->getQuery(true)
 		            ->delete($db->qn('#__user_profiles'))
@@ -288,7 +286,7 @@ abstract class Integrations
 	 */
 	public static function getUserIdByProfileData($profileKey, $profileValue)
 	{
-		$db    = JFactory::getDbo();
+		$db    = Joomla::getDbo();
 		$query = $db->getQuery(true)
 		            ->select(array(
 			            $db->qn('user_id'),
@@ -312,7 +310,7 @@ abstract class Integrations
 			 * does not exist we'll end up with an ugly Warning on our page with a text similar to "JUser: :_load:
 			 * Unable to load user with ID: 1234". This cannot be disabled so we have to be, um, a bit creative :/
 			 */
-			$db    = JFactory::getDbo();
+			$db    = Joomla::getDbo();
 			$query = $db->getQuery(true)
 			            ->select('COUNT(*)')->from($db->qn('#__users'))
 			            ->where($db->qn('id') . ' = ' . $db->q($id));

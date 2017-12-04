@@ -8,7 +8,6 @@
 namespace Akeeba\SocialLogin\Library\Helper;
 
 // Protect from unauthorized access
-use Akeeba\SocialLogin\Library\Helper\Joomla;
 use Exception;
 use JApplicationBase;
 use Joomla\CMS\Application\BaseApplication;

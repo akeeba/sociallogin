@@ -254,7 +254,7 @@ abstract class Login
 			return false;
 		}
 
-		$db    = JFactory::getDbo();
+		$db    = Joomla::getDbo();
 		$query = $db->getQuery(true)
 		            ->select('COUNT(*)')
 		            ->from($db->qn('#__user_profiles'))
@@ -283,7 +283,7 @@ abstract class Login
 	private static function getUserIdByEmail($email)
 	{
 		// Initialise some variables
-		$db = JFactory::getDbo();
+		$db = Joomla::getDbo();
 		$query = $db->getQuery(true)
 		            ->select($db->qn('id'))
 		            ->from($db->qn('#__users'))
@@ -575,7 +575,7 @@ abstract class Login
 		}
 
 		$config = JFactory::getConfig();
-		$db     = JFactory::getDbo();
+		$db     = Joomla::getDbo();
 		$query  = $db->getQuery(true);
 
 		// Compile the notification mail values.
@@ -765,7 +765,7 @@ abstract class Login
 		if ($return !== true)
 		{
 			// Send a system message to administrators receiving system mails
-			$db = JFactory::getDbo();
+			$db = Joomla::getDbo();
 			$query->clear()
 			      ->select($db->qn('id'))
 			      ->from($db->qn('#__users'))

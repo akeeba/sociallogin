@@ -11,6 +11,7 @@ namespace Akeeba\SocialLogin\Library\Helper;
 use Exception;
 use JApplicationBase;
 use JApplicationCms;
+use JDatabaseDriver;
 use JFactory;
 use JLayoutFile;
 use Joomla\CMS\Application\BaseApplication;
@@ -21,6 +22,7 @@ use Joomla\CMS\Layout\FileLayout;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\User\User;
 use Joomla\CMS\User\UserHelper;
+use Joomla\Database\DatabaseDriver;
 use Joomla\Registry\Registry;
 use JPluginHelper;
 use JRegistry;
@@ -469,5 +471,18 @@ abstract class Joomla
 		}
 
 		return $app instanceof JApplicationCms;
+	}
+
+	/**
+	 * @return JDatabaseDriver|DatabaseDriver
+	 */
+	public static function getDbo()
+	{
+		if (class_exists('Joomla\\CMS\\Factory'))
+		{
+			return Factory::getDbo();
+		}
+
+		return JFactory::getDbo();
 	}
 }

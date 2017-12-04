@@ -353,7 +353,7 @@ class plgSystemSociallogin extends JPlugin
 
 		if ($userId)
 		{
-			$db = JFactory::getDbo();
+			$db = Joomla::getDbo();
 
 			$query = $db->getQuery(true)
 			            ->delete($db->qn('#__user_profiles'))
