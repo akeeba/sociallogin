@@ -5,16 +5,23 @@
  * @license   GNU General Public License version 3, or later
  */
 
+namespace Akeeba\SocialLogin\Library\Helper;
+
 // Protect from unauthorized access
 use Akeeba\SocialLogin\Library\Helper\Joomla;
+use Exception;
+use JApplicationBase;
 use Joomla\CMS\Application\BaseApplication;
+use JText;
+use JUser;
+use RuntimeException;
 
 defined('_JEXEC') or die();
 
 /**
  * Helper class for handling AJAX requests
  */
-final class SocialLoginHelperAjax
+final class Ajax
 {
 	/**
 	 * Handle an AJAX request

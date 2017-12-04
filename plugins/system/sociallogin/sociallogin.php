@@ -6,6 +6,7 @@
  */
 
 // Prevent direct access
+use Akeeba\SocialLogin\Library\Helper\Ajax;
 use Akeeba\SocialLogin\Library\Helper\Joomla;
 
 defined('_JEXEC') or die;
@@ -189,7 +190,7 @@ class plgSystemSociallogin extends JPlugin
 	 */
 	public function onAjaxSociallogin()
 	{
-		$ajax  = new SocialLoginHelperAjax();
+		$ajax  = new Ajax();
 		$app   = Joomla::getApplication();
 		$input = $app->input;
 
