@@ -15,6 +15,8 @@ use Akeeba\SocialLogin\Library\Exception\Login\LoginError;
 use Akeeba\SocialLogin\Library\Helper\Integrations;
 use Akeeba\SocialLogin\Library\Helper\Joomla;
 use Akeeba\SocialLogin\Library\Helper\Login;
+use Akeeba\SocialLogin\Twitter\OAuth;
+use Joomla\CMS\User\User;
 use Joomla\Registry\Registry;
 
 if (!class_exists('AkeebaSocialLoginJPlugin'))
@@ -106,7 +108,7 @@ class plgSocialloginTwitter extends AkeebaSocialLoginJPlugin
 	/**
 	 * Twitter OAUth connector object
 	 *
-	 * @var   JTwitterOAuth
+	 * @var   OAuth
 	 */
 	private $connector;
 
@@ -153,22 +155,26 @@ class plgSocialloginTwitter extends AkeebaSocialLoginJPlugin
 	}
 
 	/**
-	 * Returns a JTwitterOAuth object
+	 * Returns an OAuth object
 	 *
-	 * @return  JTwitterOAuth
+	 * @return  OAuth
+	 *
+	 * @throws Exception
 	 */
 	private function getClient()
 	{
 		if (is_null($this->connector))
 		{
-			$options = new Registry(array(
+			$options = array(
 				'callback'        => JUri::base() . 'index.php?option=com_ajax&group=sociallogin&plugin=' . $this->integrationName . '&format=raw',
 				'consumer_key'    => $this->clientId,
 				'consumer_secret' => $this->clientSecret,
-			    'sendheaders'     => true,
-			));
+				'sendheaders'     => true,
+			);
 
-			$this->connector = new JTwitterOAuth($options);
+			$app             = Joomla::getApplication();
+			$httpClient      = Joomla::getHttpClient();
+			$this->connector = new OAuth($options, $httpClient, $app->input, $app);
 		}
 
 		return $this->connector;
@@ -177,11 +183,11 @@ class plgSocialloginTwitter extends AkeebaSocialLoginJPlugin
 	/**
 	 * Is the user linked to the social login account?
 	 *
-	 * @param   JUser   $user  The user account we are checking
+	 * @param   JUser|User $user The user account we are checking
 	 *
 	 * @return  bool
 	 */
-	private function isLinked(JUser $user = null)
+	private function isLinked($user = null)
 	{
 		// Make sure we are set up
 		if (!$this->isProperlySetUp())
@@ -196,9 +202,11 @@ class plgSocialloginTwitter extends AkeebaSocialLoginJPlugin
 	 * Initiate the user authentication (steps 1 & 2 per the Twitter documentation). Step 3 in the documentation is
 	 * Twitter calling back our site, i.e. the call to the onAjaxTwitter method.
 	 *
-	 * @param   string  $slug  The slug of the integration method being called.
+	 * @param   string $slug The slug of the integration method being called.
 	 *
 	 * @see https://dev.twitter.com/web/sign-in/implementing
+	 *
+	 * @throws Exception
 	 */
 	public function onSocialLoginAuthenticate($slug)
 	{
@@ -225,6 +233,8 @@ class plgSocialloginTwitter extends AkeebaSocialLoginJPlugin
 	 * @param   string  $failureURL  The URL to be redirected to on error
 	 *
 	 * @return  array
+	 *
+	 * @throws  Exception
 	 */
 	public function onSocialLoginGetLoginButton($loginURL = null, $failureURL = null)
 	{
@@ -279,11 +289,13 @@ class plgSocialloginTwitter extends AkeebaSocialLoginJPlugin
 	/**
 	 * Get the information required to render a link / unlink account button
 	 *
-	 * @param   JUser   $user        The user to be linked / unlinked
+	 * @param   JUser|User  $user  The user to be linked / unlinked
 	 *
 	 * @return  array
+	 *
+	 * @throws  Exception
 	 */
-	public function onSocialLoginGetLinkButton(JUser $user = null)
+	public function onSocialLoginGetLinkButton($user = null)
 	{
 		// Make sure we are properly set up
 		if (!$this->isProperlySetUp())
@@ -367,12 +379,12 @@ class plgSocialloginTwitter extends AkeebaSocialLoginJPlugin
 	/**
 	 * Unlink a user account from a social login integration
 	 *
-	 * @param   string      $slug  The integration to unlink from
-	 * @param   JUser|null  $user  The user to unlink, null to use the current user
+	 * @param   string           $slug  The integration to unlink from
+	 * @param   JUser|User|null  $user  The user to unlink, null to use the current user
 	 *
 	 * @return  void
 	 */
-	public function onSocialLoginUnlink($slug, JUser $user = null)
+	public function onSocialLoginUnlink($slug, $user = null)
 	{
 		// Make sure we are properly set up
 		if (!$this->isProperlySetUp())
