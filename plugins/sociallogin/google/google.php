@@ -132,7 +132,10 @@ class plgSocialloginGoogle extends AkeebaSocialLoginJPlugin
 		// Load the language files
 		$this->loadLanguage();
 
-		// Set the integration name from the plugin name (without the plg_system_ part, of course)
+		// Register the autoloader
+		JLoader::registerNamespace('Akeeba\\SocialLogin\\Google', __DIR__ . '/Google', false, false, 'psr4');
+
+		// Set the integration name from the plugin name (without the plg_sociallogin_ part, of course)
 		$this->integrationName = $this->_name;
 
 		// Load the plugin options into properties
