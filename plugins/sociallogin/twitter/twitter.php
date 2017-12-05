@@ -573,7 +573,7 @@ class plgSocialloginTwitter extends AkeebaSocialLoginJPlugin
 .akeeba-sociallogin-link-button-twitter, .akeeba-sociallogin-unlink-button-twitter, .akeeba-sociallogin-button-twitter { background-color: #1DA1F2
 ; color: #ffffff; transition-duration: 0.33s; background-image: none; border-color: #0b4060; }
 .akeeba-sociallogin-link-button-twitter:hover, .akeeba-sociallogin-unlink-button-twitter:hover, .akeeba-sociallogin-button-twitter:hover { background-color: #1470a9; color: #ffffff; transition-duration: 0.33s; border-color: #3B5998; }
-.akeeba-sociallogin-link-button-twitter img, .akeeba-sociallogin-unlink-button-twitter img, .akeeba-sociallogin-button-twitter img { width: 16px; height: 16px; margin: 0 0.33em 0.1em 0; padding: 0 }
+.akeeba-sociallogin-link-button-twitter img, .akeeba-sociallogin-unlink-button-twitter img, .akeeba-sociallogin-button-twitter img { display: inline-block; width: 16px; height: 16px; margin: 0 0.33em 0.1em 0; padding: 0 }
 
 CSS;
 
