@@ -8,6 +8,8 @@
 // Protect from unauthorized access
 defined('_JEXEC') or die();
 
+use Akeeba\SocialLogin\Google\OAuth2;
+use Akeeba\SocialLogin\Google\People;
 use Akeeba\SocialLogin\Library\Data\PluginConfiguration;
 use Akeeba\SocialLogin\Library\Data\UserData;
 use Akeeba\SocialLogin\Library\Exception\Login\GenericMessage;
@@ -15,6 +17,8 @@ use Akeeba\SocialLogin\Library\Exception\Login\LoginError;
 use Akeeba\SocialLogin\Library\Helper\Integrations;
 use Akeeba\SocialLogin\Library\Helper\Joomla;
 use Akeeba\SocialLogin\Library\Helper\Login;
+use Akeeba\SocialLogin\Library\OAuth\OAuth2Client;
+use Joomla\CMS\User\User;
 use Joomla\Registry\Registry;
 
 if (!class_exists('AkeebaSocialLoginJPlugin'))
@@ -106,14 +110,14 @@ class plgSocialloginGoogle extends AkeebaSocialLoginJPlugin
 	/**
 	 * Google OAUth connector object
 	 *
-	 * @var   JGoogleAuthOauth2
+	 * @var   OAuth2
 	 */
 	private $connector;
 
 	/**
 	 * The OAuth2 client object used by the Google OAuth connector
 	 *
-	 * @var   JOAuth2Client
+	 * @var   OAuth2Client
 	 */
 	private $oAuth2Client;
 
@@ -160,15 +164,17 @@ class plgSocialloginGoogle extends AkeebaSocialLoginJPlugin
 	}
 
 	/**
-	 * Returns a JGoogleAuthOauth2 object
+	 * Returns a OAuth2 object
 	 *
-	 * @return  JGoogleAuthOauth2
+	 * @return  OAuth2
+	 *
+	 * @throws  Exception
 	 */
 	private function getConnector()
 	{
 		if (is_null($this->connector))
 		{
-			$options = new Registry(array(
+			$options = array(
 				'authurl'       => 'https://accounts.google.com/o/oauth2/auth',
 				'tokenurl'      => 'https://accounts.google.com/o/oauth2/token',
 				'clientid'      => $this->clientId,
@@ -184,20 +190,24 @@ class plgSocialloginGoogle extends AkeebaSocialLoginJPlugin
 					'access_type'            => 'online',
 					'include_granted_scopes' => 'true',
 					'prompt'                 => 'select_account',
-				)
-			));
+				),
+			);
 
-			$this->oAuth2Client = new JOAuth2Client($options);
-			$this->connector = new JGoogleAuthOauth2($options, $this->oAuth2Client);
+			$app                = Joomla::getApplication();
+			$httpClient         = Joomla::getHttpClient();
+			$this->oAuth2Client = new OAuth2Client($options, $httpClient, $app->input, $app);
+			$this->connector    = new OAuth2($options, $this->oAuth2Client);
 		}
 
 		return $this->connector;
 	}
 
 	/**
-	 * Returns the JOAuth2Client we use to authenticate to Google
+	 * Returns the OAuth2Client we use to authenticate to Google
 	 *
-	 * @return  JOAuth2Client
+	 * @return  OAuth2Client
+	 *
+	 * @throws Exception
 	 */
 	private function getClient()
 	{
@@ -212,11 +222,11 @@ class plgSocialloginGoogle extends AkeebaSocialLoginJPlugin
 	/**
 	 * Is the user linked to the social login account?
 	 *
-	 * @param   JUser   $user  The user account we are checking
+	 * @param   JUser|User $user The user account we are checking
 	 *
 	 * @return  bool
 	 */
-	private function isLinked(JUser $user = null)
+	private function isLinked($user = null)
 	{
 		// Make sure we are set up
 		if (!$this->isProperlySetUp())
@@ -234,6 +244,7 @@ class plgSocialloginGoogle extends AkeebaSocialLoginJPlugin
 	 * @param   string  $failureURL  The URL to be redirected to on error
 	 *
 	 * @return  array
+	 * @throws  Exception
 	 */
 	public function onSocialLoginGetLoginButton($loginURL = null, $failureURL = null)
 	{
@@ -284,11 +295,13 @@ class plgSocialloginGoogle extends AkeebaSocialLoginJPlugin
 	/**
 	 * Get the information required to render a link / unlink account button
 	 *
-	 * @param   JUser   $user        The user to be linked / unlinked
+	 * @param   JUser|User  $user  The user to be linked / unlinked
 	 *
 	 * @return  array
+	 *
+	 * @throws  Exception
 	 */
-	public function onSocialLoginGetLinkButton(JUser $user = null)
+	public function onSocialLoginGetLinkButton($user = null)
 	{
 		// Make sure we are properly set up
 		if (!$this->isProperlySetUp())
@@ -432,8 +445,6 @@ class plgSocialloginGoogle extends AkeebaSocialLoginJPlugin
 			'prompt'                 => 'select_account',
 		));
 
-		//var_dump($connector);die;
-
 		/**
 		 * Handle the login callback from Google. There are three possibilities:
 		 *
@@ -461,8 +472,7 @@ class plgSocialloginGoogle extends AkeebaSocialLoginJPlugin
 				// See https://developers.google.com/+/web/api/rest/oauth
 				// See https://developers.google.com/+/web/api/rest/latest/people/get#response
 				$options = new Registry();
-				$options->set('api.url', 'https://www.googleapis.com/plus/v1/');
-				$googleUserApi = new JGoogleDataPlusPeople($options, $connector);
+				$googleUserApi = new People($options, $connector);
 				$googleFields  = $googleUserApi->getPeople('me', 'emails,id,name');
 			}
 			catch (Exception $e)

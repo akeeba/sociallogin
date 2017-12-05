@@ -28,7 +28,7 @@ defined('_JEXEC') or die();
  *
  * This class is adapter from the Joomla! Framework.
  */
-abstract class OAuth2Client
+class OAuth2Client
 {
 	/**
 	 * Options for the Client object.
