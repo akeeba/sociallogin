@@ -8,6 +8,8 @@
 // Protect from unauthorized access
 defined('_JEXEC') or die();
 
+use Akeeba\SocialLogin\Facebook\OAuth as FacebookOAuth;
+use Akeeba\SocialLogin\Facebook\User as FacebookUser;
 use Akeeba\SocialLogin\Library\Data\PluginConfiguration;
 use Akeeba\SocialLogin\Library\Data\UserData;
 use Akeeba\SocialLogin\Library\Exception\Login\GenericMessage;
@@ -15,6 +17,7 @@ use Akeeba\SocialLogin\Library\Exception\Login\LoginError;
 use Akeeba\SocialLogin\Library\Helper\Integrations;
 use Akeeba\SocialLogin\Library\Helper\Joomla;
 use Akeeba\SocialLogin\Library\Helper\Login;
+use Joomla\CMS\User\User;
 use Joomla\Registry\Registry;
 
 if (!class_exists('AkeebaSocialLoginJPlugin'))
@@ -104,9 +107,9 @@ class plgSocialloginFacebook extends AkeebaSocialLoginJPlugin
 	private $appSecret = '';
 
 	/**
-	 * Facebook OAUth connector object
+	 * Facebook FacebookOAuth connector object
 	 *
-	 * @var   JFacebookOAuth
+	 * @var   FacebookOAuth
 	 */
 	private $connector;
 
@@ -153,20 +156,24 @@ class plgSocialloginFacebook extends AkeebaSocialLoginJPlugin
 	}
 
 	/**
-	 * Returns a JFacebookOAuth object
+	 * Returns a FacebookOAuth object
 	 *
-	 * @return  JFacebookOAuth
+	 * @return  FacebookOAuth
+	 *
+	 * @throws  Exception
 	 */
 	private function getConnector()
 	{
 		if (is_null($this->connector))
 		{
-			$options = new Registry(array(
+			$options = array(
 				'clientid'     => $this->appId,
 				'clientsecret' => $this->appSecret,
-				'redirecturi'  => JUri::base() . 'index.php?option=com_ajax&group=sociallogin&plugin=' . $this->integrationName . '&format=raw'
-			));
-			$this->connector = new JFacebookOAuth($options);
+				'redirecturi'  => JUri::base() . 'index.php?option=com_ajax&group=sociallogin&plugin=' . $this->integrationName . '&format=raw',
+			);
+			$app             = Joomla::getApplication();
+			$httpClient      = Joomla::getHttpClient();
+			$this->connector = new FacebookOAuth($options, $httpClient, $app->input, $app);
 			$this->connector->setScope('public_profile,email');
 		}
 
@@ -176,11 +183,11 @@ class plgSocialloginFacebook extends AkeebaSocialLoginJPlugin
 	/**
 	 * Is the user linked to the social login account?
 	 *
-	 * @param   JUser   $user  The user account we are checking
+	 * @param   JUser|User $user The user account we are checking
 	 *
 	 * @return  bool
 	 */
-	private function isLinked(JUser $user = null)
+	private function isLinked($user = null)
 	{
 		// Make sure we are set up
 		if (!$this->isProperlySetUp())
@@ -198,6 +205,8 @@ class plgSocialloginFacebook extends AkeebaSocialLoginJPlugin
 	 * @param   string  $failureURL  The URL to be redirected to on error
 	 *
 	 * @return  array
+	 *
+	 * @throws  Exception
 	 */
 	public function onSocialLoginGetLoginButton($loginURL = null, $failureURL = null)
 	{
@@ -249,11 +258,13 @@ class plgSocialloginFacebook extends AkeebaSocialLoginJPlugin
 	/**
 	 * Get the information required to render a link / unlink account button
 	 *
-	 * @param   JUser   $user        The user to be linked / unlinked
+	 * @param   JUser|User   $user        The user to be linked / unlinked
 	 *
 	 * @return  array
+	 *
+	 * @throws  Exception
 	 */
-	public function onSocialLoginGetLinkButton(JUser $user = null)
+	public function onSocialLoginGetLinkButton($user = null)
 	{
 		// Make sure we are properly set up
 		if (!$this->isProperlySetUp())
@@ -333,12 +344,12 @@ class plgSocialloginFacebook extends AkeebaSocialLoginJPlugin
 	/**
 	 * Unlink a user account from a social login integration
 	 *
-	 * @param   string      $slug  The integration to unlink from
-	 * @param   JUser|null  $user  The user to unlink, null to use the current user
+	 * @param   string           $slug  The integration to unlink from
+	 * @param   JUser|User|null  $user  The user to unlink, null to use the current user
 	 *
 	 * @return  void
 	 */
-	public function onSocialLoginUnlink($slug, JUser $user = null)
+	public function onSocialLoginUnlink($slug, $user = null)
 	{
 		// Make sure we are properly set up
 		if (!$this->isProperlySetUp())
@@ -412,7 +423,7 @@ class plgSocialloginFacebook extends AkeebaSocialLoginJPlugin
 				// Get information about the user from Big Brother... er... Facebook.
 				$options = new Registry();
 				$options->set('api.url', 'https://graph.facebook.com/v2.7/');
-				$fbUserApi       = new JFacebookUser($options, null, $oauthConnector);
+				$fbUserApi       = new FacebookUser($options, null, $oauthConnector);
 				$fbUserFields    = $fbUserApi->getUser('me?fields=id,name,email,verified,timezone');
 			}
 			catch (Exception $e)

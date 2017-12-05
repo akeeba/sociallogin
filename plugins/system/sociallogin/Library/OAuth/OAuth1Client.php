@@ -7,7 +7,7 @@
 
 namespace Akeeba\SocialLogin\Library\OAuth;
 
-use Joomla\Application\AbstractWebApplication;
+use Joomla\CMS\Application\CMSApplication;
 use Joomla\CMS\Http\Http;
 use Joomla\CMS\Http\Response;
 use Joomla\Input\Input;
@@ -18,60 +18,49 @@ defined('_JEXEC') or die();
 /**
  * OAuth 1 client.
  *
- * This class is copied from the Joomla! Framework. We removed the typehints to allow it to work with older versions of
- * Joomla! 3 which included legacy CMS-specific classes instead of the equivalent Joomla! Framework classes. Moreover,
- * forking the code allows us to use it in Joomla! 4 where this class is simply not present. Forking, instead of using
- * a private Composer vendor folder, is the best way to avoid hard to solve conflicts with third party extensions also
- * using the same code.
+ * This class is adapter from the Joomla! Framework.
  */
 abstract class OAuth1Client
 {
 	/**
 	 * @var    array  Options for the Client object.
-	 * @since  1.0
 	 */
 	protected $options;
 
 	/**
 	 * @var    array  Contains access token key, secret and verifier.
-	 * @since  1.0
 	 */
 	protected $token = array();
 
 	/**
 	 * @var    Http  The HTTP client object to use in sending HTTP requests.
-	 * @since  1.0
 	 */
 	protected $client;
 
 	/**
 	 * @var    Input The input object to use in retrieving GET/POST data.
-	 * @since  1.0
 	 */
 	protected $input;
 
 	/**
-	 * @var    AbstractWebApplication  The application object to send HTTP headers for redirects.
-	 * @since  1.0
+	 * @var    CMSApplication  The application object to send HTTP headers for redirects.
 	 */
 	protected $application;
 
 	/**
 	 * @var    string  Selects which version of OAuth to use: 1.0 or 1.0a.
-	 * @since  1.0
 	 */
 	protected $version;
 
 	/**
 	 * Constructor.
 	 *
-	 * @param   array                   $options      OAuth1 Client options array.
-	 * @param   Http                    $client       The HTTP client object.
-	 * @param   Input                   $input        The input object
-	 * @param   AbstractWebApplication  $application  The application object
-	 * @param   string                  $version      Specify the OAuth version. By default we are using 1.0a.
+	 * @param   array           $options      OAuth1 Client options array.
+	 * @param   Http            $client       The HTTP client object.
+	 * @param   Input           $input        The input object
+	 * @param   CMSApplication  $application  The application object
+	 * @param   string          $version      Specify the OAuth version. By default we are using 1.0a.
 	 *
-	 * @since   1.0
 	 */
 	public function __construct($options = array(), $client, $input, $application, $version = '1.0a')
 	{
@@ -96,7 +85,6 @@ abstract class OAuth1Client
 	 *
 	 * @return  array  The access token.
 	 *
-	 * @since   1.0
 	 * @throws  \DomainException
 	 */
 	public function authenticate()
@@ -259,7 +247,6 @@ abstract class OAuth1Client
 	 *
 	 * @return  Response  The Response object.
 	 *
-	 * @since   1.0
 	 * @throws  \DomainException
 	 */
 	public function oauthRequest($url, $method, $parameters, $data = array(), $headers = array())
@@ -330,7 +317,6 @@ abstract class OAuth1Client
 	 *
 	 * @return  void
 	 *
-	 * @since   1.0
 	 * @throws  \DomainException
 	 */
 	abstract public function validateResponse($url, $response);
@@ -369,7 +355,6 @@ abstract class OAuth1Client
 	 *
 	 * @return  string  The formed URL.
 	 *
-	 * @since   1.0
 	 */
 	public function toUrl($url, $parameters)
 	{
@@ -489,7 +474,6 @@ abstract class OAuth1Client
 	 *
 	 * @return  string  $data encoded in a way compatible with OAuth.
 	 *
-	 * @since   1.0
 	 */
 	public function safeEncode($data)
 	{
@@ -515,7 +499,6 @@ abstract class OAuth1Client
 	 *
 	 * @return  string  The current nonce.
 	 *
-	 * @since   1.0
 	 */
 	public static function generateNonce()
 	{
@@ -542,7 +525,6 @@ abstract class OAuth1Client
 	 *
 	 * @return  array  The decoded JSON response
 	 *
-	 * @since   1.0
 	 */
 	abstract public function verifyCredentials();
 
@@ -553,7 +535,6 @@ abstract class OAuth1Client
 	 *
 	 * @return  mixed  The option value
 	 *
-	 * @since   1.0
 	 */
 	public function getOption($key)
 	{
@@ -568,7 +549,6 @@ abstract class OAuth1Client
 	 *
 	 * @return  self  This object for method chaining
 	 *
-	 * @since   1.0
 	 */
 	public function setOption($key, $value)
 	{
@@ -582,7 +562,6 @@ abstract class OAuth1Client
 	 *
 	 * @return  array  The oauth token key and secret.
 	 *
-	 * @since   1.0
 	 */
 	public function getToken()
 	{
@@ -596,7 +575,6 @@ abstract class OAuth1Client
 	 *
 	 * @return  self  This object for method chaining.
 	 *
-	 * @since   1.0
 	 */
 	public function setToken($token)
 	{

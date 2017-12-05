@@ -18,6 +18,8 @@ use Joomla\CMS\Application\BaseApplication;
 use Joomla\CMS\Application\CliApplication;
 use Joomla\CMS\Application\CMSApplication;
 use Joomla\CMS\Factory;
+use Joomla\CMS\Http\Http;
+use Joomla\CMS\Http\HttpFactory;
 use Joomla\CMS\Layout\FileLayout;
 use Joomla\CMS\Mail\Mail;
 use Joomla\CMS\Plugin\PluginHelper;
@@ -594,5 +596,32 @@ abstract class Joomla
 		}
 
 		return call_user_func_array(array('JText', 'sprintf'), $args);
+	}
+
+	/**
+	 * Get an HTTP client
+	 *
+	 * @param   array  $options  The options to pass to the factory when building the client.
+	 *
+	 * @return  Http|\JHttp
+	 */
+	public static function getHttpClient(array $options = array())
+	{
+		if (class_exists('Joomla\\Registry\\Registry'))
+		{
+			$optionRegistry = new Registry($options);
+		}
+		else
+		{
+			$optionRegistry = new JRegistry($options);
+		}
+
+		if (class_exists('Joomla\\CMS\\Http\\Http'))
+		{
+			return HttpFactory::getHttp($optionRegistry);
+		}
+
+		return \JHttpFactory::getHttp($optionRegistry);
+
 	}
 }

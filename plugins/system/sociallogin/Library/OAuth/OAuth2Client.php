@@ -13,7 +13,7 @@ use InvalidArgumentException;
 use JApplicationWeb;
 use JHttpFactory;
 use JInput;
-use Joomla\Application\AbstractWebApplication;
+use Joomla\CMS\Application\CMSApplication;
 use Joomla\CMS\Http\HttpFactory;
 use Joomla\CMS\Http\Response;
 use Joomla\Input\Input;
@@ -26,11 +26,7 @@ defined('_JEXEC') or die();
 /**
  * OAuth 2 client.
  *
- * This class is copied from the Joomla! Framework. We removed the typehints to allow it to work with older versions of
- * Joomla! 3 which included legacy CMS-specific classes instead of the equivalent Joomla! Framework classes. Moreover,
- * forking the code allows us to use it in Joomla! 4 where this class is simply not present. Forking, instead of using
- * a private Composer vendor folder, is the best way to avoid hard to solve conflicts with third party extensions also
- * using the same code.
+ * This class is adapter from the Joomla! Framework.
  */
 abstract class OAuth2Client
 {
@@ -38,7 +34,6 @@ abstract class OAuth2Client
 	 * Options for the Client object.
 	 *
 	 * @var    array|ArrayAccess
-	 * @since  1.0
 	 */
 	protected $options;
 
@@ -46,7 +41,6 @@ abstract class OAuth2Client
 	 * The HTTP client object to use in sending HTTP requests.
 	 *
 	 * @var    Http
-	 * @since  1.0
 	 */
 	protected $http;
 
@@ -54,27 +48,24 @@ abstract class OAuth2Client
 	 * The input object to use in retrieving GET/POST data.
 	 *
 	 * @var    Input
-	 * @since  1.0
 	 */
 	protected $input;
 
 	/**
 	 * The application object to send HTTP headers for redirects.
 	 *
-	 * @var    AbstractWebApplication
-	 * @since  1.0
+	 * @var    CMSApplication
 	 */
 	protected $application;
 
 	/**
 	 * Constructor.
 	 *
-	 * @param   array|ArrayAccess      $options     OAuth2 Client options object
-	 * @param   Http                   $http        The HTTP client object
-	 * @param   Input                  $input       The input object
-	 * @param   AbstractWebApplication $application The application object
+	 * @param   array|ArrayAccess  $options      OAuth2 Client options object
+	 * @param   Http               $http         The HTTP client object
+	 * @param   Input              $input        The input object
+	 * @param   CMSApplication     $application  The application object
 	 *
-	 * @since   1.0
 	 */
 	public function __construct($options = array(), $http = null, $input = null, $application = null)
 	{
@@ -113,7 +104,6 @@ abstract class OAuth2Client
 	 *
 	 * @return  string  The access token
 	 *
-	 * @since   1.0
 	 * @throws  RuntimeException
 	 */
 	public function authenticate()
@@ -150,19 +140,19 @@ abstract class OAuth2Client
 		{
 			$isValidApplication = false;
 
-			if (class_exists('Joomla\\Application\\AbstractWebApplication'))
+			if (class_exists('Joomla\\CMS\\Application\\CMSApplication'))
 			{
-				$isValidApplication = $this->application instanceof AbstractWebApplication;
+				$isValidApplication = $this->application instanceof CMSApplication;
 			}
 
-			if (class_exists('JApplicationWeb'))
+			if (class_exists('JApplicationCms'))
 			{
 				$isValidApplication = $isValidApplication || ($this->application instanceof JApplicationWeb);
 			}
 
 			if (!$isValidApplication)
 			{
-				throw new RuntimeException('AbstractWebApplication/JApplicationWeb object required for authentication process.');
+				throw new RuntimeException('CMSApplication/JApplicationCms object required for authentication process.');
 			}
 
 			$this->application->redirect($this->createUrl());
@@ -176,7 +166,6 @@ abstract class OAuth2Client
 	 *
 	 * @return  boolean  Is authenticated
 	 *
-	 * @since   1.0
 	 */
 	public function isAuthenticated()
 	{
@@ -200,7 +189,6 @@ abstract class OAuth2Client
 	 *
 	 * @return  string  The URL for authentication
 	 *
-	 * @since   1.0
 	 * @throws  InvalidArgumentException
 	 */
 	public function createUrl()
@@ -253,7 +241,6 @@ abstract class OAuth2Client
 	 *
 	 * @return  Response|bool
 	 *
-	 * @since   1.0
 	 * @throws  InvalidArgumentException
 	 * @throws  RuntimeException
 	 * @throws  Exception
@@ -326,7 +313,6 @@ abstract class OAuth2Client
 	 *
 	 * @return  mixed  The option value
 	 *
-	 * @since   1.0
 	 */
 	public function getOption($key, $default = null)
 	{
@@ -341,7 +327,6 @@ abstract class OAuth2Client
 	 *
 	 * @return  self  This object for method chaining
 	 *
-	 * @since   1.0
 	 */
 	public function setOption($key, $value)
 	{
@@ -355,7 +340,6 @@ abstract class OAuth2Client
 	 *
 	 * @return  array  The access token
 	 *
-	 * @since   1.0
 	 */
 	public function getToken()
 	{
@@ -369,7 +353,6 @@ abstract class OAuth2Client
 	 *
 	 * @return  self  This object for method chaining
 	 *
-	 * @since   1.0
 	 */
 	public function setToken($value)
 	{
@@ -391,7 +374,6 @@ abstract class OAuth2Client
 	 *
 	 * @return  array  The new access token
 	 *
-	 * @since   1.0
 	 * @throws  Exception
 	 * @throws  RuntimeException
 	 */
