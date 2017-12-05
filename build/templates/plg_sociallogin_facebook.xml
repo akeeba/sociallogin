@@ -15,6 +15,7 @@
 
     <files>
         <filename plugin="facebook">facebook.php</filename>
+        <folder>Facebook</folder>
     </files>
 
     <media folder="media" destination="plg_sociallogin_facebook">

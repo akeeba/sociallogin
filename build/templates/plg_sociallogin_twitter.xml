@@ -15,6 +15,7 @@
 
     <files>
         <filename plugin="twitter">twitter.php</filename>
+        <folder>Twitter</folder>
     </files>
 
     <media folder="media" destination="plg_sociallogin_twitter">

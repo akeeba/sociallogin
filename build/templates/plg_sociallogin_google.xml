@@ -15,6 +15,7 @@
 
     <files>
         <filename plugin="google">google.php</filename>
+        <folder>Google</folder>
     </files>
 
     <media folder="media" destination="plg_sociallogin_google">
