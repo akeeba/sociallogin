@@ -128,7 +128,7 @@ class plgSocialloginTwitter extends AkeebaSocialLoginJPlugin
 		$this->loadLanguage();
 
 		// Register the autoloader
-		JLoader::registerNamespace('Akeeba\\SocialLogin\\Google', __DIR__ . '/Twitter', false, false, 'psr4');
+		JLoader::registerNamespace('Akeeba\\SocialLogin\\Twitter', __DIR__ . '/Twitter', false, false, 'psr4');
 
 		// Set the integration name from the plugin name (without the plg_sociallogin_ part, of course)
 		$this->integrationName = $this->_name;
