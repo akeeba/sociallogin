@@ -70,4 +70,6 @@
 		</fields>
 	</config>
 
+	<!-- Installation script -->
+	<scriptfile>script.plg_system_sociallogin.php</scriptfile>
 </extension>
