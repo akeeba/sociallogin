@@ -1,4 +1,8 @@
-# 1.0.3
+# 2.0.0
+
+**New features**
+
+* Compatible with Joomla! 3.4 to 3.8 (inclusive) and, now, also Joomla! 4.0.
 
 **Bug fixes**
 
