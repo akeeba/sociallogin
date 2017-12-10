@@ -1,5 +1,43 @@
 <!-- Akeeba Social Login update provisioning XML stream -->
 <updates>
+    <!-- Version 2.0.1 Stable -->
+    <update>
+        <version>2.0.1</version>
+        <tags>
+            <tag>stable</tag>
+        </tags>
+
+        <downloads>
+            <downloadurl type="full" format="zip">https://github.com/akeeba/sociallogin/releases/download/2.0.1/pkg_sociallogin-2.0.1.zip</downloadurl>
+        </downloads>
+        <infourl title="Akeeba Social Login Release Notes">https://github.com/akeeba/sociallogin/releases/2.0.1</infourl>
+
+        <targetplatform name="joomla" version="3.4"/>
+        <targetplatform name="joomla" version="3.5"/>
+        <targetplatform name="joomla" version="3.6"/>
+        <targetplatform name="joomla" version="3.7"/>
+        <targetplatform name="joomla" version="3.8"/>
+        <targetplatform name="joomla" version="4.0"/>
+
+        <php_minimum>5.3.10</php_minimum>
+
+        <ars-phpcompat version="5.3"/>
+        <ars-phpcompat version="5.4"/>
+        <ars-phpcompat version="5.5"/>
+        <ars-phpcompat version="5.6"/>
+        <ars-phpcompat version="7.0"/>
+        <ars-phpcompat version="7.1"/>
+
+        <name>Akeeba Social Login package</name>
+        <description>Akeeba Social Login - A social login solution for Joomla!</description>
+        <element>pkg_sociallogin</element>
+        <type>package</type>
+        <maintainer>Akeeba Ltd</maintainer>
+        <maintainerurl>https://www.akeebabackup.com</maintainerurl>
+        <section>Updates</section>
+        <client>0</client>
+    </update>
+
     <!-- Version 2.0.0 Stable -->
     <update>
         <version>2.0.0</version>
