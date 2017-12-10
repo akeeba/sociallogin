@@ -71,6 +71,9 @@ class plgSystemSociallogin extends AkeebaSocialLoginJPlugin
 		// Register the autoloader
 		JLoader::registerNamespace('Akeeba\\SocialLogin\\Library', __DIR__ . '/Library', false, false, 'psr4');
 
+		// Legacy mappings
+		JLoader::registerAlias('SocialLoginHelperIntegrations', 'Akeeba\\SocialLogin\\Library\\Helper\\Integrations', '3.0');
+
 		// Am I enabled?
 		$this->enabled = $this->isEnabled();
 

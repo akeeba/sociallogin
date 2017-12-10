@@ -1,3 +1,10 @@
+# 2.0.1
+
+**Bug fixes**
+
+* Language files were not included in the package
+* SocialLogin buttons disappear on update if you are using template overrides becayse the SocialLoginHelperIntegrations class was renamed.
+
 # 2.0.0
 
 **New features**
