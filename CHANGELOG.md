@@ -1,3 +1,9 @@
+# 2.0.2
+
+**Bug fixes**
+
+* Removed "Add buttons to login page" option since it doesn't do anything useful. You MUST use template overrides for the login page. 
+
 # 2.0.1
 
 **Bug fixes**
