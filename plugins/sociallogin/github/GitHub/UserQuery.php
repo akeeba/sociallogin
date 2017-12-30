@@ -98,16 +98,24 @@ JSON;
 		$size = (int)$size;
 
 		$query = <<< JSON
-query { 
-  viewer {
-    avatarUrl(size: $size)
-  }
+{
+	"query" : "query { viewer { avatarUrl(size: $size) } }"
 }
+
 JSON;
 
-		$response = json_decode($this->client->post(self::$endpoint, $query, array(
-			'Authorization: bearer ' . $this->token
-		)));
+		$headers  = array(
+			'Authorization' => 'bearer ' . $this->token
+		);
+
+		$reply    = $this->client->post(self::$endpoint, $query, $headers);
+
+		if ($reply->code > 299)
+		{
+			throw new \RuntimeException("HTTP {$reply->code}: {$reply->body}");
+		}
+
+		$response = json_decode($reply->body);
 
 		// Validate the response.
 		if (property_exists($response, 'errors'))
