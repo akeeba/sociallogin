@@ -22,6 +22,7 @@
     <files>
         <!-- Plugins: sociallogin -->
         <file type="plugin" group="sociallogin" id="facebook">plg_sociallogin_facebook.zip</file>
+        <file type="plugin" group="sociallogin" id="github">plg_sociallogin_github.zip</file>
         <file type="plugin" group="sociallogin" id="google">plg_sociallogin_google.zip</file>
         <file type="plugin" group="sociallogin" id="twitter">plg_sociallogin_twitter.zip</file>
 

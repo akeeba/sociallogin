@@ -1,5 +1,9 @@
 # 2.0.2
 
+**New features**
+
+* Login with GitHub
+
 **Bug fixes**
 
 * Removed "Add buttons to login page" option since it doesn't do anything useful. You MUST use template overrides for the login page. 
