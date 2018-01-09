@@ -7,6 +7,7 @@
 **Bug fixes**
 
 * Removed "Add buttons to login page" option since it doesn't do anything useful. You MUST use template overrides for the login page. 
+* Missing file from the plugin manifest causes installation failure
 
 # 2.0.1
 
