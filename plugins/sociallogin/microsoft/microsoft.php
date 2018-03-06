@@ -8,8 +8,8 @@
 // Protect from unauthorized access
 defined('_JEXEC') or die();
 
-use Akeeba\SocialLogin\LinkedIn\OAuth as LinkedInOAuth;
-use Akeeba\SocialLogin\LinkedIn\UserQuery;
+use Akeeba\SocialLogin\Microsoft\OAuth as MicrosoftOAuth;
+use Akeeba\SocialLogin\Microsoft\UserQuery;
 use Akeeba\SocialLogin\Library\Data\PluginConfiguration;
 use Akeeba\SocialLogin\Library\Data\UserData;
 use Akeeba\SocialLogin\Library\Exception\Login\GenericMessage;
@@ -34,9 +34,9 @@ if (!class_exists('Akeeba\\SocialLogin\\Library\\Helper\\Login', true))
 }
 
 /**
- * Akeeba Social Login plugin for LinkedIn integration
+ * Akeeba Social Login plugin for Microsoft Live integration
  */
-class plgSocialloginLinkedin extends AkeebaSocialLoginJPlugin
+class plgSocialloginMicrosoft extends AkeebaSocialLoginJPlugin
 {
 	/**
 	 * The integration slug used by this plugin
@@ -46,7 +46,7 @@ class plgSocialloginLinkedin extends AkeebaSocialLoginJPlugin
 	private $integrationName = '';
 
 	/**
-	 * Should I log in users who have not yet linked their LinkedIn account to their site account? THIS MAY BE DANGEROUS
+	 * Should I log in users who have not yet linked their Microsoft account to their site account? THIS MAY BE DANGEROUS
 	 * (impersonation risk), therefore it is disabled by default.
 	 *
 	 * @var   bool
@@ -55,7 +55,7 @@ class plgSocialloginLinkedin extends AkeebaSocialLoginJPlugin
 
 	/**
 	 * Can I use this integration to create new user accounts? This will happen when someone tries to login through
-	 * LinkedIn but their LinkedIn account is not linked to a user account yet.
+	 * Microsoft Live but their Microsoft account is not linked to a user account yet.
 	 *
 	 * @var   bool
 	 */
@@ -63,7 +63,7 @@ class plgSocialloginLinkedin extends AkeebaSocialLoginJPlugin
 
 	/**
 	 * Allow the plugin to override Joomla's new user account registration flag. This is useful to prevent new user
-	 * accounts from being created _unless_ they have a LinkedIn account and use it on your site (force new users to
+	 * accounts from being created _unless_ they have a Microsoft account and use it on your site (force new users to
 	 * link their social media accounts).
 	 *
 	 * @var   bool
@@ -71,10 +71,10 @@ class plgSocialloginLinkedin extends AkeebaSocialLoginJPlugin
 	private $canCreateAlways = false;
 
 	/**
-	 * When creating new users, am I allowed to bypass email verification? Remember that LinkedIn users always have their
-	 * email addresses verified. This is a precondition to allowing them to link their account to an OAuth application
-	 * i.e. log into another site using their LinkedIn account. Therefore if we see that a user has granted us permission
-	 * to access their profile we are sure that their email address has already been verified by LinkedIn.
+	 * When creating new users, am I allowed to bypass email verification? Remember that Microsoft Live users always
+	 * have their email addresses verified. This is a precondition to having an account. Therefore if we see that a user
+	 * has granted us permission to access their profile we are sure that their email address has already been verified
+	 * by Microsoft.
 	 *
 	 * @var   bool
 	 */
@@ -95,23 +95,23 @@ class plgSocialloginLinkedin extends AkeebaSocialLoginJPlugin
 	private $iconClass = '';
 
 	/**
-	 * LinkedIn App ID
+	 * Microsoft Live SDK App ID
 	 *
 	 * @var   string
 	 */
 	private $appId = '';
 
 	/**
-	 * LinkedIn App Secret
+	 * Microsoft Live SDK App Secret
 	 *
 	 * @var   string
 	 */
 	private $appSecret = '';
 
 	/**
-	 * LinkedIn LinkedInOAuth connector object
+	 * Microsoft MicrosoftOAuth connector object
 	 *
-	 * @var   LinkedInOAuth
+	 * @var   MicrosoftOAuth
 	 */
 	private $connector;
 
@@ -131,7 +131,7 @@ class plgSocialloginLinkedin extends AkeebaSocialLoginJPlugin
 		$this->loadLanguage();
 
 		// Register the autoloader
-		JLoader::registerNamespace('Akeeba\\SocialLogin\\LinkedIn', __DIR__ . '/LinkedIn', false, false, 'psr4');
+		JLoader::registerNamespace('Akeeba\\SocialLogin\\Microsoft', __DIR__ . '/Microsoft', false, false, 'psr4');
 
 		// Set the integration name from the plugin name (without the plg_sociallogin_ part, of course)
 		$this->integrationName = $this->_name;
@@ -158,9 +158,9 @@ class plgSocialloginLinkedin extends AkeebaSocialLoginJPlugin
 	}
 
 	/**
-	 * Returns a LinkedInOAuth object
+	 * Returns a MicrosoftOAuth object
 	 *
-	 * @return  LinkedInOAuth
+	 * @return  MicrosoftOAuth
 	 *
 	 * @throws  Exception
 	 */
@@ -175,7 +175,7 @@ class plgSocialloginLinkedin extends AkeebaSocialLoginJPlugin
 			);
 			$app             = Joomla::getApplication();
 			$httpClient      = Joomla::getHttpClient();
-			$this->connector = new LinkedInOAuth($options, $httpClient, $app->input, $app);
+			$this->connector = new MicrosoftOAuth($options, $httpClient, $app->input, $app);
 			$this->connector->setScope('r_basicprofile r_emailaddress');
 		}
 
@@ -231,10 +231,10 @@ class plgSocialloginLinkedin extends AkeebaSocialLoginJPlugin
 		}
 
 		// Save the return URLs into the session
-		Joomla::setSessionVar('loginUrl', $loginURL, 'plg_sociallogin_linkedin');
-		Joomla::setSessionVar('failureUrl', $failureURL, 'plg_sociallogin_linkedin');
+		Joomla::setSessionVar('loginUrl', $loginURL, 'plg_sociallogin_microsoft');
+		Joomla::setSessionVar('failureUrl', $failureURL, 'plg_sociallogin_microsoft');
 
-		// Get a LinkedIn OAUth2 connector object and retrieve the URL
+		// Get a Microsoft OAUth2 connector object and retrieve the URL
 		$connector = $this->getConnector();
 		$url       = $connector->createUrl();
 
@@ -247,11 +247,11 @@ class plgSocialloginLinkedin extends AkeebaSocialLoginJPlugin
 			// The href attribute for the anchor tag.
 			'link'       => $url,
 			// The tooltip of the anchor tag.
-			'tooltip'    => Joomla::_('PLG_SOCIALLOGIN_LINKEDIN_LOGIN_DESC'),
+			'tooltip'    => Joomla::_('PLG_SOCIALLOGIN_MICROSOFT_LOGIN_DESC'),
 			// What to put inside the anchor tag. Leave empty to put the image returned by onSocialLoginGetIntegration.
-			'label'      => Joomla::_('PLG_SOCIALLOGIN_LINKEDIN_LOGIN_LABEL'),
+			'label'      => Joomla::_('PLG_SOCIALLOGIN_MICROSOFT_LOGIN_LABEL'),
 			// The image to use if there is no icon class
-			'img'        => JHtml::image('plg_sociallogin_linkedin/linkedin_34.png', '', array(), true),
+			'img'        => JHtml::image('plg_sociallogin_microsoft/microsoft.png', '', array(), true),
 			// An icon class for the span before the label inside the anchor tag. Nothing is shown if this is blank.
 		    'icon_class' => $this->iconClass,
 		);
@@ -303,11 +303,11 @@ class plgSocialloginLinkedin extends AkeebaSocialLoginJPlugin
 				// The href attribute for the anchor tag.
 				'link'       => $unlinkURL,
 				// The tooltip of the anchor tag.
-				'tooltip'    => Joomla::_('PLG_SOCIALLOGIN_LINKEDIN_UNLINK_DESC'),
+				'tooltip'    => Joomla::_('PLG_SOCIALLOGIN_MICROSOFT_UNLINK_DESC'),
 				// What to put inside the anchor tag. Leave empty to put the image returned by onSocialLoginGetIntegration.
-				'label'      => Joomla::_('PLG_SOCIALLOGIN_LINKEDIN_UNLINK_LABEL'),
+				'label'      => Joomla::_('PLG_SOCIALLOGIN_MICROSOFT_UNLINK_LABEL'),
 				// The image to use if there is no icon class
-				'img'        => JHtml::image('plg_sociallogin_linkedin/linkedin_34.png', '', array(), true),
+				'img'        => JHtml::image('plg_sociallogin_microsoft/microsoft.png', '', array(), true),
 				// An icon class for the span before the label inside the anchor tag. Nothing is shown if this is blank.
 				'icon_class' => $this->iconClass,
 			);
@@ -315,10 +315,10 @@ class plgSocialloginLinkedin extends AkeebaSocialLoginJPlugin
 
 		// Make sure we return to the same profile edit page
 		$loginURL = JUri::getInstance()->toString(array('scheme', 'user', 'pass', 'host', 'port', 'path', 'query', 'fragment'));
-		Joomla::setSessionVar('loginUrl', $loginURL, 'plg_sociallogin_linkedin');
-		Joomla::setSessionVar('failureUrl', $loginURL, 'plg_sociallogin_linkedin');
+		Joomla::setSessionVar('loginUrl', $loginURL, 'plg_sociallogin_microsoft');
+		Joomla::setSessionVar('failureUrl', $loginURL, 'plg_sociallogin_microsoft');
 
-		// Get a LinkedIn OAUth2 connector object and retrieve the URL
+		// Get a Microsoft OAUth2 connector object and retrieve the URL
 		$connector = $this->getConnector();
 		$url       = $connector->createUrl();
 
@@ -333,11 +333,11 @@ class plgSocialloginLinkedin extends AkeebaSocialLoginJPlugin
 			// The href attribute for the anchor tag.
 			'link'       => $url,
 			// The tooltip of the anchor tag.
-			'tooltip'    => Joomla::_('PLG_SOCIALLOGIN_LINKEDIN_LINK_DESC'),
+			'tooltip'    => Joomla::_('PLG_SOCIALLOGIN_MICROSOFT_LINK_DESC'),
 			// What to put inside the anchor tag. Leave empty to put the image returned by onSocialLoginGetIntegration.
-			'label'      => Joomla::_('PLG_SOCIALLOGIN_LINKEDIN_LINK_LABEL'),
+			'label'      => Joomla::_('PLG_SOCIALLOGIN_MICROSOFT_LINK_LABEL'),
 			// The image to use if there is no icon class
-			'img'        => JHtml::image('plg_sociallogin_linkedin/linkedin_34.png', '', array(), true),
+			'img'        => JHtml::image('plg_sociallogin_microsoft/microsoft.png', '', array(), true),
 			// An icon class for the span before the label inside the anchor tag. Nothing is shown if this is blank.
 			'icon_class' => $this->iconClass,
 		);
@@ -371,11 +371,11 @@ class plgSocialloginLinkedin extends AkeebaSocialLoginJPlugin
 			$user = Joomla::getUser();
 		}
 
-		Integrations::removeUserProfileData($user->id, 'sociallogin.linkedin');
+		Integrations::removeUserProfileData($user->id, 'sociallogin.microsoft');
 	}
 
 	/**
-	 * Processes the authentication callback from LinkedIn.
+	 * Processes the authentication callback from Microsoft.
 	 *
 	 * Note: this method is called from Joomla's com_ajax, not com_sociallogin itself
 	 *
@@ -388,19 +388,19 @@ class plgSocialloginLinkedin extends AkeebaSocialLoginJPlugin
 		// This is the return URL used by the Link button
 		$returnURL  = Joomla::getSessionVar('returnUrl', JUri::base(), 'plg_system_sociallogin');
 		// And this is the login success URL used by the Login button
-		$loginUrl   = Joomla::getSessionVar('loginUrl', $returnURL, 'plg_sociallogin_linkedin');
-		$failureUrl = Joomla::getSessionVar('failureUrl', $loginUrl, 'plg_sociallogin_linkedin');
+		$loginUrl   = Joomla::getSessionVar('loginUrl', $returnURL, 'plg_sociallogin_microsoft');
+		$failureUrl = Joomla::getSessionVar('failureUrl', $loginUrl, 'plg_sociallogin_microsoft');
 
 		// Remove the return URLs from the session
-		Joomla::setSessionVar('loginUrl', null, 'plg_sociallogin_linkedin');
-		Joomla::setSessionVar('failureUrl', null, 'plg_sociallogin_linkedin');
+		Joomla::setSessionVar('loginUrl', null, 'plg_sociallogin_microsoft');
+		Joomla::setSessionVar('failureUrl', null, 'plg_sociallogin_microsoft');
 
 		// Try to exchange the code with a token
 		$oauthConnector = $this->getConnector();
 		$app            = Joomla::getApplication();
 
 		/**
-		 * Handle the login callback from LinkedIn. There are three possibilities:
+		 * Handle the login callback from Microsoft. There are three possibilities:
 		 *
 		 * 1. LoginError exception is thrown. We must go through Joomla's user plugins and let
 		 *    them handle the login failure. They MAY change the error response. Then we report that error reponse to
@@ -419,7 +419,7 @@ class plgSocialloginLinkedin extends AkeebaSocialLoginJPlugin
 
 				if ($token === false)
 				{
-					$errorMessage = Joomla::_('PLG_SOCIALLOGIN_LINKEDIN_ERROR_NOT_LOGGED_IN_FB');
+					$errorMessage = Joomla::_('PLG_SOCIALLOGIN_MICROSOFT_ERROR_NOT_LOGGED_IN_FB');
 
 					if (defined('JDEBUG') && JDEBUG)
 					{
@@ -434,7 +434,7 @@ class plgSocialloginLinkedin extends AkeebaSocialLoginJPlugin
 					throw new LoginError($errorMessage);
 				}
 
-				// Get information about the user from LinkedIn.
+				// Get information about the user from Microsoft.
 				$tokenArray   = $oauthConnector->getToken();
 
 				$options      = new Registry(array(
@@ -451,9 +451,9 @@ class plgSocialloginLinkedin extends AkeebaSocialLoginJPlugin
 
 			// The data used to login or create a user
 			$userData = new UserData();
-			$userData->name = $liUserFields->firstName . ' ' . $liUserFields->lastName;
+			$userData->name = $liUserFields->first_name . ' ' . $liUserFields->last_name;
 			$userData->id = $liUserFields->id;
-			$userData->email = $liUserFields->emailAddress;
+			$userData->email = $liUserFields->emails->account;
 			$userData->verified = true;
 
 			// Options which control login and user account creation
@@ -470,7 +470,6 @@ class plgSocialloginLinkedin extends AkeebaSocialLoginJPlugin
 			$userProfileData = array(
 				'userid'     => $userData->id,
 				'token'      => json_encode($token),
-				'pictureUrl' => $liUserFields->pictureUrl,
 			);
 
 			Login::handleSocialLogin($this->integrationName, $pluginConfiguration, $userData, $userProfileData);
@@ -536,12 +535,12 @@ class plgSocialloginLinkedin extends AkeebaSocialLoginJPlugin
 
 		$css = /** @lang CSS */
 			<<< CSS
-.akeeba-sociallogin-link-button-linkedin, .akeeba-sociallogin-unlink-button-linkedin, .akeeba-sociallogin-button-linkedin { background-color: #ffffff; color: #000000; transition-duration: 0.33s; background-image: none; border-color: #86898C
+.akeeba-sociallogin-link-button-microsoft, .akeeba-sociallogin-unlink-button-microsoft, .akeeba-sociallogin-button-microsoft { background-color: #2B2B2B; color: #ffffff; transition-duration: 0.33s; background-image: none; border-color: #1F1F1F
 ; }
-.akeeba-sociallogin-link-button-linkedin:hover, .akeeba-sociallogin-unlink-button-linkedin:hover, .akeeba-sociallogin-button-linkedin:hover { background-color: #CFEDFB
- ; color: #000000; transition-duration: 0.33s; border-color: #00A0DC
+.akeeba-sociallogin-link-button-microsoft:hover, .akeeba-sociallogin-unlink-button-microsoft:hover, .akeeba-sociallogin-button-microsoft:hover { background-color: #767676
+ ; color: #ffffff; transition-duration: 0.33s; border-color: #393939
  ; }
-.akeeba-sociallogin-link-button-linkedin img, .akeeba-sociallogin-unlink-button-linkedin img, .akeeba-sociallogin-button-linkedin img { display: inline-block; width: 22px; height: 16px; margin: 0 0.33em 0.1em 0; padding: 0 }
+.akeeba-sociallogin-link-button-microsoft img, .akeeba-sociallogin-unlink-button-microsoft img, .akeeba-sociallogin-button-microsoft img { display: inline-block; width: 75px; height: 16px; margin: 0 0.33em 0.1em 0; padding: 0 }
 
 CSS;
 		$jDocument->addStyleDeclaration($css);
