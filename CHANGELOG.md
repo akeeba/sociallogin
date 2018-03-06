@@ -1,6 +1,8 @@
 # 2.0.3
 
-(placeholder for new release)
+**New features**
+
+* Login with LinkedIn
 
 # 2.0.2
 
