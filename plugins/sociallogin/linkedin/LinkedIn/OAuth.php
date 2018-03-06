@@ -52,7 +52,7 @@ class OAuth extends OAuth2Client
 
 		if (!isset($this->options['scope']))
 		{
-			$this->options['scope'] = 'r_fullprofile%20r_emailaddress';
+			$this->options['scope'] = 'r_basicprofile r_emailaddress';
 		}
 
 		// Call the \Joomla\OAuth2\Client constructor to setup the object.

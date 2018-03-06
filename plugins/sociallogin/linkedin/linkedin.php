@@ -176,7 +176,7 @@ class plgSocialloginLinkedin extends AkeebaSocialLoginJPlugin
 			$app             = Joomla::getApplication();
 			$httpClient      = Joomla::getHttpClient();
 			$this->connector = new LinkedInOAuth($options, $httpClient, $app->input, $app);
-			$this->connector->setScope('user');
+			$this->connector->setScope('r_basicprofile r_emailaddress');
 		}
 
 		return $this->connector;
@@ -419,7 +419,19 @@ class plgSocialloginLinkedin extends AkeebaSocialLoginJPlugin
 
 				if ($token === false)
 				{
-					throw new LoginError(Joomla::_('PLG_SOCIALLOGIN_LINKEDIN_ERROR_NOT_LOGGED_IN_FB'));
+					$errorMessage = Joomla::_('PLG_SOCIALLOGIN_LINKEDIN_ERROR_NOT_LOGGED_IN_FB');
+
+					if (defined('JDEBUG') && JDEBUG)
+					{
+						$error = JFactory::getApplication()->input->getString('error_description', '');
+
+						if (!empty($error))
+						{
+							$errorMessage .= "<br/><small>$error</small>";
+						}
+					}
+
+					throw new LoginError($errorMessage);
 				}
 
 				// Get information about the user from LinkedIn.
