@@ -46,6 +46,9 @@
 		<copy file="${phing.dir}/templates/plg_sociallogin_linkedin.xml" tofile="${dirs.plugins}/sociallogin/linkedin/linkedin.xml" overwrite="true">
 			<filterchain refid="manifest-replace-tokens" />
 		</copy>
+		<copy file="${phing.dir}/templates/plg_sociallogin_microsoft.xml" tofile="${dirs.plugins}/sociallogin/microsoft/microsoft.xml" overwrite="true">
+			<filterchain refid="manifest-replace-tokens" />
+		</copy>
 		<copy file="${phing.dir}/templates/plg_sociallogin_twitter.xml" tofile="${dirs.plugins}/sociallogin/twitter/twitter.xml" overwrite="true">
 			<filterchain refid="manifest-replace-tokens" />
 		</copy>

@@ -8,7 +8,7 @@ _This feature is available since version 2.0.2._
 
 Before you can use Microsoft Account login on your site you must create a Microsoft Live SDK "app". Even though it sounds scary, a Microsoft Live SDK App is simply a way for you to get a set of access codes which let you identify your site on Microsoft Live.
 
-Go to the [Microsoft Application Registration Portal](https://apps.dev.microsoft.com/?mkt=en-gb&referrer=https%3a%2f%2faccount.live.com#/appList). Under Live SDK applications click on **Add an app** button.
+Go to the [Microsoft Application Registration Portal](https://apps.dev.microsoft.com/#/appList). Under Live SDK applications click on **Add an app** button.
 
 Enter a Name. This what the visitors to your site will see when logging in with their Microsoft account. Click on Create Application.
 

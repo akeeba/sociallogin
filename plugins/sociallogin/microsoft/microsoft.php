@@ -176,7 +176,7 @@ class plgSocialloginMicrosoft extends AkeebaSocialLoginJPlugin
 			$app             = Joomla::getApplication();
 			$httpClient      = Joomla::getHttpClient();
 			$this->connector = new MicrosoftOAuth($options, $httpClient, $app->input, $app);
-			$this->connector->setScope('r_basicprofile r_emailaddress');
+			$this->connector->setScope('wl.basic wl.emails wl.signin');
 		}
 
 		return $this->connector;
@@ -383,7 +383,7 @@ class plgSocialloginMicrosoft extends AkeebaSocialLoginJPlugin
 	 *
 	 * @throws  Exception
 	 */
-	public function onAjaxLinkedin()
+	public function onAjaxMicrosoft()
 	{
 		// This is the return URL used by the Link button
 		$returnURL  = Joomla::getSessionVar('returnUrl', JUri::base(), 'plg_system_sociallogin');
@@ -535,12 +535,12 @@ class plgSocialloginMicrosoft extends AkeebaSocialLoginJPlugin
 
 		$css = /** @lang CSS */
 			<<< CSS
-.akeeba-sociallogin-link-button-microsoft, .akeeba-sociallogin-unlink-button-microsoft, .akeeba-sociallogin-button-microsoft { background-color: #2B2B2B; color: #ffffff; transition-duration: 0.33s; background-image: none; border-color: #1F1F1F
+.akeeba-sociallogin-link-button-microsoft, .akeeba-sociallogin-unlink-button-microsoft, .akeeba-sociallogin-button-microsoft { background-color: #cccccc; color: #000000; transition-duration: 0.33s; background-image: none; border-color: #1F1F1F
 ; }
-.akeeba-sociallogin-link-button-microsoft:hover, .akeeba-sociallogin-unlink-button-microsoft:hover, .akeeba-sociallogin-button-microsoft:hover { background-color: #767676
- ; color: #ffffff; transition-duration: 0.33s; border-color: #393939
+.akeeba-sociallogin-link-button-microsoft:hover, .akeeba-sociallogin-unlink-button-microsoft:hover, .akeeba-sociallogin-button-microsoft:hover { background-color: #2b2b2b
+ ; color: #ffffff; transition-duration: 0.33s; border-color: #2B2B2B
  ; }
-.akeeba-sociallogin-link-button-microsoft img, .akeeba-sociallogin-unlink-button-microsoft img, .akeeba-sociallogin-button-microsoft img { display: inline-block; width: 75px; height: 16px; margin: 0 0.33em 0.1em 0; padding: 0 }
+.akeeba-sociallogin-link-button-microsoft img, .akeeba-sociallogin-unlink-button-microsoft img, .akeeba-sociallogin-button-microsoft img { display: inline-block; width: 75px; height: 16px; margin: 0.1em 0.33em 0 0; padding: 0 }
 
 CSS;
 		$jDocument->addStyleDeclaration($css);
