@@ -60,10 +60,10 @@ class UserQuery
 		$path = '/people/~:(id,first-name,last-name,email-address,picture-url)?format=json';
 
 		$headers  = array(
-			'Authorization' => 'bearer ' . $this->token
+			'Authorization' => 'Bearer ' . $this->token
 		);
 
-		$reply    = $this->client->post(self::$endpoint . $path, $headers);
+		$reply    = $this->client->get(self::$endpoint . $path, $headers);
 
 		if ($reply->code > 299)
 		{
@@ -85,10 +85,10 @@ class UserQuery
 		$path = '/people/~:(picture-url)?format=json';
 
 		$headers  = array(
-			'Authorization' => 'bearer ' . $this->token
+			'Authorization' => 'Bearer ' . $this->token
 		);
 
-		$reply    = $this->client->post(self::$endpoint . $path, $headers);
+		$reply    = $this->client->get(self::$endpoint . $path, $headers);
 
 		if ($reply->code > 299)
 		{
