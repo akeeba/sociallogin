@@ -305,7 +305,7 @@ class plgSocialloginLinkedin extends AkeebaSocialLoginJPlugin
 				// The tooltip of the anchor tag.
 				'tooltip'    => Joomla::_('PLG_SOCIALLOGIN_LINKEDIN_UNLINK_DESC'),
 				// What to put inside the anchor tag. Leave empty to put the image returned by onSocialLoginGetIntegration.
-				'label'      => Joomla::_('PLG_SOCIALLOGIN_GITHUB_UNLINK_LABEL'),
+				'label'      => Joomla::_('PLG_SOCIALLOGIN_LINKEDIN_UNLINK_LABEL'),
 				// The image to use if there is no icon class
 				'img'        => JHtml::image('plg_sociallogin_linkedin/linkedin_34.png', '', array(), true),
 				// An icon class for the span before the label inside the anchor tag. Nothing is shown if this is blank.
