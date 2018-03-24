@@ -536,11 +536,8 @@ class plgSocialloginLinkedin extends AkeebaSocialLoginJPlugin
 
 		$css = /** @lang CSS */
 			<<< CSS
-.akeeba-sociallogin-link-button-linkedin, .akeeba-sociallogin-unlink-button-linkedin, .akeeba-sociallogin-button-linkedin { background-color: #ffffff; color: #000000; transition-duration: 0.33s; background-image: none; border-color: #86898C
-; }
-.akeeba-sociallogin-link-button-linkedin:hover, .akeeba-sociallogin-unlink-button-linkedin:hover, .akeeba-sociallogin-button-linkedin:hover { background-color: #CFEDFB
- ; color: #000000; transition-duration: 0.33s; border-color: #00A0DC
- ; }
+.akeeba-sociallogin-link-button-linkedin, .akeeba-sociallogin-unlink-button-linkedin, .akeeba-sociallogin-button-linkedin { background-color: #007bb6; color: #ffffff; transition-duration: 0.33s; background-image: none; border-color: #006a9d; }
+.akeeba-sociallogin-link-button-linkedin:hover, .akeeba-sociallogin-unlink-button-linkedin:hover, .akeeba-sociallogin-button-linkedin:hover { background-color: #005983; color: #ffffff; transition-duration: 0.33s; border-color: #007bb6; }
 .akeeba-sociallogin-link-button-linkedin img, .akeeba-sociallogin-unlink-button-linkedin img, .akeeba-sociallogin-button-linkedin img { display: inline-block; width: 16px; height: 16px; margin: 0 0.33em 0.1em 0; padding: 0 }
 
 CSS;
