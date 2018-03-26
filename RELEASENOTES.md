@@ -18,14 +18,5 @@ Akeeba SocialLogin comes with English (Great Britain) language built-in. Install
 
 ## Changelog
 
-# 2.0.2
-
-**New features**
-
-* Login with GitHub
-
-**Bug fixes**
-
-* Removed "Add buttons to login page" option since it doesn't do anything useful. You MUST use template overrides for the login page. 
-* Missing file from the plugin manifest causes installation failure
-
+* Login with LinkedIn
+* Login with Microsoft Account

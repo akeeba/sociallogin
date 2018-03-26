@@ -3,6 +3,7 @@
 **New features**
 
 * Login with LinkedIn
+* Login with Microsoft Account
 
 # 2.0.2
 
