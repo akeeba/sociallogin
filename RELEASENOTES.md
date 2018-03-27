@@ -20,3 +20,6 @@ Akeeba SocialLogin comes with English (Great Britain) language built-in. Install
 
 * Login with LinkedIn
 * Login with Microsoft Account
+* Login with LinkedIn
+* Login with Microsoft Account* Login with LinkedIn
+* Login with Microsoft Account
