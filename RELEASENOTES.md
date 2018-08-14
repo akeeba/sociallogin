@@ -12,11 +12,5 @@ We strongly recommend using the latest published Joomla! version and PHP 7.0, 7.
 
 Joomla! 4 is still in its very early development stages. While this version of SocialLogin has added preliminary support for Joomla! 4.0 Alpha 2 we cannot guarantee that it will work in any future release of Joomla! 4, be it development or stable. We reserve the right to remove Joomla! 4 compatibility and / or delegate this feature to a future version of our software.
 
-## Language files
-
-Akeeba SocialLogin comes with English (Great Britain) language built-in. Installation packages for other languages are available [on our language download page](https://cdn.akeebabackup.com/language/sociallogin/index.html).
-
 ## Changelog
 
-* Login with LinkedIn
-* Login with Microsoft Account

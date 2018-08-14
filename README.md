@@ -14,7 +14,7 @@ For more information and documentation for administrators, users and developers 
 
 Pre-built packages of Akeeba LoginGuard are available through [our GitHub repository's Releases page](https://github.com/akeeba/sociallogin/releases).
 
-Akeeba SocialLogin comes with English (Great Britain) language built-in. Installation packages for other languages are available [on our language download page](https://cdn.akeebabackup.com/language/sociallogin/index.html).
+Akeeba SocialLogin comes with English (Great Britain) language built-in. We do not offer official translations for any other language nor will we accept pull requests for language files. You are welcome to translate to your own language and make the translation available free of charge under the GPLv3 license which the original translation files are licensed under.
 
 ## No support - For developers only
 
