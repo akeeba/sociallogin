@@ -6,5 +6,4 @@ $symlink_files = array(
 );
 
 $symlink_folders = array(
-	'../translations/sociallogin' => 'translations',
 );
