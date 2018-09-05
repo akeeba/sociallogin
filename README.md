@@ -1,80 +1,17 @@
 # Akeeba Social Login
 
-A social login solution for Joomla!
+## THIS PRODUCT IS DISCONTINUED AS OF SEPTEMBER 2018
 
-## What does it do?
+I originally wrote this set of plugins with the intention of using it on our site to facilitate sign-up of new users and offer an alternative method for existing users to log in. In short, I wanted frictionless sign-up and log in to our site.
 
-These plugins let users link their social media (Facebook, Google, Twitter, ...) account to your site. Users can then log in using these social media accounts. A typical use case for that is Facebook login.
+Then, GDPR happened. And with GDPR here comes ePrivacy to complicate things.
 
-Moreover, it allows new users to register to your site using their social media account. For example, someone can create a user account on your site using their Facebook login, without going through Joomla's user registration process. The created user accounts can either be activated immediately (e.g. when it's a verified Facebook account, i.e. Facebook has verified the user's email and/or mobile phone number) or go through Joomla's account activation process (click on the link sent by email). This is faster for the user and easier for you, since in most cases the email address of the user has already been verified by the social network and they don't have to go through Joomla's email address verification.
- 
-For more information and documentation for administrators, users and developers please [consult the documentation Wiki](https://github.com/akeeba/sociallogin/wiki).
+It is not entirely clear whether your the identified returned by the social network and stored on our site is personally identifiable information (PII) or not. If it is, we have a problem. Let's say that you linked your Facebook account to your login. At some later point you decided to revoke your consent for us using your PII. If we let you log in with Facebook we are processing your PII to log you in. We don't know about your revocation of consent before processing your PII. However, having processed your PII is illegal. So just the fact that we let you log in with a social network account might be illegal. The potential fine is too high to risk it.
 
-## Download
+Then we have ePrivacy. We can't even let you use social login to log in or, worse, create an account unless you have already _actively_ accepted the terms of service and sharing your information with third parties. In other words you need to provide consent before logging in. This nullifies the whole consept of frictionless sign-up and logging in. Filling in a regular login or signup form is easier than having you jump through hoops.
 
-Pre-built packages of Akeeba LoginGuard are available through [our GitHub repository's Releases page](https://github.com/akeeba/sociallogin/releases).
+So, the reason I wrote this code no longer exists. I have no use of that code anymore.
 
-Akeeba SocialLogin comes with English (Great Britain) language built-in. We do not offer official translations for any other language nor will we accept pull requests for language files. You are welcome to translate to your own language and make the translation available free of charge under the GPLv3 license which the original translation files are licensed under.
+On top of that wwe have to deal with Facebook, Twitter and Google changing their interfaces all the time. 98% of the time I spend on SocialLogin is answering posts, issues and emails regarding how these third party services' interfaces work. I am providing free support for the services of multinationals making billions using up time I should rather be spending on the software that pays the bills.
 
-## No support - For developers only
-
-This software is provided **WITHOUT ANY KIND OF END USER SUPPORT**. You are free to consult [consult the documentation Wiki](https://github.com/akeeba/sociallogin/wiki).
-
-If you are a developer you are free to submit a pull request with your code fix, as long as there is a clear description of what was not working for you, why and how you fixed it. 
- 
-## Prerequisites
-
-In order to build the installation packages of this component you will need to have the following tools:
-
-* A command line environment. Using Bash under Linux / Mac OS X works best. On Windows you will need to run most tools through an elevated privileges (administrator) command prompt on an NTFS filesystem due to the use of symlinks. Press WIN-X and click on "Command Prompt (Admin)" to launch an elevated command prompt.
-* A PHP CLI binary in your path
-* Command line Git executables
-* Phing
-* (Optional) libxml and libsxlt command-line tools, only if you intend on building the documentation PDF files
-
-You will also need the following path structure inside a folder on your system
-
-* **sociallogin** This repository
-* **buildfiles** [Akeeba Build Tools](https://github.com/akeeba/buildfiles)
-* **translations** [Akeeba Translations](https://github.com/akeeba/translations)
-
-You will need to use the exact folder names specified here.
-
-### Useful Phing tasks
-
-All of the following commands are to be run from the MAIN/build directory.
-Lines starting with $ indicate a Mac OS X / Linux / other *NIX system commands.
-Lines starting with > indicate Windows commands. The starting character ($ or >)
-MUST NOT be typed!
-
-You are advised to NOT distribute the library installation packages you have built yourselves with your components. It
-is best to only use the official library packages released by Akeeba Ltd.
-
-1. Relinking internal files
-
-   This is only required when the buildfiles change.
-
-		$ phing link
-		> phing link
-
-1. Creating a dev release installation package
-
-   This creates the installable ZIP packages of the component inside the
-   MAIN/release directory.
-
-		$ phing git
-		> phing git
-		
-   **WARNING** Do not distribute the dev releases to your clients. Dev releases, unlike regular releases, also use a
-   dev version of FOF 3.
-
-1. Build the documentation in PDF format
-
-   This creates the documentation in PDF format
-
-		$ phing doc-j-pdf
-		> phing doc-j-pdf
-
-
-Please note that all generated files (ZIP library packages, PDF files, HTML files) are written to the
-`release` directory inside the repository's root.
+As a result I have decided to discontinue SocialLogin on September 2018. The repository on GitHub will be archived and will no longer accept issues, pull requests and code commits.
