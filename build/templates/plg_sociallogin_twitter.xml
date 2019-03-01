@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<extension version="3.4.0" type="plugin" group="sociallogin" method="upgrade">
+<extension version="3.8.0" type="plugin" group="sociallogin" method="upgrade">
     <name>PLG_SOCIALLOGIN_TWITTER</name>
     <version>##VERSION##</version>
     <creationDate>##DATE##</creationDate>
@@ -8,7 +8,7 @@
     <authorEmail>no-reply@akeebabackup.com</authorEmail>
     <authorUrl>https://www.akeebabackup.com</authorUrl>
 
-    <copyright>Copyright (c)2016-2017 Akeeba Ltd</copyright>
+    <copyright>Copyright (c)2016-2019 Akeeba Ltd</copyright>
     <license>GNU GPL v3 or later</license>
 
     <description>PLG_SOCIALLOGIN_TWITTER_DESCRIPTION</description>
