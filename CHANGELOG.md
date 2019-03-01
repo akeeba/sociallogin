@@ -1,6 +1,8 @@
 # 2.1.0
 
--- TODO --
+**New features**
+
+* Login with Google using Google OpenID instead of the now defunct Google+ API
 
 # 2.0.3
 

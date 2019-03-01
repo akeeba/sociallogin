@@ -9,7 +9,7 @@
 defined('_JEXEC') or die();
 
 use Akeeba\SocialLogin\Google\OAuth2;
-use Akeeba\SocialLogin\Google\People;
+use Akeeba\SocialLogin\Google\OpenID;
 use Akeeba\SocialLogin\Library\Data\PluginConfiguration;
 use Akeeba\SocialLogin\Library\Data\UserData;
 use Akeeba\SocialLogin\Library\Exception\Login\GenericMessage;
@@ -427,7 +427,7 @@ class plgSocialloginGoogle extends CMSPlugin
 		$app          = Joomla::getApplication();
 
 		/**
-		 * I have to do this because Joomla's Google OAUth2 connector is buggy :@ The googlize() method assumes that
+		 * I have to do this because Joomla's Google OAuth2 connector is buggy :@ The googlize() method assumes that
 		 * the requestparams option is an array. However, when you construct the object Joomla! will "helpfully" convert
 		 * your original array into an object. Therefore trying to later access it as an array causes a PHP Fatal Error
 		 * about trying to access an stdClass object as an array...!
@@ -462,72 +462,42 @@ class plgSocialloginGoogle extends CMSPlugin
 				}
 
 				// Get information about the user from Big Brother... er... Google.
-				// See https://developers.google.com/+/web/api/rest/oauth
-				// See https://developers.google.com/+/web/api/rest/latest/people/get#response
-				$options = new Registry();
-				$googleUserApi = new People($options, $connector);
-				$googleFields  = $googleUserApi->getPeople('me', 'emails,id,name');
+				$options       = new Registry();
+				$googleUserApi = new OpenID($options, $connector);
+				$openIDProfile = $googleUserApi->getOpenIDProfile();
 			}
 			catch (Exception $e)
 			{
 				throw new LoginError($e->getMessage());
 			}
 
-			// The data used to login or create a user
-			$userData = new UserData;
-			$userData->name = '';
-
-			$name = '';
-
-			if (isset($googleFields['name']['givenName']))
-			{
-				$name .= $googleFields['name']['givenName'];
-			}
-
-			if (isset($googleFields['name']['familyName']))
-			{
-				$name .= ' ' . $googleFields['name']['familyName'];
-			}
-
-			if (isset($googleFields['name']['formatted']))
-			{
-				$name = $googleFields['name']['formatted'];
-			}
-
-			$userData->name = $name;
-
-			$userData->id = $googleFields['id'];
-			$userData->email = '';
-			$userData->verified = false;
-
-			// Loop through all emails and try to find the verified Google account email
-			foreach ($googleFields['emails'] as $email)
-			{
-				$userData->email = $email['value'];
-
-				if ($email['type'] == 'account')
-				{
-					$userData->verified = true;
-
-					break;
-				}
-			}
+			/**
+			 * The data used to login or create a user.
+			 *
+			 * For the returned fields see https://openid.net/specs/openid-connect-core-1_0.html#StandardClaims
+			 */
+			$userData           = new UserData;
+			$userData->name     = isset($openIDProfile['name']) ? isset($openIDProfile['name']) : '';
+			$userData->id       = $openIDProfile['sub'];
+			$userData->email    = isset($openIDProfile['email']) ? $openIDProfile['email'] : '';
+			$userData->verified = isset($openIDProfile['email_verified']) ? $openIDProfile['email_verified'] : false;
+			$userData->timezone = isset($openIDProfile['zoneinfo']) ? $openIDProfile['zoneinfo'] : 'GMT';
 
 			// Options which control login and user account creation
-			$pluginConfiguration = new PluginConfiguration;
-			$pluginConfiguration ->canLoginUnlinked = $this->canLoginUnlinked;
-			$pluginConfiguration ->canCreateAlways = $this->canCreateAlways;
-			$pluginConfiguration ->canCreateNewUsers = $this->canCreateNewUsers;
-			$pluginConfiguration ->canBypassValidation = $this->canBypassValidation;
+			$pluginConfiguration                      = new PluginConfiguration;
+			$pluginConfiguration->canLoginUnlinked    = $this->canLoginUnlinked;
+			$pluginConfiguration->canCreateAlways     = $this->canCreateAlways;
+			$pluginConfiguration->canCreateNewUsers   = $this->canCreateNewUsers;
+			$pluginConfiguration->canBypassValidation = $this->canBypassValidation;
 
 			/**
 			 * Data to save to the user profile. The first row is the primary key which links the Joomla! user account to
 			 * the social media account.
 			 */
-			$userProfileData = array(
+			$userProfileData = [
 				'userid' => $userData->id,
 				'token'  => json_encode($token),
-			);
+			];
 
 			Login::handleSocialLogin($this->integrationName, $pluginConfiguration, $userData, $userProfileData);
 		}
@@ -590,11 +560,12 @@ class plgSocialloginGoogle extends CMSPlugin
 			return;
 		}
 
+		// Yeah, I know the display is kinda braindead. This is how Google requires it, see https://developers.google.com/identity/branding-guidelines
 		$css = /** @lang CSS */
 			<<< CSS
-.akeeba-sociallogin-link-button-google, .akeeba-sociallogin-unlink-button-google, .akeeba-sociallogin-button-google { background-color: #DD4B39; color: #ffffff; transition-duration: 0.33s; background-image: none; border-color: #6e251c; }
-.akeeba-sociallogin-link-button-google:hover, .akeeba-sociallogin-unlink-button-google:hover, .akeeba-sociallogin-button-google:hover { background-color: #9a3427; color: #ffffff; transition-duration: 0.33s; border-color: #3B5998; }
-.akeeba-sociallogin-link-button-google img, .akeeba-sociallogin-unlink-button-google img, .akeeba-sociallogin-button-google img { display: inline-block; width: 16px; height: 16px; margin: 0 0.33em 0.1em 0; padding: 0 }
+.akeeba-sociallogin-link-button-google, .akeeba-sociallogin-unlink-button-google, .akeeba-sociallogin-button-google { background-color: #4285F4; color: #ffffff; transition-duration: 0.33s; background-image: none; border-color: #4285F4; padding: 8px 8px; }
+.akeeba-sociallogin-link-button-google:hover, .akeeba-sociallogin-unlink-button-google:hover, .akeeba-sociallogin-button-google:hover { background-color: #3c63cc; color: #ffffff; transition-duration: 0.33s; border-color: #3c63cc; }
+.akeeba-sociallogin-link-button-google img, .akeeba-sociallogin-unlink-button-google img, .akeeba-sociallogin-button-google img { display: inline-block; width: 18px; height: 18px; margin: 0 24px 0 0; padding: 0 }
 
 CSS;
 

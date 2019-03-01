@@ -136,7 +136,7 @@ class OAuth2
 
 		if (!$this->client->getOption('requestparams'))
 		{
-			$this->client->setOption('requestparams', Array());
+			$this->client->setOption('requestparams', []);
 		}
 
 		$params = $this->client->getOption('requestparams');
