@@ -18,16 +18,9 @@ use Akeeba\SocialLogin\Library\Helper\Integrations;
 use Akeeba\SocialLogin\Library\Helper\Joomla;
 use Akeeba\SocialLogin\Library\Helper\Login;
 use Akeeba\SocialLogin\Library\OAuth\OAuth2Client;
+use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\CMS\User\User;
 use Joomla\Registry\Registry;
-
-if (!class_exists('AkeebaSocialLoginJPlugin'))
-{
-	if (!include_once (JPATH_PLUGINS . '/system/sociallogin/abstraction.php'))
-	{
-		return;
-	}
-}
 
 if (!class_exists('Akeeba\\SocialLogin\\Library\\Helper\\Login', true))
 {
@@ -37,7 +30,7 @@ if (!class_exists('Akeeba\\SocialLogin\\Library\\Helper\\Login', true))
 /**
  * Akeeba Social Login plugin for Google integration
  */
-class plgSocialloginGoogle extends AkeebaSocialLoginJPlugin
+class plgSocialloginGoogle extends CMSPlugin
 {
 	/**
 	 * The integration slug used by this plugin

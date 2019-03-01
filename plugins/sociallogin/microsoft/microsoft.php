@@ -8,8 +8,6 @@
 // Protect from unauthorized access
 defined('_JEXEC') or die();
 
-use Akeeba\SocialLogin\Microsoft\OAuth as MicrosoftOAuth;
-use Akeeba\SocialLogin\Microsoft\UserQuery;
 use Akeeba\SocialLogin\Library\Data\PluginConfiguration;
 use Akeeba\SocialLogin\Library\Data\UserData;
 use Akeeba\SocialLogin\Library\Exception\Login\GenericMessage;
@@ -17,16 +15,11 @@ use Akeeba\SocialLogin\Library\Exception\Login\LoginError;
 use Akeeba\SocialLogin\Library\Helper\Integrations;
 use Akeeba\SocialLogin\Library\Helper\Joomla;
 use Akeeba\SocialLogin\Library\Helper\Login;
+use Akeeba\SocialLogin\Microsoft\OAuth as MicrosoftOAuth;
+use Akeeba\SocialLogin\Microsoft\UserQuery;
+use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\CMS\User\User;
 use Joomla\Registry\Registry;
-
-if (!class_exists('AkeebaSocialLoginJPlugin'))
-{
-	if (!include_once (JPATH_PLUGINS . '/system/sociallogin/abstraction.php'))
-	{
-		return;
-	}
-}
 
 if (!class_exists('Akeeba\\SocialLogin\\Library\\Helper\\Login', true))
 {
@@ -36,7 +29,7 @@ if (!class_exists('Akeeba\\SocialLogin\\Library\\Helper\\Login', true))
 /**
  * Akeeba Social Login plugin for Microsoft Live integration
  */
-class plgSocialloginMicrosoft extends AkeebaSocialLoginJPlugin
+class plgSocialloginMicrosoft extends CMSPlugin
 {
 	/**
 	 * The integration slug used by this plugin

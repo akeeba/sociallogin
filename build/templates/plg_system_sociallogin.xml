@@ -15,7 +15,6 @@
 
 	<files>
 		<filename plugin="sociallogin">sociallogin.php</filename>
-		<filename>abstraction.php</filename>
 		<folder>fields</folder>
 		<folder>layout</folder>
 		<folder>Library</folder>

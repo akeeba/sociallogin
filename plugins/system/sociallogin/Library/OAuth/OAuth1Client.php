@@ -62,22 +62,13 @@ abstract class OAuth1Client
 	 * @param   string          $version      Specify the OAuth version. By default we are using 1.0a.
 	 *
 	 */
-	public function __construct($options = array(), $client, $input, $application, $version = '1.0a')
+	public function __construct($options, $client, $input, $application, $version = '1.0a')
 	{
-		$this->options = $options;
-		$this->client = $client;
-
-		if (class_exists('Joomla\\Input\\Input'))
-		{
-			$this->input = $input ?: ($application ? $application->input : new Input());
-		}
-		else
-		{
-			$this->input = $input ?: ($application ? $application->input : new JInput());
-		}
-
+		$this->options     = $options;
+		$this->client      = $client;
+		$this->input       = $input ?: ($application ? $application->input : new Input());
 		$this->application = $application;
-		$this->version = $version;
+		$this->version     = $version;
 	}
 
 	/**
@@ -86,6 +77,7 @@ abstract class OAuth1Client
 	 * @return  array  The access token.
 	 *
 	 * @throws  \DomainException
+	 * @throws  \Exception
 	 */
 	public function authenticate()
 	{
@@ -155,6 +147,7 @@ abstract class OAuth1Client
 	 * @return  void
 	 *
 	 * @throws  \DomainException
+	 * @throws  \Exception
 	 */
 	private function generateRequestToken()
 	{
@@ -214,6 +207,8 @@ abstract class OAuth1Client
 	 * Method used to get an access token.
 	 *
 	 * @return  void
+	 *
+	 * @throws \Exception
 	 */
 	private function generateAccessToken()
 	{
@@ -248,6 +243,7 @@ abstract class OAuth1Client
 	 * @return  Response  The Response object.
 	 *
 	 * @throws  \DomainException
+	 * @throws  \Exception
 	 */
 	public function oauthRequest($url, $method, $parameters, $data = array(), $headers = array())
 	{
@@ -286,6 +282,7 @@ abstract class OAuth1Client
 		switch ($method)
 		{
 			case 'GET':
+			default:
 				$url = $this->toUrl($url, $data);
 				$response = $this->client->get($url, array('Authorization' => $this->createHeader($oauthHeaders)));
 				break;
@@ -433,6 +430,8 @@ abstract class OAuth1Client
 		uksort($parameters, 'strcmp');
 
 		// Encode parameters.
+		$kv = [];
+
 		foreach ($parameters as $key => $value)
 		{
 			$key = $this->safeEncode($key);
@@ -441,14 +440,14 @@ abstract class OAuth1Client
 			{
 				foreach ($value as $k => $v)
 				{
-					$v = $this->safeEncode($v);
+					$v    = $this->safeEncode($v);
 					$kv[] = "{$key}={$v}";
 				}
 			}
 			else
 			{
 				$value = $this->safeEncode($value);
-				$kv[] = "{$key}={$value}";
+				$kv[]  = "{$key}={$value}";
 			}
 		}
 
@@ -456,32 +455,29 @@ abstract class OAuth1Client
 		$params = implode('&', $kv);
 
 		// Signature base string elements.
-		$base = array(
+		$base = [
 			$method,
 			$url,
-			$params
-		);
+			$params,
+		];
+
+		$base = array_map([$this, 'safeEncode'], $base);
 
 		// Return the base string.
-		return implode('&', $this->safeEncode($base));
+		return implode('&', $base);
 	}
 
 	/**
 	 * Encodes the string or array passed in a way compatible with OAuth.
 	 * If an array is passed each array value will will be encoded.
 	 *
-	 * @param   mixed  $data  The scalar or array to encode.
+	 * @param   string  $data  The scalar to encode.
 	 *
 	 * @return  string  $data encoded in a way compatible with OAuth.
 	 *
 	 */
 	public function safeEncode($data)
 	{
-		if (is_array($data))
-		{
-			return array_map(array($this, 'safeEncode'), $data);
-		}
-
 		if (is_scalar($data))
 		{
 			return str_ireplace(
@@ -499,6 +495,7 @@ abstract class OAuth1Client
 	 *
 	 * @return  string  The current nonce.
 	 *
+	 * @throws \Exception
 	 */
 	public static function generateNonce()
 	{

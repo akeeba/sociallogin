@@ -9,11 +9,8 @@ namespace Akeeba\SocialLogin\Library\Helper;
 
 // Protect from unauthorized access
 use Exception;
-use JApplicationBase;
-use JApplicationCms;
 use JDatabaseDriver;
-use JFactory;
-use JLayoutFile;
+use JEventDispatcher;
 use Joomla\CMS\Application\BaseApplication;
 use Joomla\CMS\Application\CliApplication;
 use Joomla\CMS\Application\CMSApplication;
@@ -26,14 +23,7 @@ use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\String\PunycodeHelper;
 use Joomla\CMS\User\User;
 use Joomla\CMS\User\UserHelper;
-use Joomla\Database\DatabaseDriver;
 use Joomla\Registry\Registry;
-use JPluginHelper;
-use JRegistry;
-use JSession;
-use JStringPunycode;
-use JUser;
-use JUserHelper;
 use RuntimeException;
 
 defined('_JEXEC') or die();
@@ -47,7 +37,7 @@ abstract class Joomla
 	 * A fake session storage for CLI apps. Since CLI applications cannot have a session we are using a Registry object
 	 * we manage internally.
 	 *
-	 * @var   JRegistry|Registry
+	 * @var   Registry
 	 */
 	protected static $fakeSession = null;
 
@@ -68,13 +58,13 @@ abstract class Joomla
 	/**
 	 * Are we inside an administrator page?
 	 *
-	 * @param   \JApplicationCms|CMSApplication $app The current CMS application which tells us if we are inside an admin page
+	 * @param   CMSApplication  $app  The current CMS application which tells us if we are inside an admin page
 	 *
 	 * @return  bool
 	 *
 	 * @throws  Exception
 	 */
-	public static function isAdminPage($app = null)
+	public static function isAdminPage(CMSApplication $app = null)
 	{
 		if (is_null(self::$isAdmin))
 		{
@@ -83,7 +73,7 @@ abstract class Joomla
 				$app = self::getApplication();
 			}
 
-			self::$isAdmin = method_exists($app, 'isClient') ? $app->isClient('administrator') : $app->isAdmin();
+			self::$isAdmin = $app->isClient('administrator');
 		}
 
 		return self::$isAdmin;
@@ -92,11 +82,11 @@ abstract class Joomla
 	/**
 	 * Are we inside a CLI application
 	 *
-	 * @param   \JApplicationCms|CMSApplication $app The current CMS application which tells us if we are inside an admin page
+	 * @param   CMSApplication  $app  The current CMS application which tells us if we are inside an admin page
 	 *
 	 * @return  bool
 	 */
-	public static function isCli($app = null)
+	public static function isCli(CMSApplication $app = null)
 	{
 		if (is_null(self::$isCli))
 		{
@@ -121,11 +111,6 @@ abstract class Joomla
 			{
 				self::$isCli = $app instanceof \Exception;
 
-				if (class_exists('JApplicationCli'))
-				{
-					self::$isCli = self::$isCli || $app instanceof \JApplicationCli;
-				}
-
 				if (class_exists('Joomla\\CMS\\Application\\CliApplication'))
 				{
 					self::$isCli = self::$isCli || $app instanceof CliApplication;
@@ -140,7 +125,7 @@ abstract class Joomla
 	 * Is the current user allowed to edit the social login configuration of $user? To do so I must either be editing my
 	 * own account OR I have to be a Super User.
 	 *
-	 * @param   JUser|User $user The user you want to know if we're allowed to edit
+	 * @param   User  $user  The user you want to know if we're allowed to edit
 	 *
 	 * @return  bool
 	 */
@@ -180,10 +165,10 @@ abstract class Joomla
 	/**
 	 * Helper method to render a JLayout.
 	 *
-	 * @param   string $layoutFile  Dot separated path to the layout file, relative to base path (plugins/system/sociallogin/layout)
-	 * @param   object $displayData Object which properties are used inside the layout file to build displayed output
-	 * @param   string $includePath Additional path holding layout files
-	 * @param   mixed  $options     Optional custom options to load. Registry or array format. Set 'debug'=>true to output debug information.
+	 * @param   string  $layoutFile   Dot separated path to the layout file, relative to base path (plugins/system/sociallogin/layout)
+	 * @param   object  $displayData  Object which properties are used inside the layout file to build displayed output
+	 * @param   string  $includePath  Additional path holding layout files
+	 * @param   mixed   $options      Optional custom options to load. Registry or array format. Set 'debug'=>true to output debug information.
 	 *
 	 * @return  string
 	 */
@@ -203,10 +188,10 @@ abstract class Joomla
 	/**
 	 * Execute a plugin event and return the results
 	 *
-	 * @param   string                           $event   The plugin event to trigger.
-	 * @param   array                            $data    The data to pass to the event handlers.
-	 * @param   JApplicationBase|BaseApplication $app     The application to run plugins against,
-	 *                                                    default the currently loaded application.
+	 * @param   string           $event  The plugin event to trigger.
+	 * @param   array            $data   The data to pass to the event handlers.
+	 * @param   BaseApplication  $app    The application to run plugins against,
+	 *                                   default the currently loaded application.
 	 *
 	 * @return  array  The plugin responses
 	 *
@@ -227,7 +212,7 @@ abstract class Joomla
 
 		if (class_exists('JEventDispatcher'))
 		{
-			return \JEventDispatcher::getInstance()->trigger($event, $data);
+			return JEventDispatcher::getInstance()->trigger($event, $data);
 		}
 
 		throw new RuntimeException('Cannot run plugins');
@@ -245,63 +230,41 @@ abstract class Joomla
 	 */
 	public static function importPlugins($group, $plugin = null)
 	{
-		if (class_exists('Joomla\\CMS\\Plugin\\PluginHelper'))
-		{
-			PluginHelper::importPlugin($group, $plugin);
-
-			return;
-		}
-
-		JPluginHelper::importPlugin($group, $plugin);
+		PluginHelper::importPlugin($group, $plugin);
 	}
 
 	/**
 	 * Get the CMS application object
 	 *
-	 * @return  JApplicationCms|CMSApplication
+	 * @return  CMSApplication
 	 *
 	 * @throws  Exception
 	 */
 	public static function getApplication()
 	{
-		if (class_exists('Joomla\\CMS\\Factory'))
-		{
-			return Factory::getApplication();
-		}
-
-		return JFactory::getApplication();
+		return Factory::getApplication();
 	}
 
 	/**
 	 * Returns the user, delegates to JFactory/Factory.
 	 *
-	 * @param   int|null $id The ID of the Joomla! user to load, default null (currently logged in user)
+	 * @param   int|null  $id  The ID of the Joomla! user to load, default null (currently logged in user)
 	 *
-	 * @return  JUser|User
+	 * @return  User
 	 */
 	public static function getUser($id = null)
 	{
-		if (class_exists('Joomla\\CMS\\Factory'))
-		{
-			return Factory::getUser($id);
-		}
-
-		return JFactory::getUser($id);
+		return Factory::getUser($id);
 	}
 
 	/**
 	 * Get the Joomla! session
 	 *
-	 * @return JSession|\Joomla\CMS\Session\Session
+	 * @return  \Joomla\CMS\Session\Session
 	 */
 	protected static function getSession()
 	{
-		if (class_exists('Joomla\\CMS\\Factory'))
-		{
-			return Factory::getSession();
-		}
-
-		return JFactory::getSession();
+		return Factory::getSession();
 	}
 
 	/**
@@ -311,16 +274,11 @@ abstract class Joomla
 	 * @param   array   $options     Options to the layout file
 	 * @param   string  $basePath    Base path for the layout file
 	 *
-	 * @return JLayoutFile|FileLayout
+	 * @return  FileLayout
 	 */
 	public static function getJLayoutFromFile($layoutFile, $options, $basePath)
 	{
-		if (class_exists('Joomla\\CMS\\Layout\\FileLayout'))
-		{
-			return new FileLayout($layoutFile, $basePath, $options);
-		}
-
-		return new JLayoutFile($layoutFile, $basePath, $options);
+		return new FileLayout($layoutFile, $basePath, $options);
 	}
 
 	/**
@@ -393,18 +351,13 @@ abstract class Joomla
 	}
 
 	/**
-	 * @return Registry|JRegistry
+	 * @return  Registry
 	 */
 	protected static function getFakeSession()
 	{
 		if (!is_object(self::$fakeSession))
 		{
-			if (class_exists('Joomla\\Registry\\Registry'))
-			{
-				self::$fakeSession = new Registry();
-			}
-
-			self::$fakeSession = new JRegistry();
+			self::$fakeSession = new Registry();
 		}
 
 		return self::$fakeSession;
@@ -448,12 +401,7 @@ abstract class Joomla
 	 */
 	public static function generateRandom($length)
 	{
-		if (class_exists('Joomla\\CMS\\User\\UserHelper'))
-		{
-			return UserHelper::genRandomPassword($length);
-		}
-
-		return JUserHelper::genRandomPassword($length);
+		return UserHelper::genRandomPassword($length);
 	}
 
 	/**
@@ -465,12 +413,7 @@ abstract class Joomla
 	 */
 	public static function emailToPunycode($email)
 	{
-		if (class_exists('Joomla\\CMS\\String\\PunycodeHelper'))
-		{
-			return PunycodeHelper::emailToPunycode($email);
-		}
-
-		return JStringPunycode::emailToPunycode($email);
+		return PunycodeHelper::emailToPunycode($email);
 	}
 
 	/**
@@ -487,65 +430,40 @@ abstract class Joomla
 			return false;
 		}
 
-		if (class_exists('Joomla\\CMS\\Application\\CMSApplication'))
-		{
-			return $app instanceof CMSApplication;
-		}
-
-		return $app instanceof JApplicationCms;
+		return $app instanceof CMSApplication;
 	}
 
 	/**
-	 * @return JDatabaseDriver|DatabaseDriver
+	 * @return JDatabaseDriver
 	 */
 	public static function getDbo()
 	{
-		if (class_exists('Joomla\\CMS\\Factory'))
-		{
-			return Factory::getDbo();
-		}
-
-		return JFactory::getDbo();
+		return Factory::getDbo();
 	}
 
 	/**
 	 * Get the Joomla! global configuration object
 	 *
-	 * @return JRegistry|Registry
+	 * @return  Registry
 	 */
 	public static function getConfig()
 	{
-		if (class_exists('Joomla\\CMS\\Factory'))
-		{
-			return Factory::getConfig();
-		}
-
-		return JFactory::getConfig();
+		return Factory::getConfig();
 	}
 
 	/**
 	 * Get the Joomla! mailer object
 	 *
-	 * @return \JMail|Mail
+	 * @return  Mail
 	 */
 	public static function getMailer()
 	{
-		if (class_exists('Joomla\\CMS\\Factory'))
-		{
-			return Factory::getMailer();
-		}
-
-		return JFactory::getMailer();
+		return Factory::getMailer();
 	}
 
 	public static function getUserId($username)
 	{
-		if (class_exists('Joomla\\CMS\\User\\UserHelper'))
-		{
-			return UserHelper::getUserId($username);
-		}
-
-		return JUserHelper::getUserId($username);
+		return UserHelper::getUserId($username);
 	}
 
 	/**
@@ -557,12 +475,7 @@ abstract class Joomla
 	 */
 	public static function _($string)
 	{
-		if (class_exists('Joomla\\CMS\\Language\\Text'))
-		{
-			return call_user_func_array(array('Joomla\\CMS\\Language\\Text', '_'), array($string));
-		}
-
-		return call_user_func_array(array('JText', '_'), array($string));
+		return call_user_func_array(array('Joomla\\CMS\\Language\\Text', '_'), array($string));
 	}
 
 	/**
@@ -590,12 +503,7 @@ abstract class Joomla
 	{
 		$args = func_get_args();
 
-		if (class_exists('Joomla\\CMS\\Language\\Text'))
-		{
-			return call_user_func_array(array('Joomla\\CMS\\Language\\Text', 'sprintf'), $args);
-		}
-
-		return call_user_func_array(array('JText', 'sprintf'), $args);
+		return call_user_func_array(array('Joomla\\CMS\\Language\\Text', 'sprintf'), $args);
 	}
 
 	/**
@@ -603,25 +511,12 @@ abstract class Joomla
 	 *
 	 * @param   array  $options  The options to pass to the factory when building the client.
 	 *
-	 * @return  Http|\JHttp
+	 * @return  Http
 	 */
 	public static function getHttpClient(array $options = array())
 	{
-		if (class_exists('Joomla\\Registry\\Registry'))
-		{
-			$optionRegistry = new Registry($options);
-		}
-		else
-		{
-			$optionRegistry = new JRegistry($options);
-		}
+		$optionRegistry = new Registry($options);
 
-		if (class_exists('Joomla\\CMS\\Http\\Http'))
-		{
-			return HttpFactory::getHttp($optionRegistry);
-		}
-
-		return \JHttpFactory::getHttp($optionRegistry);
-
+		return HttpFactory::getHttp($optionRegistry);
 	}
 }

@@ -8,15 +8,11 @@
 // Prevent direct access
 use Akeeba\SocialLogin\Library\Helper\Integrations;
 use Akeeba\SocialLogin\Library\Helper\Joomla;
+use Joomla\CMS\Form\FormField;
 
 defined('_JEXEC') or die;
 
-if (!defined('_AkeebaSocialLoginJFormFieldParent_'))
-{
-	require_once __DIR__ . '/abstraction.php';
-}
-
-class JFormFieldSociallogin extends AkeebaSocialLoginJFormFieldParent
+class JFormFieldSociallogin extends FormField
 {
 	/**
 	 * Element name

@@ -9,22 +9,15 @@
 use Akeeba\SocialLogin\Library\Helper\Ajax;
 use Akeeba\SocialLogin\Library\Helper\Integrations;
 use Akeeba\SocialLogin\Library\Helper\Joomla;
+use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\Utilities\ArrayHelper;
 
 defined('_JEXEC') or die;
 
-if (!class_exists('AkeebaSocialLoginJPlugin'))
-{
-	if (!include_once (__DIR__ . '/abstraction.php'))
-	{
-		return;
-	}
-}
-
 /**
  * SocialLogin System Plugin
  */
-class plgSystemSociallogin extends AkeebaSocialLoginJPlugin
+class plgSystemSociallogin extends CMSPlugin
 {
 	/**
 	 * The names of the login modules to intercept. Default: mod_login

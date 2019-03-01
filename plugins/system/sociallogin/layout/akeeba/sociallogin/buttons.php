@@ -5,6 +5,8 @@
  * @license   GNU General Public License version 3, or later
  */
 
+use Joomla\CMS\Layout\FileLayout;
+
 // Protect from unauthorized access
 defined('_JEXEC') or die();
 
@@ -15,7 +17,7 @@ defined('_JEXEC') or die();
  *
  * Generic data
  *
- * @var   JLayoutFile  $this         The JLayout renderer
+ * @var   FileLayout   $this         The Joomla layout renderer
  * @var   array        $displayData  The data in array format. DO NOT USE.
  *
  * Layout specific data

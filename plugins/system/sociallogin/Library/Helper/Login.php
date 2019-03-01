@@ -12,24 +12,24 @@ use Akeeba\SocialLogin\Library\Data\UserData;
 use Akeeba\SocialLogin\Library\Exception\Login\GenericMessage;
 use Akeeba\SocialLogin\Library\Exception\Login\LoginError;
 use Exception;
-use JApplicationHelper;
-use JAuthentication;
-use JAuthenticationResponse;
-use JComponentHelper;
-use JDate;
 use JEventDispatcher;
 use JLoader;
-use JLog;
 use Joomla\CMS\Application\ApplicationHelper;
+use Joomla\CMS\Application\ApplicationHelper as JApplicationHelper;
 use Joomla\CMS\Application\BaseApplication;
 use Joomla\CMS\Authentication\Authentication;
+use Joomla\CMS\Authentication\Authentication as JAuthentication;
 use Joomla\CMS\Authentication\AuthenticationResponse;
+use Joomla\CMS\Authentication\AuthenticationResponse as JAuthenticationResponse;
 use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Component\ComponentHelper as JComponentHelper;
+use Joomla\CMS\Date\Date as JDate;
+use Joomla\CMS\Log\Log as JLog;
+use Joomla\CMS\Router\Route as JRoute;
+use Joomla\CMS\Uri\Uri as JUri;
+use Joomla\CMS\User\User as JUser;
 use Joomla\Event\Event;
 use Joomla\Registry\Registry;
-use JRoute;
-use JUri;
-use JUser;
 use RuntimeException;
 use UnexpectedValueException;
 
@@ -56,6 +56,7 @@ abstract class Login
 	 * @throws  LoginError      When a login error occurs (must report the login error to Joomla!).
 	 * @throws  GenericMessage  When there is no login error but we need to report a message to the user, e.g. to tell
 	 *                          them they need to click on the activation email.
+	 * @throws  Exception
 	 */
 	public static function handleSocialLogin($slug, PluginConfiguration $config, UserData $userData, array $userProfileData)
 	{
@@ -394,7 +395,7 @@ abstract class Login
 			$app = Joomla::getApplication();
 		}
 
-		$isAdmin = method_exists($app, 'isClient') ? $app->isClient('administrator') : $app->isAdmin();
+		$isAdmin = $app->isClient('administrator');
 		$user    = Joomla::getUser($userId);
 
 		// Does the user account have a pending activation?
@@ -638,7 +639,7 @@ abstract class Login
 
 		// Handle account activation/confirmation emails.
 		$app = Joomla::getApplication();
-		$isAdmin = method_exists($app, 'isClient') ? $app->isClient('administrator') : $app->isAdmin();
+		$isAdmin = $app->isClient('administrator');
 
 		switch ($userActivation)
 		{
