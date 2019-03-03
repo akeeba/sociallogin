@@ -17,9 +17,12 @@ use Akeeba\SocialLogin\Library\Exception\Login\LoginError;
 use Akeeba\SocialLogin\Library\Helper\Integrations;
 use Akeeba\SocialLogin\Library\Helper\Joomla;
 use Akeeba\SocialLogin\Library\Helper\Login;
+use Joomla\CMS\Authentication\Authentication;
+use Joomla\CMS\Log\Log;
 use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\CMS\User\User;
 use Joomla\Registry\Registry;
+use Joomla\Utilities\ArrayHelper;
 
 if (!class_exists('Akeeba\\SocialLogin\\Library\\Helper\\Login', true))
 {
@@ -128,6 +131,9 @@ class plgSocialloginGithub extends CMSPlugin
 
 		// Set the integration name from the plugin name (without the plg_sociallogin_ part, of course)
 		$this->integrationName = $this->_name;
+
+		// Register a debug log file writer
+		Joomla::addLogger($this->_name);
 
 		// Load the plugin options into properties
 		$this->appId               = $this->params->get('appid', '');
@@ -378,6 +384,8 @@ class plgSocialloginGithub extends CMSPlugin
 	 */
 	public function onAjaxGithub()
 	{
+		Joomla::log($this->integrationName, 'Begin handing of authentication callback');
+
 		// This is the return URL used by the Link button
 		$returnURL  = Joomla::getSessionVar('returnUrl', JUri::base(), 'plg_system_sociallogin');
 		// And this is the login success URL used by the Login button
@@ -408,14 +416,19 @@ class plgSocialloginGithub extends CMSPlugin
 		{
 			try
 			{
+				Joomla::log($this->integrationName, 'Validate received token with GitHub', Log::INFO);
+
 				$token = $oauthConnector->authenticate();
 
 				if ($token === false)
 				{
+					Joomla::log($this->integrationName, 'Received token from GitHub is invalid or the user has declined application authorization', Log::ERROR);
 					throw new LoginError(Joomla::_('PLG_SOCIALLOGIN_GITHUB_ERROR_NOT_LOGGED_IN_FB'));
 				}
 
 				// Get information about the user from GitHub.
+				Joomla::log($this->integrationName, 'Retrieving GitHub profile information', Log::INFO);
+
 				$tokenArray   = $oauthConnector->getToken();
 
 				$options      = new Registry(array(
@@ -427,8 +440,12 @@ class plgSocialloginGithub extends CMSPlugin
 			}
 			catch (Exception $e)
 			{
+				Joomla::log($this->integrationName, "Returning login error '{$e->getMessage()}'", Log::ERROR);
+
 				throw new LoginError($e->getMessage());
 			}
+
+			Joomla::log($this->integrationName, sprintf("Retrieved information: %s", ArrayHelper::toString((array)$ghUserFields)));
 
 			// The data used to login or create a user
 			$userData = new UserData();
@@ -453,14 +470,18 @@ class plgSocialloginGithub extends CMSPlugin
 				'token' => json_encode($token),
 			);
 
+			Joomla::log($this->integrationName, sprintf("Calling Social Login login handler with the following information: %s", ArrayHelper::toString($userProfileData)));
+
 			Login::handleSocialLogin($this->integrationName, $pluginConfiguration, $userData, $userProfileData);
 		}
 		catch (LoginError  $e)
 		{
 			// Log failed login
 			$response                = Login::getAuthenticationResponseObject();
-			$response->status        = JAuthentication::STATUS_UNKNOWN;
+			$response->status        = Authentication::STATUS_UNKNOWN;
 			$response->error_message = $e->getMessage();
+
+			Joomla::log($this->integrationName, sprintf("Received login failure. Message: %s", $e->getMessage()), Log::ERROR);
 
 			// This also enqueues the login failure message for display after redirection. Look for JLog in that method.
 			Login::processLoginFailure($response);
@@ -471,6 +492,8 @@ class plgSocialloginGithub extends CMSPlugin
 		}
 		catch (GenericMessage $e)
 		{
+			Joomla::log($this->integrationName, sprintf("Report non-login failure message to user: %s", $e->getMessage()), Log::NOTICE);
+
 			// Do NOT go through processLoginFailure. This is NOT a login failure.
 			$app->enqueueMessage($e->getMessage(), 'info');
 			$app->redirect($failureUrl);
@@ -478,6 +501,7 @@ class plgSocialloginGithub extends CMSPlugin
 			return;
 		}
 
+		Joomla::log($this->integrationName, sprintf("Successful login. Redirecting to %s", $loginUrl), Log::INFO);
 		$app->redirect($loginUrl);
 	}
 

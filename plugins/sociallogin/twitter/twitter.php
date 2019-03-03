@@ -16,8 +16,11 @@ use Akeeba\SocialLogin\Library\Helper\Integrations;
 use Akeeba\SocialLogin\Library\Helper\Joomla;
 use Akeeba\SocialLogin\Library\Helper\Login;
 use Akeeba\SocialLogin\Twitter\OAuth;
+use Joomla\CMS\Authentication\Authentication;
+use Joomla\CMS\Log\Log;
 use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\CMS\User\User;
+use Joomla\Utilities\ArrayHelper;
 
 if (!class_exists('Akeeba\\SocialLogin\\Library\\Helper\\Login', true))
 {
@@ -124,6 +127,9 @@ class plgSocialloginTwitter extends CMSPlugin
 
 		// Set the integration name from the plugin name (without the plg_sociallogin_ part, of course)
 		$this->integrationName = $this->_name;
+
+		// Register a debug log file writer
+		Joomla::addLogger($this->_name);
 
 		// Load the plugin options into properties
 		$this->clientId            = $this->params->get('appid', '');
@@ -410,6 +416,8 @@ class plgSocialloginTwitter extends CMSPlugin
 	 */
 	public function onAjaxTwitter()
 	{
+		Joomla::log($this->integrationName, 'Begin handing of authentication callback');
+
 		// This is the return URL used by the Link button
 		$returnURL  = Joomla::getSessionVar('returnUrl', JUri::base(), 'plg_system_sociallogin');
 		// And this is the login success URL used by the Login button
@@ -440,14 +448,19 @@ class plgSocialloginTwitter extends CMSPlugin
 		{
 			try
 			{
+				Joomla::log($this->integrationName, 'Validate received token with Twitter', Log::INFO);
 				$token = $connector->authenticate();
 
 				if ($token === false)
 				{
+					Joomla::log($this->integrationName, 'Received token from Twitter is invalid or the user has declined application authorization', Log::ERROR);
+
 					throw new LoginError(Joomla::_('PLG_SOCIALLOGIN_TWITTER_ERROR_NOT_LOGGED_IN_TWITTER'));
 				}
 
 				// Get information about the user from Twitter.
+				Joomla::log($this->integrationName, 'Retrieving Twitter profile information', Log::INFO);
+
 				$parameters    = array(
 					'oauth_token' => $token['key'],
 				);
@@ -466,10 +479,14 @@ class plgSocialloginTwitter extends CMSPlugin
 			}
 			catch (Exception $e)
 			{
+				Joomla::log($this->integrationName, "Returning login error '{$e->getMessage()}'", Log::ERROR);
+
 				throw new LoginError($e->getMessage());
 			}
 
 			// The data used to login or create a user
+			Joomla::log($this->integrationName, sprintf("Retrieved information: %s", ArrayHelper::toString($twitterFields)));
+
 			$userData           = new UserData;
 			$userData->name     = $twitterFields['name'];
 			$userData->id       = $twitterFields['id'];
@@ -499,14 +516,18 @@ class plgSocialloginTwitter extends CMSPlugin
 				'token'  => json_encode($token),
 			);
 
+			Joomla::log($this->integrationName, sprintf("Calling Social Login login handler with the following information: %s", ArrayHelper::toString($userProfileData)));
+
 			Login::handleSocialLogin($this->integrationName, $pluginConfiguration, $userData, $userProfileData);
 		}
 		catch (LoginError $e)
 		{
 			// Log failed login
 			$response                = Login::getAuthenticationResponseObject();
-			$response->status        = JAuthentication::STATUS_UNKNOWN;
+			$response->status        = Authentication::STATUS_UNKNOWN;
 			$response->error_message = $e->getMessage();
+
+			Joomla::log($this->integrationName, sprintf("Received login failure. Message: %s", $e->getMessage()), Log::ERROR);
 
 			// This also enqueues the login failure message for display after redirection. Look for JLog in that method.
 			Login::processLoginFailure($response);
@@ -517,6 +538,8 @@ class plgSocialloginTwitter extends CMSPlugin
 		}
 		catch (GenericMessage $e)
 		{
+			Joomla::log($this->integrationName, sprintf("Report non-login failure message to user: %s", $e->getMessage()), Log::NOTICE);
+
 			// Do NOT go through processLoginFailure. This is NOT a login failure.
 			$app->enqueueMessage($e->getMessage(), 'info');
 			$app->redirect($failureUrl);
@@ -524,6 +547,7 @@ class plgSocialloginTwitter extends CMSPlugin
 			return;
 		}
 
+		Joomla::log($this->integrationName, sprintf("Successful login. Redirecting to %s", $loginUrl), Log::INFO);
 		$app->redirect($loginUrl);
 	}
 

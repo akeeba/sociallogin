@@ -18,9 +18,12 @@ use Akeeba\SocialLogin\Library\Helper\Integrations;
 use Akeeba\SocialLogin\Library\Helper\Joomla;
 use Akeeba\SocialLogin\Library\Helper\Login;
 use Akeeba\SocialLogin\Library\OAuth\OAuth2Client;
+use Joomla\CMS\Authentication\Authentication;
+use Joomla\CMS\Log\Log;
 use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\CMS\User\User;
 use Joomla\Registry\Registry;
+use Joomla\Utilities\ArrayHelper;
 
 if (!class_exists('Akeeba\\SocialLogin\\Library\\Helper\\Login', true))
 {
@@ -134,6 +137,9 @@ class plgSocialloginGoogle extends CMSPlugin
 
 		// Set the integration name from the plugin name (without the plg_sociallogin_ part, of course)
 		$this->integrationName = $this->_name;
+
+		// Register a debug log file writer
+		Joomla::addLogger($this->_name);
 
 		// Load the plugin options into properties
 		$this->clientId            = $this->params->get('appid', '');
@@ -412,6 +418,8 @@ class plgSocialloginGoogle extends CMSPlugin
 	 */
 	public function onAjaxGoogle()
 	{
+		Joomla::log($this->integrationName, 'Begin handing of authentication callback');
+
 		// This is the return URL used by the Link button
 		$returnURL  = Joomla::getSessionVar('returnUrl', JUri::base(), 'plg_system_sociallogin');
 		// And this is the login success URL used by the Login button
@@ -454,22 +462,32 @@ class plgSocialloginGoogle extends CMSPlugin
 		{
 			try
 			{
+				Joomla::log($this->integrationName, 'Validate received token with Google', Log::INFO);
+
 				$token = $connector->authenticate();
 
 				if ($token === false)
 				{
+					Joomla::log($this->integrationName, 'Received token from Google is invalid or the user has declined application authorization', Log::ERROR);
+
 					throw new LoginError(Joomla::_('PLG_SOCIALLOGIN_GOOGLE_ERROR_NOT_LOGGED_IN_GOOGLE'));
 				}
 
 				// Get information about the user from Big Brother... er... Google.
+				Joomla::log($this->integrationName, 'Retrieving OpenID profile information from Google', Log::INFO);
+
 				$options       = new Registry();
 				$googleUserApi = new OpenID($options, $connector);
 				$openIDProfile = $googleUserApi->getOpenIDProfile();
 			}
 			catch (Exception $e)
 			{
+				Joomla::log($this->integrationName, "Returning login error '{$e->getMessage()}'", Log::ERROR);
+
 				throw new LoginError($e->getMessage());
 			}
+
+			Joomla::log($this->integrationName, sprintf("Retrieved information: %s", ArrayHelper::toString($openIDProfile)));
 
 			/**
 			 * The data used to login or create a user.
@@ -499,14 +517,18 @@ class plgSocialloginGoogle extends CMSPlugin
 				'token'  => json_encode($token),
 			];
 
+			Joomla::log($this->integrationName, sprintf("Calling Social Login login handler with the following information: %s", ArrayHelper::toString($userProfileData)));
+
 			Login::handleSocialLogin($this->integrationName, $pluginConfiguration, $userData, $userProfileData);
 		}
 		catch (LoginError $e)
 		{
 			// Log failed login
 			$response                = Login::getAuthenticationResponseObject();
-			$response->status        = JAuthentication::STATUS_UNKNOWN;
+			$response->status        = Authentication::STATUS_UNKNOWN;
 			$response->error_message = $e->getMessage();
+
+			Joomla::log($this->integrationName, sprintf("Received login failure. Message: %s", $e->getMessage()), Log::ERROR);
 
 			// This also enqueues the login failure message for display after redirection. Look for JLog in that method.
 			Login::processLoginFailure($response);
@@ -517,6 +539,8 @@ class plgSocialloginGoogle extends CMSPlugin
 		}
 		catch (GenericMessage $e)
 		{
+			Joomla::log($this->integrationName, sprintf("Report non-login failure message to user: %s", $e->getMessage()), Log::NOTICE);
+
 			// Do NOT go through processLoginFailure. This is NOT a login failure.
 			$app->enqueueMessage($e->getMessage(), 'info');
 			$app->redirect($failureUrl);
@@ -524,6 +548,7 @@ class plgSocialloginGoogle extends CMSPlugin
 			return;
 		}
 
+		Joomla::log($this->integrationName, sprintf("Successful login. Redirecting to %s", $loginUrl), Log::INFO);
 		$app->redirect($loginUrl);
 	}
 

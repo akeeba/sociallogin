@@ -67,6 +67,8 @@ class plgSystemSociallogin extends CMSPlugin
 		// Legacy mappings
 		JLoader::registerAlias('SocialLoginHelperIntegrations', 'Akeeba\\SocialLogin\\Library\\Helper\\Integrations', '3.0');
 
+		Joomla::addLogger('system');
+
 		// Am I enabled?
 		$this->enabled = $this->isEnabled();
 
@@ -189,6 +191,7 @@ class plgSystemSociallogin extends CMSPlugin
 		}
 
 		// Append the social login buttons content
+		Joomla::log('system', "Injecting buttons to {$module->module} module.");
 		$socialLoginButtons = Integrations::getSocialLoginButtons();
 		$module->content    .= $socialLoginButtons;
 	}
@@ -215,10 +218,12 @@ class plgSystemSociallogin extends CMSPlugin
 
 		try
 		{
+			Joomla::log('system', "Received AJAX callback.");
 			$result = $ajax->handle($app);
 		}
 		catch (Exception $e)
 		{
+			Joomla::log('system', "Callback failure, redirecting to $returnURL.");
 			$app->enqueueMessage($e->getMessage(), 'error');
 			$app->redirect($returnURL);
 
@@ -231,32 +236,42 @@ class plgSystemSociallogin extends CMSPlugin
 			{
 				default:
 				case 'json':
+					Joomla::log('system', "Callback complete, returning JSON.");
 					echo json_encode($result);
 
 					break;
 
 				case 'jsonhash':
+					Joomla::log('system', "Callback complete, returning JSON inside ### markers.");
 					echo '###' . json_encode($result) . '###';
 
 					break;
 
 				case 'raw':
+					Joomla::log('system', "Callback complete, returning raw response.");
 					echo $result;
 
 					break;
 
 				case 'redirect':
+					$modifiers = '';
+
 					if (isset($result['message']))
 					{
 						$type = isset($result['type']) ? $result['type'] : 'info';
 						$app->enqueueMessage($result['message'], $type);
+
+						$modifiers = " and setting a system message of type $type";
 					}
 
 					if (isset($result['url']))
 					{
+						Joomla::log('system', "Callback complete, performing redirection to {$result['url']}{$modifiers}.");
 						$app->redirect($result['url']);
 					}
 
+
+					Joomla::log('system', "Callback complete, performing redirection to {$result}{$modifiers}.");
 					$app->redirect($result);
 
 					return;
@@ -265,6 +280,8 @@ class plgSystemSociallogin extends CMSPlugin
 
 			$app->close(200);
 		}
+
+		Joomla::log('system', "Null response from AJAX callback, redirecting to $returnURL");
 
 		$app->redirect($returnURL);
 	}
@@ -335,6 +352,7 @@ class plgSystemSociallogin extends CMSPlugin
 		}
 
 		// Add the fields to the form. The custom Sociallogin field uses the Integrations to render the buttons.
+		Joomla::log('system', 'Injecting Social Login fields in user profile edit page');
 		$this->loadLanguage();
 		JForm::addFormPath(dirname(__FILE__) . '/fields');
 		$form->loadFile('sociallogin', false);
@@ -373,6 +391,7 @@ class plgSystemSociallogin extends CMSPlugin
 
 		if ($userId)
 		{
+			Joomla::log('system', "Removing Social Login information for deleted user #{$userId}");
 			$db = Joomla::getDbo();
 
 			$query = $db->getQuery(true)

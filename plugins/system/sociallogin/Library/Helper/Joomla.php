@@ -18,6 +18,8 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Http\Http;
 use Joomla\CMS\Http\HttpFactory;
 use Joomla\CMS\Layout\FileLayout;
+use Joomla\CMS\Log\Log;
+use Joomla\CMS\Log\LogEntry;
 use Joomla\CMS\Mail\Mail;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\String\PunycodeHelper;
@@ -54,6 +56,14 @@ abstract class Joomla
 	 * @var   bool
 	 */
 	protected static $isCli = null;
+
+	/**
+	 * Which plugins have already registered a text file logger. Prevents double registration of a log file.
+	 *
+	 * @var   array
+	 * @since 2.1.0
+	 */
+	protected static $registeredLoggers = [];
 
 	/**
 	 * Are we inside an administrator page?
@@ -518,5 +528,57 @@ abstract class Joomla
 		$optionRegistry = new Registry($options);
 
 		return HttpFactory::getHttp($optionRegistry);
+	}
+
+	/**
+	 * Writes a log message to the debug log
+	 *
+	 * @param   string       $plugin     The Social Login plugin which generated this log message
+	 * @param   string       $message    The message to write to the log
+	 * @param   int          $priority   Log message priority, default is Log::DEBUG
+	 *
+	 * @return  void
+	 *
+	 * @since   2.1.0
+	 */
+	public static function log($plugin, $message, $priority = Log::DEBUG)
+	{
+		Log::add($message, $priority, 'sociallogin.' . $plugin);
+	}
+
+	/**
+	 * Register a debug log file writer for a Social Login plugin.
+	 *
+	 * @param   string  $plugin  The Social Login plugin for which to register a debug log file writer
+	 *
+	 * @return  void
+	 *
+	 * @since   2.1.0
+	 */
+	public static function addLogger($plugin)
+	{
+		// Make sure this logger is not already registered
+		if (in_array($plugin, self::$registeredLoggers))
+		{
+			return;
+		}
+
+		self::$registeredLoggers[] = $plugin;
+
+		// We only log errors unless Site Debug is enabled
+		$logLevels = Log::ERROR | Log::CRITICAL | Log::ALERT | Log::EMERGENCY;
+
+		if (defined('JDEBUG') && JDEBUG)
+		{
+			$logLevels = Log::ALL;
+		}
+
+		// Add a formatted text logger
+		Log::addLogger([
+			'text_file' => "sociallogin_{$plugin}.php",
+			'text_entry_format' => '{DATETIME}	{PRIORITY} {CLIENTIP}	{MESSAGE}'
+		], $logLevels, [
+			"sociallogin.{$plugin}"
+		]);
 	}
 }
