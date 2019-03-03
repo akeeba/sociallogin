@@ -377,7 +377,7 @@ class plgSocialloginFacebook extends CMSPlugin
 	public function onAjaxFacebook()
 	{
 		// This is the return URL used by the Link button
-		$returnURL  = Joomla::getSessionVar('returnUrl', JUri::base(), 'plg_system_sociallogin');
+		$returnURL = Joomla::getSessionVar('returnUrl', JUri::base(), 'plg_system_sociallogin');
 		// And this is the login success URL used by the Login button
 		$loginUrl   = Joomla::getSessionVar('loginUrl', $returnURL, 'plg_sociallogin_facebook');
 		$failureUrl = Joomla::getSessionVar('failureUrl', $loginUrl, 'plg_sociallogin_facebook');
@@ -416,8 +416,8 @@ class plgSocialloginFacebook extends CMSPlugin
 				// Get information about the user from Big Brother... er... Facebook.
 				$options = new Registry();
 				$options->set('api.url', 'https://graph.facebook.com/v2.7/');
-				$fbUserApi       = new FacebookUser($options, null, $oauthConnector);
-				$fbUserFields    = $fbUserApi->getUser('me?fields=id,name,email,verified,timezone');
+				$fbUserApi    = new FacebookUser($options, null, $oauthConnector);
+				$fbUserFields = $fbUserApi->getUser('me?fields=id,name,email,verified,timezone');
 			}
 			catch (Exception $e)
 			{
@@ -425,28 +425,28 @@ class plgSocialloginFacebook extends CMSPlugin
 			}
 
 			// The data used to login or create a user
-			$userData = new UserData();
-			$userData->name = $fbUserFields->name;
-			$userData->id = $fbUserFields->id;
-			$userData->email = $fbUserFields->email;
-			$userData->verified = $fbUserFields->verified;
-			$userData->timezone = $fbUserFields->timezone;
+			$userData           = new UserData();
+			$userData->name     = isset($fbUserFields->name) ? $fbUserFields->name : '';
+			$userData->id       = isset($fbUserFields->id) ? $fbUserFields->id : '';
+			$userData->email    = isset($fbUserFields->email) ? $fbUserFields->email : '';
+			$userData->verified = isset($fbUserFields->verified) ? $fbUserFields->verified : false;
+			$userData->timezone = isset($fbUserFields->timezone) ? $fbUserFields->timezone : 'GMT';
 
 			// Options which control login and user account creation
-			$pluginConfiguration = new PluginConfiguration;
-			$pluginConfiguration ->canLoginUnlinked = $this->canLoginUnlinked;
-			$pluginConfiguration ->canCreateAlways = $this->canCreateAlways;
-			$pluginConfiguration ->canCreateNewUsers = $this->canCreateNewUsers;
-			$pluginConfiguration ->canBypassValidation = $this->canBypassValidation;
+			$pluginConfiguration                      = new PluginConfiguration;
+			$pluginConfiguration->canLoginUnlinked    = $this->canLoginUnlinked;
+			$pluginConfiguration->canCreateAlways     = $this->canCreateAlways;
+			$pluginConfiguration->canCreateNewUsers   = $this->canCreateNewUsers;
+			$pluginConfiguration->canBypassValidation = $this->canBypassValidation;
 
 			/**
 			 * Data to save to the user profile. The first row is the primary key which links the Joomla! user account to
 			 * the social media account.
 			 */
-			$userProfileData = array(
+			$userProfileData = [
 				'userid' => $userData->id,
-				'token' => json_encode($token),
-			);
+				'token'  => json_encode($token),
+			];
 
 			Login::handleSocialLogin($this->integrationName, $pluginConfiguration, $userData, $userProfileData);
 		}
