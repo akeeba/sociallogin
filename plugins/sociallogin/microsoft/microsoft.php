@@ -179,19 +179,6 @@ CSS;
 	}
 
 	/**
-	 * Return the user's profile picture URL given the social network profile fields retrieved with
-	 * getSocialNetworkProfileInformation(). Return null if no such thing is supported.
-	 *
-	 * @param   array $socialProfile The raw social profile fields
-	 *
-	 * @return  string|null
-	 */
-	protected function getPictureUrl(array $socialProfile)
-	{
-		return null;
-	}
-
-	/**
 	 * Processes the authentication callback from Microsoft.
 	 *
 	 * Note: this method is called from Joomla's com_ajax, not com_sociallogin itself

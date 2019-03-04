@@ -101,14 +101,14 @@ abstract class AbstractPlugin extends CMSPlugin
 	protected $customCSS = '';
 
 	/**
-	 * Facebook App ID
+	 * OAuth application ID
 	 *
 	 * @var   string
 	 */
 	protected $appId = '';
 
 	/**
-	 * Facebook App Secret
+	 * OAuth application secret key
 	 *
 	 * @var   string
 	 */
@@ -203,11 +203,14 @@ abstract class AbstractPlugin extends CMSPlugin
 	 * Return the user's profile picture URL given the social network profile fields retrieved with
 	 * getSocialNetworkProfileInformation(). Return null if no such thing is supported.
 	 *
-	 * @param   array  $socialProfile  The raw social profile fields
+	 * @param   array $socialProfile The raw social profile fields
 	 *
 	 * @return  string|null
 	 */
-	protected abstract function getPictureUrl(array $socialProfile);
+	protected function getPictureUrl(array $socialProfile)
+	{
+		return null;
+	}
 
 	/**
 	 * Is the user linked to the social login account?

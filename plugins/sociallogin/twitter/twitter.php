@@ -187,19 +187,6 @@ CSS;
 	}
 
 	/**
-	 * Return the user's profile picture URL given the social network profile fields retrieved with
-	 * getSocialNetworkProfileInformation(). Return null if no such thing is supported.
-	 *
-	 * @param   array $socialProfile The raw social profile fields
-	 *
-	 * @return  string|null
-	 */
-	protected function getPictureUrl(array $socialProfile)
-	{
-		return null;
-	}
-
-	/**
 	 * Initiate the user authentication (steps 1 & 2 per the Twitter documentation). Step 3 in the documentation is
 	 * Twitter calling back our site, i.e. the call to the onAjaxTwitter method.
 	 *
