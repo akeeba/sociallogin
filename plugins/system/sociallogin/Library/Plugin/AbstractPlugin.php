@@ -429,6 +429,12 @@ abstract class AbstractPlugin extends CMSPlugin
 		Integrations::removeUserProfileData($user->id, 'sociallogin.' . $this->integrationName);
 	}
 
+	/**
+	 * Handles the social network login callback, gets social network user information and performs the Social Login
+	 * flow (including logging in non-linked users or creating a new user from the social media profile)
+	 *
+	 * @throws  Exception
+	 */
 	protected function onSocialLoginAjax()
 	{
 		Joomla::log($this->integrationName, 'Begin handing of authentication callback');
@@ -464,9 +470,9 @@ abstract class AbstractPlugin extends CMSPlugin
 			{
 				Joomla::log($this->integrationName, 'Receive token from the social network', Log::INFO);
 
-				$tokenResponse = $this->getToken();
+				list($token, $connector) = $this->getToken();
 
-				if ($tokenResponse === false)
+				if ($token === false)
 				{
 					Joomla::log($this->integrationName, 'Received token from social network is invalid or the user has declined application authorization', Log::ERROR);
 
@@ -484,8 +490,6 @@ abstract class AbstractPlugin extends CMSPlugin
 
 					throw new LoginError($errorMessage);
 				}
-
-				list($token, $connector) = $tokenResponse;
 
 				// Get information about the user from the social network
 				Joomla::log($this->integrationName, 'Retrieving social network profile information', Log::INFO);
