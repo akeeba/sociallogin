@@ -27,20 +27,6 @@ if (!class_exists('Akeeba\\SocialLogin\\Library\\Plugin\\AbstractPlugin', true))
 class plgSocialloginGoogle extends AbstractPlugin
 {
 	/**
-	 * Google Client ID
-	 *
-	 * @var   string
-	 */
-	private $clientId = '';
-
-	/**
-	 * Google Client Secret
-	 *
-	 * @var   string
-	 */
-	private $clientSecret = '';
-
-	/**
 	 * Google OAUth connector object
 	 *
 	 * @var   OAuth2
@@ -78,10 +64,6 @@ class plgSocialloginGoogle extends AbstractPlugin
 .akeeba-sociallogin-link-button-google img, .akeeba-sociallogin-unlink-button-google img, .akeeba-sociallogin-button-google img { display: inline-block; width: 18px; height: 18px; margin: 0 24px 0 0; padding: 0 }
 
 CSS;
-
-		// Load the plugin options into properties
-		$this->clientId            = $this->params->get('appid', '');
-		$this->clientSecret        = $this->params->get('appsecret', '');
 	}
 
 	/**
@@ -91,7 +73,7 @@ CSS;
 	 */
 	protected function isProperlySetUp()
 	{
-		return !(empty($this->clientId) || empty($this->clientSecret));
+		return !(empty($this->appId) || empty($this->appSecret));
 	}
 
 	/**
@@ -108,8 +90,8 @@ CSS;
 			$options = array(
 				'authurl'       => 'https://accounts.google.com/o/oauth2/auth',
 				'tokenurl'      => 'https://accounts.google.com/o/oauth2/token',
-				'clientid'      => $this->clientId,
-				'clientsecret'  => $this->clientSecret,
+				'clientid'      => $this->appId,
+				'clientsecret'  => $this->appSecret,
 				'redirecturi'   => JUri::base() . 'index.php?option=com_ajax&group=sociallogin&plugin=' . $this->integrationName . '&format=raw',
 				/**
 				 * Authorization scopes, space separated.

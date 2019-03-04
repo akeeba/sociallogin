@@ -26,20 +26,6 @@ if (!class_exists('Akeeba\\SocialLogin\\Library\\Plugin\\AbstractPlugin', true))
 class plgSocialloginLinkedin extends AbstractPlugin
 {
 	/**
-	 * LinkedIn App ID
-	 *
-	 * @var   string
-	 */
-	private $appId = '';
-
-	/**
-	 * LinkedIn App Secret
-	 *
-	 * @var   string
-	 */
-	private $appSecret = '';
-
-	/**
 	 * LinkedIn LinkedInOAuth connector object
 	 *
 	 * @var   LinkedInOAuth
@@ -73,10 +59,6 @@ class plgSocialloginLinkedin extends AbstractPlugin
 .akeeba-sociallogin-link-button-linkedin img, .akeeba-sociallogin-unlink-button-linkedin img, .akeeba-sociallogin-button-linkedin img { display: inline-block; width: 22px; height: 16px; margin: 0 0.33em 0.1em 0; padding: 0 }
 
 CSS;
-
-		// Load the plugin options into properties
-		$this->appId               = $this->params->get('appid', '');
-		$this->appSecret           = $this->params->get('appsecret', '');
 	}
 
 	/**

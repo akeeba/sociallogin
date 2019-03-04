@@ -100,6 +100,20 @@ abstract class AbstractPlugin extends CMSPlugin
 	 */
 	protected $customCSS = '';
 
+	/**
+	 * Facebook App ID
+	 *
+	 * @var   string
+	 */
+	protected $appId = '';
+
+	/**
+	 * Facebook App Secret
+	 *
+	 * @var   string
+	 */
+	protected $appSecret = '';
+
 
 	/**
 	 * Constructor. Loads the language files as well.
@@ -129,6 +143,8 @@ abstract class AbstractPlugin extends CMSPlugin
 		$this->canBypassValidation = $this->params->get('bypassvalidation', true);
 		$this->useCustomCSS        = $this->params->get('customcss', true);
 		$this->iconClass           = $this->params->get('icon_class', '');
+		$this->appId               = $this->params->get('appid', '');
+		$this->appSecret           = $this->params->get('appsecret', '');
 	}
 
 	/**

@@ -26,20 +26,6 @@ if (!class_exists('Akeeba\\SocialLogin\\Library\\Plugin\\AbstractPlugin', true))
 class plgSocialloginGithub extends AbstractPlugin
 {
 	/**
-	 * GitHub App ID
-	 *
-	 * @var   string
-	 */
-	private $appId = '';
-
-	/**
-	 * GitHub App Secret
-	 *
-	 * @var   string
-	 */
-	private $appSecret = '';
-
-	/**
 	 * GitHub GitHubOAuth connector object
 	 *
 	 * @var   GitHubOAuth
@@ -70,10 +56,6 @@ class plgSocialloginGithub extends AbstractPlugin
 .akeeba-sociallogin-link-button-github img, .akeeba-sociallogin-unlink-button-github img, .akeeba-sociallogin-button-github img { display: inline-block; width: 16px; height: 16px; margin: 0 0.33em 0.1em 0; padding: 0 }
 
 CSS;
-
-		// Load the plugin options into properties
-		$this->appId               = $this->params->get('appid', '');
-		$this->appSecret           = $this->params->get('appsecret', '');
 	}
 
 	/**

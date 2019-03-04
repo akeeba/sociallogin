@@ -27,20 +27,6 @@ if (!class_exists('Akeeba\\SocialLogin\\Library\\Plugin\\AbstractPlugin', true))
 class plgSocialloginFacebook extends AbstractPlugin
 {
 	/**
-	 * Facebook App ID
-	 *
-	 * @var   string
-	 */
-	private $appId = '';
-
-	/**
-	 * Facebook App Secret
-	 *
-	 * @var   string
-	 */
-	private $appSecret = '';
-
-	/**
 	 * Facebook FacebookOAuth connector object
 	 *
 	 * @var   FacebookOAuth
@@ -71,10 +57,6 @@ class plgSocialloginFacebook extends AbstractPlugin
 .akeeba-sociallogin-link-button-facebook img, .akeeba-sociallogin-unlink-button-facebook img, .akeeba-sociallogin-button-facebook img { display: inline-block; width: 16px; height: 16px; margin: 0 0.33em 0.1em 0; padding: 0 }
 
 CSS;
-
-		// Load the plugin options into properties
-		$this->appId               = $this->params->get('appid', '');
-		$this->appSecret           = $this->params->get('appsecret', '');
 	}
 
 	/**

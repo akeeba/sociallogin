@@ -26,20 +26,6 @@ if (!class_exists('Akeeba\\SocialLogin\\Library\\Plugin\\AbstractPlugin', true))
 class plgSocialloginMicrosoft extends AbstractPlugin
 {
 	/**
-	 * Microsoft Live SDK App ID
-	 *
-	 * @var   string
-	 */
-	private $appId = '';
-
-	/**
-	 * Microsoft Live SDK App Secret
-	 *
-	 * @var   string
-	 */
-	private $appSecret = '';
-
-	/**
 	 * Microsoft MicrosoftOAuth connector object
 	 *
 	 * @var   MicrosoftOAuth
@@ -73,10 +59,6 @@ class plgSocialloginMicrosoft extends AbstractPlugin
 .akeeba-sociallogin-link-button-microsoft img, .akeeba-sociallogin-unlink-button-microsoft img, .akeeba-sociallogin-button-microsoft img { display: inline-block; width: 75px; height: 16px; margin: 0.1em 0.33em 0 0; padding: 0 }
 
 CSS;
-
-		// Load the plugin options into properties
-		$this->appId               = $this->params->get('appid', '');
-		$this->appSecret           = $this->params->get('appsecret', '');
 	}
 
 	/**

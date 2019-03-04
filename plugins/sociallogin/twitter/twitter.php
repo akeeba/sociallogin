@@ -26,20 +26,6 @@ if (!class_exists('Akeeba\\SocialLogin\\Library\\Plugin\\AbstractPlugin', true))
 class plgSocialloginTwitter extends AbstractPlugin
 {
 	/**
-	 * Twitter Client ID
-	 *
-	 * @var   string
-	 */
-	private $clientId = '';
-
-	/**
-	 * Twitter Client Secret
-	 *
-	 * @var   string
-	 */
-	private $clientSecret = '';
-
-	/**
 	 * Twitter OAUth connector object
 	 *
 	 * @var   OAuth
@@ -71,10 +57,6 @@ class plgSocialloginTwitter extends AbstractPlugin
 .akeeba-sociallogin-link-button-twitter img, .akeeba-sociallogin-unlink-button-twitter img, .akeeba-sociallogin-button-twitter img { display: inline-block; width: 16px; height: 16px; margin: 0 0.33em 0.1em 0; padding: 0 }
 
 CSS;
-
-		// Load the plugin options into properties
-		$this->clientId            = $this->params->get('appid', '');
-		$this->clientSecret        = $this->params->get('appsecret', '');
 	}
 
 	/**
@@ -84,7 +66,7 @@ CSS;
 	 */
 	protected function isProperlySetUp()
 	{
-		return !(empty($this->clientId) || empty($this->clientSecret));
+		return !(empty($this->appId) || empty($this->appSecret));
 	}
 
 	/**
@@ -100,8 +82,8 @@ CSS;
 		{
 			$options = array(
 				'callback'        => JUri::base() . 'index.php?option=com_ajax&group=sociallogin&plugin=' . $this->integrationName . '&format=raw',
-				'consumer_key'    => $this->clientId,
-				'consumer_secret' => $this->clientSecret,
+				'consumer_key'    => $this->appId,
+				'consumer_secret' => $this->appSecret,
 				'sendheaders'     => true,
 			);
 
