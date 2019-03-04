@@ -114,6 +114,12 @@ abstract class AbstractPlugin extends CMSPlugin
 	 */
 	protected $appSecret = '';
 
+	/**
+	 * The OAuth/Oauth2 connector object for this integration
+	 *
+	 * @var   object
+	 */
+	protected $connector;
 
 	/**
 	 * Constructor. Loads the language files as well.
@@ -163,6 +169,15 @@ abstract class AbstractPlugin extends CMSPlugin
 	 * @return  string
 	 */
 	protected abstract function getLoginButtonURL();
+
+	/**
+	 * Returns the OAuth/OAuth2 connector object used by this integration.
+	 *
+	 * @return  object
+	 *
+	 * @throws  Exception
+	 */
+	protected abstract function getConnector();
 
 	/**
 	 * Return the URL for the link button

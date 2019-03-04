@@ -27,13 +27,6 @@ if (!class_exists('Akeeba\\SocialLogin\\Library\\Plugin\\AbstractPlugin', true))
 class plgSocialloginGoogle extends AbstractPlugin
 {
 	/**
-	 * Google OAUth connector object
-	 *
-	 * @var   OAuth2
-	 */
-	private $connector;
-
-	/**
 	 * The OAuth2 client object used by the Google OAuth connector
 	 *
 	 * @var   OAuth2Client
@@ -73,7 +66,7 @@ CSS;
 	 *
 	 * @throws  Exception
 	 */
-	private function getConnector()
+	protected function getConnector()
 	{
 		if (is_null($this->connector))
 		{

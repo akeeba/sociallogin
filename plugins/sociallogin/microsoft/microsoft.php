@@ -26,13 +26,6 @@ if (!class_exists('Akeeba\\SocialLogin\\Library\\Plugin\\AbstractPlugin', true))
 class plgSocialloginMicrosoft extends AbstractPlugin
 {
 	/**
-	 * Microsoft MicrosoftOAuth connector object
-	 *
-	 * @var   MicrosoftOAuth
-	 */
-	private $connector;
-
-	/**
 	 * Constructor. Loads the language files as well.
 	 *
 	 * @param   object  &$subject  The object to observe
@@ -68,7 +61,7 @@ CSS;
 	 *
 	 * @throws  Exception
 	 */
-	private function getConnector()
+	protected function getConnector()
 	{
 		if (is_null($this->connector))
 		{
