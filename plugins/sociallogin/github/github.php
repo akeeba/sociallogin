@@ -126,18 +126,6 @@ CSS;
 	}
 
 	/**
-	 * Return the URL for the link button
-	 *
-	 * @return  string
-	 *
-	 * @throws  Exception
-	 */
-	protected function getLinkButtonURL()
-	{
-		return $this->getLoginButtonURL();
-	}
-
-	/**
 	 * Get the OAuth / OAuth2 token from the social network. Used in the onAjax* handler.
 	 *
 	 * @return  array|bool  False if we could not retrieve it. Otherwise [$token, $connector]

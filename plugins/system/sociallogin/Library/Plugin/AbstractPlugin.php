@@ -149,8 +149,13 @@ abstract class AbstractPlugin extends CMSPlugin
 	 * Return the URL for the link button
 	 *
 	 * @return  string
+	 *
+	 * @throws  Exception
 	 */
-	protected abstract function getLinkButtonURL();
+	protected function getLinkButtonURL()
+	{
+		return $this->getLoginButtonURL();
+	}
 
 	/**
 	 * Get the OAuth / OAuth2 token from the social network. Used in the onAjax* handler.
