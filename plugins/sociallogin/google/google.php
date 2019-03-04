@@ -79,7 +79,7 @@ class plgSocialloginGoogle extends AbstractPlugin
 		// Register the autoloader
 		JLoader::registerNamespace('Akeeba\\SocialLogin\\Google', __DIR__ . '/Google', false, false, 'psr4');
 
-// Per-plugin customization
+		// Per-plugin customization
 		$this->buttonImage = 'plg_sociallogin_google/google.png';
 		$this->customCSS = /** @lang CSS */
 			<<< CSS
@@ -240,7 +240,7 @@ CSS;
 	protected function mapSocialProfileToUserData(array $socialProfile)
 	{
 		$userData           = new UserData();
-		$userData->name     = isset($socialProfile['name']) ? isset($socialProfile['name']) : '';
+		$userData->name     = isset($socialProfile['name']) ? $socialProfile['name'] : '';
 		$userData->id       = $socialProfile['sub'];
 		$userData->email    = isset($socialProfile['email']) ? $socialProfile['email'] : '';
 		$userData->verified = isset($socialProfile['email_verified']) ? $socialProfile['email_verified'] : false;
