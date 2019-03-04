@@ -218,7 +218,7 @@ CSS;
 	 */
 	protected function getPictureUrl(array $socialProfile)
 	{
-		return null;
+		return $socialProfile['pictureUrl'];
 	}
 
 	/**
