@@ -77,20 +77,6 @@ CSS;
 	}
 
 	/**
-	 * Get the OAuth / OAuth2 token from the social network. Used in the onAjax* handler.
-	 *
-	 * @return  array|bool  False if we could not retrieve it. Otherwise [$token, $connector]
-	 *
-	 * @throws  Exception
-	 */
-	protected function getToken()
-	{
-		$oauthConnector = $this->getConnector();
-
-		return [$oauthConnector->authenticate(), $oauthConnector];
-	}
-
-	/**
 	 * Get the raw user profile information from the social network.
 	 *
 	 * @param   object  $connector  The internal connector object.
