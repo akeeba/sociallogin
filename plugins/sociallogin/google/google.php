@@ -10,21 +10,11 @@ defined('_JEXEC') or die();
 
 use Akeeba\SocialLogin\Google\OAuth2;
 use Akeeba\SocialLogin\Google\OpenID;
-use Akeeba\SocialLogin\Library\Data\PluginConfiguration;
 use Akeeba\SocialLogin\Library\Data\UserData;
-use Akeeba\SocialLogin\Library\Exception\Login\GenericMessage;
-use Akeeba\SocialLogin\Library\Exception\Login\LoginError;
-use Akeeba\SocialLogin\Library\Helper\Integrations;
 use Akeeba\SocialLogin\Library\Helper\Joomla;
-use Akeeba\SocialLogin\Library\Helper\Login;
 use Akeeba\SocialLogin\Library\OAuth\OAuth2Client;
 use Akeeba\SocialLogin\Library\Plugin\AbstractPlugin;
-use Joomla\CMS\Authentication\Authentication;
-use Joomla\CMS\Log\Log;
-use Joomla\CMS\Plugin\CMSPlugin;
-use Joomla\CMS\User\User;
 use Joomla\Registry\Registry;
-use Joomla\Utilities\ArrayHelper;
 
 if (!class_exists('Akeeba\\SocialLogin\\Library\\Plugin\\AbstractPlugin', true))
 {
