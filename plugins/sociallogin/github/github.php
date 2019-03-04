@@ -59,16 +59,6 @@ CSS;
 	}
 
 	/**
-	 * Is this integration properly set up and ready for use?
-	 *
-	 * @return  bool
-	 */
-	protected function isProperlySetUp()
-	{
-		return !(empty($this->appId) || empty($this->appSecret));
-	}
-
-	/**
 	 * Returns a GitHubOAuth object
 	 *
 	 * @return  GitHubOAuth

@@ -152,7 +152,10 @@ abstract class AbstractPlugin extends CMSPlugin
 	 *
 	 * @return  bool
 	 */
-	protected abstract function isProperlySetUp();
+	protected function isProperlySetUp()
+	{
+		return !(empty($this->appId) || empty($this->appSecret));
+	}
 
 	/**
 	 * Return the URL for the login button
