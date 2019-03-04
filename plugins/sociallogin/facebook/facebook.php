@@ -78,21 +78,6 @@ CSS;
 	}
 
 	/**
-	 * Return the URL for the login button
-	 *
-	 * @return  string
-	 *
-	 * @throws  Exception
-	 */
-	protected function getLoginButtonURL()
-	{
-		// Get a Facebook OAUth2 connector object and retrieve the URL
-		$connector = $this->getConnector();
-
-		return $connector->createUrl();
-	}
-
-	/**
 	 * Get the OAuth / OAuth2 token from the social network. Used in the onAjax* handler.
 	 *
 	 * @return  array|bool  False if we could not retrieve it. Otherwise [$token, $connector]

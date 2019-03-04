@@ -167,8 +167,16 @@ abstract class AbstractPlugin extends CMSPlugin
 	 * Return the URL for the login button
 	 *
 	 * @return  string
+	 *
+	 * @throws  Exception
 	 */
-	protected abstract function getLoginButtonURL();
+	protected function getLoginButtonURL()
+	{
+		// Get a Facebook OAUth2 connector object and retrieve the URL
+		$connector = $this->getConnector();
+
+		return $connector->createUrl();
+	}
 
 	/**
 	 * Returns the OAuth/OAuth2 connector object used by this integration.
