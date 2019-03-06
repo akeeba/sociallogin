@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   AkeebaSocialLogin
- * @copyright Copyright (c)2016-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright Copyright (c)2016-2019 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
@@ -136,7 +136,7 @@ class OAuth2
 
 		if (!$this->client->getOption('requestparams'))
 		{
-			$this->client->setOption('requestparams', Array());
+			$this->client->setOption('requestparams', []);
 		}
 
 		$params = $this->client->getOption('requestparams');

@@ -1,17 +1,18 @@
 Pull Request for Issue # .
 
 ### Summary of Changes
+
 The executive summary of what you have changed without getting into technical details. Think of it as your PR's elevator pitch.  
 
 
 ### Testing Instructions
+
 * List
 * of
 * clear
 * and
 * discrete
 * steps
-
 
 ### Result before applying PR
 

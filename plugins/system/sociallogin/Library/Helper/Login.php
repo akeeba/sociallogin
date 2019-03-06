@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   AkeebaSocialLogin
- * @copyright Copyright (c)2016-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright Copyright (c)2016-2019 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
@@ -12,24 +12,25 @@ use Akeeba\SocialLogin\Library\Data\UserData;
 use Akeeba\SocialLogin\Library\Exception\Login\GenericMessage;
 use Akeeba\SocialLogin\Library\Exception\Login\LoginError;
 use Exception;
-use JApplicationHelper;
-use JAuthentication;
-use JAuthenticationResponse;
-use JComponentHelper;
-use JDate;
 use JEventDispatcher;
 use JLoader;
-use JLog;
 use Joomla\CMS\Application\ApplicationHelper;
+use Joomla\CMS\Application\ApplicationHelper as JApplicationHelper;
 use Joomla\CMS\Application\BaseApplication;
 use Joomla\CMS\Authentication\Authentication;
+use Joomla\CMS\Authentication\Authentication as JAuthentication;
 use Joomla\CMS\Authentication\AuthenticationResponse;
+use Joomla\CMS\Authentication\AuthenticationResponse as JAuthenticationResponse;
 use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Component\ComponentHelper as JComponentHelper;
+use Joomla\CMS\Date\Date as JDate;
+use Joomla\CMS\Log\Log as JLog;
+use Joomla\CMS\Log\Log;
+use Joomla\CMS\Router\Route as JRoute;
+use Joomla\CMS\Uri\Uri as JUri;
+use Joomla\CMS\User\User as JUser;
 use Joomla\Event\Event;
 use Joomla\Registry\Registry;
-use JRoute;
-use JUri;
-use JUser;
 use RuntimeException;
 use UnexpectedValueException;
 
@@ -56,9 +57,11 @@ abstract class Login
 	 * @throws  LoginError      When a login error occurs (must report the login error to Joomla!).
 	 * @throws  GenericMessage  When there is no login error but we need to report a message to the user, e.g. to tell
 	 *                          them they need to click on the activation email.
+	 * @throws  Exception
 	 */
 	public static function handleSocialLogin($slug, PluginConfiguration $config, UserData $userData, array $userProfileData)
 	{
+		Joomla::log($slug, 'Entering Social Login login handler (common code)');
 		// Look for a local user account with the social network user ID _unless_ we are already logged in.
 		$profileKeys = array_keys($userProfileData);
 		$primaryKey  = $profileKeys[0];
@@ -67,6 +70,7 @@ abstract class Login
 
 		if ($currentUser->guest)
 		{
+			Joomla::log($slug, sprintf('Guest (not logged in) user detected. Trying to find a user using the %s unique ID %s', $slug, $userData->id));
 			$userId = Integrations::getUserIdByProfileData('sociallogin.' . $slug . '.' . $primaryKey, $userData->id);
 		}
 
@@ -86,6 +90,8 @@ abstract class Login
 		 */
 		if (empty($userId) && !empty($email))
 		{
+			Joomla::log($slug, 'Could not find a linked user. Performing email pre-checks before checking the plugin configuration.');
+
 			$userId = self::getUserIdByEmail($email);
 
 			/**
@@ -93,6 +99,7 @@ abstract class Login
 			 */
 			if (!$userData->verified)
 			{
+				Joomla::log($slug, 'The social network user does not have a verified email. Because of that we will NOT check the plugin configuration (if we can log them in or create a new user).');
 				throw new LoginError(Joomla::_('PLG_SOCIALLOGIN_' . $slug . '_ERROR_LOCAL_NOT_FOUND'));
 			}
 
@@ -104,6 +111,7 @@ abstract class Login
 			 */
 			if (!$config->canLoginUnlinked && !empty($userId))
 			{
+				Joomla::log($slug, 'The social network user has a verified email which matches an existing user BUT "Allow social login to non-linked accounts" is disabled. As a result we need to complain about a user account conflict.');
 				throw new LoginError(Joomla::_('PLG_SOCIALLOGIN_' . $slug . '_ERROR_LOCAL_USERNAME_CONFLICT'));
 			}
 		}
@@ -111,17 +119,29 @@ abstract class Login
 		// Try to subscribe a new user
 		if (empty($userId))
 		{
+			Joomla::log($slug, sprintf('Neither a linked user account was found, nor an account belonging to email %s. Considering my options for creating a new user.', $email));
+
 			$usersConfig           = self::getUsersParams();
 			$allowUserRegistration = $usersConfig->get('allowUserRegistration');
 
-			/**
-			 * User not found and user registration is disabled OR create new users is not allowed. Note that if the
-			 * canCreateAlways flag is set we override Joomla's user registration preference. This can be used to force
-			 * new account registrations to take place only through social media logins.
-			 */
-
-			if ((($allowUserRegistration == 0) && !$config->canCreateAlways) || !$config->canCreateNewUsers || empty($email))
+			if (empty($email))
 			{
+				Joomla::log($slug, 'No email was sent by the social network. Cannot create a new user');
+
+				throw new LoginError(Joomla::_('PLG_SOCIALLOGIN_' . $slug . '_ERROR_LOCAL_NOT_FOUND'));
+			}
+
+			if (!$config->canCreateNewUsers)
+			{
+				Joomla::log($slug, '"Create new user accounts" is set to No. Cannot create a new user');
+
+				throw new LoginError(Joomla::_('PLG_SOCIALLOGIN_' . $slug . '_ERROR_LOCAL_NOT_FOUND'));
+			}
+
+			if (($allowUserRegistration == 0) && !$config->canCreateAlways)
+			{
+				Joomla::log($slug, 'Joomla user registration is disabled and "Ignore Joomla! setting for creating user accounts" is set to No. Cannot create a new user.');
+
 				throw new LoginError(Joomla::_('PLG_SOCIALLOGIN_' . $slug . '_ERROR_LOCAL_NOT_FOUND'));
 			}
 
@@ -133,20 +153,33 @@ abstract class Login
 				 * verification emails, immediately activating the user.
 				 */
 				$bypassVerification = $userData->verified && $config->canBypassValidation;
+
+				if ($bypassVerification)
+				{
+					Joomla::log($slug, 'The "Bypass user validation" option is enabled in the plugin. No user activation email will be sent. The user will be immediately activated.');
+				}
+
+				Joomla::log($slug, 'Creating user');
 				$userId             = self::createUser($email, $userData->name, $bypassVerification, $userData->timezone);
 			}
 			catch (UnexpectedValueException $e)
 			{
+				Joomla::log($slug, 'Whoops! A user with the same username of email address already exists. Cannot create new user.', Log::ERROR);
+
 				throw new LoginError(Joomla::sprintf('PLG_SOCIALLOGIN_' . $slug . '_ERROR_CANNOT_CREATE', Joomla::_('PLG_SOCIALLOGIN_' . $slug . '_ERROR_LOCAL_USERNAME_CONFLICT')));
 			}
 			catch (RuntimeException $e)
 			{
+				Joomla::log($slug, 'Joomla reported a failure trying to create a new user record.', Log::ERROR);
+
 				throw new LoginError(Joomla::sprintf('PLG_SOCIALLOGIN_' . $slug . '_ERROR_CANNOT_CREATE', $e->getMessage()));
 			}
 
 			// Does the account need user or administrator verification?
 			if (in_array($userId, array('useractivate', 'adminactivate')))
 			{
+				Joomla::log($slug, 'The user account needs to be activated before it can be used. We will notify the user.');
+
 				// Do NOT go through processLoginFailure. This is NOT a login failure.
 				throw new GenericMessage(Joomla::_('PLG_SOCIALLOGIN_' . $slug . '_NOTICE_' . $userId));
 			}
@@ -158,12 +191,15 @@ abstract class Login
 		 */
 		if (empty($userId))
 		{
+			Joomla::log($slug, "YOU SHOULD NOT BE HERE. We cannot find a linked user, we are not allowed to log in non-linked users and we are not allowed to create new users. We should have already failed. Yet here we are. FAIL IMMEDIATELY.", Log::CRITICAL);
 			throw new LoginError(Joomla::_('PLG_SOCIALLOGIN_' . $slug . '_ERROR_LOCAL_NOT_FOUND'));
 		}
 
 		// Attach the social network link information to the user's profile
 		try
 		{
+			Joomla::log($slug, "Linking the social network profile with the Joomla user profile", Log::INFO);
+
 			Integrations::insertUserProfileData($userId, 'sociallogin.' . $slug, $userProfileData);
 		}
 		catch (Exception $e)
@@ -176,11 +212,15 @@ abstract class Login
 		{
 			if ($currentUser->guest)
 			{
+				Joomla::log($slug, "Logging in the user", Log::INFO);
+
 				self::loginUser($userId);
 			}
 		}
 		catch (Exception $e)
 		{
+			Joomla::log($slug, "Login failure. Typically this means that a third party user or authentication plugin denied the login. This is not a bug.", Log::INFO);
+
 			throw new LoginError($e->getMessage());
 		}
 	}
@@ -207,14 +247,15 @@ abstract class Login
 	/**
 	 * Have Joomla! process a login failure
 	 *
-	 * @param   AuthenticationResponse  $response  The Joomla! auth response object
-	 * @param   BaseApplication         $app       The application we are running in. Skip to auto-detect (recommended).
+	 * @param   AuthenticationResponse  $response    The Joomla! auth response object
+	 * @param   BaseApplication         $app         The application we are running in. Skip to auto-detect (recommended).
+	 * @param   string                  $logContext  Logging context (plugin name). Default: system.
 	 *
 	 * @return  bool
 	 *
 	 * @throws  Exception
 	 */
-	public static function processLoginFailure($response, $app = null)
+	public static function processLoginFailure($response, $app = null, $logContext = 'system')
 	{
 		// Import the user plugin group.
 		Joomla::importPlugins('user');
@@ -225,6 +266,7 @@ abstract class Login
 		}
 
 		// Trigger onUserLoginFailure Event.
+		Joomla::log($logContext, "Calling onUserLoginFailure plugin event");
 		Joomla::runPlugins('onUserLoginFailure', array((array) $response), $app);
 
 		// If status is success, any error will have been raised by the user plugin
@@ -239,8 +281,14 @@ abstract class Login
 
 		if ($response->status !== $expectedStatus)
 		{
+			Joomla::log($logContext, "The login failure has been logged in Joomla's error log");
+
 			// Everything logged in the 'jerror' category ends up being enqueued in the application message queue.
 			JLog::add($response->error_message, JLog::WARNING, 'jerror');
+		}
+		else
+		{
+			Joomla::log($logContext, "The login failure was caused by a third party user plugin but it did not return any further information. Good luck figuring this one out...", Log::WARNING);
 		}
 
 		return false;
@@ -283,6 +331,8 @@ abstract class Login
 		}
 		catch (Exception $e)
 		{
+			Joomla::log($slug, "Database error. Cannot write Joomla user profile information to link the user account with the social network account. Check your database. This is NOT a Social Login issue.", Log::ERROR);
+
 			return false;
 		}
 	}
@@ -394,7 +444,7 @@ abstract class Login
 			$app = Joomla::getApplication();
 		}
 
-		$isAdmin = method_exists($app, 'isClient') ? $app->isClient('administrator') : $app->isAdmin();
+		$isAdmin = $app->isClient('administrator');
 		$user    = Joomla::getUser($userId);
 
 		// Does the user account have a pending activation?
@@ -638,7 +688,7 @@ abstract class Login
 
 		// Handle account activation/confirmation emails.
 		$app = Joomla::getApplication();
-		$isAdmin = method_exists($app, 'isClient') ? $app->isClient('administrator') : $app->isAdmin();
+		$isAdmin = $app->isClient('administrator');
 
 		switch ($userActivation)
 		{

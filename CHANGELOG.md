@@ -1,3 +1,10 @@
+# 2.1.0
+
+**New features**
+
+* Login with Google using Google OpenID instead of the now defunct Google+ API
+* Debug logs for all Social Login plugins
+
 # 2.0.3
 
 **New features**

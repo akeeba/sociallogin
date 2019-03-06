@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   AkeebaSocialLogin
- * @copyright Copyright (c)2016-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright Copyright (c)2016-2019 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
@@ -121,7 +121,10 @@ class OAuth2Client
 				throw new RuntimeException('Error code ' . $response->code . ' received requesting access token: ' . $response->body . '.');
 			}
 
-			if (strpos($response->headers['Content-Type'], 'application/json') !== false)
+			$contentType = $response->headers['Content-Type'];
+			$contentType = is_array($contentType) ? array_shift($contentType) : $contentType;
+
+			if (strpos($contentType, 'application/json') !== false)
 			{
 				$token = array_merge(json_decode($response->body, true), array('created' => time()));
 			}
@@ -407,7 +410,10 @@ class OAuth2Client
 			throw new Exception('Error code ' . $response->code . ' received refreshing token: ' . $response->body . '.');
 		}
 
-		if (strpos($response->headers['Content-Type'], 'application/json') !== false)
+		$contentType = $response->headers['Content-Type'];
+		$contentType = is_array($contentType) ? array_shift($contentType) : $contentType;
+
+		if (strpos($contentType, 'application/json') !== false)
 		{
 			$token = array_merge(json_decode($response->body, true), array('created' => time()));
 		}

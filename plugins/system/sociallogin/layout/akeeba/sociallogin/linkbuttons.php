@@ -1,9 +1,11 @@
 <?php
 /**
  * @package   AkeebaSocialLogin
- * @copyright Copyright (c)2016-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright Copyright (c)2016-2019 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
+
+use Joomla\CMS\Layout\FileLayout;
 
 // Protect from unauthorized access
 defined('_JEXEC') or die();
@@ -15,7 +17,7 @@ defined('_JEXEC') or die();
  *
  * Generic data
  *
- * @var   JLayoutFile  $this         The JLayout renderer
+ * @var   FileLayout   $this         The JLayout renderer
  * @var   array        $displayData  The data in array format. DO NOT USE.
  *
  * Layout specific data

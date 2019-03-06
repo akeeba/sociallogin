@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   AkeebaSocialLogin
- * @copyright Copyright (c)2016-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright Copyright (c)2016-2019 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
@@ -16,9 +16,9 @@ use Exception;
 defined('_JEXEC') or die();
 
 /**
- * Google+ People class. Adapted from the Joomla! Framework.
+ * Google OpenID class. Adapted from the Joomla! Framework's Google+ People class.
  */
-class People
+class OpenID
 {
 	/**
 	 * @var    array  Options for the Google data object.
@@ -38,15 +38,20 @@ class People
 	 */
 	public function __construct($options, OAuth2 $auth)
 	{
-		// Setup the default API url if not already set.
-		$options->def('api.url', 'https://www.googleapis.com/plus/v1/');
+		/**
+		 * Setup the default API url if not already set.
+		 *
+		 * See https://developers.google.com/identity/protocols/OpenIDConnect#obtaininguserprofileinformation
+		 * See https://accounts.google.com/.well-known/openid-configuration
+		 */
+		$options->def('api.url', 'https://openidconnect.googleapis.com/v1/userinfo');
 
 		$this->options = $options;
 		$this->auth    = $auth;
 
 		if (!$this->auth->getOption('scope'))
 		{
-			$this->auth->setOption('scope', 'https://www.googleapis.com/auth/plus.me');
+			$this->auth->setOption('scope', 'openid email profile');
 		}
 	}
 
@@ -92,69 +97,6 @@ class People
 	}
 
 	/**
-	 * Method to retrieve a list of data
-	 *
-	 * @param   string   $url       URL to GET
-	 * @param   integer  $maxpages  Maximum number of pages to return
-	 * @param   string   $token     Next page token
-	 *
-	 * @return  mixed  Data from Google
-	 *
-	 * @throws  UnexpectedValueException
-	 * @throws  Exception
-	 */
-	protected function listGetData($url, $maxpages = 1, $token = null)
-	{
-		$qurl = $url;
-
-		if (strpos($url, '&') && isset($token))
-		{
-			$qurl .= '&pageToken=' . $token;
-		}
-		elseif (isset($token))
-		{
-			$qurl .= 'pageToken=' . $token;
-		}
-
-		$jdata = $this->query($qurl);
-		$data = json_decode($jdata->body, true);
-
-		if ($data && array_key_exists('items', $data))
-		{
-			if ($maxpages != 1 && array_key_exists('nextPageToken', $data))
-			{
-				$data['items'] = array_merge($data['items'], $this->listGetData($url, $maxpages - 1, $data['nextPageToken']));
-			}
-
-			return $data['items'];
-		}
-		elseif ($data)
-		{
-			return array();
-		}
-		else
-		{
-			throw new UnexpectedValueException("Unexpected data received from Google: `{$jdata->body}`.");
-		}
-	}
-	/**
-	 * Method to retrieve data from Google
-	 *
-	 * @param   string  $url      The URL for the request.
-	 * @param   mixed   $data     The data to include in the request.
-	 * @param   array   $headers  The headers to send with the request.
-	 * @param   string  $method   The type of http request to send.
-	 *
-	 * @return  mixed  Data from Google.
-	 *
-	 * @throws  Exception
-	 */
-	protected function query($url, $data = null, $headers = null, $method = 'get')
-	{
-		return $this->auth->query($url, $data, $headers, $method);
-	}
-
-	/**
 	 * Get an option from the Data instance.
 	 *
 	 * @param   string  $key  The name of the option to get.
@@ -183,28 +125,18 @@ class People
 	/**
 	 * Get a person's profile.
 	 *
-	 * @param   string  $id      The ID of the person to get the profile for. The special value "me" can be used to
-	 *                           indicate the authenticated user.
-	 * @param   string  $fields  Used to specify the fields you want returned.
-	 *
 	 * @return  mixed  Data from Google
 	 *
 	 * @throws  Exception
 	 */
-	public function getPeople($id = 'me', $fields = 'emails,id,name,image')
+	public function getOpenIDProfile()
 	{
 		if (!$this->isAuthenticated())
 		{
 			return false;
 		}
 
-		$url = $this->getOption('api.url') . 'people/' . $id;
-
-		// Check if fields is specified.
-		if ($fields)
-		{
-			$url .= '?fields=' . $fields;
-		}
+		$url = $this->getOption('api.url');
 
 		$jdata = $this->auth->query($url);
 

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   AkeebaSocialLogin
- * @copyright Copyright (c)2016-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright Copyright (c)2016-2019 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
@@ -15,14 +15,14 @@ class Pkg_SocialloginInstallerScript
 	 *
 	 * @var   string
 	 */
-	protected $minimumPHPVersion = '5.3.10';
+	protected $minimumPHPVersion = '5.6.0';
 
 	/**
 	 * The minimum Joomla! version required to install this extension
 	 *
 	 * @var   string
 	 */
-	protected $minimumJoomlaVersion = '3.4.0';
+	protected $minimumJoomlaVersion = '3.8.0';
 
 	/**
 	 * The maximum Joomla! version this extension can be installed on
