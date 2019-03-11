@@ -86,7 +86,7 @@ class plgSocialloginFacebook extends AbstractPlugin
 		$options->set('api.url', 'https://graph.facebook.com/v2.7/');
 
 		$fbUserApi    = new FacebookUser($options, null, $connector);
-		$fbUserFields = $fbUserApi->getUser('me?fields=id,name,email,verified,timezone');
+		$fbUserFields = $fbUserApi->getUser('me?fields=id,name,email');
 
 		return (array)$fbUserFields;
 	}
@@ -105,8 +105,7 @@ class plgSocialloginFacebook extends AbstractPlugin
 		$userData->name     = isset($socialProfile['name']) ? $socialProfile['name'] : '';
 		$userData->id       = isset($socialProfile['id']) ? $socialProfile['id'] : '';
 		$userData->email    = isset($socialProfile['email']) ? $socialProfile['email'] : '';
-		$userData->verified = isset($socialProfile['verified']) ? $socialProfile['verified'] : false;
-		$userData->timezone = isset($socialProfile['timezone']) ? $socialProfile['timezone'] : 'GMT';
+		$userData->verified = !empty($userData->email);
 
 		return $userData;
 	}
