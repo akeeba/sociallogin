@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="315bea5b-abb6-49c1-bf07-1e8acd6ad6f6" name="My Old Site" url="https://myoldsite.com">
+        <fileTransfer host="myoldsite.com" port="18765" rootFolder="/home/myoldsite/public_html" accessType="SFTP" authAgent="true">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+          <option name="port" value="18765" />
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>
