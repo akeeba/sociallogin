@@ -5,25 +5,25 @@
  */
 
 .akeeba-sociallogin-link-button-google, .akeeba-sociallogin-unlink-button-google, .akeeba-sociallogin-button-google {
-    background-color: #4285F4;
-    color: #ffffff;
-    transition-duration: 0.33s;
-    background-image: none;
-    border-color: #4285F4;
-    padding: 8px 8px;
+    background-color: #4285F4 !important;
+    color: #ffffff !important;
+    transition-duration: 0.33s !important;
+    background-image: none !important;
+    border-color: #4285F4 !important;
+    padding: 8px 8px !important;
 }
 
 .akeeba-sociallogin-link-button-google:hover, .akeeba-sociallogin-unlink-button-google:hover, .akeeba-sociallogin-button-google:hover {
-    background-color: #3c63cc;
-    color: #ffffff;
-    transition-duration: 0.33s;
-    border-color: #3c63cc;
+    background-color: #3c63cc !important;
+    color: #ffffff !important;
+    transition-duration: 0.33s !important;
+    border-color: #3c63cc !important;
 }
 
 .akeeba-sociallogin-link-button-google img, .akeeba-sociallogin-unlink-button-google img, .akeeba-sociallogin-button-google img {
-    display: inline-block;
-    width: 18px;
-    height: 18px;
-    margin: 0 24px 0 0;
-    padding: 0
+    display: inline-block !important;
+    width: 18px !important;
+    height: 18px !important;
+    margin: 0 24px 0 0 !important;
+    padding: 0 !important;
 }

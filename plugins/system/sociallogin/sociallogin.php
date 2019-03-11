@@ -423,6 +423,78 @@ class plgSystemSociallogin extends CMSPlugin
 	}
 
 	/**
+	 * Called after a component has finished running, right after Joomla has set the component output to the buffer.
+	 * Used to inject our social login buttons in the front-end login page rendered by com_users.
+	 *
+	 * @return  void
+	 */
+	public function onAfterDispatch()
+	{
+		// Are we enabled?
+		if (!$this->interceptLogin)
+		{
+			return;
+		}
+
+		// Make sure I can get basic information
+		try
+		{
+			$app     = Joomla::getApplication();
+			$isAdmin = Joomla::isAdminPage($app);
+			$input   = $app->input;
+		}
+		catch (Exception $e)
+		{
+			return;
+		}
+
+		// I can only operate in frontend pages
+		if ($isAdmin)
+		{
+			return;
+		}
+
+		// Make sure this is the Users component
+		$option = $input->getCmd('option');
+
+		if ($option !== 'com_users')
+		{
+			return;
+		}
+
+		// Make sure it is the right view / task
+		$view = $input->getCmd('view');
+		$task = $input->getCmd('task');
+
+		$check1 = is_null($view) && is_null($task);
+		$check2 = is_null($view) && ($task === 'login');
+		$check3 = ($view === 'login') && is_null($task);
+
+		if (!$check1 && !$check2 && !$check3)
+		{
+			return;
+		}
+
+		// Make sure it's an HTML document
+		$document = $app->getDocument();
+
+		if ($document->getType() != 'html')
+		{
+			return;
+		}
+
+		// Get the component output and append our buttons
+		$buttons = Integrations::getSocialLoginButtons(null, null, 'akeeba.sociallogin.button', 'akeeba.sociallogin.buttons', null, true);
+
+		$buffer          = $document->getBuffer();
+
+		$componentOutput = $buffer['component'][''][''];
+		$componentOutput .= $buttons;
+		$document->setBuffer($componentOutput, 'component');
+	}
+
+
+	/**
 	 * Should I enable the substitutions performed by this plugin?
 	 *
 	 * @return  bool

@@ -6,6 +6,7 @@
 * Debug logs for all Social Login plugins
 * Social Login buttons CSS is now loaded through .css files instead of inline styling for better performance
 * Social Login buttons can now be relocated next to the Login button in the login module using a bit of Javascript magic
+* Social Login buttons in the frontend login page (rendered by Joomla's com_users)
 
 # 2.0.3
 
