@@ -440,10 +440,17 @@ class plgSystemSociallogin extends CMSPlugin
 		try
 		{
 			$app     = Joomla::getApplication();
+			$user    = Joomla::getUser();
 			$isAdmin = Joomla::isAdminPage($app);
 			$input   = $app->input;
 		}
 		catch (Exception $e)
+		{
+			return;
+		}
+
+		// No point showing a login button when you're already logged in
+		if (!$user->guest)
 		{
 			return;
 		}
