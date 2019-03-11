@@ -18,40 +18,8 @@
 	Build customization
 	====================================================================================================
 	-->
-	<target name="component-packages" depends="plugin-manifests,package-pkg" />
-
 	<target name="package-com" description="Builds the component">
 		<echo>This is a plugins only solution.</echo>
-	</target>
-
-	<target name="plugin-manifests" depends="setup-properties">
-		<copy file="${phing.dir}/templates/plg_system_sociallogin.xml" tofile="${dirs.plugins}/system/sociallogin/sociallogin.xml" overwrite="true">
-			<filterchain id="manifest-replace-tokens">
-				<replacetokens begintoken="##" endtoken="##">
-					<token key="DATE" value="${build.date}" />
-					<token key="VERSION" value="${version}" />
-				</replacetokens>
-			</filterchain>
-		</copy>
-
-		<copy file="${phing.dir}/templates/plg_sociallogin_facebook.xml" tofile="${dirs.plugins}/sociallogin/facebook/facebook.xml" overwrite="true">
-			<filterchain refid="manifest-replace-tokens" />
-		</copy>
-		<copy file="${phing.dir}/templates/plg_sociallogin_google.xml" tofile="${dirs.plugins}/sociallogin/google/google.xml" overwrite="true">
-			<filterchain refid="manifest-replace-tokens" />
-		</copy>
-		<copy file="${phing.dir}/templates/plg_sociallogin_github.xml" tofile="${dirs.plugins}/sociallogin/github/github.xml" overwrite="true">
-			<filterchain refid="manifest-replace-tokens" />
-		</copy>
-		<copy file="${phing.dir}/templates/plg_sociallogin_linkedin.xml" tofile="${dirs.plugins}/sociallogin/linkedin/linkedin.xml" overwrite="true">
-			<filterchain refid="manifest-replace-tokens" />
-		</copy>
-		<copy file="${phing.dir}/templates/plg_sociallogin_microsoft.xml" tofile="${dirs.plugins}/sociallogin/microsoft/microsoft.xml" overwrite="true">
-			<filterchain refid="manifest-replace-tokens" />
-		</copy>
-		<copy file="${phing.dir}/templates/plg_sociallogin_twitter.xml" tofile="${dirs.plugins}/sociallogin/twitter/twitter.xml" overwrite="true">
-			<filterchain refid="manifest-replace-tokens" />
-		</copy>
 	</target>
 
 	<!--

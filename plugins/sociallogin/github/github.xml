@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension version="3.8.0" type="plugin" group="sociallogin" method="upgrade">
-    <name>PLG_SOCIALLOGIN_FACEBOOK</name>
-    <version>##VERSION##</version>
-    <creationDate>##DATE##</creationDate>
+    <name>PLG_SOCIALLOGIN_GITHUB</name>
+    <version>revBA26C5D</version>
+    <creationDate>2019-03-03</creationDate>
 
     <author>Akeeba Ltd</author>
     <authorEmail>no-reply@akeebabackup.com</authorEmail>
@@ -11,20 +11,20 @@
     <copyright>Copyright (c)2016-2019 Akeeba Ltd</copyright>
     <license>GNU GPL v3 or later</license>
 
-    <description>PLG_SOCIALLOGIN_FACEBOOK_DESCRIPTION</description>
+    <description>PLG_SOCIALLOGIN_GITHUB_DESCRIPTION</description>
 
     <files>
-        <filename plugin="facebook">facebook.php</filename>
-        <folder>Facebook</folder>
+        <filename plugin="github">github.php</filename>
+        <folder>GitHub</folder>
     </files>
 
-    <media folder="media" destination="plg_sociallogin_facebook">
+    <media folder="media" destination="plg_sociallogin_github">
         <folder>images</folder>
     </media>
 
     <languages folder="language">
-        <language tag="en-GB">en-GB/en-GB.plg_sociallogin_facebook.ini</language>
-        <language tag="en-GB">en-GB/en-GB.plg_sociallogin_facebook.sys.ini</language>
+        <language tag="en-GB">en-GB/en-GB.plg_sociallogin_github.ini</language>
+        <language tag="en-GB">en-GB/en-GB.plg_sociallogin_github.sys.ini</language>
     </languages>
 
     <config>
@@ -33,24 +33,24 @@
                 <field
                         name="appid"
                         type="text"
-                        label="PLG_SOCIALLOGIN_FACEBOOK_FIELD_APPID_LABEL"
-                        description="PLG_SOCIALLOGIN_FACEBOOK_FIELD_APPID_DESC"
+                        label="PLG_SOCIALLOGIN_GITHUB_FIELD_APPID_LABEL"
+                        description="PLG_SOCIALLOGIN_GITHUB_FIELD_APPID_DESC"
                         default=""
                 />
 
                 <field
                         name="appsecret"
                         type="password"
-                        label="PLG_SOCIALLOGIN_FACEBOOK_FIELD_APPSECRET_LABEL"
-                        description="PLG_SOCIALLOGIN_FACEBOOK_FIELD_APPSECRET_DESC"
+                        label="PLG_SOCIALLOGIN_GITHUB_FIELD_APPSECRET_LABEL"
+                        description="PLG_SOCIALLOGIN_GITHUB_FIELD_APPSECRET_DESC"
                         default=""
                 />
 
                 <field
                         name="loginunlinked"
                         type="radio"
-                        label="PLG_SOCIALLOGIN_FACEBOOK_FIELD_LOGINUNLINKED_LABEL"
-                        description="PLG_SOCIALLOGIN_FACEBOOK_FIELD_LOGINUNLINKED_DESC"
+                        label="PLG_SOCIALLOGIN_GITHUB_FIELD_LOGINUNLINKED_LABEL"
+                        description="PLG_SOCIALLOGIN_GITHUB_FIELD_LOGINUNLINKED_DESC"
                         default="0"
                         class="btn-group btn-group-yesno"
                 >
@@ -61,8 +61,8 @@
                 <field
                         name="createnew"
                         type="radio"
-                        label="PLG_SOCIALLOGIN_FACEBOOK_FIELD_CREATENEW_LABEL"
-                        description="PLG_SOCIALLOGIN_FACEBOOK_FIELD_CREATENEW_DESC"
+                        label="PLG_SOCIALLOGIN_GITHUB_FIELD_CREATENEW_LABEL"
+                        description="PLG_SOCIALLOGIN_GITHUB_FIELD_CREATENEW_DESC"
                         default="0"
                         class="btn-group btn-group-yesno"
                 >
@@ -73,8 +73,8 @@
                 <field
                         name="forcenew"
                         type="radio"
-                        label="PLG_SOCIALLOGIN_FACEBOOK_FIELD_FORCENEW_LABEL"
-                        description="PLG_SOCIALLOGIN_FACEBOOK_FIELD_FORCENEW_DESC"
+                        label="PLG_SOCIALLOGIN_GITHUB_FIELD_FORCENEW_LABEL"
+                        description="PLG_SOCIALLOGIN_GITHUB_FIELD_FORCENEW_DESC"
                         default="0"
                         class="btn-group btn-group-yesno"
                 >
@@ -85,8 +85,8 @@
                 <field
                         name="bypassvalidation"
                         type="radio"
-                        label="PLG_SOCIALLOGIN_FACEBOOK_FIELD_BYPASSVALIDATION_LABEL"
-                        description="PLG_SOCIALLOGIN_FACEBOOK_FIELD_BYPASSVALIDATION_DESC"
+                        label="PLG_SOCIALLOGIN_GITHUB_FIELD_BYPASSVALIDATION_LABEL"
+                        description="PLG_SOCIALLOGIN_GITHUB_FIELD_BYPASSVALIDATION_DESC"
                         default="1"
                         class="btn-group btn-group-yesno"
                 >
@@ -97,8 +97,8 @@
                 <field
                         name="customcss"
                         type="radio"
-                        label="PLG_SOCIALLOGIN_FACEBOOK_FIELD_CUSTOMCSS_LABEL"
-                        description="PLG_SOCIALLOGIN_FACEBOOK_FIELD_CUSTOMCSS_DESC"
+                        label="PLG_SOCIALLOGIN_GITHUB_FIELD_CUSTOMCSS_LABEL"
+                        description="PLG_SOCIALLOGIN_GITHUB_FIELD_CUSTOMCSS_DESC"
                         default="1"
                         class="btn-group btn-group-yesno"
                 >
@@ -109,8 +109,8 @@
                 <field
                         name="icon_class"
                         type="text"
-                        label="PLG_SOCIALLOGIN_FACEBOOK_FIELD_ICONCLASS_LABEL"
-                        description="PLG_SOCIALLOGIN_FACEBOOK_FIELD_ICONCLASS_DESC"
+                        label="PLG_SOCIALLOGIN_GITHUB_FIELD_ICONCLASS_LABEL"
+                        description="PLG_SOCIALLOGIN_GITHUB_FIELD_ICONCLASS_DESC"
                         default=""
                 />
             </fieldset>

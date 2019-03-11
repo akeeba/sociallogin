@@ -6,8 +6,6 @@
 
 /component/media/js/*.map
 
-/plugins/**/**/*.xml
-
 /release
 
 # Internal language symlinks
