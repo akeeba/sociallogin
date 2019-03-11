@@ -49,6 +49,18 @@
 				/>
 
 				<field
+						name="relocate"
+						type="list"
+						label="PLG_SYSTEM_SOCIALLOGIN_CONFIG_RELOCATE_LABEL"
+						description="PLG_SYSTEM_SOCIALLOGIN_CONFIG_RELOCATE_DESC"
+						default="1"
+						class="btn-group btn-group-yesno"
+				>
+					<option value="1">PLG_SYSTEM_SOCIALLOGIN_CONFIG_RELOCATE_OPT_NEXTTOLOGIN</option>
+					<option value="0">PLG_SYSTEM_SOCIALLOGIN_CONFIG_RELOCATE_OPT_ENDOFMODULE</option>
+				</field>
+
+				<field
 						name="interceptlogin"
 						type="radio"
 						label="PLG_SYSTEM_SOCIALLOGIN_CONFIG_INTERCEPTLOGIN_LABEL"
@@ -71,6 +83,19 @@
 					<option value="1">JYES</option>
 					<option value="0">JNO</option>
 				</field>
+			</fieldset>
+			<fieldset name="sociallogin_expert">
+				<field
+						name="relocate_selectors"
+						type="textarea"
+						label="PLG_SYSTEM_SOCIALLOGIN_CONFIG_RELOCATESELECTORS_LABEL"
+						description="PLG_SYSTEM_SOCIALLOGIN_CONFIG_RELOCATESELECTORS_DESC"
+						default='#form-login-submit > button, button[type=submit], [type=submit], [id*="submit"]'
+						class="input-xlarge"
+						cols="50"
+						rows="10"
+				/>
+
 			</fieldset>
 		</fields>
 	</config>

@@ -41,6 +41,20 @@ class plgSystemSociallogin extends CMSPlugin
 	private $addLinkUnlinkButtons = true;
 
 	/**
+	 * Should I relocate the social login buttons next to the Login button in the login module?
+	 *
+	 * @var   bool
+	 */
+	protected $relocateButton = true;
+
+	/**
+	 * CSS selectors for the relocate feature
+	 *
+	 * @var   array
+	 */
+	protected $relocateSelectors = [];
+
+	/**
 	 * Are the substitutions enabled?
 	 *
 	 * @var   bool
@@ -93,6 +107,8 @@ class plgSystemSociallogin extends CMSPlugin
 		// Load the other plugin parameters
 		$this->interceptLogin       = $this->params->get('interceptlogin', 1);
 		$this->addLinkUnlinkButtons = $this->params->get('linkunlinkbuttons', 1);
+		$this->relocateButton       = $this->params->get('relocate', 1) == 1;
+		$this->relocateSelectors    = explode("\n", str_replace(',', "\n", $this->params->get('relocate_selectors', '')));
 	}
 
 	/**
@@ -192,7 +208,8 @@ class plgSystemSociallogin extends CMSPlugin
 
 		// Append the social login buttons content
 		Joomla::log('system', "Injecting buttons to {$module->module} module.");
-		$socialLoginButtons = Integrations::getSocialLoginButtons();
+		$selectors = empty($this->relocateSelectors) ? [] : $this->relocateSelectors;
+		$socialLoginButtons = Integrations::getSocialLoginButtons(null, null, 'akeeba.sociallogin.button', 'akeeba.sociallogin.buttons', null, $this->relocateButton, $selectors);
 		$module->content    .= $socialLoginButtons;
 	}
 

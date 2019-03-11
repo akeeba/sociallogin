@@ -9,6 +9,7 @@ namespace Akeeba\SocialLogin\Library\Helper;
 
 use Exception;
 use Joomla\CMS\Application\BaseApplication;
+use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\User\User;
 
 // Protect from unauthorized access
@@ -19,6 +20,13 @@ defined('_JEXEC') or die();
  */
 abstract class Integrations
 {
+	/**
+	 * Have I already included the button relocation JavaScript? Prevents double inclusion of the same files.
+	 *
+	 * @var   bool
+	 */
+	private static $includedRelocationJS = false;
+
 	/**
 	 * Cached copy of the social login buttons' HTML
 	 *
@@ -34,12 +42,14 @@ abstract class Integrations
 	 * @param   string           $buttonLayout   JLayout for rendering a single login button
 	 * @param   string           $buttonsLayout  JLayout for rendering all the login buttons
 	 * @param   BaseApplication  $app            The application we are running in. Skip to auto-detect (recommended).
+	 * @param   bool             $relocate       Should I try to relocate the Social Login buttons next to an existing login button?
+	 * @param   array            $selectors      The selectors to use for identifying the existing login buttons.
 	 *
 	 * @return  string  The rendered HTML of the login buttons
 	 *
 	 * @throws  Exception
 	 */
-	public static function getSocialLoginButtons($loginURL = null, $failureURL = null, $buttonLayout = 'akeeba.sociallogin.button', $buttonsLayout  = 'akeeba.sociallogin.buttons', $app = null)
+	public static function getSocialLoginButtons($loginURL = null, $failureURL = null, $buttonLayout = 'akeeba.sociallogin.button', $buttonsLayout = 'akeeba.sociallogin.buttons', $app = null, $relocate = false, array $selectors = [])
 	{
 		if (!is_object($app))
 		{
@@ -50,17 +60,27 @@ abstract class Integrations
 		{
 			Joomla::importPlugins('sociallogin');
 
-			$buttonDefinitions = Joomla::runPlugins('onSocialLoginGetLoginButton', array(
+			$buttonDefinitions = Joomla::runPlugins('onSocialLoginGetLoginButton', [
 				$loginURL,
-				$failureURL
-			), $app);
-			$buttonsHTML       = array();
+				$failureURL,
+			], $app);
+			$buttonsHTML       = [];
 
 			foreach ($buttonDefinitions as $buttonDefinition)
 			{
 				if (empty($buttonDefinition))
 				{
 					continue;
+				}
+
+				if ($relocate)
+				{
+					$buttonDefinition['relocate'] = true;
+				}
+
+				if (!empty($selectors))
+				{
+					$buttonDefinition['selectors'] = $selectors;
 				}
 
 				$includePath = JPATH_SITE . '/plugins/sociallogin/' . $buttonDefinition['slug'] . '/layout';
@@ -70,13 +90,13 @@ abstract class Integrations
 
 				if (empty($html))
 				{
-					$html          = Joomla::renderLayout($buttonLayout, $buttonDefinition, $includePath);
+					$html = Joomla::renderLayout($buttonLayout, $buttonDefinition, $includePath);
 				}
 
 				$buttonsHTML[] = $html;
 			}
 
-			self::$cachedSocialLoginButtons = Joomla::renderLayout($buttonsLayout, array('buttons' => $buttonsHTML));
+			self::$cachedSocialLoginButtons = Joomla::renderLayout($buttonsLayout, ['buttons' => $buttonsHTML]);
 		}
 
 		return self::$cachedSocialLoginButtons;
@@ -95,7 +115,7 @@ abstract class Integrations
 	 *
 	 * @throws  Exception
 	 */
-	public static function getSocialLinkButtons($user = null, $buttonLayout = 'akeeba.sociallogin.linkbutton', $buttonsLayout  = 'akeeba.sociallogin.linkbuttons', $app = null)
+	public static function getSocialLinkButtons($user = null, $buttonLayout = 'akeeba.sociallogin.linkbutton', $buttonsLayout = 'akeeba.sociallogin.linkbuttons', $app = null)
 	{
 		if (!is_object($app))
 		{
@@ -106,8 +126,8 @@ abstract class Integrations
 		{
 			Joomla::importPlugins('sociallogin');
 
-			$buttonDefinitions = Joomla::runPlugins('onSocialLoginGetLinkButton', array($user), $app);
-			$buttonsHTML       = array();
+			$buttonDefinitions = Joomla::runPlugins('onSocialLoginGetLinkButton', [$user], $app);
+			$buttonsHTML       = [];
 
 			foreach ($buttonDefinitions as $buttonDefinition)
 			{
@@ -123,13 +143,13 @@ abstract class Integrations
 
 				if (empty($html))
 				{
-					$html          = Joomla::renderLayout($buttonLayout, $buttonDefinition, $includePath);
+					$html = Joomla::renderLayout($buttonLayout, $buttonDefinition, $includePath);
 				}
 
 				$buttonsHTML[] = $html;
 			}
 
-			self::$cachedSocialLoginButtons = Joomla::renderLayout($buttonsLayout, array('buttons' => $buttonsHTML));
+			self::$cachedSocialLoginButtons = Joomla::renderLayout($buttonsLayout, ['buttons' => $buttonsHTML]);
 		}
 
 		return self::$cachedSocialLoginButtons;
@@ -179,27 +199,27 @@ abstract class Integrations
 		$primaryKey   = $keys[0];
 		$primaryValue = $data[$primaryKey];
 		$query        = $db->getQuery(true)
-		                   ->select('user_id')
-		                   ->from($db->qn('#__user_profiles'))
-		                   ->where($db->qn('profile_key') . ' = ' . $db->q($slug . '.' . $primaryKey))
-		                   ->where($db->qn('profile_value') . ' = ' . $db->q($primaryValue));
+			->select('user_id')
+			->from($db->qn('#__user_profiles'))
+			->where($db->qn('profile_key') . ' = ' . $db->q($slug . '.' . $primaryKey))
+			->where($db->qn('profile_value') . ' = ' . $db->q($primaryValue));
 
 		// Get all user IDs matching the primary key's value
 		try
 		{
 			$allUserIDs = $db->setQuery($query)->loadAssocList(null, 'user_id');
 
-			$allUserIDs = empty($allUserIDs) ? array() : $allUserIDs;
+			$allUserIDs = empty($allUserIDs) ? [] : $allUserIDs;
 		}
 		catch (Exception $e)
 		{
-			$allUserIDs = array();
+			$allUserIDs = [];
 		}
 
 		// Remove our own user's ID from the list
 		if (!empty($allUserIDs))
 		{
-			$temp = array();
+			$temp = [];
 
 			foreach ($allUserIDs as $id)
 			{
@@ -218,20 +238,20 @@ abstract class Integrations
 		$allUserIDs[] = $userId;
 
 		// Create database-escaped lists of user IDs and keys to remove
-		$allUserIDs = array_map(array($db, 'quote'), $allUserIDs);
-		$keys = array_map(function ($x) use ($slug, $db) {
+		$allUserIDs = array_map([$db, 'quote'], $allUserIDs);
+		$keys       = array_map(function ($x) use ($slug, $db) {
 			return $db->q($slug . '.' . $x);
 		}, $keys);
 
 		// Delete old values
 		$query = $db->getQuery(true)
 			->delete($db->qn('#__user_profiles'))
-			->where($db->qn('user_id') . ' IN(' . implode(', ', $allUserIDs) . ')' )
-			->where($db->qn('profile_key') . ' IN(' . implode(', ', $keys) . ')' );
+			->where($db->qn('user_id') . ' IN(' . implode(', ', $allUserIDs) . ')')
+			->where($db->qn('profile_key') . ' IN(' . implode(', ', $keys) . ')');
 		$db->setQuery($query)->execute();
 
 		// Insert new values
-		$insertData = array();
+		$insertData = [];
 
 		foreach ($data as $key => $value)
 		{
@@ -266,9 +286,9 @@ abstract class Integrations
 		$db = Joomla::getDbo();
 
 		$query = $db->getQuery(true)
-		            ->delete($db->qn('#__user_profiles'))
-		            ->where($db->qn('user_id') . ' = ' . $db->q($userId))
-		            ->where($db->qn('profile_key') . ' LIKE ' . $db->q($slug . '.%'));
+			->delete($db->qn('#__user_profiles'))
+			->where($db->qn('user_id') . ' = ' . $db->q($userId))
+			->where($db->qn('profile_key') . ' LIKE ' . $db->q($slug . '.%'));
 		$db->setQuery($query)->execute();
 
 	}
@@ -286,11 +306,11 @@ abstract class Integrations
 	{
 		$db    = Joomla::getDbo();
 		$query = $db->getQuery(true)
-		            ->select(array(
-			            $db->qn('user_id'),
-		            ))->from($db->qn('#__user_profiles'))
-		            ->where($db->qn('profile_key') . ' = ' . $db->q($profileKey))
-		            ->where($db->qn('profile_value') . ' = ' . $db->q($profileValue));
+			->select([
+				$db->qn('user_id'),
+			])->from($db->qn('#__user_profiles'))
+			->where($db->qn('profile_key') . ' = ' . $db->q($profileKey))
+			->where($db->qn('profile_value') . ' = ' . $db->q($profileValue));
 
 		try
 		{
@@ -308,10 +328,10 @@ abstract class Integrations
 			 * does not exist we'll end up with an ugly Warning on our page with a text similar to "JUser: :_load:
 			 * Unable to load user with ID: 1234". This cannot be disabled so we have to be, um, a bit creative :/
 			 */
-			$db    = Joomla::getDbo();
-			$query = $db->getQuery(true)
-			            ->select('COUNT(*)')->from($db->qn('#__users'))
-			            ->where($db->qn('id') . ' = ' . $db->q($id));
+			$db         = Joomla::getDbo();
+			$query      = $db->getQuery(true)
+				->select('COUNT(*)')->from($db->qn('#__users'))
+				->where($db->qn('id') . ' = ' . $db->q($id));
 			$userExists = $db->setQuery($query)->loadResult();
 
 			return ($userExists == 0) ? 0 : $id;
@@ -320,6 +340,28 @@ abstract class Integrations
 		{
 			return 0;
 		}
+	}
+
+	/**
+	 * Injects the Javascript used to relocate login buttons, but only once per page load.
+	 *
+	 * @return  void
+	 */
+	public static function includeButtonRelocationJS()
+	{
+		if (self::$includedRelocationJS)
+		{
+			return;
+		}
+
+		// Load the JavaScript
+		HTMLHelper::_('script', 'plg_system_sociallogin/dist/buttons.js', [
+			'relative'  => true,
+			'framework' => true,
+		]);
+
+		// Set the "don't load again" flag
+		self::$includedRelocationJS = true;
 	}
 
 }

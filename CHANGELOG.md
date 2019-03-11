@@ -4,6 +4,8 @@
 
 * Login with Google using Google OpenID instead of the now defunct Google+ API
 * Debug logs for all Social Login plugins
+* Social Login buttons CSS is now loaded through .css files instead of inline styling for better performance
+* Social Login buttons can now be relocated next to the Login button in the login module using a bit of Javascript magic
 
 # 2.0.3
 
