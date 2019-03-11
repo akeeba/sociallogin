@@ -1,0 +1,28 @@
+/**
+ * @package   AkeebaSocialLogin
+ * @copyright Copyright (c)2016-2019 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @license   GNU General Public License version 3, or later
+ */
+
+.akeeba-sociallogin-link-button-facebook, .akeeba-sociallogin-unlink-button-facebook, .akeeba-sociallogin-button-facebook {
+    background-color: #3B5998;
+    color: #ffffff;
+    transition-duration: 0.33s;
+    background-image: none;
+    border-color: #23355b;
+}
+
+.akeeba-sociallogin-link-button-facebook:hover, .akeeba-sociallogin-unlink-button-facebook:hover, .akeeba-sociallogin-button-facebook:hover {
+    background-color: #8B9DC3;
+    color: #ffffff;
+    transition-duration: 0.33s;
+    border-color: #3B5998;
+}
+
+.akeeba-sociallogin-link-button-facebook img, .akeeba-sociallogin-unlink-button-facebook img, .akeeba-sociallogin-button-facebook img {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    margin: 0 0.33em 0.1em 0;
+    padding: 0
+}

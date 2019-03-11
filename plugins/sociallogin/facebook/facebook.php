@@ -43,13 +43,6 @@ class plgSocialloginFacebook extends AbstractPlugin
 
 		// Per-plugin customization
 		$this->buttonImage = 'plg_sociallogin_facebook/fb_white_29.png';
-		$this->customCSS = /** @lang CSS */
-			<<< CSS
-.akeeba-sociallogin-link-button-facebook, .akeeba-sociallogin-unlink-button-facebook, .akeeba-sociallogin-button-facebook { background-color: #3B5998; color: #ffffff; transition-duration: 0.33s; background-image: none; border-color: #23355b; }
-.akeeba-sociallogin-link-button-facebook:hover, .akeeba-sociallogin-unlink-button-facebook:hover, .akeeba-sociallogin-button-facebook:hover { background-color: #8B9DC3; color: #ffffff; transition-duration: 0.33s; border-color: #3B5998; }
-.akeeba-sociallogin-link-button-facebook img, .akeeba-sociallogin-unlink-button-facebook img, .akeeba-sociallogin-button-facebook img { display: inline-block; width: 16px; height: 16px; margin: 0 0.33em 0.1em 0; padding: 0 }
-
-CSS;
 	}
 
 	/**

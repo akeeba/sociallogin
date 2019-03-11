@@ -42,13 +42,6 @@ class plgSocialloginGithub extends AbstractPlugin
 
 		// Per-plugin customization
 		$this->buttonImage = 'plg_sociallogin_github/gh_white_32.png';
-		$this->customCSS = /** @lang CSS */
-			<<< CSS
-.akeeba-sociallogin-link-button-github, .akeeba-sociallogin-unlink-button-github, .akeeba-sociallogin-button-github { background-color: #000000; color: #ffffff; transition-duration: 0.33s; background-image: none; border-color: #333333; }
-.akeeba-sociallogin-link-button-github:hover, .akeeba-sociallogin-unlink-button-github:hover, .akeeba-sociallogin-button-github:hover { background-color: #333333; color: #ffffff; transition-duration: 0.33s; border-color: #999999; }
-.akeeba-sociallogin-link-button-github img, .akeeba-sociallogin-unlink-button-github img, .akeeba-sociallogin-button-github img { display: inline-block; width: 16px; height: 16px; margin: 0 0.33em 0.1em 0; padding: 0 }
-
-CSS;
 	}
 
 	/**

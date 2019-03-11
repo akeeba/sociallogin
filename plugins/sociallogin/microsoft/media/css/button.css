@@ -1,0 +1,29 @@
+/**
+ * @package   AkeebaSocialLogin
+ * @copyright Copyright (c)2016-2019 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @license   GNU General Public License version 3, or later
+ */
+
+.akeeba-sociallogin-link-button-microsoft, .akeeba-sociallogin-unlink-button-microsoft, .akeeba-sociallogin-button-microsoft {
+    background-color: #cccccc;
+    color: #000000;
+    transition-duration: 0.33s;
+    background-image: none;
+    border-color: #1F1F1F;
+}
+
+.akeeba-sociallogin-link-button-microsoft:hover, .akeeba-sociallogin-unlink-button-microsoft:hover, .akeeba-sociallogin-button-microsoft:hover {
+    background-color: #2b2b2b;
+    color: #ffffff;
+    transition-duration: 0.33s;
+    border-color: #2B2B2B;
+}
+
+.akeeba-sociallogin-link-button-microsoft img, .akeeba-sociallogin-unlink-button-microsoft img, .akeeba-sociallogin-button-microsoft img {
+    display: inline-block;
+    width: 75px;
+    height: 16px;
+    margin: 0.1em 0.33em 0 0;
+    padding: 0
+}
+

@@ -19,6 +19,7 @@
     </files>
 
     <media folder="media" destination="plg_sociallogin_microsoft">
+        <folder>css</folder>
         <folder>images</folder>
     </media>
 

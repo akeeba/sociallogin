@@ -50,13 +50,6 @@ class plgSocialloginGoogle extends AbstractPlugin
 
 		// Per-plugin customization
 		$this->buttonImage = 'plg_sociallogin_google/google.png';
-		$this->customCSS = /** @lang CSS */
-			<<< CSS
-.akeeba-sociallogin-link-button-google, .akeeba-sociallogin-unlink-button-google, .akeeba-sociallogin-button-google { background-color: #4285F4; color: #ffffff; transition-duration: 0.33s; background-image: none; border-color: #4285F4; padding: 8px 8px; }
-.akeeba-sociallogin-link-button-google:hover, .akeeba-sociallogin-unlink-button-google:hover, .akeeba-sociallogin-button-google:hover { background-color: #3c63cc; color: #ffffff; transition-duration: 0.33s; border-color: #3c63cc; }
-.akeeba-sociallogin-link-button-google img, .akeeba-sociallogin-unlink-button-google img, .akeeba-sociallogin-button-google img { display: inline-block; width: 18px; height: 18px; margin: 0 24px 0 0; padding: 0 }
-
-CSS;
 	}
 
 	/**

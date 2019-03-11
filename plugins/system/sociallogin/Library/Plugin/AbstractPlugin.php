@@ -94,13 +94,6 @@ abstract class AbstractPlugin extends CMSPlugin
 	protected $buttonImage = '';
 
 	/**
-	 * Custom CSS for the login, link and unlink buttons of this social network.
-	 *
-	 * @var string
-	 */
-	protected $customCSS = '';
-
-	/**
 	 * OAuth application ID
 	 *
 	 * @var   string
@@ -585,12 +578,13 @@ abstract class AbstractPlugin extends CMSPlugin
 
 		$hasOutputCustomCSS = true;
 
-		// Am I allowed to add my custom CSS?
+		// Am I allowed to add the built-in custom button styling?
 		if (!$this->useCustomCSS)
 		{
 			return;
 		}
 
+		// Is this an HTML document?
 		$jDocument = Joomla::getApplication()->getDocument();
 
 		if (empty($jDocument) || !is_object($jDocument) || !($jDocument instanceof HtmlDocument))
@@ -598,7 +592,12 @@ abstract class AbstractPlugin extends CMSPlugin
 			return;
 		}
 
-		$jDocument->addStyleDeclaration($this->customCSS);
+		// Load the built-in stylesheet
+		$stylesheet = 'plg_sociallogin_' . strtolower($this->integrationName) . '/button.css';
+
+		HTMLHelper::_('stylesheet', $stylesheet, [
+			'relative' => true
+		]);
 	}
 
 }
