@@ -28,13 +28,6 @@ abstract class Integrations
 	private static $includedRelocationJS = false;
 
 	/**
-	 * Cached copy of the social login buttons' HTML
-	 *
-	 * @var   string
-	 */
-	private static $cachedSocialLoginButtons = null;
-
-	/**
 	 * Gets the Social Login buttons for logging into the site (typically used in login modules)
 	 *
 	 * @param   string           $loginURL       The URL to return to upon successful login. Current URL if omitted.
@@ -56,50 +49,45 @@ abstract class Integrations
 			$app = Joomla::getApplication();
 		}
 
-		if (is_null(self::$cachedSocialLoginButtons))
+		Joomla::importPlugins('sociallogin');
+
+		$buttonDefinitions = Joomla::runPlugins('onSocialLoginGetLoginButton', [
+			$loginURL,
+			$failureURL,
+		], $app);
+		$buttonsHTML       = [];
+
+		foreach ($buttonDefinitions as $buttonDefinition)
 		{
-			Joomla::importPlugins('sociallogin');
-
-			$buttonDefinitions = Joomla::runPlugins('onSocialLoginGetLoginButton', [
-				$loginURL,
-				$failureURL,
-			], $app);
-			$buttonsHTML       = [];
-
-			foreach ($buttonDefinitions as $buttonDefinition)
+			if (empty($buttonDefinition))
 			{
-				if (empty($buttonDefinition))
-				{
-					continue;
-				}
-
-				if ($relocate)
-				{
-					$buttonDefinition['relocate'] = true;
-				}
-
-				if (!empty($selectors))
-				{
-					$buttonDefinition['selectors'] = $selectors;
-				}
-
-				$includePath = JPATH_SITE . '/plugins/sociallogin/' . $buttonDefinition['slug'] . '/layout';
-
-				// First try the plugin-specific layout
-				$html = Joomla::renderLayout("$buttonLayout.{$buttonDefinition['slug']}", $buttonDefinition, $includePath);
-
-				if (empty($html))
-				{
-					$html = Joomla::renderLayout($buttonLayout, $buttonDefinition, $includePath);
-				}
-
-				$buttonsHTML[] = $html;
+				continue;
 			}
 
-			self::$cachedSocialLoginButtons = Joomla::renderLayout($buttonsLayout, ['buttons' => $buttonsHTML]);
+			if ($relocate)
+			{
+				$buttonDefinition['relocate'] = true;
+			}
+
+			if (!empty($selectors))
+			{
+				$buttonDefinition['selectors'] = $selectors;
+			}
+
+			$includePath = JPATH_SITE . '/plugins/sociallogin/' . $buttonDefinition['slug'] . '/layout';
+
+			// First try the plugin-specific layout
+			$html = Joomla::renderLayout("$buttonLayout.{$buttonDefinition['slug']}", $buttonDefinition, $includePath);
+
+			if (empty($html))
+			{
+				$html = Joomla::renderLayout($buttonLayout, $buttonDefinition, $includePath);
+			}
+
+			$buttonsHTML[] = $html;
 		}
 
-		return self::$cachedSocialLoginButtons;
+		return Joomla::renderLayout($buttonsLayout, ['buttons' => $buttonsHTML]);
 	}
 
 	/**
