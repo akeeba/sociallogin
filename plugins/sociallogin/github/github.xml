@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension version="3.8.0" type="plugin" group="sociallogin" method="upgrade">
     <name>PLG_SOCIALLOGIN_GITHUB</name>
-    <version>revBA26C5D</version>
-    <creationDate>2019-03-03</creationDate>
+    <version>revF57D62D</version>
+    <creationDate>2019-03-12</creationDate>
 
     <author>Akeeba Ltd</author>
     <authorEmail>no-reply@akeebabackup.com</authorEmail>

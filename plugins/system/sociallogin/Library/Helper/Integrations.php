@@ -110,37 +110,32 @@ abstract class Integrations
 			$app = Joomla::getApplication();
 		}
 
-		if (is_null(self::$cachedSocialLoginButtons))
+		Joomla::importPlugins('sociallogin');
+
+		$buttonDefinitions = Joomla::runPlugins('onSocialLoginGetLinkButton', [$user], $app);
+		$buttonsHTML       = [];
+
+		foreach ($buttonDefinitions as $buttonDefinition)
 		{
-			Joomla::importPlugins('sociallogin');
-
-			$buttonDefinitions = Joomla::runPlugins('onSocialLoginGetLinkButton', [$user], $app);
-			$buttonsHTML       = [];
-
-			foreach ($buttonDefinitions as $buttonDefinition)
+			if (empty($buttonDefinition))
 			{
-				if (empty($buttonDefinition))
-				{
-					continue;
-				}
-
-				$includePath = JPATH_SITE . '/plugins/sociallogin/' . $buttonDefinition['slug'] . '/layout';
-
-				// First try the plugin-specific layout
-				$html = Joomla::renderLayout("$buttonLayout.{$buttonDefinition['slug']}", $buttonDefinition, $includePath);
-
-				if (empty($html))
-				{
-					$html = Joomla::renderLayout($buttonLayout, $buttonDefinition, $includePath);
-				}
-
-				$buttonsHTML[] = $html;
+				continue;
 			}
 
-			self::$cachedSocialLoginButtons = Joomla::renderLayout($buttonsLayout, ['buttons' => $buttonsHTML]);
+			$includePath = JPATH_SITE . '/plugins/sociallogin/' . $buttonDefinition['slug'] . '/layout';
+
+			// First try the plugin-specific layout
+			$html = Joomla::renderLayout("$buttonLayout.{$buttonDefinition['slug']}", $buttonDefinition, $includePath);
+
+			if (empty($html))
+			{
+				$html = Joomla::renderLayout($buttonLayout, $buttonDefinition, $includePath);
+			}
+
+			$buttonsHTML[] = $html;
 		}
 
-		return self::$cachedSocialLoginButtons;
+		return Joomla::renderLayout($buttonsLayout, ['buttons' => $buttonsHTML]);
 	}
 
 	/**
