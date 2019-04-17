@@ -9,7 +9,11 @@
 use Akeeba\SocialLogin\Library\Helper\Ajax;
 use Akeeba\SocialLogin\Library\Helper\Integrations;
 use Akeeba\SocialLogin\Library\Helper\Joomla;
+use Joomla\CMS\Factory;
 use Joomla\CMS\Plugin\CMSPlugin;
+use Joomla\CMS\Table\Menu;
+use Joomla\CMS\Table\Table;
+use Joomla\CMS\Uri\Uri;
 use Joomla\Utilities\ArrayHelper;
 
 defined('_JEXEC') or die;
@@ -333,7 +337,30 @@ class plgSystemSociallogin extends CMSPlugin
 			return true;
 		}
 
-		if (!Joomla::isAdminPage() && (Joomla::getApplication()->input->getCmd('layout', 'default') != 'edit'))
+		$layout = Joomla::getApplication()->input->getCmd('layout', 'default');
+
+		/**
+		 * Joomla is kinda brain-dead. When we have a menu item to the Edit Profile page it does not push the layout
+		 * into the Input (as opposed with option and view) so I have to go in and dig it out myself. Yikes!
+		 */
+		$itemId = Factory::getApplication()->input->getInt('Itemid');
+
+		if ($itemId)
+		{
+			try
+			{
+				/** @var Menu $menuItem */
+				$menuItem = Table::getInstance('Menu');
+				$menuItem->load($itemId);
+				$uri    = new Uri($menuItem->link);
+				$layout = $uri->getVar('layout', $layout);
+			}
+			catch (Exception $e)
+			{
+			}
+		}
+
+		if (!Joomla::isAdminPage() && ($layout != 'edit'))
 		{
 			return true;
 		}

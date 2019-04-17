@@ -3,6 +3,7 @@
 **Bug fixes**
 
 * User profile fields do not appear when LoginGuard is also enabled
+* User Profile fields not displayed correctly when using an Edit Profile menu item
 
 # 3.0.0
 
