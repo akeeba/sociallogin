@@ -1,3 +1,9 @@
+# 3.0.1
+
+**Bug fixes**
+
+* User profile fields do not appear when LoginGuard is also enabled
+
 # 3.0.0
 
 **New features**

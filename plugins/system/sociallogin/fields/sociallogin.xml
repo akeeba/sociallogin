@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <form>
-	<fields name="loginguard" addfieldpath="plugins/system/sociallogin/fields">
+	<fields name="sociallogin" addfieldpath="plugins/system/sociallogin/fields">
 		<fieldset name="sociallogin"
 			label="PLG_SYSTEM_SOCIALLOGIN_HEADER"
 		>
