@@ -105,7 +105,8 @@ class plgSocialloginFacebook extends AbstractPlugin
 		$userData->name     = isset($socialProfile['name']) ? $socialProfile['name'] : '';
 		$userData->id       = isset($socialProfile['id']) ? $socialProfile['id'] : '';
 		$userData->email    = isset($socialProfile['email']) ? $socialProfile['email'] : '';
-		$userData->verified = !empty($userData->email);
+		// DO NOT USE empty() SINCE $userData->email IS A MAGIC PROPERTY (fetched through __get).
+		$userData->verified = $userData->email != '';
 
 		return $userData;
 	}

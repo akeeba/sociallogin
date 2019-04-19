@@ -5,6 +5,7 @@
 * User profile fields do not appear when LoginGuard is also enabled
 * User Profile fields not displayed correctly when using an Edit Profile menu item
 * Some servers return lowercase the content-type header instead of Content-Type.
+* Facebook login could not create new users
 
 # 3.0.0
 
