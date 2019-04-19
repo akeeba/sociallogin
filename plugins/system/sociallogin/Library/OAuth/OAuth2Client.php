@@ -121,7 +121,18 @@ class OAuth2Client
 				throw new RuntimeException('Error code ' . $response->code . ' received requesting access token: ' . $response->body . '.');
 			}
 
-			$contentType = $response->headers['Content-Type'];
+			$contentType = '';
+
+			if (isset($response->headers['Content-Type']))
+			{
+				$contentType = $response->headers['Content-Type'];
+			}
+
+			if (isset($response->headers['content-type']))
+			{
+				$contentType = $response->headers['content-type'];
+			}
+
 			$contentType = is_array($contentType) ? array_shift($contentType) : $contentType;
 
 			if (strpos($contentType, 'application/json') !== false)
