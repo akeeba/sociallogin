@@ -114,7 +114,7 @@ trait UserFields
 		// Add the fields to the form. The custom Sociallogin field uses the Integrations to render the buttons.
 		Joomla::log('system', 'Injecting Social Login fields in user profile edit page');
 		$this->loadLanguage();
-		JForm::addFormPath(dirname(__FILE__) . '/fields');
+		JForm::addFormPath(dirname(__FILE__) . '/../fields');
 		$form->loadFile('sociallogin', false);
 
 		return true;
