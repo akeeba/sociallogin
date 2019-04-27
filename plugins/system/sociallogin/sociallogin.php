@@ -7,6 +7,7 @@
 
 use Akeeba\SocialLogin\Features\Ajax;
 use Akeeba\SocialLogin\Features\ButtonInjection;
+use Akeeba\SocialLogin\Features\DynamicUsergroups;
 use Akeeba\SocialLogin\Features\UserFields;
 use Akeeba\SocialLogin\Library\Helper\Joomla;
 use Joomla\CMS\Factory;
@@ -28,7 +29,10 @@ JLoader::registerNamespace('Akeeba\\SocialLogin\\Features', __DIR__ . '/Features
 class plgSystemSociallogin extends CMSPlugin
 {
 	// Load the features, implemented as traits (for easier code management)
-	use Ajax;
+	use Ajax, DynamicUsergroups {
+		Ajax::onAfterInitialise as protected onAfterIntialise_Ajax;
+		DynamicUsergroups::onAfterInitialise as protected onAfterInitialise_DynamicUserGroups;
+	}
 	use ButtonInjection;
 	use UserFields;
 
@@ -68,6 +72,22 @@ class plgSystemSociallogin extends CMSPlugin
 	protected $relocateSelectors = [];
 
 	/**
+	 * User group ID to add the user to if they have linked social network accounts to their profile
+	 *
+	 * @var   int
+	 * @since 3.0.1
+	 */
+	protected $linkedUserGroup = 0;
+
+	/**
+	 * User group ID to add the user to if they have NOT linked social network accounts to their profile
+	 *
+	 * @var   int
+	 * @since 3.0.1
+	 */
+	protected $unlinkedUserGroup = 0;
+
+	/**
 	 * Are the substitutions enabled?
 	 *
 	 * @var   bool
@@ -99,11 +119,6 @@ class plgSystemSociallogin extends CMSPlugin
 		// Am I enabled?
 		$this->enabled = $this->isEnabled();
 
-		if (!$this->enabled)
-		{
-			return;
-		}
-
 		// Load the language files
 		$this->loadLanguage();
 
@@ -122,6 +137,19 @@ class plgSystemSociallogin extends CMSPlugin
 		$this->addLinkUnlinkButtons = $this->params->get('linkunlinkbuttons', 1);
 		$this->relocateButton       = $this->params->get('relocate', 1) == 1;
 		$this->relocateSelectors    = explode("\n", str_replace(',', "\n", $this->params->get('relocate_selectors', '')));
+		$this->linkedUserGroup      = (int) $this->params->get('linkedAccountUserGroup', 0);
+		$this->unlinkedUserGroup    = (int) $this->params->get('noLinkedAccountUserGroup', 0);
+	}
+
+	/**
+	 * Assemble the onAfterInitialise event from code belonging to many features' traits.
+	 *
+	 * @throws Exception
+	 */
+	public function onAfterInitialise()
+	{
+		$this->onAfterInitialise_DynamicUserGroups();
+		$this->onAfterIntialise_Ajax();
 	}
 
 	/**
