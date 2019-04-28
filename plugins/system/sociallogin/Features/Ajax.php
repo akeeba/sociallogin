@@ -62,6 +62,9 @@ trait Ajax
 			return;
 		}
 
+		// Reset the session flag; the AJAX operation may change whether the Joomla user is linked to a social media account
+		Joomla::setSessionVar('islinked', null, 'sociallogin');
+
 		// Load the plugin and execute the AJAX method
 		$plugin = $input->getCmd('plugin', '');
 
