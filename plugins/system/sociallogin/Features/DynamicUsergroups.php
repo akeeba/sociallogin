@@ -111,7 +111,7 @@ trait DynamicUsergroups
 		// Is "Don't remind me" flag set?
 		if (isset($profileValues['sociallogin.dontremind']))
 		{
-			if ($profileValues['sociallogin.dontremind'] == 1)
+			if ($profileValues['sociallogin.dontremind']['profile_value'] == 1)
 			{
 				return -1;
 			}

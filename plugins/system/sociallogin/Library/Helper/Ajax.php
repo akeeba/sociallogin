@@ -10,6 +10,7 @@ namespace Akeeba\SocialLogin\Library\Helper;
 // Protect from unauthorized access
 use Exception;
 use Joomla\CMS\Application\BaseApplication;
+use Joomla\CMS\Factory;
 use Joomla\CMS\User\User;
 use RuntimeException;
 
@@ -36,11 +37,12 @@ final class Ajax
 			return null;
 		}
 
-		$input    = $app->input;
-		$akaction = $input->getCmd('akaction');
-		$token    = Joomla::getToken();
+		$input          = $app->input;
+		$akaction       = $input->getCmd('akaction');
+		$token          = Joomla::getToken();
+		$noTokenActions = ['dontremind'];
 
-		if ($input->getInt($token, 0) != 1)
+		if (!in_array($akaction, $noTokenActions) && ($input->getInt($token, 0) != 1))
 		{
 			throw new RuntimeException(Joomla::_('JERROR_ALERTNOAUTHOR'));
 		}
@@ -59,7 +61,7 @@ final class Ajax
 			throw new RuntimeException(Joomla::_('PLG_SYSTEM_SOCIALLOGIN_ERR_AJAX_INVALIDACTION'));
 		}
 
-		return call_user_func(array($this, $method_name), $app);
+		return call_user_func([$this, $method_name], $app);
 	}
 
 	/**
@@ -98,6 +100,9 @@ final class Ajax
 			throw new RuntimeException(Joomla::_('PLG_SYSTEM_SOCIALLOGIN_ERR_AJAX_INVALIDUSER'));
 		}
 
+		// Reset the session flag; the AJAX operation will change whether the Joomla user is linked to a social media account
+		Joomla::setSessionVar('islinked', null, 'sociallogin');
+
 		// Get the user to unlink
 		$user = Joomla::getUser($userId);
 
@@ -135,4 +140,53 @@ final class Ajax
 		Joomla::runPlugins('onSocialLoginAuthenticate', array($slug), $app);
 	}
 
+	/**
+	 * Set the "don't remind me again" flag
+	 *
+	 * Call by accessing index.php?option=com_ajax&group=system&plugin=sociallogin&akaction=dontremind&format=raw
+	 *
+	 * @param   BaseApplication  $app  The application
+	 */
+	protected function ajaxDontremind($app)
+	{
+		if (!Joomla::isCmsApplication($app))
+		{
+			return;
+		}
+
+		$myUser = Factory::getUser();
+		$db     = Factory::getDbo();
+
+		if ($myUser->guest)
+		{
+			return;
+		}
+
+		try
+		{
+			// Delete an existing profile value
+			$query = $db->getQuery(true)
+				->delete($db->qn('#__user_profiles'))
+				->where($db->qn('user_id') . ' = ' . $db->q($myUser->id))
+				->where($db->qn('profile_key') . ' = ' . $db->q('sociallogin.dontremind'));
+			$db->setQuery($query)->execute();
+
+			// Set the new profile value
+			$o = (object) [
+				'user_id'       => $myUser->id,
+				'profile_key'   => 'sociallogin.dontremind',
+				'profile_value' => 1,
+			];
+
+			$db->insertObject('#__user_profiles', $o);
+		}
+		catch (Exception $e)
+		{
+			// Do nothing; we can let this fail
+		}
+
+		// Reset the session flag; we need to re-evaluate the flag in the next page load.
+		Joomla::setSessionVar('islinked', null, 'sociallogin');
+
+	}
 }
