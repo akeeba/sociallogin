@@ -15,6 +15,7 @@
 
 	<files>
 		<filename plugin="sociallogin">sociallogin.php</filename>
+		<folder>Features</folder>
 		<folder>fields</folder>
 		<folder>layout</folder>
 		<folder>Library</folder>
@@ -83,7 +84,41 @@
 					<option value="1">JYES</option>
 					<option value="0">JNO</option>
 				</field>
+
+				<field
+						name="show_dontremind"
+						type="radio"
+						label="PLG_SYSTEM_SOCIALLOGIN_CONFIG_LINKUNLINKBUTTONS_LABEL"
+						description="PLG_SYSTEM_SOCIALLOGIN_CONFIG_LINKUNLINKBUTTONS_DESC"
+						default="0"
+						class="btn-group btn-group-yesno"
+				>
+					<option value="1">JYES</option>
+					<option value="0">JNO</option>
+				</field>
 			</fieldset>
+
+			<fieldset name="sociallogin_usergroups">
+				<field name="linkedAccountUserGroup" type="UserGroupList"
+					   checksuperusergroup="1"
+					   default=""
+					   label="PLG_SYSTEM_SOCIALLOGIN_LINKEDACCOUNTUSERGROUP_TITLE"
+					   description="PLG_SYSTEM_SOCIALLOGIN_LINKEDACCOUNTUSERGROUP_DESC"
+				>
+					<option value="0">PLG_SYSTEM_SOCIALLOGIN_LINKEDACCOUNTUSERGROUP_NOGROUP</option>
+				</field>
+
+				<field name="noLinkedAccountUserGroup" type="UserGroupList"
+					   checksuperusergroup="1"
+					   default=""
+					   label="PLG_SYSTEM_SOCIALLOGIN_NOLINKEDACCOUNTUSERGROUP_TITLE"
+					   description="PLG_SYSTEM_SOCIALLOGIN_NOLINKEDACCOUNTUSERGROUP_DESC"
+				>
+					<option value="0">PLG_SYSTEM_SOCIALLOGIN_LINKEDACCOUNTUSERGROUP_NOGROUP</option>
+				</field>
+
+			</fieldset>
+
 			<fieldset name="sociallogin_expert">
 				<field
 						name="relocate_selectors"
