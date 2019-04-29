@@ -13,6 +13,15 @@
 				readonly="false"
 				default=""
 			/>
+
+			<field name="dontremind" type="radio" default="0"
+				   label="PLG_SYSTEM_SOCIALLOGIN_FIELD_DONTREMIND_LABEL"
+				   description="PLG_SYSTEM_SOCIALLOGIN_FIELD_DONTREMIND_DESC"
+				   class="switcher btn-group">
+				<option value="0">JNo</option>
+				<option value="1">JYes</option>
+			</field>
+
 		</fieldset>
 	</fields>
 </form>

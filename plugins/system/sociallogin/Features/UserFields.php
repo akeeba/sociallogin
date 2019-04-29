@@ -24,6 +24,66 @@ use Joomla\Utilities\ArrayHelper;
 trait UserFields
 {
 	/**
+	 * Add the SocialLogin custom user profile field data to the core Joomla user profile data. This is required to
+	 * populate the "sociallogin.dontremind" field with its current value.
+	 *
+	 * @param	string	$context  The context for the data (form name)
+	 * @param	object  $data	  The user profile data
+	 *
+	 * @return	bool
+	 */
+	public function onContentPrepareData($context, $data)
+	{
+		// Check we are manipulating a valid form.
+		if (!in_array($context, ['com_admin.profile', 'com_users.user', 'com_users.profile', 'com_users.registration']))
+		{
+			return true;
+		}
+
+		if (!is_object($data))
+		{
+			return true;
+		}
+
+		$userId = isset($data->id) ? $data->id : 0;
+
+		if (isset($data->profile) || ($userId <= 0))
+		{
+			return true;
+		}
+
+		// Load the profile data from the database.
+		$db = Factory::getDbo();
+
+		$query = $db->getQuery(true)
+			->select([$db->qn('profile_key'), $db->qn('profile_value')])
+			->from($db->qn('#__user_profiles'))
+			->where($db->qn('user_id') . ' = ' . $db->q($userId))
+			->where($db->qn('profile_key') . ' LIKE ' . $db->q('sociallogin.%', false))
+			->order($db->qn('ordering'));
+
+		try
+		{
+			$results = $db->setQuery($query)->loadRowList();
+		}
+		catch (Exception $e)
+		{
+			return true;
+		}
+
+		// Merge the profile data.
+		$data->sociallogin = [];
+
+		foreach ($results as $v)
+		{
+			$k                     = str_replace('sociallogin.', '', $v[0]);
+			$data->sociallogin[$k] = $v[1];
+		}
+
+		return true;
+	}
+
+	/**
 	 * Adds additional fields to the user editing form
 	 *
 	 * @param   JForm  $form  The form to be altered.
@@ -116,6 +176,63 @@ trait UserFields
 		$this->loadLanguage();
 		JForm::addFormPath(dirname(__FILE__) . '/../fields');
 		$form->loadFile('sociallogin', false);
+
+		// Should I show the Don't Remind field?
+		if (!$this->params->get('show_dontremind', 0))
+		{
+			$form->removeField('dontremind', 'sociallogin');
+		}
+
+		return true;
+	}
+
+	/**
+	 * Save the custom SocialLogin user profile fields. It's called after Joomla saves a user to the database.
+	 *
+	 * @param   array   $data    The user profile data which was saved.
+	 * @param   bool    $isNew   Is this a new user? (ignored)
+	 * @param   bool    $result  Was the user saved successfully?
+	 * @param   mixed   $error   (ignored)
+	 *
+	 * @return bool
+	 */
+	public function onUserAfterSave($data, $isNew, $result, $error)
+	{
+		$userId = ArrayHelper::getValue($data, 'id', 0, 'int');
+
+		if (!$userId || !$result || !isset($data['sociallogin']) || !is_array($data['sociallogin']) || !count($data['sociallogin']))
+		{
+			return true;
+		}
+
+
+		$db         = Factory::getDbo();
+		$fieldNames = array_map(function ($key) use ($db) {
+			return $db->q('sociallogin.' . $key);
+		}, array_keys($data['sociallogin']));
+
+		$query = $db->getQuery(true)
+			->delete($db->qn('#__user_profiles'))
+			->where($db->qn('user_id') . ' = ' . $db->q($userId))
+			->where($db->qn('profile_key') . ' IN (' . implode(',', $fieldNames) . ')');
+
+		$db->setQuery($query)->execute();
+
+		$order = 1;
+
+		$query = $db->getQuery(true)
+			->insert($db->qn('#__user_profiles'))
+			->columns([$db->qn('user_id'), $db->qn('profile_key'), $db->qn('profile_value'), $db->qn('ordering')]);
+
+		foreach ($data['sociallogin'] as $k => $v)
+		{
+			$query->values($userId . ', ' . $db->quote('sociallogin.' . $k) . ', ' . $db->quote($v) . ', ' . $order++);
+		}
+
+		$db->setQuery($query)->execute();
+
+		// Reset the session flag; the user save operation may have changed the dontremind flag.
+		Joomla::setSessionVar('islinked', null, 'sociallogin');
 
 		return true;
 	}
