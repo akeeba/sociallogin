@@ -1,5 +1,13 @@
 # 3.0.1
 
+**Added features**
+
+* Dynamically add a logged in user to a user group if they have not yet linked any social media presence to their Joomla user account.
+
+**Removed features**
+
+* Removed Login with LinkedIn. The v2 API does not provide enough information to log in unlinked accounts or create new user accounts.
+
 **Bug fixes**
 
 * User profile fields do not appear when LoginGuard is also enabled

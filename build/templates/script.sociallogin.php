@@ -6,6 +6,8 @@
  */
 
 // Prevent direct access
+use Joomla\CMS\Factory;
+
 defined('_JEXEC') or die;
 
 class Pkg_SocialloginInstallerScript
@@ -37,14 +39,16 @@ class Pkg_SocialloginInstallerScript
 	 *
 	 * @var array
 	 */
-	protected $extensionsToEnable = array(
+	protected $extensionsToEnable = [
 		// System plugins
-		array('plugin', 'sociallogin', 1, 'system'),
-		// User plugins
-		array('plugin', 'sociallogin', 1, 'user'),
+		['plugin', 'sociallogin', 1, 'system'],
 		// Social Login plugins
-		array('plugin', 'facebook', 1, 'sociallogin'),
-	);
+		['plugin', 'facebook', 1, 'sociallogin'],
+	];
+
+	protected $obsoletePlugins = [
+		['sociallogin', 'linkedin']
+	];
 
 	/**
 	 * =================================================================================================================
@@ -107,6 +111,9 @@ class Pkg_SocialloginInstallerScript
 	 */
 	public function postflight($type, $parent)
 	{
+		// Uninstall obsolete plugins
+		$this->uninstallObsoletePlugins();
+
 		/**
 		 * Clean the cache after installing the package.
 		 *
@@ -245,6 +252,46 @@ class Pkg_SocialloginInstallerScript
 		}
 		catch (\Exception $e)
 		{
+		}
+	}
+
+	private function uninstallObsoletePlugins()
+	{
+		$db = Factory::getDbo();
+
+		JModelLegacy::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_installer/models', 'InstallerModel');
+		/** @var InstallerModelManage $model */
+		$model = JModelLegacy::getInstance('Manage', 'InstallerModel');
+
+		foreach ($this->obsoletePlugins as $pluginDef)
+		{
+			list($folder, $element) = $pluginDef;
+
+			// Does the plugin exist? If not, there's nothing to do here.
+			$query = $db->getQuery(true)
+				->select('*')
+				->from('#__extensions')
+				->where($db->qn('type') . ' = ' . $db->q('plugin'))
+				->where($db->qn('folder') . ' = ' . $db->q($folder))
+				->where($db->qn('element') . ' = ' . $db->q($element));
+			try
+			{
+				$result = $db->setQuery($query)->loadAssoc();
+
+				if (empty($result))
+				{
+					continue;
+				}
+
+				$eid = $result['extension_id'];
+			}
+			catch (Exception $e)
+			{
+				continue;
+			}
+
+			// Uninstall the plugin
+			$model->remove([$eid]);
 		}
 	}
 
