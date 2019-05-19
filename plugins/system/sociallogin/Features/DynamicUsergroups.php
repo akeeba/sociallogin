@@ -7,10 +7,12 @@
 
 namespace Akeeba\SocialLogin\Features;
 
+// Protect from unauthorized access
+defined('_JEXEC') or die();
 
-use Joomla\CMS\Factory;
+use Akeeba\SocialLogin\Library\Helper\DynamicGroups;
 use Akeeba\SocialLogin\Library\Helper\Joomla;
-use FOF30\Utils\DynamicGroups;
+use Joomla\CMS\Factory;
 use Joomla\CMS\User\User;
 
 /**
