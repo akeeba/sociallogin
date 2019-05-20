@@ -23,6 +23,10 @@ We strongly recommend using the latest published Joomla! version and PHP 7.2 _fo
 
 ## Changelog
 
+**Added features**
+
+* Dynamically add a logged in user to a user group if they have not yet linked any social media presence to their Joomla user account.
+
 **Removed features**
 
 * Removed Login with LinkedIn. The v2 API does not provide enough information to log in unlinked accounts or create new user accounts.
