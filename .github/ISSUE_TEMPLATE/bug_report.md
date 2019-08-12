@@ -1,12 +1,17 @@
-Please read the README.md in the repository's root before submitting an issue.
+---
+name: Bug report
+about: Create a report to help us improve
+title: ''
+labels: bug
+assignees: ''
+
+---
+
+Please read the README.md in the repository's root and the support resources before submitting an issue.
 
 ### Steps to reproduce the issue
 
 Be specific. You may link to one or more screenshots or a video as long as it's not the only clue you leave. Use words to describe what happens.
-
-Make sure your issue can be reproduced on a new installation of Joomla! without any modified configuration settings or third party extensions. If the issue only occurs with a specific third party extension or configuration setting please specify exactly what triggers it. Always keep in mind that if it can't be reproduced it can't be fixed!
-
-Please do read the documentation first and make sure you've configured the social network login integration properly.
 
 ### Expected result
 
@@ -15,6 +20,10 @@ What you believed should have happened following the steps you outlined above.
 ### Actual result
 
 What actually happened.
+
+### Troubleshooting already performed
+
+Please tell us about any troubleshooting you already performed and its results.
 
 ### System information
 
