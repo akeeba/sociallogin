@@ -4,7 +4,6 @@ Pull Request for Issue # .
 
 The executive summary of what you have changed without getting into technical details. Think of it as your PR's elevator pitch.  
 
-
 ### Testing Instructions
 
 * List

@@ -1,6 +1,4 @@
-Before you file an issue: GitHub issues are only for confirmed bugs. Confirmed bugs are those which can be reproduced on multiple sites and hosting environments, following the steps you provide below. 
-
-Please note that this software is provided free of charge without any promise of support. You may not receive an answer right away or at all if your issue is not a reproducible bug or if there's no time to look into it. Be respectful of the developers who are commenting on your issues free of charge, taking time to do that instead of spending it with their families.
+Please read the README.md in the repository's root before submitting an issue.
 
 ### Steps to reproduce the issue
 
@@ -8,7 +6,7 @@ Be specific. You may link to one or more screenshots or a video as long as it's 
 
 Make sure your issue can be reproduced on a new installation of Joomla! without any modified configuration settings or third party extensions. If the issue only occurs with a specific third party extension or configuration setting please specify exactly what triggers it. Always keep in mind that if it can't be reproduced it can't be fixed!
 
-Please do read the documentation first and make sure you've configured the social network login integration properly. We won't provide support for configuring SocialLogin.
+Please do read the documentation first and make sure you've configured the social network login integration properly.
 
 ### Expected result
 
