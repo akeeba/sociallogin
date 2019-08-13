@@ -1,3 +1,9 @@
+# 3.0.2
+
+**Added features**
+
+* Added back the LinkedIn integration
+
 # 3.0.1
 
 **Added features**
