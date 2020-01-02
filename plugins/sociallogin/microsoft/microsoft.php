@@ -1,8 +1,8 @@
 <?php
 /**
- * @package   AkeebaSocialLogin
- * @copyright Copyright (c)2016-2019 Nicholas K. Dionysopoulos / Akeeba Ltd
- * @license   GNU General Public License version 3, or later
+ *  @package   AkeebaSocialLogin
+ *  @copyright Copyright (c)2016-2020 Nicholas K. Dionysopoulos / Akeeba Ltd
+ *  @license   GNU General Public License version 3, or later
  */
 
 // Protect from unauthorized access

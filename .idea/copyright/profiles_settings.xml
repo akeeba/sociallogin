@@ -1,3 +1,7 @@
 <component name="CopyrightManager">
-  <settings default="Akeeba" />
+  <settings>
+    <module2copyright>
+      <element module="Copyright" copyright="Akeeba" />
+    </module2copyright>
+  </settings>
 </component>

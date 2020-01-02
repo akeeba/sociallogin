@@ -1,4 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~  @package   AkeebaSocialLogin
+  ~  @copyright Copyright (c)2016-2020 Nicholas K. Dionysopoulos / Akeeba Ltd
+  ~  @license   GNU General Public License version 3, or later
+  -->
+
 <form>
 	<fields name="sociallogin" addfieldpath="plugins/system/sociallogin/fields">
 		<fieldset name="sociallogin"
