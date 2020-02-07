@@ -1,0 +1,3 @@
+<component name="DependencyValidationManager">
+  <scope name="Copyright" pattern="file:plugins//*||file:translations//*||file:build/templates//*||file:build/build.xml" />
+</component>
