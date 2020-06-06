@@ -3,6 +3,7 @@
   <component name="SshConfigs">
     <configs>
       <sshConfig authType="OPEN_SSH" host="myoldsite.com" id="66e4c4be-a188-4487-bb42-cccad0fe4409" port="18765" customName="My Old Site" nameFormat="CUSTOM" />
+      <sshConfig authType="OPEN_SSH" host="myoldsite.com" id="51d01829-0172-443c-82ea-d7a18fcc4a91" port="18765" customName="My Old Site" nameFormat="CUSTOM" />
     </configs>
   </component>
 </project>

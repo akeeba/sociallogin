@@ -1,0 +1,19 @@
+{
+	"name": "akeeba/sociallogin",
+	"description": "Akeeba SocialLogin – A social login solution for Joomla!",
+	"minimum-stability": "stable",
+	"license": "GPL-3.0-or-later",
+	"authors": [
+		{
+			"name": "Nicholas K. Dionysopoulos",
+			"homepage": "https://www.AkeebaBackup.com",
+			"role": "Lead Developer"
+		}
+	],
+	"require": {
+		"php": "^7.1",
+		"ext-json": "*"
+	},
+	"suggest": {
+	}
+}

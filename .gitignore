@@ -24,6 +24,10 @@
 # Editor-based Rest Client
 .idea/httpRequests
 
+## Composer
+
+/vendor
+
 ## Akeeba Stuff
 
 # Build property overrides (unused)

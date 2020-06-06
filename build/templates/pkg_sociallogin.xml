@@ -5,7 +5,7 @@
   ~  @license   GNU General Public License version 3, or later
   -->
 
-<extension version="3.8.0" type="package" method="upgrade">
+<extension version="3.9.0" type="package" method="upgrade">
     <name>Akeeba Social Login package</name>
     <version>##VERSION##</version>
     <creationDate>##DATE##</creationDate>
