@@ -1,3 +1,13 @@
+# 3.1.0
+
+**Added features**
+
+* Joomla 4 integration with the new `onUserLoginButtons` event. **DOES NOT WORK IN JOOMLA 4.0 BETA 1 DUE TO A BUG IN JOOMLA ITSELF**.
+
+**Miscellaneous changes**
+
+* Minimum requirements: Joomla 3.9, PHP 7.1
+
 # 3.0.2
 
 **Added features**

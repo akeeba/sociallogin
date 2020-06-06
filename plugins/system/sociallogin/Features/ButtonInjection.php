@@ -1,8 +1,8 @@
 <?php
 /**
- *  @package   AkeebaSocialLogin
- *  @copyright Copyright (c)2016-2020 Nicholas K. Dionysopoulos / Akeeba Ltd
- *  @license   GNU General Public License version 3, or later
+ * @package   AkeebaSocialLogin
+ * @copyright Copyright (c)2016-2020 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @license   GNU General Public License version 3, or later
  */
 
 namespace Akeeba\SocialLogin\Features;
@@ -13,6 +13,8 @@ defined('_JEXEC') or die;
 use Akeeba\SocialLogin\Library\Helper\Integrations;
 use Akeeba\SocialLogin\Library\Helper\Joomla;
 use Exception;
+use Joomla\CMS\HTML\HTMLHelper;
+use Joomla\CMS\User\UserHelper;
 
 /**
  * Feature: Button injection in login modules and login pages
@@ -23,6 +25,14 @@ use Exception;
 trait ButtonInjection
 {
 	/**
+	 * Have I already included the Joomla 4 button handler JavaScript?
+	 *
+	 * @var   bool
+	 * @since 3.1.0
+	 */
+	private static $includedJ4ButtonHandlerJS = false;
+
+	/**
 	 * Intercepts module rendering, appending the Social Login buttons to the configured login modules.
 	 *
 	 * @param   object  $module   The module being rendered
@@ -32,7 +42,7 @@ trait ButtonInjection
 	 */
 	public function onRenderModule(&$module, &$attribs)
 	{
-		if (!$this->enabled)
+		if (!$this->enabled || $this->useJ4Injection())
 		{
 			return;
 		}
@@ -70,7 +80,7 @@ trait ButtonInjection
 
 		// Append the social login buttons content
 		Joomla::log('system', "Injecting buttons to {$module->module} module.");
-		$selectors = empty($this->relocateSelectors) ? [] : $this->relocateSelectors;
+		$selectors          = empty($this->relocateSelectors) ? [] : $this->relocateSelectors;
 		$socialLoginButtons = Integrations::getSocialLoginButtons(null, null, 'akeeba.sociallogin.button', 'akeeba.sociallogin.buttons', null, $this->relocateButton, $selectors);
 		$module->content    .= $socialLoginButtons;
 	}
@@ -83,6 +93,12 @@ trait ButtonInjection
 	 */
 	public function onAfterDispatch()
 	{
+		// Should I use this method?
+		if (!$this->enabled || $this->useJ4Injection())
+		{
+			return;
+		}
+
 		// Are we enabled?
 		if (!$this->interceptLogin)
 		{
@@ -146,10 +162,85 @@ trait ButtonInjection
 		// Get the component output and append our buttons
 		$buttons = Integrations::getSocialLoginButtons(null, null, 'akeeba.sociallogin.button', 'akeeba.sociallogin.buttons', null, true);
 
-		$buffer          = $document->getBuffer();
+		$buffer = $document->getBuffer();
 
 		$componentOutput = $buffer['component'][''][''];
 		$componentOutput .= $buttons;
 		$document->setBuffer($componentOutput, 'component');
+	}
+
+	/**
+	 * Creates additional login buttons
+	 *
+	 * @param   string  $form  The HTML ID of the form we are enclosed in
+	 *
+	 * @return  array
+	 *
+	 * @throws  Exception
+	 *
+	 * @see     AuthenticationHelper::getLoginButtons()
+	 *
+	 * @since   3.1.0
+	 */
+	public function onUserLoginButtons(string $form): array
+	{
+		if (!$this->enabled || !$this->useJ4Injection())
+		{
+			return [];
+		}
+
+		// Append the social login buttons content
+		Joomla::log('system', "Injecting buttons using the Joomla 4 way.");
+
+		$this->includeJ4ButtonHandler();
+
+		return array_map(function (array $def) {
+			$randomId = sprintf("plg_system_sociallogin-%s-%s-%s",
+				$def['slug'], UserHelper::genRandomPassword(12), UserHelper::genRandomPassword(8));
+
+			return [
+				'label'          => $def['label'],
+				'icon'           => $def['icon_class'] ?? '',
+				'image'          => $def['rawimage'] ?? '',
+				'class'          => sprintf('akeeba-sociallogin-link-button-j4 akeeba-sociallogin-link-button-%s', $def['slug']),
+				'id'             => $randomId,
+				'data-socialurl' => $def['link'],
+			];
+		}, Integrations::getSocialLoginButtonDefinitions());
+	}
+
+	private function includeJ4ButtonHandler()
+	{
+		if (self::$includedJ4ButtonHandlerJS)
+		{
+			return;
+		}
+
+		// Load the JavaScript
+		HTMLHelper::_('script', 'plg_system_sociallogin/dist/j4buttons.js', [
+			'relative'  => true,
+			'framework' => true,
+		]);
+
+		// Set the "don't load again" flag
+		self::$includedJ4ButtonHandlerJS = true;
+	}
+
+
+	/**
+	 * Should I use the Joomla 4 button injection method?
+	 *
+	 * @return  bool
+	 *
+	 * @since   3.1.0
+	 */
+	private function useJ4Injection(): bool
+	{
+		if ($this->params->get('j4buttons', 1) == 0)
+		{
+			return false;
+		}
+
+		return version_compare(JVERSION, '3.999.999', 'ge');
 	}
 }

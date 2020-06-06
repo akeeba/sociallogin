@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ProjectTasksOptions">
-    <TaskOptions isEnabled="false">
+    <TaskOptions isEnabled="true">
       <option name="arguments" value="$FileName$ -o $FileNameWithoutExtension$.min.css" />
       <option name="checkSyntaxErrors" value="true" />
       <option name="description" />
@@ -14,7 +14,7 @@
         <array />
       </option>
       <option name="outputFromStdout" value="false" />
-      <option name="program" value="yui-compressor" />
+      <option name="program" value="/usr/local/bin/yuicompressor" />
       <option name="runOnExternalChanges" value="true" />
       <option name="scopeName" value="Project Files" />
       <option name="trackOnlyRoot" value="true" />
@@ -36,7 +36,7 @@
       <option name="outputFromStdout" value="false" />
       <option name="program" value="$ProjectFileDir$/node_modules/.bin/babel" />
       <option name="runOnExternalChanges" value="true" />
-      <option name="scopeName" value="Plugin ECMAScript 6" />
+      <option name="scopeName" value="System Plugin ES6" />
       <option name="trackOnlyRoot" value="false" />
       <option name="workingDir" value="$ProjectFileDir$/plugins/system/sociallogin/media/js" />
       <envs />
@@ -56,7 +56,7 @@
       <option name="outputFromStdout" value="true" />
       <option name="program" value="closure-compiler" />
       <option name="runOnExternalChanges" value="true" />
-      <option name="scopeName" value="System Plugin JS" />
+      <option name="scopeName" value="Compiled JS" />
       <option name="trackOnlyRoot" value="true" />
       <option name="workingDir" value="$FileDir$" />
       <envs />

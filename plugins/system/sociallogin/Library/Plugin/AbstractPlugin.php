@@ -293,7 +293,7 @@ abstract class AbstractPlugin extends CMSPlugin
 		// Add custom CSS
 		$this->addCustomCSS();
 
-		return array(
+		return [
 			// The name of the plugin rendering this button. Used for customized JLayouts.
 			'slug'       => $this->integrationName,
 			// The href attribute for the anchor tag.
@@ -303,10 +303,12 @@ abstract class AbstractPlugin extends CMSPlugin
 			// What to put inside the anchor tag. Leave empty to put the image returned by onSocialLoginGetIntegration.
 			'label'      => Joomla::_(sprintf('PLG_SOCIALLOGIN_%s_LOGIN_LABEL', $this->integrationName)),
 			// The image to use if there is no icon class
-			'img'        => HTMLHelper::image($this->buttonImage, '', array(), true),
+			'img'        => HTMLHelper::image($this->buttonImage, '', [], true),
+			// Raw button image URL
+			'rawimage'   => $this->buttonImage,
 			// An icon class for the span before the label inside the anchor tag. Nothing is shown if this is blank.
 			'icon_class' => $this->iconClass,
-		);
+		];
 	}
 
 	/**
@@ -463,7 +465,7 @@ abstract class AbstractPlugin extends CMSPlugin
 			{
 				Joomla::log($this->integrationName, 'Receive token from the social network', Log::INFO);
 
-				list($token, $connector) = $this->getToken();
+				[$token, $connector] = $this->getToken();
 
 				if ($token === false)
 				{

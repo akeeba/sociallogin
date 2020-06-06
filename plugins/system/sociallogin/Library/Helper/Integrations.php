@@ -1,8 +1,8 @@
 <?php
 /**
- *  @package   AkeebaSocialLogin
- *  @copyright Copyright (c)2016-2020 Nicholas K. Dionysopoulos / Akeeba Ltd
- *  @license   GNU General Public License version 3, or later
+ * @package   AkeebaSocialLogin
+ * @copyright Copyright (c)2016-2020 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @license   GNU General Public License version 3, or later
  */
 
 namespace Akeeba\SocialLogin\Library\Helper;
@@ -31,11 +31,13 @@ abstract class Integrations
 	 * Gets the Social Login buttons for logging into the site (typically used in login modules)
 	 *
 	 * @param   string           $loginURL       The URL to return to upon successful login. Current URL if omitted.
-	 * @param   string           $failureURL     The URL to return to on login error. It's set automatically to $loginURL if omitted.
+	 * @param   string           $failureURL     The URL to return to on login error. It's set automatically to
+	 *                                           $loginURL if omitted.
 	 * @param   string           $buttonLayout   JLayout for rendering a single login button
 	 * @param   string           $buttonsLayout  JLayout for rendering all the login buttons
 	 * @param   BaseApplication  $app            The application we are running in. Skip to auto-detect (recommended).
-	 * @param   bool             $relocate       Should I try to relocate the Social Login buttons next to an existing login button?
+	 * @param   bool             $relocate       Should I try to relocate the Social Login buttons next to an existing
+	 *                                           login button?
 	 * @param   array            $selectors      The selectors to use for identifying the existing login buttons.
 	 *
 	 * @return  string  The rendered HTML of the login buttons
@@ -44,17 +46,7 @@ abstract class Integrations
 	 */
 	public static function getSocialLoginButtons($loginURL = null, $failureURL = null, $buttonLayout = 'akeeba.sociallogin.button', $buttonsLayout = 'akeeba.sociallogin.buttons', $app = null, $relocate = false, array $selectors = [])
 	{
-		if (!is_object($app))
-		{
-			$app = Joomla::getApplication();
-		}
-
-		Joomla::importPlugins('sociallogin');
-
-		$buttonDefinitions = Joomla::runPlugins('onSocialLoginGetLoginButton', [
-			$loginURL,
-			$failureURL,
-		], $app);
+		$buttonDefinitions = self::getSocialLoginButtonDefinitions($app, $loginURL, $failureURL);
 		$buttonsHTML       = [];
 
 		foreach ($buttonDefinitions as $buttonDefinition)
@@ -93,7 +85,8 @@ abstract class Integrations
 	/**
 	 * Gets the Social Login buttons for linking and unlinking accounts (typically used in the My Account page).
 	 *
-	 * @param   User             $user           The Joomla! user object for which to get the buttons. Omit to use the currently logged in user.
+	 * @param   User             $user           The Joomla! user object for which to get the buttons. Omit to use the
+	 *                                           currently logged in user.
 	 * @param   string           $buttonLayout   JLayout for rendering a single login button
 	 * @param   string           $buttonsLayout  JLayout for rendering all the login buttons
 	 * @param   BaseApplication  $app            The application we are running in. Skip to auto-detect (recommended).
@@ -347,4 +340,46 @@ abstract class Integrations
 		self::$includedRelocationJS = true;
 	}
 
+	/**
+	 * Returns the raw SocialLogin button definitions.
+	 *
+	 * Each definition is a dictionary (hashed) array with the following keys:
+	 *
+	 * * `slug`: The name of the plugin rendering this button. Used for customized JLayouts.
+	 * * `link`: The href attribute for the anchor tag.
+	 * * `tooltip`: The tooltip of the anchor tag.
+	 * * `label`: What to put inside the anchor tag.
+	 * * `img`: The image to use if there is no icon class.
+	 * * `icon_class`: An icon class for the span before the label inside the anchor tag. Nothing shown if blank.
+	 *
+	 * @param   BaseApplication  $app
+	 * @param   string|null      $loginURL
+	 * @param   string|null      $failureURL
+	 *
+	 * @return array  Simple array of dictionary arrays. See method description for the format.
+	 * @throws Exception
+	 */
+	public static function getSocialLoginButtonDefinitions(BaseApplication $app = null, ?string $loginURL = null, ?string $failureURL = null): array
+	{
+		if (!is_object($app))
+		{
+			$app = Joomla::getApplication();
+		}
+
+		Joomla::importPlugins('sociallogin');
+
+		$buttonDefinitions = Joomla::runPlugins('onSocialLoginGetLoginButton', [
+			$loginURL,
+			$failureURL,
+		], $app);
+
+		if (empty($buttonDefinitions))
+		{
+			$buttonDefinitions = [];
+		}
+
+		return array_filter($buttonDefinitions, function ($definition) {
+			return is_array($definition) && !empty($definition);
+		});
+	}
 }

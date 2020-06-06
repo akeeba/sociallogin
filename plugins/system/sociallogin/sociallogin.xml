@@ -39,6 +39,19 @@
 	<config>
 		<fields name="params">
 			<fieldset name="basic">
+
+				<field
+						name="j4buttons"
+						type="list"
+						label="PLG_SYSTEM_SOCIALLOGIN_CONFIG_J4BUTTONS_LABEL"
+						description="PLG_SYSTEM_SOCIALLOGIN_CONFIG_J4BUTTONS_DESC"
+						default="1"
+						class="btn-group btn-group-yesno"
+				>
+					<option value="1">JYES</option>
+					<option value="0">JNO</option>
+				</field>
+
 				<field
 						name="loginmodules"
 						type="text"
@@ -79,6 +92,9 @@
 					<option value="0">JNO</option>
 				</field>
 
+			</fieldset>
+
+			<fieldset name="sociallogin_useraccount">
 				<field
 						name="linkunlinkbuttons"
 						type="radio"

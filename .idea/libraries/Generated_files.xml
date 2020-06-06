@@ -3,10 +3,12 @@
     <properties>
       <sourceFilesUrls>
         <item url="file://$PROJECT_DIR$/plugins/system/sociallogin/media/js/dist/buttons.min.js" />
+        <item url="file://$PROJECT_DIR$/plugins/system/sociallogin/media/js/dist/j4buttons.min.js" />
       </sourceFilesUrls>
     </properties>
     <CLASSES>
       <root url="file://$PROJECT_DIR$/plugins/system/sociallogin/media/js/dist/buttons.min.js" />
+      <root url="file://$PROJECT_DIR$/plugins/system/sociallogin/media/js/dist/j4buttons.min.js" />
     </CLASSES>
     <SOURCES />
   </library>
