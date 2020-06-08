@@ -1,0 +1,3 @@
+<component name="DependencyValidationManager">
+  <scope name="Compiled JS" pattern="file:plugins/system/sociallogin/media/js/dist//*.js&amp;&amp;!file:plugins/system/sociallogin/media/js/dist//*.min.js" />
+</component>

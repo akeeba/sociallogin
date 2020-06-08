@@ -1,0 +1,3 @@
+<component name="DependencyValidationManager">
+  <scope name="System Plugin ES6" pattern="file:plugins/system/sociallogin/media/js/*.js&amp;&amp;!file:plugins/system/sociallogin/media/js/dist//*" />
+</component>
