@@ -42,6 +42,6 @@
 
     <!-- Update servers -->
     <updateservers>
-        <server type="extension" priority="1" name="Akeeba Social Login Updates">https://raw.githubusercontent.com/akeeba/sociallogin/master/update/pkg_sociallogin_updates.xml</server>
+        <server type="extension" priority="1" name="Akeeba Social Login Updates">https://raw.githubusercontent.com/akeeba/sociallogin/main/update/pkg_sociallogin_updates.xml</server>
     </updateservers>
 </extension>
