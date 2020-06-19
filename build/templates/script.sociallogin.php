@@ -115,6 +115,18 @@ class Pkg_SocialloginInstallerScript
 		$this->uninstallObsoletePlugins();
 
 		/**
+		 * Clean up the obsolete package update sites.
+		 *
+		 * If you specify a new update site location in the XML manifest Joomla will install it in the #__update_sites
+		 * table but it will NOT remove the previous update site. This method removes the old update sites which are
+		 * left behind by Joomla.
+		 */
+		if ($type !== 'install')
+		{
+			$this->removeObsoleteUpdateSites();
+		}
+
+		/**
 		 * Clean the cache after installing the package.
 		 *
 		 * See bug report https://github.com/joomla/joomla-cms/issues/16147
@@ -295,4 +307,138 @@ class Pkg_SocialloginInstallerScript
 		}
 	}
 
+	/**
+	 * Removes the obsolete update sites for the component, since now we're dealing with a package.
+	 *
+	 * Controlled by componentName, packageName and obsoleteUpdateSiteLocations
+	 *
+	 * Depends on getExtensionId, getUpdateSitesFor
+	 *
+	 * @return  void
+	 */
+	private function removeObsoleteUpdateSites()
+	{
+		// Initialize
+		$deleteIDs = [];
+
+		// Get package ID
+		$packageID = $this->findPackageExtensionID($this->packageName);
+
+		if (!$packageID)
+		{
+			return;
+		}
+
+		// All update sites for the packgae
+		$deleteIDs = $this->getUpdateSitesFor($packageID);
+
+		if (empty($deleteIDs))
+		{
+			$deleteIDs = [];
+		}
+
+		if (count($deleteIDs) <= 1)
+		{
+			return;
+		}
+
+		$deleteIDs = array_unique($deleteIDs);
+
+		// Remove the latest update site, the one we just installed
+		array_pop($deleteIDs);
+
+		$db = \Joomla\CMS\Factory::getDbo();
+
+		if (empty($deleteIDs) || !count($deleteIDs))
+		{
+			return;
+		}
+
+		// Delete the remaining update sites
+		$deleteIDs = array_map([$db, 'q'], $deleteIDs);
+
+		$query = $db->getQuery(true)
+			->delete($db->qn('#__update_sites'))
+			->where($db->qn('update_site_id') . ' IN(' . implode(',', $deleteIDs) . ')');
+
+		try
+		{
+			$db->setQuery($query)->execute();
+		}
+		catch (Exception $e)
+		{
+			// Do nothing.
+		}
+
+		$query = $db->getQuery(true)
+			->delete($db->qn('#__update_sites_extensions'))
+			->where($db->qn('update_site_id') . ' IN(' . implode(',', $deleteIDs) . ')');
+
+		try
+		{
+			$db->setQuery($query)->execute();
+		}
+		catch (Exception $e)
+		{
+			// Do nothing.
+		}
+	}
+
+	/**
+	 * Gets the ID of an extension
+	 *
+	 * @param   string  $element  Package extension element, e.g. pkg_foo
+	 *
+	 * @return  int  Extension ID or 0 on failure
+	 */
+	private function findPackageExtensionID($element)
+	{
+		$db    = \Joomla\CMS\Factory::getDbo();
+		$query = $db->getQuery(true)
+			->select($db->qn('extension_id'))
+			->from($db->qn('#__extensions'))
+			->where($db->qn('element') . ' = ' . $db->q($element))
+			->where($db->qn('type') . ' = ' . $db->q('package'));
+
+		try
+		{
+			$id = $db->setQuery($query, 0, 1)->loadResult();
+		}
+		catch (Exception $e)
+		{
+			return 0;
+		}
+
+		return empty($id) ? 0 : (int) $id;
+	}
+
+	/**
+	 * Returns the update site IDs for the specified Joomla Extension ID.
+	 *
+	 * @param   int  $eid  Extension ID for which to retrieve update sites
+	 *
+	 * @return  array  The IDs of the update sites
+	 */
+	private function getUpdateSitesFor($eid = null)
+	{
+		$db    = \Joomla\CMS\Factory::getDbo();
+		$query = $db->getQuery(true)
+			->select($db->qn('s.update_site_id'))
+			->from($db->qn('#__update_sites', 's'))
+			->innerJoin($db->qn('#__update_sites_extensions', 'e') . 'ON(' . $db->qn('e.update_site_id') .
+				' = ' . $db->qn('s.update_site_id') . ')'
+			)
+			->where($db->qn('e.extension_id') . ' = ' . $db->q($eid));
+
+		try
+		{
+			$ret = $db->setQuery($query)->loadColumn();
+		}
+		catch (Exception $e)
+		{
+			return [];
+		}
+
+		return empty($ret) ? [] : $ret;
+	}
 }
