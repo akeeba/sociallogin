@@ -1,3 +1,9 @@
+# 3.1.1
+
+**Bug fixes**
+
+* Microsoft account button read “Linkt” instead of “Link”
+
 # 3.1.0
 
 **Added features**
