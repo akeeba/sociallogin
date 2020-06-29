@@ -15,6 +15,7 @@
       <sshConfig authType="OPEN_SSH" host="myoldsite.com" id="b05d6189-4e4f-4eed-88fc-09a57cf167e0" port="18765" customName="My Old Site" nameFormat="CUSTOM" />
       <sshConfig authType="OPEN_SSH" host="myoldsite.com" id="25d3aa52-3100-4950-94d1-51ef7b319102" port="18765" customName="My Old Site" nameFormat="CUSTOM" />
       <sshConfig authType="OPEN_SSH" host="myoldsite.com" id="36b17e8c-fe52-4f3d-b030-5337337269e1" port="18765" customName="My Old Site" nameFormat="CUSTOM" />
+      <sshConfig authType="OPEN_SSH" host="myoldsite.com" id="0235685a-0322-4807-bdcf-0511c0ce7eef" port="18765" customName="My Old Site" nameFormat="CUSTOM" />
     </configs>
   </component>
 </project>

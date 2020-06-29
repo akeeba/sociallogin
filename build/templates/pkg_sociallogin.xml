@@ -42,6 +42,6 @@
 
     <!-- Update servers -->
     <updateservers>
-        <server type="extension" priority="1" name="Akeeba Social Login Updates">https://cdn.akeebabackup.com/updates/pkgsociallogin.xml</server>
+        <server type="extension" priority="1" name="Akeeba Social Login Updates">https://cdn.akeeba.com/updates/pkgsociallogin.xml</server>
     </updateservers>
 </extension>
