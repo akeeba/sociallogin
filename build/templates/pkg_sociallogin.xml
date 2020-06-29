@@ -11,13 +11,13 @@
     <creationDate>##DATE##</creationDate>
 
     <author>Akeeba Ltd</author>
-    <authorEmail>no-reply@akeebabackup.com</authorEmail>
-    <authorUrl>https://www.akeebabackup.com</authorUrl>
+    <authorEmail>no-reply@akeeba.com</authorEmail>
+    <authorUrl>https://www.akeeba.com</authorUrl>
 
     <packagename>sociallogin</packagename>
-    <url>https://www.akeebabackup.com</url>
+    <url>https://www.akeeba.com</url>
     <packager>Akeeba Ltd</packager>
-    <packagerurl>https://www.akeebabackup.com</packagerurl>
+    <packagerurl>https://www.akeeba.com</packagerurl>
 
     <copyright>Copyright (c)2016-2019 Akeeba Ltd</copyright>
     <license>GNU GPL v3 or later</license>
