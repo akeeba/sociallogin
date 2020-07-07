@@ -110,8 +110,8 @@
 				<field
 						name="show_dontremind"
 						type="radio"
-						label="PLG_SYSTEM_SOCIALLOGIN_CONFIG_LINKUNLINKBUTTONS_LABEL"
-						description="PLG_SYSTEM_SOCIALLOGIN_CONFIG_LINKUNLINKBUTTONS_DESC"
+						label="PLG_SYSTEM_SOCIALLOGIN_CONFIG_SHOW_DONTREMIND_LABEL"
+						description="PLG_SYSTEM_SOCIALLOGIN_CONFIG_SHOW_DONTREMIND_DESC"
 						default="0"
 						class="btn-group btn-group-yesno"
 				>

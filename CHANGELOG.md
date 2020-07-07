@@ -7,6 +7,7 @@
 **Bug fixes**
 
 * Microsoft account button read “Linkt” instead of “Link”
+* Wrong label in system plugin's options
 
 # 3.1.0
 
