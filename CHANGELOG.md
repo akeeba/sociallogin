@@ -1,5 +1,9 @@
 # 3.1.1
 
+**Miscellaneous changes**
+
+* Made JavaScript loading deferred
+
 **Bug fixes**
 
 * Microsoft account button read “Linkt” instead of “Link”

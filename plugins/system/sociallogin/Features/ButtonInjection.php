@@ -220,6 +220,8 @@ trait ButtonInjection
 		HTMLHelper::_('script', 'plg_system_sociallogin/dist/j4buttons.js', [
 			'relative'  => true,
 			'framework' => true,
+		], [
+			'defer' => 'defer',
 		]);
 
 		// Set the "don't load again" flag

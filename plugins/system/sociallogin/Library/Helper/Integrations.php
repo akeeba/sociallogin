@@ -334,6 +334,8 @@ abstract class Integrations
 		HTMLHelper::_('script', 'plg_system_sociallogin/dist/buttons.js', [
 			'relative'  => true,
 			'framework' => true,
+		], [
+			'defer' => 'defer',
 		]);
 
 		// Set the "don't load again" flag
