@@ -4,6 +4,7 @@
 
 * Made JavaScript loading deferred
 * Make the Login with Microsoft button's appearance consistent with the other login buttons
+* Add JS and CSS with media versioning queries
 
 **Bug fixes**
 

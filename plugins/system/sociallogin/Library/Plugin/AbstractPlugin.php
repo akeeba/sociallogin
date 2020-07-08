@@ -1,8 +1,8 @@
 <?php
 /**
- *  @package   AkeebaSocialLogin
- *  @copyright Copyright (c)2016-2020 Nicholas K. Dionysopoulos / Akeeba Ltd
- *  @license   GNU General Public License version 3, or later
+ * @package   AkeebaSocialLogin
+ * @copyright Copyright (c)2016-2020 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @license   GNU General Public License version 3, or later
  */
 
 namespace Akeeba\SocialLogin\Library\Plugin;
@@ -118,11 +118,11 @@ abstract class AbstractPlugin extends CMSPlugin
 	 * Constructor. Loads the language files as well.
 	 *
 	 * @param   object  &$subject  The object to observe
-	 * @param   array   $config    An optional associative array of configuration settings.
+	 * @param   array    $config   An optional associative array of configuration settings.
 	 *                             Recognized key values include 'name', 'group', 'params', 'language'
 	 *                             (this list is not meant to be comprehensive).
 	 */
-	public function __construct($subject, array $config = array())
+	public function __construct($subject, array $config = [])
 	{
 		parent::__construct($subject, $config);
 
@@ -144,6 +144,180 @@ abstract class AbstractPlugin extends CMSPlugin
 		$this->iconClass           = $this->params->get('icon_class', '');
 		$this->appId               = $this->params->get('appid', '');
 		$this->appSecret           = $this->params->get('appsecret', '');
+	}
+
+	/**
+	 * Get the information required to render a login / link account button
+	 *
+	 * @param   string  $loginURL    The URL to be redirected to upon successful login / account link
+	 * @param   string  $failureURL  The URL to be redirected to on error
+	 *
+	 * @return  array
+	 *
+	 * @throws  Exception
+	 */
+	public function onSocialLoginGetLoginButton($loginURL = null, $failureURL = null)
+	{
+		// Make sure we are properly set up
+		if (!$this->isProperlySetUp())
+		{
+			return [];
+		}
+
+		// If there's no return URL use the current URL
+		if (empty($loginURL))
+		{
+			$loginURL = Uri::getInstance()->toString([
+				'scheme', 'user', 'pass', 'host', 'port', 'path', 'query', 'fragment',
+			]);
+		}
+
+		// If there's no failure URL use the same as the regular return URL
+		if (empty($failureURL))
+		{
+			$failureURL = $loginURL;
+		}
+
+		// Save the return URLs into the session
+		Joomla::setSessionVar('loginUrl', $loginURL, 'plg_sociallogin_' . $this->integrationName);
+		Joomla::setSessionVar('failureUrl', $failureURL, 'plg_sociallogin_' . $this->integrationName);
+
+		// Add custom CSS
+		$this->addCustomCSS();
+
+		return [
+			// The name of the plugin rendering this button. Used for customized JLayouts.
+			'slug'       => $this->integrationName,
+			// The href attribute for the anchor tag.
+			'link'       => $this->getLoginButtonURL(),
+			// The tooltip of the anchor tag.
+			'tooltip'    => Joomla::_(sprintf('PLG_SOCIALLOGIN_%s_LOGIN_DESC', $this->integrationName)),
+			// What to put inside the anchor tag. Leave empty to put the image returned by onSocialLoginGetIntegration.
+			'label'      => Joomla::_(sprintf('PLG_SOCIALLOGIN_%s_LOGIN_LABEL', $this->integrationName)),
+			// The image to use if there is no icon class
+			'img'        => HTMLHelper::image($this->buttonImage, '', [], true),
+			// Raw button image URL
+			'rawimage'   => $this->buttonImage,
+			// An icon class for the span before the label inside the anchor tag. Nothing is shown if this is blank.
+			'icon_class' => $this->iconClass,
+		];
+	}
+
+	/**
+	 * Get the information required to render a link / unlink account button
+	 *
+	 * @param   User  $user  The user to be linked / unlinked
+	 *
+	 * @return  array
+	 *
+	 * @throws  Exception
+	 */
+	public function onSocialLoginGetLinkButton($user = null)
+	{
+		// Make sure we are properly set up
+		if (!$this->isProperlySetUp())
+		{
+			return [];
+		}
+
+		if (empty($user))
+		{
+			$user = Joomla::getUser();
+		}
+
+		// Get the return URL
+		$returnURL = Uri::getInstance()->toString([
+			'scheme', 'user', 'pass', 'host', 'port', 'path', 'query', 'fragment',
+		]);
+
+		// Save the return URL and user ID into the session
+		Joomla::setSessionVar('returnUrl', $returnURL, 'plg_system_sociallogin');
+		Joomla::setSessionVar('userID', $user->id, 'plg_system_sociallogin');
+
+		if ($this->isLinked($user))
+		{
+			$token     = Joomla::getToken();
+			$unlinkURL = Uri::base() . 'index.php?option=com_ajax&group=system&plugin=sociallogin&format=raw&akaction=unlink&encoding=redirect&slug=' . $this->integrationName . '&' . $token . '=1';
+
+			// Add custom CSS
+			$this->addCustomCSS();
+
+			// Render an unlink button
+			return [
+				// The name of the plugin rendering this button. Used for customized JLayouts.
+				'slug'       => $this->integrationName,
+				// The type of the button: 'link' or 'unlink'
+				'type'       => 'unlink',
+				// The href attribute for the anchor tag.
+				'link'       => $unlinkURL,
+				// The tooltip of the anchor tag.
+				'tooltip'    => Joomla::_(sprintf('PLG_SOCIALLOGIN_%s_UNLINK_DESC', $this->integrationName)),
+				// What to put inside the anchor tag. Leave empty to put the image returned by onSocialLoginGetIntegration.
+				'label'      => Joomla::_(sprintf('PLG_SOCIALLOGIN_%s_UNLINK_LABEL', $this->integrationName)),
+				// The image to use if there is no icon class
+				'img'        => HTMLHelper::image($this->buttonImage, '', [], true),
+				// An icon class for the span before the label inside the anchor tag. Nothing is shown if this is blank.
+				'icon_class' => $this->iconClass,
+			];
+		}
+
+		// Make sure we return to the same profile edit page
+		$loginURL = Uri::getInstance()->toString([
+			'scheme', 'user', 'pass', 'host', 'port', 'path', 'query', 'fragment',
+		]);
+		Joomla::setSessionVar('loginUrl', $loginURL, 'plg_sociallogin_' . $this->integrationName);
+		Joomla::setSessionVar('failureUrl', $loginURL, 'plg_sociallogin_' . $this->integrationName);
+
+		// Add custom CSS
+		$this->addCustomCSS();
+
+		return [
+			// The name of the plugin rendering this button. Used for customized JLayouts.
+			'slug'       => $this->integrationName,
+			// The type of the button: 'link' or 'unlink'
+			'type'       => 'link',
+			// The href attribute for the anchor tag.
+			'link'       => $this->getLinkButtonURL(),
+			// The tooltip of the anchor tag.
+			'tooltip'    => Joomla::_(sprintf('PLG_SOCIALLOGIN_%s_LINK_DESC', $this->integrationName)),
+			// What to put inside the anchor tag. Leave empty to put the image returned by onSocialLoginGetIntegration.
+			'label'      => Joomla::_(sprintf('PLG_SOCIALLOGIN_%s_LINK_LABEL', $this->integrationName)),
+			// The image to use if there is no icon class
+			'img'        => HTMLHelper::image($this->buttonImage, '', [], true),
+			// An icon class for the span before the label inside the anchor tag. Nothing is shown if this is blank.
+			'icon_class' => $this->iconClass,
+		];
+	}
+
+	/**
+	 * Unlink a user account from a social login integration
+	 *
+	 * @param   string     $slug  The integration to unlink from
+	 * @param   User|null  $user  The user to unlink, null to use the current user
+	 *
+	 * @return  void
+	 */
+	public function onSocialLoginUnlink($slug, $user = null)
+	{
+		// Make sure we are properly set up
+		if (!$this->isProperlySetUp())
+		{
+			return;
+		}
+
+		// Make sure it's our integration
+		if ($slug != $this->integrationName)
+		{
+			return;
+		}
+
+		// Make sure we have a user
+		if (is_null($user))
+		{
+			$user = Joomla::getUser();
+		}
+
+		Integrations::removeUserProfileData($user->id, 'sociallogin.' . $this->integrationName);
 	}
 
 	/**
@@ -229,7 +403,7 @@ abstract class AbstractPlugin extends CMSPlugin
 	 * Return the user's profile picture URL given the social network profile fields retrieved with
 	 * getSocialNetworkProfileInformation(). Return null if no such thing is supported.
 	 *
-	 * @param   array $socialProfile The raw social profile fields
+	 * @param   array  $socialProfile  The raw social profile fields
 	 *
 	 * @return  string|null
 	 */
@@ -241,7 +415,7 @@ abstract class AbstractPlugin extends CMSPlugin
 	/**
 	 * Is the user linked to the social login account?
 	 *
-	 * @param   User $user The user account we are checking
+	 * @param   User  $user  The user account we are checking
 	 *
 	 * @return  bool
 	 */
@@ -254,174 +428,6 @@ abstract class AbstractPlugin extends CMSPlugin
 		}
 
 		return Login::isLinkedUser($this->integrationName, $user);
-	}
-
-	/**
-	 * Get the information required to render a login / link account button
-	 *
-	 * @param   string  $loginURL    The URL to be redirected to upon successful login / account link
-	 * @param   string  $failureURL  The URL to be redirected to on error
-	 *
-	 * @return  array
-	 *
-	 * @throws  Exception
-	 */
-	public function onSocialLoginGetLoginButton($loginURL = null, $failureURL = null)
-	{
-		// Make sure we are properly set up
-		if (!$this->isProperlySetUp())
-		{
-			return array();
-		}
-
-		// If there's no return URL use the current URL
-		if (empty($loginURL))
-		{
-			$loginURL = Uri::getInstance()->toString(array('scheme', 'user', 'pass', 'host', 'port', 'path', 'query', 'fragment'));
-		}
-
-		// If there's no failure URL use the same as the regular return URL
-		if (empty($failureURL))
-		{
-			$failureURL = $loginURL;
-		}
-
-		// Save the return URLs into the session
-		Joomla::setSessionVar('loginUrl', $loginURL, 'plg_sociallogin_' . $this->integrationName);
-		Joomla::setSessionVar('failureUrl', $failureURL, 'plg_sociallogin_' . $this->integrationName);
-
-		// Add custom CSS
-		$this->addCustomCSS();
-
-		return [
-			// The name of the plugin rendering this button. Used for customized JLayouts.
-			'slug'       => $this->integrationName,
-			// The href attribute for the anchor tag.
-			'link'       => $this->getLoginButtonURL(),
-			// The tooltip of the anchor tag.
-			'tooltip'    => Joomla::_(sprintf('PLG_SOCIALLOGIN_%s_LOGIN_DESC', $this->integrationName)),
-			// What to put inside the anchor tag. Leave empty to put the image returned by onSocialLoginGetIntegration.
-			'label'      => Joomla::_(sprintf('PLG_SOCIALLOGIN_%s_LOGIN_LABEL', $this->integrationName)),
-			// The image to use if there is no icon class
-			'img'        => HTMLHelper::image($this->buttonImage, '', [], true),
-			// Raw button image URL
-			'rawimage'   => $this->buttonImage,
-			// An icon class for the span before the label inside the anchor tag. Nothing is shown if this is blank.
-			'icon_class' => $this->iconClass,
-		];
-	}
-
-	/**
-	 * Get the information required to render a link / unlink account button
-	 *
-	 * @param   User   $user  The user to be linked / unlinked
-	 *
-	 * @return  array
-	 *
-	 * @throws  Exception
-	 */
-	public function onSocialLoginGetLinkButton($user = null)
-	{
-		// Make sure we are properly set up
-		if (!$this->isProperlySetUp())
-		{
-			return array();
-		}
-
-		if (empty($user))
-		{
-			$user = Joomla::getUser();
-		}
-
-		// Get the return URL
-		$returnURL = Uri::getInstance()->toString(array('scheme', 'user', 'pass', 'host', 'port', 'path', 'query', 'fragment'));
-
-		// Save the return URL and user ID into the session
-		Joomla::setSessionVar('returnUrl', $returnURL, 'plg_system_sociallogin');
-		Joomla::setSessionVar('userID', $user->id, 'plg_system_sociallogin');
-
-		if ($this->isLinked($user))
-		{
-			$token = Joomla::getToken();
-			$unlinkURL = Uri::base() . 'index.php?option=com_ajax&group=system&plugin=sociallogin&format=raw&akaction=unlink&encoding=redirect&slug=' . $this->integrationName . '&' . $token . '=1';
-
-			// Add custom CSS
-			$this->addCustomCSS();
-
-			// Render an unlink button
-			return array(
-				// The name of the plugin rendering this button. Used for customized JLayouts.
-				'slug'       => $this->integrationName,
-				// The type of the button: 'link' or 'unlink'
-				'type'       => 'unlink',
-				// The href attribute for the anchor tag.
-				'link'       => $unlinkURL,
-				// The tooltip of the anchor tag.
-				'tooltip'    => Joomla::_(sprintf('PLG_SOCIALLOGIN_%s_UNLINK_DESC', $this->integrationName)),
-				// What to put inside the anchor tag. Leave empty to put the image returned by onSocialLoginGetIntegration.
-				'label'      => Joomla::_(sprintf('PLG_SOCIALLOGIN_%s_UNLINK_LABEL', $this->integrationName)),
-				// The image to use if there is no icon class
-				'img'        => HTMLHelper::image($this->buttonImage, '', array(), true),
-				// An icon class for the span before the label inside the anchor tag. Nothing is shown if this is blank.
-				'icon_class' => $this->iconClass,
-			);
-		}
-
-		// Make sure we return to the same profile edit page
-		$loginURL = Uri::getInstance()->toString(array('scheme', 'user', 'pass', 'host', 'port', 'path', 'query', 'fragment'));
-		Joomla::setSessionVar('loginUrl', $loginURL, 'plg_sociallogin_' . $this->integrationName);
-		Joomla::setSessionVar('failureUrl', $loginURL, 'plg_sociallogin_' . $this->integrationName);
-
-		// Add custom CSS
-		$this->addCustomCSS();
-
-		return array(
-			// The name of the plugin rendering this button. Used for customized JLayouts.
-			'slug'       => $this->integrationName,
-			// The type of the button: 'link' or 'unlink'
-			'type'       => 'link',
-			// The href attribute for the anchor tag.
-			'link'       => $this->getLinkButtonURL(),
-			// The tooltip of the anchor tag.
-			'tooltip'    => Joomla::_(sprintf('PLG_SOCIALLOGIN_%s_LINK_DESC', $this->integrationName)),
-			// What to put inside the anchor tag. Leave empty to put the image returned by onSocialLoginGetIntegration.
-			'label'      => Joomla::_(sprintf('PLG_SOCIALLOGIN_%s_LINK_LABEL', $this->integrationName)),
-			// The image to use if there is no icon class
-			'img'        => HTMLHelper::image($this->buttonImage, '', array(), true),
-			// An icon class for the span before the label inside the anchor tag. Nothing is shown if this is blank.
-			'icon_class' => $this->iconClass,
-		);
-	}
-
-	/**
-	 * Unlink a user account from a social login integration
-	 *
-	 * @param   string     $slug  The integration to unlink from
-	 * @param   User|null  $user  The user to unlink, null to use the current user
-	 *
-	 * @return  void
-	 */
-	public function onSocialLoginUnlink($slug, $user = null)
-	{
-		// Make sure we are properly set up
-		if (!$this->isProperlySetUp())
-		{
-			return;
-		}
-
-		// Make sure it's our integration
-		if ($slug != $this->integrationName)
-		{
-			return;
-		}
-
-		// Make sure we have a user
-		if (is_null($user))
-		{
-			$user = Joomla::getUser();
-		}
-
-		Integrations::removeUserProfileData($user->id, 'sociallogin.' . $this->integrationName);
 	}
 
 	/**
@@ -445,7 +451,7 @@ abstract class AbstractPlugin extends CMSPlugin
 		Joomla::setSessionVar('failureUrl', null, 'plg_sociallogin_' . $this->integrationName);
 
 		// Try to exchange the code with a token
-		$app            = Joomla::getApplication();
+		$app = Joomla::getApplication();
 
 		/**
 		 * Handle the login callback from the social network. There are three possibilities:
@@ -595,10 +601,14 @@ abstract class AbstractPlugin extends CMSPlugin
 		}
 
 		// Load the built-in stylesheet
-		$stylesheet = 'plg_sociallogin_' . strtolower($this->integrationName) . '/button.css';
+		$pluginSlug = 'plg_sociallogin_' . strtolower($this->integrationName);
+		$stylesheet = sprintf("%s/button.css", $pluginSlug);
+		$absoluteFile = sprintf("%s/media/%s/css/button.css", JPATH_ROOT, $pluginSlug);
+		$mediaVersion = md5_file($absoluteFile);
 
 		HTMLHelper::_('stylesheet', $stylesheet, [
-			'relative' => true
+			'version'  => $mediaVersion,
+			'relative' => true,
 		]);
 	}
 

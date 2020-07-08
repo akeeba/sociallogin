@@ -220,6 +220,7 @@ trait ButtonInjection
 		HTMLHelper::_('script', 'plg_system_sociallogin/dist/j4buttons.js', [
 			'relative'  => true,
 			'framework' => true,
+			'version'   => md5_file(JPATH_SITE . '/media/plg_system_sociallogin/js/dist/j4buttons.js'),
 		], [
 			'defer' => 'defer',
 		]);
