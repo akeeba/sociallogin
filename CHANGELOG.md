@@ -3,10 +3,10 @@
 **Miscellaneous changes**
 
 * Made JavaScript loading deferred
+* Make the Login with Microsoft button's appearance consistent with the other login buttons
 
 **Bug fixes**
 
-* Microsoft account button read “Linkt” instead of “Link”
 * Wrong label in system plugin's options
 
 # 3.1.0
