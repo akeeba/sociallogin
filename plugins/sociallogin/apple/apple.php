@@ -116,7 +116,6 @@ class plgSocialloginApple extends AbstractPlugin
 			];
 			$httpClient      = Joomla::getHttpClient();
 			$this->connector = new Akeeba\SocialLogin\Library\OAuth\OAuth2Client($options, $httpClient, $this->app->input, $this->app);
-			$this->connector->setScope('name email');
 
 		}
 
