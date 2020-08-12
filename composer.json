@@ -10,9 +10,13 @@
 			"role": "Lead Developer"
 		}
 	],
+	"config": {
+		"vendor-dir": "plugins/system/sociallogin/vendor"
+	},
 	"require": {
 		"php": "^7.1",
-		"ext-json": "*"
+		"ext-json": "*",
+		"lcobucci/jwt": "^3.3"
 	},
 	"suggest": {
 	}

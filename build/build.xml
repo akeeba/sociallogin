@@ -29,6 +29,27 @@
 	</target>
 
 	<!--
+	Internal builder task to process all plugins inside a plugins/whatever folder of your repository, e.g. plugins/system
+	-->
+	<target name="package-plugin-folder" description="Iterate over the plugins in an area (system, user, ...) directory">
+		<property name="plugin_area" value="${dirname}" />
+
+		<foreach param="plugin_name" absparam="plugin_dir" target="package-plugin-item">
+			<fileset dir="${absname}">
+				<type type="dir" />
+				<depth max="0" min="0" />
+				<exclude name="vendor/lcobucci/jwt/test/**" />
+				<exclude name="vendor/lcobucci/jwt/.gitignore" />
+				<exclude name="vendor/lcobucci/jwt/.scrutinizer*" />
+				<exclude name="vendor/lcobucci/jwt/.travis*" />
+				<exclude name="vendor/lcobucci/jwt/composer.json" />
+				<exclude name="vendor/lcobucci/jwt/phpunit.xml.dist" />
+			</fileset>
+		</foreach>
+	</target>
+
+
+	<!--
 	====================================================================================================
 	Tasks - Documentation
 	====================================================================================================
