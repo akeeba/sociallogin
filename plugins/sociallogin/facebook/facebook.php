@@ -61,9 +61,8 @@ class plgSocialloginFacebook extends AbstractPlugin
 				'clientsecret' => $this->appSecret,
 				'redirecturi'  => Uri::base() . 'index.php?option=com_ajax&group=sociallogin&plugin=' . $this->integrationName . '&format=raw',
 			);
-			$app             = Joomla::getApplication();
 			$httpClient      = Joomla::getHttpClient();
-			$this->connector = new FacebookOAuth($options, $httpClient, $app->input, $app);
+			$this->connector = new FacebookOAuth($options, $httpClient, $this->app->input, $this->app);
 			$this->connector->setScope('public_profile,email');
 		}
 

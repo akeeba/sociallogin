@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~  @package   AkeebaSocialLogin
+  ~  @copyright Copyright (c)2016-2020 Nicholas K. Dionysopoulos / Akeeba Ltd
+  ~  @license   GNU General Public License version 3, or later
+  -->
+
+<extension version="3.8.0" type="plugin" group="sociallogin" method="upgrade">
+    <name>PLG_SOCIALLOGIN_APPLE</name>
+    <version>3.1.1</version>
+    <creationDate>2020-07-14</creationDate>
+
+    <author>Akeeba Ltd</author>
+    <authorEmail>no-reply@akeeba.com</authorEmail>
+    <authorUrl>https://www.akeeba.com</authorUrl>
+
+    <copyright>Copyright (c)2016-2019 Akeeba Ltd</copyright>
+    <license>GNU GPL v3 or later</license>
+
+    <description>PLG_SOCIALLOGIN_APPLE_DESCRIPTION</description>
+
+    <files>
+        <filename plugin="apple">apple.php</filename>
+    </files>
+
+    <media folder="media" destination="plg_sociallogin_apple">
+        <folder>css</folder>
+        <folder>images</folder>
+    </media>
+
+    <languages folder="language">
+        <language tag="en-GB">en-GB/en-GB.plg_sociallogin_apple.ini</language>
+        <language tag="en-GB">en-GB/en-GB.plg_sociallogin_apple.sys.ini</language>
+    </languages>
+
+    <config>
+        <fields name="params">
+            <fieldset name="basic">
+                <field
+                        name="appid"
+                        type="text"
+                        label="PLG_SOCIALLOGIN_APPLE_FIELD_CLIENTID_LABEL"
+                        description="PLG_SOCIALLOGIN_APPLE_FIELD_CLIENTID_DESC"
+                        default=""
+                />
+
+                <field
+                        name="appsecret"
+                        type="password"
+                        label="PLG_SOCIALLOGIN_APPLE_FIELD_CLIENTSECRET_LABEL"
+                        description="PLG_SOCIALLOGIN_APPLE_FIELD_CLIENTSECRET_DESC"
+                        default=""
+                />
+
+                <field
+                        name="loginunlinked"
+                        type="hidden"
+                        default="0"
+                        class="btn-group btn-group-yesno"
+                >
+                    <option value="1">JYES</option>
+                    <option value="0">JNO</option>
+                </field>
+
+                <field
+                        name="createnew"
+                        type="radio"
+                        label="PLG_SOCIALLOGIN_APPLE_FIELD_CREATENEW_LABEL"
+                        description="PLG_SOCIALLOGIN_APPLE_FIELD_CREATENEW_DESC"
+                        default="0"
+                        class="btn-group btn-group-yesno"
+                >
+                    <option value="1">JYES</option>
+                    <option value="0">JNO</option>
+                </field>
+
+                <field
+                        name="forcenew"
+                        type="radio"
+                        label="PLG_SOCIALLOGIN_APPLE_FIELD_FORCENEW_LABEL"
+                        description="PLG_SOCIALLOGIN_APPLE_FIELD_FORCENEW_DESC"
+                        default="0"
+                        class="btn-group btn-group-yesno"
+                >
+                    <option value="1">JYES</option>
+                    <option value="0">JNO</option>
+                </field>
+
+                <field
+                        name="bypassvalidation"
+                        type="radio"
+                        label="PLG_SOCIALLOGIN_APPLE_FIELD_BYPASSVALIDATION_LABEL"
+                        description="PLG_SOCIALLOGIN_APPLE_FIELD_BYPASSVALIDATION_DESC"
+                        default="1"
+                        class="btn-group btn-group-yesno"
+                >
+                    <option value="1">JYES</option>
+                    <option value="0">JNO</option>
+                </field>
+
+                <field
+                        name="customcss"
+                        type="radio"
+                        label="PLG_SOCIALLOGIN_APPLE_FIELD_CUSTOMCSS_LABEL"
+                        description="PLG_SOCIALLOGIN_APPLE_FIELD_CUSTOMCSS_DESC"
+                        default="1"
+                        class="btn-group btn-group-yesno"
+                >
+                    <option value="1">JYES</option>
+                    <option value="0">JNO</option>
+                </field>
+
+                <field
+                        name="icon_class"
+                        type="text"
+                        label="PLG_SOCIALLOGIN_APPLE_FIELD_ICONCLASS_LABEL"
+                        description="PLG_SOCIALLOGIN_APPLE_FIELD_ICONCLASS_DESC"
+                        default=""
+                />
+
+            </fieldset>
+        </fields>
+    </config>
+
+</extension>

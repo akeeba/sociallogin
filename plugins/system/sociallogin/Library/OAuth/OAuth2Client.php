@@ -102,7 +102,7 @@ class OAuth2Client
 	/**
 	 * Get the access token or redirect to the authentication URL.
 	 *
-	 * @return  string  The access token
+	 * @return  array|null  The access token
 	 *
 	 * @throws  RuntimeException
 	 */
@@ -172,7 +172,7 @@ class OAuth2Client
 			$this->application->redirect($this->createUrl());
 		}
 
-		return false;
+		return null;
 	}
 
 	/**

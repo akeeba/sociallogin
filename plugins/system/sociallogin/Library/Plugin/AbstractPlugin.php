@@ -15,6 +15,7 @@ use Akeeba\SocialLogin\Library\Helper\Integrations;
 use Akeeba\SocialLogin\Library\Helper\Joomla;
 use Akeeba\SocialLogin\Library\Helper\Login;
 use Exception;
+use Joomla\CMS\Application\CMSApplication;
 use Joomla\CMS\Authentication\Authentication;
 use Joomla\CMS\Document\HtmlDocument;
 use Joomla\CMS\HTML\HTMLHelper;
@@ -32,6 +33,13 @@ defined('_JEXEC') or die();
  */
 abstract class AbstractPlugin extends CMSPlugin
 {
+	/**
+	 * The CMS application object
+	 *
+	 * @var  CMSApplication
+	 */
+	public $app;
+
 	/**
 	 * The integration slug used by this plugin.
 	 *
@@ -451,7 +459,7 @@ abstract class AbstractPlugin extends CMSPlugin
 		Joomla::setSessionVar('failureUrl', null, 'plg_sociallogin_' . $this->integrationName);
 
 		// Try to exchange the code with a token
-		$app = Joomla::getApplication();
+		$app = $this->app;
 
 		/**
 		 * Handle the login callback from the social network. There are three possibilities:
@@ -481,7 +489,7 @@ abstract class AbstractPlugin extends CMSPlugin
 
 					if (defined('JDEBUG') && JDEBUG)
 					{
-						$error = Joomla::getApplication()->input->getString('error_description', '');
+						$error = $this->app->input->getString('error_description', '');
 
 						if (!empty($error))
 						{
@@ -593,7 +601,7 @@ abstract class AbstractPlugin extends CMSPlugin
 		}
 
 		// Is this an HTML document?
-		$jDocument = Joomla::getApplication()->getDocument();
+		$jDocument = $this->app->getDocument();
 
 		if (empty($jDocument) || !is_object($jDocument) || !($jDocument instanceof HtmlDocument))
 		{

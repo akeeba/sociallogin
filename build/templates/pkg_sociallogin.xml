@@ -27,6 +27,7 @@
     <!-- List of extensions to install -->
     <files>
         <!-- Plugins: sociallogin -->
+        <file type="plugin" group="sociallogin" id="apple">plg_sociallogin_apple.zip</file>
         <file type="plugin" group="sociallogin" id="facebook">plg_sociallogin_facebook.zip</file>
         <file type="plugin" group="sociallogin" id="github">plg_sociallogin_github.zip</file>
         <file type="plugin" group="sociallogin" id="google">plg_sociallogin_google.zip</file>

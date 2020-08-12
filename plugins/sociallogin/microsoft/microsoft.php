@@ -60,9 +60,8 @@ class plgSocialloginMicrosoft extends AbstractPlugin
 				'clientsecret' => $this->appSecret,
 				'redirecturi'  => JUri::base() . 'index.php?option=com_ajax&group=sociallogin&plugin=' . $this->integrationName . '&format=raw',
 			);
-			$app             = Joomla::getApplication();
 			$httpClient      = Joomla::getHttpClient();
-			$this->connector = new MicrosoftOAuth($options, $httpClient, $app->input, $app);
+			$this->connector = new MicrosoftOAuth($options, $httpClient, $this->app->input, $this->app);
 			$this->connector->setScope('wl.basic wl.emails wl.signin');
 		}
 
