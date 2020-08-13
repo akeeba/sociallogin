@@ -225,7 +225,8 @@ class OAuth2Client
 		if ($this->getOption('scope'))
 		{
 			$scope = is_array($this->getOption('scope')) ? implode(' ', $this->getOption('scope')) : $this->getOption('scope');
-			$url .= '&scope=' . urlencode($scope);
+
+			$url .= '&scope=' . str_replace('+', '%20', urlencode($scope));
 		}
 
 		if ($this->getOption('state'))
