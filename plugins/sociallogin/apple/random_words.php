@@ -7,8 +7,21 @@
 
 defined('_JEXEC') or die;
 
+/**
+ * Generates random adjective-noun pairs.
+ *
+ * We use this to create random usernames when full name information is not provided by Apple for any reason.
+ *
+ * @since   3.2.0
+ */
 class plgSocialloginAppleRandomWords
 {
+	/**
+	 * A list of non-offensive, English adjectives
+	 *
+	 * @var   string[]
+	 * @since 3.2.0
+	 */
 	private static $adjectives = [
 		"additional",
 		"administrative",
@@ -307,6 +320,12 @@ class plgSocialloginAppleRandomWords
 		"young",
 	];
 
+	/**
+	 * A list of non-offensive, English nouns
+	 *
+	 * @var   string[]
+	 * @since 3.2.0
+	 */
 	private static $nouns = [
 		"ability",
 		"accident",
@@ -835,6 +854,12 @@ class plgSocialloginAppleRandomWords
 		"youth",
 	];
 
+	/**
+	 * A random adjective-noun pair
+	 *
+	 * @return  array  As ['adjective', 'noun']
+	 * @since   3.2.0
+	 */
 	public static function randomPair(): array
 	{
 		[$usec, $sec] = microtime(false);
@@ -847,4 +872,3 @@ class plgSocialloginAppleRandomWords
 		];
 	}
 }
-

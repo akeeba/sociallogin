@@ -71,7 +71,9 @@
 
                 <field
                         name="loginunlinked"
-                        type="hidden"
+                        type="radio"
+                        label="PLG_SOCIALLOGIN_APPLE_FIELD_LOGINUNLINKED_LABEL"
+                        description="PLG_SOCIALLOGIN_APPLE_FIELD_LOGINUNLINKED_DESC"
                         default="0"
                         class="btn-group btn-group-yesno"
                 >
