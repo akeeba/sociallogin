@@ -26,7 +26,7 @@
 
 ## Composer
 
-/vendor
+/plugins/system/sociallogin/vendor
 
 ## Akeeba Stuff
 
@@ -38,3 +38,6 @@
 
 # Node.js modules (used to install Babel)
 /node_modules
+
+# Temp files for Sign In with Apple
+/apple/**

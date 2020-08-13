@@ -62,9 +62,8 @@ class plgSocialloginTwitter extends AbstractPlugin
 				'sendheaders'     => true,
 			);
 
-			$app             = Joomla::getApplication();
 			$httpClient      = Joomla::getHttpClient();
-			$this->connector = new OAuth($options, $httpClient, $app->input, $app);
+			$this->connector = new OAuth($options, $httpClient, $this->app->input, $this->app);
 		}
 
 		return $this->connector;

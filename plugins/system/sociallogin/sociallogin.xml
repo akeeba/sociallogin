@@ -25,6 +25,7 @@
 		<folder>fields</folder>
 		<folder>layout</folder>
 		<folder>Library</folder>
+		<folder>vendor</folder>
 	</files>
 
 	<media folder="media" destination="plg_system_sociallogin">

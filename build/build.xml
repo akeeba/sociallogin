@@ -29,6 +29,39 @@
 	</target>
 
 	<!--
+	Internal builder task to process all plugins inside a plugins/whatever folder of your repository, e.g. plugins/system
+	-->
+	<target name="package-plugin-folder" description="Iterate over the plugins in an area (system, user, ...) directory">
+		<property name="plugin_area" value="${dirname}" />
+
+		<foreach param="plugin_name" absparam="plugin_dir" target="package-plugin-item">
+			<fileset dir="${absname}">
+				<type type="dir" />
+				<depth max="0" min="0" />
+				<exclude name="vendor/codercat/jwk-to-pem/tests/**" />
+				<exclude name="vendor/codercat/jwk-to-pem/.gitignore" />
+				<exclude name="vendor/codercat/jwk-to-pem/composer.json" />
+				<exclude name="vendor/codercat/jwk-to-pem/phpunit.xml" />
+
+				<exclude name="vendor/lcobucci/jwt/test/**" />
+				<exclude name="vendor/lcobucci/jwt/.gitignore" />
+				<exclude name="vendor/lcobucci/jwt/.scrutinizer*" />
+				<exclude name="vendor/lcobucci/jwt/.travis*" />
+				<exclude name="vendor/lcobucci/jwt/composer.json" />
+				<exclude name="vendor/lcobucci/jwt/phpunit.xml.dist" />
+
+				<exclude name="vendor/phpseclib/phpseclib/appveyor.yml" />
+				<exclude name="vendor/phpseclib/phpseclib/AUTHORS" />
+				<exclude name="vendor/phpseclib/phpseclib/BACKERS.md" />
+				<exclude name="vendor/phpseclib/phpseclib/composer.json" />
+
+				<exclude name="vendor/phpseclib/bcmath_compat/composer.json" />
+			</fileset>
+		</foreach>
+	</target>
+
+
+	<!--
 	====================================================================================================
 	Tasks - Documentation
 	====================================================================================================

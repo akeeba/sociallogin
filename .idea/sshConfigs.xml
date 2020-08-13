@@ -2,26 +2,9 @@
 <project version="4">
   <component name="SshConfigs">
     <configs>
-      <sshConfig authType="OPEN_SSH" host="myoldsite.com" id="66e4c4be-a188-4487-bb42-cccad0fe4409" port="18765" customName="My Old Site" nameFormat="CUSTOM" />
-      <sshConfig authType="OPEN_SSH" host="myoldsite.com" id="51d01829-0172-443c-82ea-d7a18fcc4a91" port="18765" customName="My Old Site" nameFormat="CUSTOM" />
-      <sshConfig authType="OPEN_SSH" host="myoldsite.com" id="de9fafb0-0eeb-4385-9d63-6da5afea60c1" port="18765" customName="My Old Site" nameFormat="CUSTOM" />
-      <sshConfig authType="OPEN_SSH" host="myoldsite.com" id="2cdb5085-826c-43e1-9646-8eab7b121f00" port="18765" customName="My Old Site" nameFormat="CUSTOM" />
-      <sshConfig authType="OPEN_SSH" host="myoldsite.com" id="bffe9c4e-1091-4093-b22e-4c070be2cbfb" port="18765" customName="My Old Site" nameFormat="CUSTOM" />
-      <sshConfig authType="OPEN_SSH" host="myoldsite.com" id="8a010fb4-8400-4d96-a7c0-f04ef6298702" port="18765" customName="My Old Site" nameFormat="CUSTOM" />
-      <sshConfig authType="OPEN_SSH" host="myoldsite.com" id="92d2043d-0b36-45b7-bfd6-5a00a3599f0a" port="18765" customName="My Old Site" nameFormat="CUSTOM" />
-      <sshConfig authType="OPEN_SSH" host="myoldsite.com" id="946d9cbf-6df1-4d8d-ac94-b1d0860e1da5" port="18765" customName="My Old Site" nameFormat="CUSTOM" />
-      <sshConfig authType="OPEN_SSH" host="myoldsite.com" id="58eafc2a-e62d-4958-b669-44bf60f74309" port="18765" customName="My Old Site" nameFormat="CUSTOM" />
-      <sshConfig authType="OPEN_SSH" host="myoldsite.com" id="33a094dc-fe2a-46c7-9eee-c10ec8452782" port="18765" customName="My Old Site" nameFormat="CUSTOM" />
-      <sshConfig authType="OPEN_SSH" host="myoldsite.com" id="b05d6189-4e4f-4eed-88fc-09a57cf167e0" port="18765" customName="My Old Site" nameFormat="CUSTOM" />
-      <sshConfig authType="OPEN_SSH" host="myoldsite.com" id="25d3aa52-3100-4950-94d1-51ef7b319102" port="18765" customName="My Old Site" nameFormat="CUSTOM" />
-      <sshConfig authType="OPEN_SSH" host="myoldsite.com" id="36b17e8c-fe52-4f3d-b030-5337337269e1" port="18765" customName="My Old Site" nameFormat="CUSTOM" />
-      <sshConfig authType="OPEN_SSH" host="myoldsite.com" id="0235685a-0322-4807-bdcf-0511c0ce7eef" port="18765" customName="My Old Site" nameFormat="CUSTOM" />
-      <sshConfig authType="OPEN_SSH" host="myoldsite.com" id="2e0a5f48-c92a-4a23-9638-48e8a18d924c" port="18765" customName="My Old Site" nameFormat="CUSTOM" />
-      <sshConfig authType="OPEN_SSH" host="myoldsite.com" id="6cdc288d-213d-46c3-a5f7-396886f10dcb" port="18765" customName="My Old Site" nameFormat="CUSTOM" />
-      <sshConfig authType="OPEN_SSH" host="myoldsite.com" id="fa018ddd-7b7b-4d79-b489-e625316f3b07" port="18765" customName="My Old Site" nameFormat="CUSTOM" />
-      <sshConfig authType="OPEN_SSH" host="myoldsite.com" id="17df6162-5ba5-44fc-9f8c-24d18e7b373d" port="18765" customName="My Old Site" nameFormat="CUSTOM" />
-      <sshConfig authType="OPEN_SSH" host="myoldsite.com" id="f1129fa0-305b-4997-b0c1-93dbd5b9cd1c" port="18765" customName="My Old Site" nameFormat="CUSTOM" />
-      <sshConfig authType="OPEN_SSH" host="myoldsite.com" id="aa7ea4d6-8ba0-4056-ba5c-3844acb4b184" port="18765" customName="My Old Site" nameFormat="CUSTOM" />
+      <sshConfig authType="OPEN_SSH" host="myoldsite.com" id="66e4c4be-a188-4487-bb42-cccad0fe4409" port="18765" customName="My Old Site" nameFormat="CUSTOM" username="myoldsite">
+        <option name="customName" value="My Old Site" />
+      </sshConfig>
     </configs>
   </component>
 </project>

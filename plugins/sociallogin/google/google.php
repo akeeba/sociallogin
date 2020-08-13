@@ -82,9 +82,8 @@ class plgSocialloginGoogle extends AbstractPlugin
 				),
 			);
 
-			$app                = Joomla::getApplication();
 			$httpClient         = Joomla::getHttpClient();
-			$this->oAuth2Client = new OAuth2Client($options, $httpClient, $app->input, $app);
+			$this->oAuth2Client = new OAuth2Client($options, $httpClient, $this->app->input, $this->app);
 			$this->connector    = new OAuth2($options, $this->oAuth2Client);
 		}
 

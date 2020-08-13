@@ -102,7 +102,7 @@ class OAuth2Client
 	/**
 	 * Get the access token or redirect to the authentication URL.
 	 *
-	 * @return  string  The access token
+	 * @return  array|null  The access token
 	 *
 	 * @throws  RuntimeException
 	 */
@@ -172,7 +172,7 @@ class OAuth2Client
 			$this->application->redirect($this->createUrl());
 		}
 
-		return false;
+		return null;
 	}
 
 	/**
@@ -225,7 +225,8 @@ class OAuth2Client
 		if ($this->getOption('scope'))
 		{
 			$scope = is_array($this->getOption('scope')) ? implode(' ', $this->getOption('scope')) : $this->getOption('scope');
-			$url .= '&scope=' . urlencode($scope);
+
+			$url .= '&scope=' . str_replace('+', '%20', urlencode($scope));
 		}
 
 		if ($this->getOption('state'))

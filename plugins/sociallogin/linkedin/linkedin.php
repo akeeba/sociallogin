@@ -72,9 +72,8 @@ CSS;
 				'clientsecret' => $this->appSecret,
 				'redirecturi'  => JUri::base() . 'index.php?option=com_ajax&group=sociallogin&plugin=' . $this->integrationName . '&format=raw',
 			);
-			$app             = Joomla::getApplication();
 			$httpClient      = Joomla::getHttpClient();
-			$this->connector = new LinkedInOAuth($options, $httpClient, $app->input, $app);
+			$this->connector = new LinkedInOAuth($options, $httpClient, $this->app->input, $this->app);
 			$this->connector->setScope('r_liteprofile r_emailaddress');
 		}
 

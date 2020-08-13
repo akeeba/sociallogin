@@ -47,7 +47,7 @@ class OAuth2
 	/**
 	 * Method to authenticate to Google
 	 *
-	 * @return  boolean  True on success.
+	 * @return  array  Token on success.
 	 *
 	 * @since   1.0
 	 */

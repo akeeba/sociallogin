@@ -1,4 +1,8 @@
 <?php die(); ?>
+Akeeba SocialLogin 3.2.0
+================================================================================
++ Now supports Sign In with Apple
+
 Akeeba SocialLogin 3.1.1
 ================================================================================
 ~ Made JavaScript loading deferred

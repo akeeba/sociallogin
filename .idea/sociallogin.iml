@@ -3,18 +3,22 @@
   <component name="NewModuleRootManager">
     <content url="file://$MODULE_DIR$">
       <sourceFolder url="file://$MODULE_DIR$/plugins/system/sociallogin" isTestSource="false" packagePrefix="Akeeba\SocialLogin" />
+      <sourceFolder url="file://$MODULE_DIR$/plugins/sociallogin/apple/Apple" isTestSource="false" packagePrefix="Akeeba\SocialLogin\Apple" />
+      <sourceFolder url="file://$MODULE_DIR$/plugins/sociallogin/facebook/Facebook" isTestSource="false" packagePrefix="Akeeba\SocialLogin\Facebook" />
+      <sourceFolder url="file://$MODULE_DIR$/plugins/sociallogin/github/GitHub" isTestSource="false" packagePrefix="Akeeba\SocialLogin\GitHub" />
+      <sourceFolder url="file://$MODULE_DIR$/plugins/sociallogin/google/Google" isTestSource="false" packagePrefix="Akeeba\SocialLogin\Google" />
+      <sourceFolder url="file://$MODULE_DIR$/plugins/sociallogin/linkedin/LinkedIn" isTestSource="false" packagePrefix="Akeeba\SocialLogin\LinkedIn" />
+      <sourceFolder url="file://$MODULE_DIR$/plugins/sociallogin/microsoft/Microsoft" isTestSource="false" packagePrefix="Akeeba\SocialLogin\Microsoft" />
+      <sourceFolder url="file://$MODULE_DIR$/plugins/sociallogin/twitter/Twitter" isTestSource="false" packagePrefix="Akeeba\SocialLogin\Twitter" />
       <excludeFolder url="file://$MODULE_DIR$/.github" />
       <excludeFolder url="file://$MODULE_DIR$/.idea" />
       <excludeFolder url="file://$MODULE_DIR$/modules" />
-      <excludeFolder url="file://$MODULE_DIR$/plugins/sociallogin/facebook/language" />
-      <excludeFolder url="file://$MODULE_DIR$/plugins/sociallogin/github/language" />
-      <excludeFolder url="file://$MODULE_DIR$/plugins/sociallogin/google/language" />
-      <excludeFolder url="file://$MODULE_DIR$/plugins/sociallogin/linkedin/language" />
-      <excludeFolder url="file://$MODULE_DIR$/plugins/sociallogin/microsoft/language" />
-      <excludeFolder url="file://$MODULE_DIR$/plugins/sociallogin/twitter/language" />
-      <excludeFolder url="file://$MODULE_DIR$/plugins/system/sociallogin/language" />
+      <excludeFolder url="file://$MODULE_DIR$/plugins/system/sociallogin/vendor/codercat/jwk-to-pem" />
+      <excludeFolder url="file://$MODULE_DIR$/plugins/system/sociallogin/vendor/composer" />
+      <excludeFolder url="file://$MODULE_DIR$/plugins/system/sociallogin/vendor/lcobucci/jwt" />
+      <excludeFolder url="file://$MODULE_DIR$/plugins/system/sociallogin/vendor/phpseclib/bcmath_compat" />
+      <excludeFolder url="file://$MODULE_DIR$/plugins/system/sociallogin/vendor/phpseclib/phpseclib" />
       <excludeFolder url="file://$MODULE_DIR$/release" />
-      <excludeFolder url="file://$MODULE_DIR$/vendor/composer" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
