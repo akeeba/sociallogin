@@ -7,16 +7,10 @@
 .akeeba-sociallogin-link-button-twitter, .akeeba-sociallogin-unlink-button-twitter, .akeeba-sociallogin-button-twitter {
     background-color: #1DA1F2 !important;
     color: #ffffff !important;
-    transition-duration: 0.33s !important;
+    text-shadow: none !important;
     background-image: none !important;
-    border-color: #0b4060 !important;
-}
-
-.akeeba-sociallogin-link-button-twitter:hover, .akeeba-sociallogin-unlink-button-twitter:hover, .akeeba-sociallogin-button-twitter:hover {
-    background-color: #1470a9 !important;
-    color: #ffffff !important;
-    transition-duration: 0.33s !important;
-    border-color: #3B5998 !important;
+    border: none !important;
+    padding: 9px 8px !important;
 }
 
 .akeeba-sociallogin-link-button-twitter img, .akeeba-sociallogin-unlink-button-twitter img, .akeeba-sociallogin-button-twitter img {

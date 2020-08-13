@@ -21,6 +21,7 @@
 
     <files>
         <filename plugin="linkedin">linkedin.php</filename>
+        <folder>layout</folder>
         <folder>LinkedIn</folder>
     </files>
 
@@ -100,6 +101,19 @@
                     <option value="1">JYES</option>
                     <option value="0">JNO</option>
                 </field>
+
+                <field
+                        name="imagebutton"
+                        type="radio"
+                        label="PLG_SOCIALLOGIN_LINKEDIN_FIELD_IMAGEBUTTON_LABEL"
+                        description="PLG_SOCIALLOGIN_LINKEDIN_FIELD_IMAGEBUTTON_DESC"
+                        default="1"
+                        class="btn-group btn-group-yesno"
+                >
+                    <option value="1">JYES</option>
+                    <option value="0">JNO</option>
+                </field>
+
 
                 <field
                         name="customcss"

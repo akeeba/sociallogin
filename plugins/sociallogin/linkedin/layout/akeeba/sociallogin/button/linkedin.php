@@ -8,12 +8,13 @@
 // Protect from unauthorized access
 use Akeeba\SocialLogin\Library\Helper\Integrations;
 use Akeeba\SocialLogin\Library\Helper\Joomla;
+use Joomla\CMS\Uri\Uri;
 
 defined('_JEXEC') or die();
 
 /**
- * Renders a Sign In with Apple login button, allowing the user to log into Joomla! using their Apple ID. This is
- * typically used in login modules.
+ * Renders a Sign In with LinkedIn login button, allowing the user to log into Joomla! using their LinkedIn profile.
+ * This is typically used in login modules.
  *
  * Generic data
  *
@@ -35,7 +36,7 @@ defined('_JEXEC') or die();
 // BEGIN - MANDATORY CODE
 
 // Should I fall back to the generic akeeba.sociallogin.button layout instead?
-$plugin       = \Joomla\CMS\Plugin\PluginHelper::getPlugin('sociallogin', 'apple');
+$plugin       = \Joomla\CMS\Plugin\PluginHelper::getPlugin('sociallogin', 'linkedin');
 $pluginParams = new \Joomla\Registry\Registry($plugin->params);
 
 if ($pluginParams->get('imagebutton', 1) != 1)
@@ -82,12 +83,14 @@ JS;
 // END - MANDATORY CODE
 
 // Start writing your template override code below this line
+$imageBaseUrl = Uri::base(true) . '/media/plg_sociallogin_linkedin/images/';
+
 ?>
 <a class="akeeba-sociallogin-button akeeba-sociallogin-button-<?= $slug ?>--image hasTooltip"
    id="<?= $randomId ?>"
    href="<?= $link ?>" title="<?= $tooltip ?>">
 	<img
-			srcset="https://appleid.cdn-apple.com/appleid/button?height=36&scale=6 6x, https://appleid.cdn-apple.com/appleid/button?height=36&scale=4 4x, https://appleid.cdn-apple.com/appleid/button?height=36&scale=3 3x, https://appleid.cdn-apple.com/appleid/button?height=36&scale=2 2x, https://appleid.cdn-apple.com/appleid/button?height=36 1x"
-			src="https://appleid.cdn-apple.com/appleid/button"
+			srcset="<?= $imageBaseUrl ?>button@2x.png 2x, <?= $imageBaseUrl ?>button.png 1x"
+			src="<?= $imageBaseUrl ?>button.png"
 			alt="<?= $label ?>"
 </a>

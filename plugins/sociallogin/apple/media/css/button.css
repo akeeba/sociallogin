@@ -7,9 +7,10 @@
 .akeeba-sociallogin-link-button-apple, .akeeba-sociallogin-unlink-button-apple, .akeeba-sociallogin-button-apple {
     background-color: #000000 !important;
     color: #ffffff !important;
-    transition-duration: 0.33s !important;
+    text-shadow: none !important;
     background-image: none !important;
-    border-color: #2b2b2b !important;
+    border: none !important;
+    padding: 8px 8px !important;
 }
 
 .akeeba-sociallogin-link-button-apple img, .akeeba-sociallogin-unlink-button-apple img, .akeeba-sociallogin-button-apple img {

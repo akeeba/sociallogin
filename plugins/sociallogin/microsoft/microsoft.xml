@@ -21,6 +21,7 @@
 
     <files>
         <filename plugin="microsoft">microsoft.php</filename>
+        <folder>layout</folder>
         <folder>Microsoft</folder>
     </files>
 

@@ -7,16 +7,10 @@
 .akeeba-sociallogin-link-button-github, .akeeba-sociallogin-unlink-button-github, .akeeba-sociallogin-button-github {
     background-color: #000000 !important;
     color: #ffffff !important;
-    transition-duration: 0.33s !important;
+    text-shadow: none !important;
     background-image: none !important;
-    border-color: #333333 !important;
-}
-
-.akeeba-sociallogin-link-button-github:hover, .akeeba-sociallogin-unlink-button-github:hover, .akeeba-sociallogin-button-github:hover {
-    background-color: #333333 !important;
-    color: #ffffff !important;
-    transition-duration: 0.33s !important;
-    border-color: #999999 !important;
+    border: none !important;
+    padding: 9px 8px !important;
 }
 
 .akeeba-sociallogin-link-button-github img, .akeeba-sociallogin-unlink-button-github img, .akeeba-sociallogin-button-github img {
