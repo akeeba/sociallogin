@@ -22,6 +22,8 @@
     <files>
         <filename plugin="apple">apple.php</filename>
         <filename>random_words.php</filename>
+
+        <folder>layout</folder>
     </files>
 
     <media folder="media" destination="plg_sociallogin_apple">
@@ -110,6 +112,18 @@
                         type="radio"
                         label="PLG_SOCIALLOGIN_APPLE_FIELD_BYPASSVALIDATION_LABEL"
                         description="PLG_SOCIALLOGIN_APPLE_FIELD_BYPASSVALIDATION_DESC"
+                        default="1"
+                        class="btn-group btn-group-yesno"
+                >
+                    <option value="1">JYES</option>
+                    <option value="0">JNO</option>
+                </field>
+
+                <field
+                        name="imagebutton"
+                        type="radio"
+                        label="PLG_SOCIALLOGIN_APPLE_FIELD_IMAGEBUTTON_LABEL"
+                        description="PLG_SOCIALLOGIN_APPLE_FIELD_IMAGEBUTTON_DESC"
                         default="1"
                         class="btn-group btn-group-yesno"
                 >
