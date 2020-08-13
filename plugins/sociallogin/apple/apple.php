@@ -13,6 +13,7 @@ use Akeeba\SocialLogin\Library\Helper\Joomla;
 use Akeeba\SocialLogin\Library\OAuth\OAuth2Client;
 use Akeeba\SocialLogin\Library\Plugin\AbstractPlugin;
 use Joomla\CMS\Crypt\Crypt;
+use Lcobucci\JWT\Builder as JWTBuilder;
 use Lcobucci\JWT\Parser as JWTParser;
 use Lcobucci\JWT\Signer\Ecdsa\Sha256 as SignerE256;
 use Lcobucci\JWT\Signer\Key as SignerKey;
@@ -102,6 +103,8 @@ class plgSocialloginApple extends AbstractPlugin
 	{
 		if (is_null($this->connector))
 		{
+			$this->appSecret = $this->getSecretKey();
+
 			$options         = [
 				'authurl'       => 'https://appleid.apple.com/auth/authorize',
 				'tokenurl'      => 'https://appleid.apple.com/auth/token',
@@ -237,7 +240,7 @@ class plgSocialloginApple extends AbstractPlugin
 		 * may be used for creating a new user. I use a random English adjective-noun pair, e.g. "Lunar Mood". You can
 		 * change your name later and possibly your username (if the site admin allows it).
 		 */
-		$name               = $socialProfile['name'] ?? '';
+		$name = $socialProfile['name'] ?? '';
 
 		if (empty($name))
 		{
@@ -251,5 +254,46 @@ class plgSocialloginApple extends AbstractPlugin
 		$userData->verified = $socialProfile['verified'] ?? false;
 
 		return $userData;
+	}
+
+	/**
+	 * Is this integration properly set up and ready for use?
+	 *
+	 * @return  bool
+	 */
+	protected function isProperlySetUp()
+	{
+		$keyMaterial = $this->params->get('keyMaterial', '');
+		$keyID       = $this->params->get('keyID', '');
+		$teamID      = $this->params->get('teamID', '');
+
+		return !(empty($this->appId) || empty($keyMaterial) || empty($keyID) || empty($teamID));
+	}
+
+
+	private function getSecretKey(): string
+	{
+		$keyMaterial = $this->params->get('keyMaterial', '');
+		$keyID       = $this->params->get('keyID', '');
+		$teamID      = $this->params->get('teamID', '');
+
+		if (empty($keyMaterial) || empty($keyID) || empty($teamID))
+		{
+			return '';
+		}
+
+		$signer     = new SignerE256();
+		$privateKey = new SignerKey($keyMaterial);
+
+		$time  = time();
+		$token = (new JWTBuilder())->issuedBy($teamID)
+			->withHeader('kid', $keyID)
+			->permittedFor('https://appleid.apple.com')
+			->issuedAt($time)
+			->expiresAt($time + 3600)
+			->relatedTo($this->appId)
+			->getToken($signer, $privateKey);
+
+		return (string) $token;
 	}
 }

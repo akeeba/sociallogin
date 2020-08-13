@@ -21,6 +21,7 @@
 
     <files>
         <filename plugin="apple">apple.php</filename>
+        <filename>random_words.php</filename>
     </files>
 
     <media folder="media" destination="plg_sociallogin_apple">
@@ -45,10 +46,26 @@
                 />
 
                 <field
-                        name="appsecret"
-                        type="password"
-                        label="PLG_SOCIALLOGIN_APPLE_FIELD_CLIENTSECRET_LABEL"
-                        description="PLG_SOCIALLOGIN_APPLE_FIELD_CLIENTSECRET_DESC"
+                        name="teamID"
+                        type="text"
+                        label="PLG_SOCIALLOGIN_APPLE_FIELD_TEAMID_LABEL"
+                        description="PLG_SOCIALLOGIN_APPLE_FIELD_TEAMID_DESC"
+                        default=""
+                />
+
+                <field
+                        name="keyID"
+                        type="text"
+                        label="PLG_SOCIALLOGIN_APPLE_FIELD_KEYID_LABEL"
+                        description="PLG_SOCIALLOGIN_APPLE_FIELD_KEYID_DESC"
+                        default=""
+                />
+
+                <field
+                        name="keyMaterial"
+                        type="textarea"
+                        label="PLG_SOCIALLOGIN_APPLE_FIELD_KEYMATERIAL_LABEL"
+                        description="PLG_SOCIALLOGIN_APPLE_FIELD_KEYMATERIAL_DESC"
                         default=""
                 />
 

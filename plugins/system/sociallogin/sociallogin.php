@@ -111,6 +111,9 @@ class plgSystemSociallogin extends CMSPlugin
 		// Register the autoloader
 		JLoader::registerNamespace('Akeeba\\SocialLogin\\Library', __DIR__ . '/Library', false, false, 'psr4');
 
+		// Register the Composer autoloader
+		require_once __DIR__ . '/vendor/autoload.php';
+
 		// Legacy mappings
 		JLoader::registerAlias('SocialLoginHelperIntegrations', 'Akeeba\\SocialLogin\\Library\\Helper\\Integrations', '3.0');
 
