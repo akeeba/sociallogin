@@ -3,6 +3,7 @@ Akeeba SocialLogin 3.2.0
 ================================================================================
 + Now supports Sign In with Apple
 ~ Better follow branding guidelines for the various third party services
+# [HIGH] The LinkedIn plugin was not shipped with the package
 
 Akeeba SocialLogin 3.1.1
 ================================================================================
