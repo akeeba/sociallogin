@@ -5,6 +5,9 @@
       <sshConfig authType="OPEN_SSH" host="myoldsite.com" id="66e4c4be-a188-4487-bb42-cccad0fe4409" port="18765" customName="My Old Site" nameFormat="CUSTOM" username="myoldsite">
         <option name="customName" value="My Old Site" />
       </sshConfig>
+      <sshConfig authType="OPEN_SSH" host="myoldsite.com" id="6868b3bd-4c17-4fd2-a2da-a8a17814404f" port="18765" customName="My Old Site" nameFormat="CUSTOM">
+        <option name="customName" value="My Old Site" />
+      </sshConfig>
     </configs>
   </component>
 </project>
