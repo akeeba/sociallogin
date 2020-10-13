@@ -1,4 +1,8 @@
 <?php die(); ?>
+Akeeba SocialLogin 3.2.2
+================================================================================
+# [LOW] PHP notice in the post-installation script (gh-60)
+
 Akeeba SocialLogin 3.2.1
 ================================================================================
 # [HIGH] Login with Apple was broken due to a problem in third party Composer dependencies

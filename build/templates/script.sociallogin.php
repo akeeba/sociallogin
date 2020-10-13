@@ -12,6 +12,8 @@ defined('_JEXEC') or die;
 
 class Pkg_SocialloginInstallerScript
 {
+	protected $packageName = 'pkg_sociallogin';
+
 	/**
 	 * The minimum PHP version required to install this extension
 	 *
