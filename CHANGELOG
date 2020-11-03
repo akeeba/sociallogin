@@ -2,6 +2,7 @@
 Akeeba SocialLogin 3.2.2
 ================================================================================
 # [LOW] PHP notice in the post-installation script (gh-60)
+# [LOW] Unnecessarily including mooTools in the frontend (gh-61)
 
 Akeeba SocialLogin 3.2.1
 ================================================================================

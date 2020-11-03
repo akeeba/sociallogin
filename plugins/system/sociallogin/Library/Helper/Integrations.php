@@ -333,7 +333,6 @@ abstract class Integrations
 		// Load the JavaScript
 		HTMLHelper::_('script', 'plg_system_sociallogin/dist/buttons.js', [
 			'relative'  => true,
-			'framework' => true,
 			'version'   => md5_file(JPATH_SITE . '/media/plg_system_sociallogin/js/dist/buttons.js')
 		], [
 			'defer' => 'defer',
