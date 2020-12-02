@@ -110,10 +110,18 @@ class OAuth2Client
 	{
 		if ($data['code'] = $this->input->get('code', false, 'raw'))
 		{
-			$data['grant_type'] = 'authorization_code';
+			$data['grant_type'] = $this->getOption('grant_type', 'authorization_code');
 			$data['redirect_uri'] = $this->getOption('redirecturi');
 			$data['client_id'] = $this->getOption('clientid');
 			$data['client_secret'] = $this->getOption('clientsecret');
+
+			$grantScope = $this->getOption('grant_scope', '');
+
+			if (!empty($grantScope))
+			{
+				$data['scope'] = $grantScope;
+			}
+
 			$response = $this->http->post($this->getOption('tokenurl'), $data);
 
 			if (!($response->code >= 200 && $response->code < 400))

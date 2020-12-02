@@ -39,11 +39,41 @@
         <fields name="params">
             <fieldset name="basic">
                 <field
+                        name="apptype"
+                        type="list"
+                        label="PLG_SOCIALLOGIN_MICROSOFT_FIELD_APPTYPE_LABEL"
+                        description="PLG_SOCIALLOGIN_MICROSOFT_FIELD_APPTYPE_DESC"
+                        default="live"
+                >
+                    <option value="live">PLG_SOCIALLOGIN_MICROSOFT_FIELD_APPTYPE_LIVE</option>
+                    <option value="azure">PLG_SOCIALLOGIN_MICROSOFT_FIELD_APPTYPE_AZURE</option>
+                </field>
+
+                <field
+                        name="azappid"
+                        type="text"
+                        label="PLG_SOCIALLOGIN_MICROSOFT_FIELD_AZAPPID_LABEL"
+                        description="PLG_SOCIALLOGIN_MICROSOFT_FIELD_AZAPPID_DESC"
+                        default=""
+                        showon="apptype:azure"
+                />
+
+                <field
+                        name="azappsecret"
+                        type="text"
+                        label="PLG_SOCIALLOGIN_MICROSOFT_FIELD_AZAPPSECRET_LABEL"
+                        description="PLG_SOCIALLOGIN_MICROSOFT_FIELD_AZAPPSECRET_DESC"
+                        default=""
+                        showon="apptype:azure"
+                />
+
+                <field
                         name="appid"
                         type="text"
                         label="PLG_SOCIALLOGIN_MICROSOFT_FIELD_APPID_LABEL"
                         description="PLG_SOCIALLOGIN_MICROSOFT_FIELD_APPID_DESC"
                         default=""
+                        showon="apptype:live"
                 />
 
                 <field
@@ -52,6 +82,7 @@
                         label="PLG_SOCIALLOGIN_MICROSOFT_FIELD_APPSECRET_LABEL"
                         description="PLG_SOCIALLOGIN_MICROSOFT_FIELD_APPSECRET_DESC"
                         default=""
+                        showon="apptype:live"
                 />
 
                 <field

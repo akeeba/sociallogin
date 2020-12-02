@@ -1,8 +1,8 @@
 <?php
 /**
- *  @package   AkeebaSocialLogin
- *  @copyright Copyright (c)2016-2020 Nicholas K. Dionysopoulos / Akeeba Ltd
- *  @license   GNU General Public License version 3, or later
+ * @package   AkeebaSocialLogin
+ * @copyright Copyright (c)2016-2020 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @license   GNU General Public License version 3, or later
  */
 
 // Protect from unauthorized access
@@ -12,7 +12,10 @@ use Akeeba\SocialLogin\Library\Data\UserData;
 use Akeeba\SocialLogin\Library\Helper\Joomla;
 use Akeeba\SocialLogin\Library\Plugin\AbstractPlugin;
 use Akeeba\SocialLogin\Microsoft\OAuth as MicrosoftOAuth;
+use Akeeba\SocialLogin\Microsoft\UserGraphQuery;
 use Akeeba\SocialLogin\Microsoft\UserQuery;
+use Joomla\CMS\Http\HttpFactory;
+use Joomla\CMS\Uri\Uri;
 use Joomla\Registry\Registry;
 
 if (!class_exists('Akeeba\\SocialLogin\\Library\\Plugin\\AbstractPlugin', true))
@@ -26,14 +29,21 @@ if (!class_exists('Akeeba\\SocialLogin\\Library\\Plugin\\AbstractPlugin', true))
 class plgSocialloginMicrosoft extends AbstractPlugin
 {
 	/**
+	 * Is this an Azure AD application? False for Live SDK.
+	 *
+	 * @var bool
+	 */
+	protected $isAzure = false;
+
+	/**
 	 * Constructor. Loads the language files as well.
 	 *
 	 * @param   object  &$subject  The object to observe
-	 * @param   array   $config    An optional associative array of configuration settings.
+	 * @param   array    $config   An optional associative array of configuration settings.
 	 *                             Recognized key values include 'name', 'group', 'params', 'language'
 	 *                             (this list is not meant to be comprehensive).
 	 */
-	public function __construct($subject, array $config = array())
+	public function __construct($subject, array $config = [])
 	{
 		parent::__construct($subject, $config);
 
@@ -42,6 +52,11 @@ class plgSocialloginMicrosoft extends AbstractPlugin
 
 		// Per-plugin customization
 		$this->buttonImage = 'plg_sociallogin_microsoft/microsoft_mark.png';
+
+		// Customization for Microsoft Azure AD vs Live SDK applications
+		$this->isAzure   = $this->params->get('apptype', 'live') === 'azure';
+		$this->appId     = $this->params->get($this->isAzure ? 'azappid' : 'appid', '');
+		$this->appSecret = $this->params->get($this->isAzure ? 'azappsecret' : 'appsecret', '');
 	}
 
 	/**
@@ -55,14 +70,29 @@ class plgSocialloginMicrosoft extends AbstractPlugin
 	{
 		if (is_null($this->connector))
 		{
-			$options = array(
+			$options = [
 				'clientid'     => $this->appId,
 				'clientsecret' => $this->appSecret,
-				'redirecturi'  => JUri::base() . 'index.php?option=com_ajax&group=sociallogin&plugin=' . $this->integrationName . '&format=raw',
-			);
+				'redirecturi'  => Uri::base() . 'index.php?option=com_ajax&group=sociallogin&plugin=' . $this->integrationName . '&format=raw',
+				'scope'        => 'wl.basic wl.emails wl.signin',
+			];
+
+			$appType = $this->params->get('apptype', 'live');
+
+			if ($appType === 'azure')
+			{
+				$options['redirecturi']   = Uri::base() . 'index.php/aksociallogin_finishLogin/microsoft.raw';
+				$options['authurl']       = 'https://login.microsoftonline.com/common/oauth2/v2.0/authorize';
+				$options['tokenurl']      = 'https://login.microsoftonline.com/common/oauth2/v2.0/token';
+				$options['scope']         = 'https://graph.microsoft.com/User.Read';
+				$options['grant_scope']   = 'https://graph.microsoft.com/User.Read';
+				$options['requestparams'] = [
+					'response_mode' => 'query',
+				];
+			}
+
 			$httpClient      = Joomla::getHttpClient();
 			$this->connector = new MicrosoftOAuth($options, $httpClient, $this->app->input, $this->app);
-			$this->connector->setScope('wl.basic wl.emails wl.signin');
 		}
 
 		return $this->connector;
@@ -71,7 +101,7 @@ class plgSocialloginMicrosoft extends AbstractPlugin
 	/**
 	 * Get the raw user profile information from the social network.
 	 *
-	 * @param   object  $connector  The internal connector object.
+	 * @param   MicrosoftOAuth  $connector  The internal connector object.
 	 *
 	 * @return  array
 	 *
@@ -79,13 +109,15 @@ class plgSocialloginMicrosoft extends AbstractPlugin
 	 */
 	protected function getSocialNetworkProfileInformation($connector)
 	{
-		$tokenArray   = $connector->getToken();
+		$tokenArray = $connector->getToken();
 
-		$options      = new Registry(array(
+		$options = new Registry([
 			'userAgent' => 'Akeeba-Social-Login',
-		));
-		$client       = \Joomla\CMS\Http\HttpFactory::getHttp($options);
-		$msUserQuery  = new UserQuery($client, $tokenArray['access_token']);
+		]);
+		$client  = HttpFactory::getHttp($options);
+
+		$className    = $this->isAzure ? UserGraphQuery::class : UserQuery::class;
+		$msUserQuery  = new $className($client, $tokenArray['access_token']);
 		$msUserFields = $msUserQuery->getUserInformation();
 
 		return json_decode(json_encode($msUserFields), true);
@@ -95,7 +127,7 @@ class plgSocialloginMicrosoft extends AbstractPlugin
 	 * Maps the raw social network profile fields retrieved with getSocialNetworkProfileInformation() into a UserData
 	 * object we use in the Social Login library.
 	 *
-	 * @param   array $socialProfile The raw social profile fields
+	 * @param   array  $socialProfile  The raw social profile fields
 	 *
 	 * @return  UserData
 	 */
@@ -103,20 +135,48 @@ class plgSocialloginMicrosoft extends AbstractPlugin
 	{
 		$nameParts = [];
 
-		if (isset($socialProfile['first_name']))
+		if (!$this->isAzure)
 		{
-			$nameParts[] = $socialProfile['first_name'];
-		}
+			if (isset($socialProfile['first_name']))
+			{
+				$nameParts[] = $socialProfile['first_name'];
+			}
 
-		if (isset($socialProfile['last_name']))
+			if (isset($socialProfile['last_name']))
+			{
+				$nameParts[] = $socialProfile['last_name'];
+			}
+
+			$name = implode(' ', $nameParts);
+
+			$email = isset($socialProfile['emails']) && isset($socialProfile['emails']['account']) ? $socialProfile['emails']['account'] : '';
+		}
+		else
 		{
-			$nameParts[] = $socialProfile['last_name'];
+			if (isset($socialProfile['givenName']))
+			{
+				$nameParts[] = $socialProfile['first_name'];
+			}
+
+			if (isset($socialProfile['surname']))
+			{
+				$nameParts[] = $socialProfile['last_name'];
+			}
+
+			$name = implode(' ', $nameParts);
+
+			if (isset($socialProfile['displayName']))
+			{
+				$name = $socialProfile['displayName'];
+			}
+
+			$email = isset($socialProfile['mail']) ? $socialProfile['mail'] : '';
 		}
 
 		$userData           = new UserData();
-		$userData->name     = implode(' ', $nameParts);
 		$userData->id       = $socialProfile['id'];
-		$userData->email    = isset($socialProfile['emails']) && isset($socialProfile['emails']['account']) ? $socialProfile['emails']['account'] : '';
+		$userData->name     = $name;
+		$userData->email    = $email;
 		$userData->verified = true;
 
 		return $userData;

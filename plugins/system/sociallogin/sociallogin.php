@@ -28,6 +28,9 @@ JLoader::registerNamespace('Akeeba\\SocialLogin\\Features', __DIR__ . '/Features
  */
 class plgSystemSociallogin extends CMSPlugin
 {
+	/** @var \Joomla\CMS\Application\CMSApplication */
+	public $app;
+
 	// Load the features, implemented as traits (for easier code management)
 	use Ajax, DynamicUsergroups {
 		Ajax::onAfterInitialise as protected onAfterIntialise_Ajax;
@@ -151,6 +154,7 @@ class plgSystemSociallogin extends CMSPlugin
 	 */
 	public function onAfterInitialise()
 	{
+		$this->magicRoute();
 		$this->onAfterInitialise_DynamicUserGroups();
 		$this->onAfterIntialise_Ajax();
 	}
@@ -169,5 +173,45 @@ class plgSystemSociallogin extends CMSPlugin
 		}
 
 		return true;
+	}
+
+	protected function magicRoute()
+	{
+		$path = Uri::getInstance()->getPath();
+
+		if (empty($path)) {
+			return;
+		}
+
+		$rootPath = Uri::base(true);
+
+		if (!empty($rootPath)) {
+			$path = substr($path, strlen($rootPath));
+		}
+
+		$path = trim($path,'/');
+
+		if (strpos($path, 'index.php/') === 0)
+		{
+			$path = substr($path, 10);
+		}
+
+		if (strpos($path, 'aksociallogin_finishLogin/') !== 0)
+		{
+			return;
+		}
+
+		list(, $plugin) = explode('/', $path, 2);
+
+		if (empty($plugin)) {
+			return;
+		}
+
+		list($plugin, ) = explode('.', $plugin);
+
+		$this->app->input->set('option', 'com_ajax');
+		$this->app->input->set('group', 'sociallogin');
+		$this->app->input->set('plugin', $plugin);
+		$this->app->input->set('format', 'raw');
 	}
 }
