@@ -60,6 +60,20 @@ class plgSocialloginMicrosoft extends AbstractPlugin
 	}
 
 	/**
+	 * Processes the authentication callback from Microsoft.
+	 *
+	 * Note: this method is called from Joomla's com_ajax, not com_sociallogin itself
+	 *
+	 * @return  void
+	 *
+	 * @throws  Exception
+	 */
+	public function onAjaxMicrosoft()
+	{
+		$this->onSocialLoginAjax();
+	}
+
+	/**
 	 * Returns a MicrosoftOAuth object
 	 *
 	 * @return  MicrosoftOAuth
@@ -70,6 +84,8 @@ class plgSocialloginMicrosoft extends AbstractPlugin
 	{
 		if (is_null($this->connector))
 		{
+			$appType = $this->params->get('apptype', 'live');
+
 			$options = [
 				'clientid'     => $this->appId,
 				'clientsecret' => $this->appSecret,
@@ -77,17 +93,20 @@ class plgSocialloginMicrosoft extends AbstractPlugin
 				'scope'        => 'wl.basic wl.emails wl.signin',
 			];
 
-			$appType = $this->params->get('apptype', 'live');
 
 			if ($appType === 'azure')
 			{
-				$options['redirecturi']   = Uri::base() . 'index.php/aksociallogin_finishLogin/microsoft.raw';
-				$options['authurl']       = 'https://login.microsoftonline.com/common/oauth2/v2.0/authorize';
-				$options['tokenurl']      = 'https://login.microsoftonline.com/common/oauth2/v2.0/token';
-				$options['scope']         = 'https://graph.microsoft.com/User.Read';
-				$options['grant_scope']   = 'https://graph.microsoft.com/User.Read';
-				$options['requestparams'] = [
-					'response_mode' => 'query',
+				$options = [
+					'clientid'      => $this->appId,
+					'clientsecret'  => $this->appSecret,
+					'redirecturi'   => Uri::base() . 'index.php/aksociallogin_finishLogin/microsoft.raw',
+					'authurl'       => 'https://login.microsoftonline.com/common/oauth2/v2.0/authorize',
+					'tokenurl'      => 'https://login.microsoftonline.com/common/oauth2/v2.0/token',
+					'scope'         => 'user.read offline_access',
+					'grant_scope'   => 'user.read offline_access',
+					'requestparams' => [
+						'response_mode' => 'query',
+					],
 				];
 			}
 
@@ -180,19 +199,5 @@ class plgSocialloginMicrosoft extends AbstractPlugin
 		$userData->verified = true;
 
 		return $userData;
-	}
-
-	/**
-	 * Processes the authentication callback from Microsoft.
-	 *
-	 * Note: this method is called from Joomla's com_ajax, not com_sociallogin itself
-	 *
-	 * @return  void
-	 *
-	 * @throws  Exception
-	 */
-	public function onAjaxMicrosoft()
-	{
-		$this->onSocialLoginAjax();
 	}
 }

@@ -1,8 +1,8 @@
 <?php
 /**
- *  @package   AkeebaSocialLogin
- *  @copyright Copyright (c)2016-2020 Nicholas K. Dionysopoulos / Akeeba Ltd
- *  @license   GNU General Public License version 3, or later
+ * @package   AkeebaSocialLogin
+ * @copyright Copyright (c)2016-2020 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @license   GNU General Public License version 3, or later
  */
 
 use Akeeba\SocialLogin\Features\Ajax;
@@ -10,12 +10,9 @@ use Akeeba\SocialLogin\Features\ButtonInjection;
 use Akeeba\SocialLogin\Features\DynamicUsergroups;
 use Akeeba\SocialLogin\Features\UserFields;
 use Akeeba\SocialLogin\Library\Helper\Joomla;
-use Joomla\CMS\Factory;
+use Joomla\CMS\Language\LanguageHelper;
 use Joomla\CMS\Plugin\CMSPlugin;
-use Joomla\CMS\Table\Menu;
-use Joomla\CMS\Table\Table;
 use Joomla\CMS\Uri\Uri;
-use Joomla\Utilities\ArrayHelper;
 
 // Prevent direct access
 defined('_JEXEC') or die;
@@ -32,33 +29,13 @@ class plgSystemSociallogin extends CMSPlugin
 	public $app;
 
 	// Load the features, implemented as traits (for easier code management)
-	use Ajax, DynamicUsergroups {
+	use Ajax, DynamicUsergroups
+	{
 		Ajax::onAfterInitialise as protected onAfterIntialise_Ajax;
 		DynamicUsergroups::onAfterInitialise as protected onAfterInitialise_DynamicUserGroups;
 	}
 	use ButtonInjection;
 	use UserFields;
-
-	/**
-	 * The names of the login modules to intercept. Default: mod_login
-	 *
-	 * @var   array
-	 */
-	private $loginModules = array('mod_login');
-
-	/**
-	 * Should I intercept the login page of com_users and add social login buttons there?
-	 *
-	 * @var   bool
-	 */
-	private $interceptLogin = true;
-
-	/**
-	 * Should I add link/unlink buttons in the Edit User Profile page of com_users?
-	 *
-	 * @var   bool
-	 */
-	private $addLinkUnlinkButtons = true;
 
 	/**
 	 * Should I relocate the social login buttons next to the Login button in the login module?
@@ -91,6 +68,27 @@ class plgSystemSociallogin extends CMSPlugin
 	protected $unlinkedUserGroup = 0;
 
 	/**
+	 * The names of the login modules to intercept. Default: mod_login
+	 *
+	 * @var   array
+	 */
+	private $loginModules = ['mod_login'];
+
+	/**
+	 * Should I intercept the login page of com_users and add social login buttons there?
+	 *
+	 * @var   bool
+	 */
+	private $interceptLogin = true;
+
+	/**
+	 * Should I add link/unlink buttons in the Edit User Profile page of com_users?
+	 *
+	 * @var   bool
+	 */
+	private $addLinkUnlinkButtons = true;
+
+	/**
 	 * Are the substitutions enabled?
 	 *
 	 * @var   bool
@@ -101,13 +99,13 @@ class plgSystemSociallogin extends CMSPlugin
 	 * Constructor
 	 *
 	 * @param   object  &$subject  The object to observe
-	 * @param   array   $config    An optional associative array of configuration settings.
+	 * @param   array    $config   An optional associative array of configuration settings.
 	 *                             Recognized key values include 'name', 'group', 'params', 'language'
 	 *                             (this list is not meant to be comprehensive).
 	 *
 	 * @throws  Exception
 	 */
-	public function __construct(& $subject, $config)
+	public function __construct(&$subject, $config)
 	{
 		parent::__construct($subject, $config);
 
@@ -159,6 +157,71 @@ class plgSystemSociallogin extends CMSPlugin
 		$this->onAfterIntialise_Ajax();
 	}
 
+	protected function magicRoute()
+	{
+		$currentUri = Uri::getInstance();
+		$path       = $currentUri->getPath();
+
+		if (empty($path))
+		{
+			return;
+		}
+
+		$rootPath = Uri::base(true);
+
+		if (!empty($rootPath))
+		{
+			$path = substr($path, strlen($rootPath));
+		}
+
+		$path = trim($path, '/');
+
+		if (strpos($path, 'index.php/') === 0)
+		{
+			$path = substr($path, 10);
+		}
+
+		// Remove the language part on multilingual sites
+		if ($this->app->isClient('site') && $this->app->getLanguageFilter())
+		{
+			$languageTag    = $this->app->getLanguage()->getTag() ?? 'invalid_language';
+			$allLanguages   = LanguageHelper::getLanguages('lang_code');
+			$langDefinition = $allLanguages[$languageTag] ?? (object) ['sef' => ''];
+			$langPrefix     = $langDefinition->sef ?? '';
+			$langPrefix     = empty($langPrefix) ? $langPrefix : ($langPrefix . '/');
+
+			if (!empty($langPrefix) && strpos($path, $langPrefix) === 0)
+			{
+				$path = substr($path, strlen($langPrefix));
+			}
+		}
+
+		if (strpos($path, 'aksociallogin_finishLogin/') !== 0)
+		{
+			return;
+		}
+
+		[, $plugin] = explode('/', $path, 2);
+
+		if (empty($plugin))
+		{
+			return;
+		}
+
+		[$plugin,] = explode('.', $plugin);
+
+		$this->app->input->set('option', 'com_ajax');
+		$this->app->input->set('group', 'sociallogin');
+		$this->app->input->set('plugin', $plugin);
+		$this->app->input->set('format', 'raw');
+
+		$currentUri->setPath(rtrim($rootPath, '/') . '/index.php');
+		$currentUri->setVar('option', 'com_ajax');
+		$currentUri->setVar('group', 'sociallogin');
+		$currentUri->setVar('plugin', $plugin);
+		$currentUri->setVar('format', 'raw');
+	}
+
 	/**
 	 * Should I enable the substitutions performed by this plugin?
 	 *
@@ -173,45 +236,5 @@ class plgSystemSociallogin extends CMSPlugin
 		}
 
 		return true;
-	}
-
-	protected function magicRoute()
-	{
-		$path = Uri::getInstance()->getPath();
-
-		if (empty($path)) {
-			return;
-		}
-
-		$rootPath = Uri::base(true);
-
-		if (!empty($rootPath)) {
-			$path = substr($path, strlen($rootPath));
-		}
-
-		$path = trim($path,'/');
-
-		if (strpos($path, 'index.php/') === 0)
-		{
-			$path = substr($path, 10);
-		}
-
-		if (strpos($path, 'aksociallogin_finishLogin/') !== 0)
-		{
-			return;
-		}
-
-		list(, $plugin) = explode('/', $path, 2);
-
-		if (empty($plugin)) {
-			return;
-		}
-
-		list($plugin, ) = explode('.', $plugin);
-
-		$this->app->input->set('option', 'com_ajax');
-		$this->app->input->set('group', 'sociallogin');
-		$this->app->input->set('plugin', $plugin);
-		$this->app->input->set('format', 'raw');
 	}
 }
