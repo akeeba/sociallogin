@@ -203,8 +203,6 @@ class plgSocialloginMicrosoft extends AbstractPlugin
 		$userData->email    = $email;
 		$userData->verified = true;
 
-		var_dump($socialProfile, $userData);die;
-
 		return $userData;
 	}
 }
