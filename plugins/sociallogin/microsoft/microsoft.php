@@ -174,12 +174,12 @@ class plgSocialloginMicrosoft extends AbstractPlugin
 		{
 			if (isset($socialProfile['givenName']))
 			{
-				$nameParts[] = $socialProfile['first_name'];
+				$nameParts[] = $socialProfile['givenName'];
 			}
 
 			if (isset($socialProfile['surname']))
 			{
-				$nameParts[] = $socialProfile['last_name'];
+				$nameParts[] = $socialProfile['surname'];
 			}
 
 			$name = implode(' ', $nameParts);
@@ -190,6 +190,11 @@ class plgSocialloginMicrosoft extends AbstractPlugin
 			}
 
 			$email = isset($socialProfile['mail']) ? $socialProfile['mail'] : '';
+
+			if (empty($email) && !empty($socialProfile['userPrincipalName'] ?? ''))
+			{
+				$email = is_string($socialProfile['userPrincipalName']) ? $socialProfile['userPrincipalName'] : '';
+			}
 		}
 
 		$userData           = new UserData();
