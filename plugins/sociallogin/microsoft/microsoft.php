@@ -102,8 +102,8 @@ class plgSocialloginMicrosoft extends AbstractPlugin
 					'redirecturi'   => Uri::base() . 'index.php/aksociallogin_finishLogin/microsoft.raw',
 					'authurl'       => 'https://login.microsoftonline.com/common/oauth2/v2.0/authorize',
 					'tokenurl'      => 'https://login.microsoftonline.com/common/oauth2/v2.0/token',
-					'scope'         => 'user.read offline_access',
-					'grant_scope'   => 'user.read offline_access',
+					'scope'         => 'user.read',
+					'grant_scope'   => 'user.read',
 					'requestparams' => [
 						'response_mode' => 'query',
 					],
@@ -202,6 +202,8 @@ class plgSocialloginMicrosoft extends AbstractPlugin
 		$userData->name     = $name;
 		$userData->email    = $email;
 		$userData->verified = true;
+
+		var_dump($socialProfile, $userData);die;
 
 		return $userData;
 	}
