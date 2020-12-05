@@ -3,6 +3,7 @@ Akeeba SocialLogin 3.2.3
 ================================================================================
 ~ Login with Microsoft: Support Azure AD app registrations on top of the deprecated Windows Live SDK apps.
 # [HIGH] The LinkedIn plugin was not installed when installing the package
+# [HIGH] Joomla 4 beta 6 changed how sessions work, breaking everything
 
 Akeeba SocialLogin 3.2.2
 ================================================================================

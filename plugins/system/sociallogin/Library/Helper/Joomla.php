@@ -274,7 +274,12 @@ abstract class Joomla
 	 */
 	protected static function getSession()
 	{
-		return Factory::getSession();
+		if (version_compare(JVERSION, '3.99999.99999', 'lt'))
+		{
+			return Factory::getSession();
+		}
+
+		return Factory::getApplication()->getSession();
 	}
 
 	/**
@@ -318,7 +323,21 @@ abstract class Joomla
 			return;
 		}
 
-		self::getSession()->set($qualifiedKey, $value);
+		if (empty($namespace))
+		{
+			self::getSession()->set($name, $value);
+		}
+
+		$registry = self::getSession()->get('registry');
+
+		if (is_null($registry))
+		{
+			$registry = new Registry();
+
+			self::getSession()->set('registry', $registry);
+		}
+
+		$registry->set($qualifiedKey, $value);
 	}
 
 	/**
@@ -344,7 +363,16 @@ abstract class Joomla
 			return self::getSession()->get($name, $default, $namespace);
 		}
 
-		return self::getSession()->get($qualifiedKey, $default);
+		$registry = self::getSession()->get('registry');
+
+		if (is_null($registry))
+		{
+			$registry = new Registry();
+
+			self::getSession()->set('registry', $registry);
+		}
+
+		return $registry->get($qualifiedKey, $default);
 	}
 
 	/**

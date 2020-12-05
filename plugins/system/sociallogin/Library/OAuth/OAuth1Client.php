@@ -7,6 +7,7 @@
 
 namespace Akeeba\SocialLogin\Library\OAuth;
 
+use Akeeba\SocialLogin\Library\Helper\Joomla;
 use Joomla\CMS\Application\CMSApplication;
 use Joomla\CMS\Http\Http;
 use Joomla\CMS\Http\Response;
@@ -116,11 +117,8 @@ abstract class OAuth1Client
 			return array();
 		}
 
-		// Callback
-		$session = $this->application->getSession();
-
 		// Get token form session.
-		$this->token = array('key' => $session->get('oauth_token.key', null), 'secret' => $session->get('oauth_token.secret', null));
+		$this->token = array('key' => Joomla::getSessionVar('oauth_token.key', null), 'secret' => Joomla::getSessionVar('oauth_token.secret', null));
 
 		// Verify the returned request token.
 		if (strcmp($this->token['key'], $this->input->get('oauth_token')) !== 0)
@@ -177,9 +175,8 @@ abstract class OAuth1Client
 		$this->token = array('key' => $params['oauth_token'], 'secret' => $params['oauth_token_secret']);
 
 		// Save the request token in session
-		$session = $this->application->getSession();
-		$session->set('oauth_token.key', $this->token['key']);
-		$session->set('oauth_token.secret', $this->token['secret']);
+		Joomla::setSessionVar('oauth_token.key', $this->token['key']);
+		Joomla::setSessionVar('oauth_token.secret', $this->token['secret']);
 	}
 
 	/**
