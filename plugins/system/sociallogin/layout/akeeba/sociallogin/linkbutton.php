@@ -5,10 +5,20 @@
  *  @license   GNU General Public License version 3, or later
  */
 
+// Protect from unauthorized access
+defined('_JEXEC') || die();
+
 use Joomla\CMS\Layout\FileLayout;
 
-// Protect from unauthorized access
-defined('_JEXEC') or die();
+$array_merge = array_merge(array(
+	'slug'       => '',
+	'type'       => 'link',
+	'link'       => '',
+	'tooltip'    => '',
+	'label'      => '',
+	'icon_class' => '',
+	'img'        => '',
+), $displayData);
 
 /**
  * Renders a social account link / unlink button. Lets the user link their Joomla! user account with a social network
@@ -34,15 +44,7 @@ defined('_JEXEC') or die();
  */
 
 // Extract the data. Do not remove until the unset() line.
-extract(array_merge(array(
-	'slug'       => '',
-	'type'       => 'link',
-	'link'       => '',
-	'tooltip'    => '',
-	'label'      => '',
-	'icon_class' => '',
-	'img'        => '',
-), $displayData));
+extract($array_merge);
 
 // Start writing your template override code below this line
 ?>

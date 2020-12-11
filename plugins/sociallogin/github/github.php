@@ -6,13 +6,14 @@
  */
 
 // Protect from unauthorized access
-defined('_JEXEC') or die();
+defined('_JEXEC') || die();
 
 use Akeeba\SocialLogin\GitHub\OAuth as GitHubOAuth;
 use Akeeba\SocialLogin\GitHub\UserQuery;
 use Akeeba\SocialLogin\Library\Data\UserData;
 use Akeeba\SocialLogin\Library\Helper\Joomla;
 use Akeeba\SocialLogin\Library\Plugin\AbstractPlugin;
+use Joomla\CMS\Uri\Uri;
 use Joomla\Registry\Registry;
 
 if (!class_exists('Akeeba\\SocialLogin\\Library\\Plugin\\AbstractPlugin', true))
@@ -58,7 +59,7 @@ class plgSocialloginGithub extends AbstractPlugin
 			$options = array(
 				'clientid'     => $this->appId,
 				'clientsecret' => $this->appSecret,
-				'redirecturi'  => JUri::base() . 'index.php?option=com_ajax&group=sociallogin&plugin=' . $this->integrationName . '&format=raw',
+				'redirecturi'  => Uri::base() . 'index.php?option=com_ajax&group=sociallogin&plugin=' . $this->integrationName . '&format=raw',
 			);
 			$httpClient      = Joomla::getHttpClient();
 			$this->connector = new GitHubOAuth($options, $httpClient, $this->app->input, $this->app);
@@ -102,9 +103,9 @@ class plgSocialloginGithub extends AbstractPlugin
 	protected function mapSocialProfileToUserData(array $socialProfile)
 	{
 		$userData           = new UserData();
-		$userData->name     = isset($socialProfile['name']) ? $socialProfile['name'] : '';
-		$userData->id       = isset($socialProfile['id']) ? $socialProfile['id'] : '';
-		$userData->email    = isset($socialProfile['email']) ? $socialProfile['email'] : '';
+		$userData->name     = $socialProfile['name'] ?? '';
+		$userData->id       = $socialProfile['id'] ?? '';
+		$userData->email    = $socialProfile['email'] ?? '';
 		$userData->verified = true;
 
 		return $userData;

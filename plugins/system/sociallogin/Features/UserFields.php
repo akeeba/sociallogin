@@ -8,7 +8,7 @@
 namespace Akeeba\SocialLogin\Features;
 
 // Prevent direct access
-defined('_JEXEC') or die;
+defined('_JEXEC') || die;
 
 use Akeeba\SocialLogin\Library\Helper\Joomla;
 use Exception;
@@ -45,7 +45,7 @@ trait UserFields
 			return true;
 		}
 
-		$userId = isset($data->id) ? $data->id : 0;
+		$userId = $data->id ?? 0;
 
 		if (isset($data->profile) || ($userId <= 0))
 		{
@@ -146,7 +146,7 @@ trait UserFields
 
 		if (is_array($data))
 		{
-			$id = isset($data['id']) ? $data['id'] : null;
+			$id = $data['id'] ?? null;
 		}
 		elseif (is_object($data) && is_null($data) && ($data instanceof JRegistry))
 		{
@@ -154,7 +154,7 @@ trait UserFields
 		}
 		elseif (is_object($data) && !is_null($data))
 		{
-			$id = isset($data->id) ? $data->id : null;
+			$id = $data->id ?? null;
 		}
 
 		$user = Joomla::getUser($id);

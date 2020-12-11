@@ -1,19 +1,19 @@
 <?php
 /**
- *  @package   AkeebaSocialLogin
- *  @copyright Copyright (c)2016-2020 Nicholas K. Dionysopoulos / Akeeba Ltd
- *  @license   GNU General Public License version 3, or later
+ * @package   AkeebaSocialLogin
+ * @copyright Copyright (c)2016-2020 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @license   GNU General Public License version 3, or later
  */
 
 namespace Akeeba\SocialLogin\Google;
 
-use Joomla\Registry\Registry;
-use UnexpectedValueException;
-use SimpleXMLElement;
-use Exception;
-
 // Protect from unauthorized access
-defined('_JEXEC') or die();
+defined('_JEXEC') || die();
+
+use Exception;
+use Joomla\Registry\Registry;
+use SimpleXMLElement;
+use UnexpectedValueException;
 
 /**
  * Google OpenID class. Adapted from the Joomla! Framework's Google+ People class.
@@ -33,8 +33,8 @@ class OpenID
 	/**
 	 * Constructor.
 	 *
-	 * @param   Registry|\JRegistry  $options  Google options object.
-	 * @param   OAuth2               $auth     Google data http client object.
+	 * @param   Registry  $options  Google options object.
+	 * @param   OAuth2    $auth     Google data http client object.
 	 */
 	public function __construct($options, OAuth2 $auth)
 	{
@@ -105,7 +105,7 @@ class OpenID
 	 */
 	public function getOption($key)
 	{
-		return isset($this->options[$key]) ? $this->options[$key] : null;
+		return $this->options[$key] ?? null;
 	}
 
 	/**
@@ -119,6 +119,7 @@ class OpenID
 	public function setOption($key, $value)
 	{
 		$this->options[$key] = $value;
+
 		return $this;
 	}
 

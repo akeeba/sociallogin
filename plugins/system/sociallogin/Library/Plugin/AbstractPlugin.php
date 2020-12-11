@@ -7,6 +7,9 @@
 
 namespace Akeeba\SocialLogin\Library\Plugin;
 
+// Protect from unauthorized access
+defined('_JEXEC') || die();
+
 use Akeeba\SocialLogin\Library\Data\PluginConfiguration;
 use Akeeba\SocialLogin\Library\Data\UserData;
 use Akeeba\SocialLogin\Library\Exception\Login\GenericMessage;
@@ -24,9 +27,6 @@ use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\User\User;
 use Joomla\Utilities\ArrayHelper;
-
-// Protect from unauthorized access
-defined('_JEXEC') or die();
 
 /**
  * Abstract Social Login plugin class
@@ -138,7 +138,7 @@ abstract class AbstractPlugin extends CMSPlugin
 		$this->loadLanguage();
 
 		// Set the integration name from the plugin name (without the plg_sociallogin_ part, of course)
-		$this->integrationName = isset($config['sociallogin.integrationName']) ? $config['sociallogin.integrationName'] : $this->_name;
+		$this->integrationName = $config['sociallogin.integrationName'] ?? $this->_name;
 
 		// Register a debug log file writer
 		Joomla::addLogger($this->integrationName);

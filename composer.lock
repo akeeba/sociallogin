@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d241161d0addd613e0f74e2330077248",
+    "content-hash": "c1740a1a00cda164d33d4f81af743c70",
     "packages": [
         {
             "name": "codercat/jwk-to-pem",
-            "version": "0.0.3",
+            "version": "1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/acodercat/php-jwk-to-pem.git",
-                "reference": "52bdaa2bce6c9f08c081aeada3f55d45b1282500"
+                "reference": "e428b7abba5b37676e30e968930f718cf26724ac"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/acodercat/php-jwk-to-pem/zipball/52bdaa2bce6c9f08c081aeada3f55d45b1282500",
-                "reference": "52bdaa2bce6c9f08c081aeada3f55d45b1282500",
+                "url": "https://api.github.com/repos/acodercat/php-jwk-to-pem/zipball/e428b7abba5b37676e30e968930f718cf26724ac",
+                "reference": "e428b7abba5b37676e30e968930f718cf26724ac",
                 "shasum": ""
             },
             "require": {
@@ -26,9 +26,6 @@
             },
             "require-dev": {
                 "phpunit/phpunit": "^7.0"
-            },
-            "suggest": {
-                "ext-gmp": ""
             },
             "type": "library",
             "autoload": {
@@ -47,20 +44,24 @@
                 }
             ],
             "description": "Convert JWK to PEM format.",
-            "time": "2019-06-07T06:06:16+00:00"
+            "support": {
+                "issues": "https://github.com/acodercat/php-jwk-to-pem/issues",
+                "source": "https://github.com/acodercat/php-jwk-to-pem/tree/1.0"
+            },
+            "time": "2020-11-12T05:40:03+00:00"
         },
         {
             "name": "lcobucci/jwt",
-            "version": "3.3.3",
+            "version": "3.4.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/lcobucci/jwt.git",
-                "reference": "c1123697f6a2ec29162b82f170dd4a491f524773"
+                "reference": "17cb82dd625ccb17c74bf8f38563d3b260306483"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/lcobucci/jwt/zipball/c1123697f6a2ec29162b82f170dd4a491f524773",
-                "reference": "c1123697f6a2ec29162b82f170dd4a491f524773",
+                "url": "https://api.github.com/repos/lcobucci/jwt/zipball/17cb82dd625ccb17c74bf8f38563d3b260306483",
+                "reference": "17cb82dd625ccb17c74bf8f38563d3b260306483",
                 "shasum": ""
             },
             "require": {
@@ -75,6 +76,9 @@
                 "phpunit/phpunit": "^5.7 || ^7.3",
                 "squizlabs/php_codesniffer": "~2.3"
             },
+            "suggest": {
+                "lcobucci/clock": "*"
+            },
             "type": "library",
             "extra": {
                 "branch-alias": {
@@ -84,7 +88,12 @@
             "autoload": {
                 "psr-4": {
                     "Lcobucci\\JWT\\": "src"
-                }
+                },
+                "files": [
+                    "compat/class-aliases.php",
+                    "compat/json-exception-polyfill.php",
+                    "compat/lcobucci-clock-polyfill.php"
+                ]
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
@@ -102,6 +111,10 @@
                 "JWS",
                 "jwt"
             ],
+            "support": {
+                "issues": "https://github.com/lcobucci/jwt/issues",
+                "source": "https://github.com/lcobucci/jwt/tree/3.4.2"
+            },
             "funding": [
                 {
                     "url": "https://github.com/lcobucci",
@@ -112,7 +125,7 @@
                     "type": "patreon"
                 }
             ],
-            "time": "2020-08-20T13:22:28+00:00"
+            "time": "2020-12-03T13:43:45+00:00"
         },
         {
             "name": "phpseclib/bcmath_compat",
@@ -169,6 +182,11 @@
                 "math",
                 "polyfill"
             ],
+            "support": {
+                "email": "terrafrost@php.net",
+                "issues": "https://github.com/phpseclib/bcmath_compat/issues",
+                "source": "https://github.com/phpseclib/bcmath_compat"
+            },
             "time": "2020-04-26T16:34:33+00:00"
         },
         {
@@ -260,6 +278,10 @@
                 "x.509",
                 "x509"
             ],
+            "support": {
+                "issues": "https://github.com/phpseclib/phpseclib/issues",
+                "source": "https://github.com/phpseclib/phpseclib/tree/2.0"
+            },
             "funding": [
                 {
                     "url": "https://github.com/terrafrost",
@@ -285,8 +307,9 @@
     "prefer-lowest": false,
     "platform": {
         "php": "^7.1",
-        "ext-json": "*"
+        "ext-json": "*",
+        "ext-simplexml": "*"
     },
     "platform-dev": [],
-    "plugin-api-version": "1.1.0"
+    "plugin-api-version": "2.0.0"
 }

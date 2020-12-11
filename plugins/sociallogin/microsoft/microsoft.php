@@ -6,7 +6,7 @@
  */
 
 // Protect from unauthorized access
-defined('_JEXEC') or die();
+defined('_JEXEC') || die();
 
 use Akeeba\SocialLogin\Library\Data\UserData;
 use Akeeba\SocialLogin\Library\Helper\Joomla;
@@ -189,7 +189,7 @@ class plgSocialloginMicrosoft extends AbstractPlugin
 				$name = $socialProfile['displayName'];
 			}
 
-			$email = isset($socialProfile['mail']) ? $socialProfile['mail'] : '';
+			$email = $socialProfile['mail'] ?? '';
 
 			if (empty($email) && !empty($socialProfile['userPrincipalName'] ?? ''))
 			{

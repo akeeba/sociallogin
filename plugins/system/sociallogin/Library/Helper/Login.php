@@ -7,6 +7,9 @@
 
 namespace Akeeba\SocialLogin\Library\Helper;
 
+// Protect from unauthorized access
+defined('_JEXEC') || die();
+
 use Akeeba\SocialLogin\Library\Data\PluginConfiguration;
 use Akeeba\SocialLogin\Library\Data\UserData;
 use Akeeba\SocialLogin\Library\Exception\Login\GenericMessage;
@@ -33,9 +36,6 @@ use Joomla\Event\Event;
 use Joomla\Registry\Registry;
 use RuntimeException;
 use UnexpectedValueException;
-
-// Protect from unauthorized access
-defined('_JEXEC') or die();
 
 /**
  * Helper class for managing Joomla! user login
@@ -228,7 +228,7 @@ abstract class Login
 	/**
 	 * Returns a (blank) Joomla! authentication response
 	 *
-	 * @return  JAuthenticationResponse|AuthenticationResponse
+	 * @return  AuthenticationResponse
 	 */
 	public static function getAuthenticationResponseObject()
 	{
@@ -236,12 +236,7 @@ abstract class Login
 		JLoader::import('joomla.user.authentication');
 		class_exists('JAuthentication', true);
 
-		if (class_exists('Joomla\\CMS\\Authentication\\AuthenticationResponse'))
-		{
-			return new AuthenticationResponse();
-		}
-
-		return new JAuthenticationResponse();
+		return new AuthenticationResponse();
 	}
 
 	/**
@@ -883,7 +878,7 @@ abstract class Login
 				throw new RuntimeException(Joomla::sprintf('COM_USERS_DATABASE_ERROR', $e->getMessage()), 500);
 			}
 
-			if (count($userids) > 0)
+			if ((is_array($userids) || $userids instanceof \Countable ? count($userids) : 0) > 0)
 			{
 				$jdate = new JDate;
 

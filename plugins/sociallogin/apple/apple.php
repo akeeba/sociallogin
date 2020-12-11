@@ -6,7 +6,7 @@
  */
 
 // Protect from unauthorized access
-defined('_JEXEC') or die();
+defined('_JEXEC') || die();
 
 use Akeeba\SocialLogin\Library\Data\UserData;
 use Akeeba\SocialLogin\Library\Helper\Joomla;
@@ -14,6 +14,7 @@ use Akeeba\SocialLogin\Library\OAuth\OAuth2Client;
 use Akeeba\SocialLogin\Library\Plugin\AbstractPlugin;
 use Joomla\CMS\Crypt\Crypt;
 use Joomla\CMS\Log\Log;
+use Joomla\CMS\Uri\Uri;
 use Lcobucci\JWT\Builder as JWTBuilder;
 use Lcobucci\JWT\Parser as JWTParser;
 use Lcobucci\JWT\Signer\Ecdsa\Sha256 as SignerE256;
@@ -114,7 +115,7 @@ class plgSocialloginApple extends AbstractPlugin
 				'tokenurl'      => 'https://appleid.apple.com/auth/token',
 				'clientid'      => $this->appId,
 				'clientsecret'  => $this->appSecret,
-				'redirecturi'   => JUri::base() . 'index.php?option=com_ajax&group=sociallogin&plugin=' . $this->integrationName . '&format=raw',
+				'redirecturi'   => Uri::base() . 'index.php?option=com_ajax&group=sociallogin&plugin=' . $this->integrationName . '&format=raw',
 				'scope'         => 'name email',
 				'requestparams' => [
 					'nonce'         => $this->app->getSession()->getToken(),

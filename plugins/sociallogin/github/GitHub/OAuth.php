@@ -7,13 +7,13 @@
 
 namespace Akeeba\SocialLogin\GitHub;
 
+// Protect from unauthorized access
+defined('_JEXEC') || die();
+
 use Akeeba\SocialLogin\Library\OAuth\OAuth2Client;
 use Joomla\CMS\Application\CMSApplication;
 use Joomla\CMS\Http\Http;
 use Joomla\Input\Input;
-
-// Protect from unauthorized access
-defined('_JEXEC') or die();
 
 /**
  * Facebook OAuth client.

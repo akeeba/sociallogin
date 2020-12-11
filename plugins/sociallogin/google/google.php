@@ -6,7 +6,7 @@
  */
 
 // Protect from unauthorized access
-defined('_JEXEC') or die();
+defined('_JEXEC') || die();
 
 use Akeeba\SocialLogin\Google\OAuth2;
 use Akeeba\SocialLogin\Google\OpenID;
@@ -14,6 +14,7 @@ use Akeeba\SocialLogin\Library\Data\UserData;
 use Akeeba\SocialLogin\Library\Helper\Joomla;
 use Akeeba\SocialLogin\Library\OAuth\OAuth2Client;
 use Akeeba\SocialLogin\Library\Plugin\AbstractPlugin;
+use Joomla\CMS\Uri\Uri;
 use Joomla\Registry\Registry;
 
 if (!class_exists('Akeeba\\SocialLogin\\Library\\Plugin\\AbstractPlugin', true))
@@ -68,7 +69,7 @@ class plgSocialloginGoogle extends AbstractPlugin
 				'tokenurl'      => 'https://accounts.google.com/o/oauth2/token',
 				'clientid'      => $this->appId,
 				'clientsecret'  => $this->appSecret,
-				'redirecturi'   => JUri::base() . 'index.php?option=com_ajax&group=sociallogin&plugin=' . $this->integrationName . '&format=raw',
+				'redirecturi'   => Uri::base() . 'index.php?option=com_ajax&group=sociallogin&plugin=' . $this->integrationName . '&format=raw',
 				/**
 				 * Authorization scopes, space separated.
 				 *
@@ -175,11 +176,11 @@ class plgSocialloginGoogle extends AbstractPlugin
 	protected function mapSocialProfileToUserData(array $socialProfile)
 	{
 		$userData           = new UserData();
-		$userData->name     = isset($socialProfile['name']) ? $socialProfile['name'] : '';
+		$userData->name     = $socialProfile['name'] ?? '';
 		$userData->id       = $socialProfile['sub'];
-		$userData->email    = isset($socialProfile['email']) ? $socialProfile['email'] : '';
-		$userData->verified = isset($socialProfile['email_verified']) ? $socialProfile['email_verified'] : false;
-		$userData->timezone = isset($socialProfile['zoneinfo']) ? $socialProfile['zoneinfo'] : 'GMT';
+		$userData->email    = $socialProfile['email'] ?? '';
+		$userData->verified = $socialProfile['email_verified'] ?? false;
+		$userData->timezone = $socialProfile['zoneinfo'] ?? 'GMT';
 
 		return $userData;
 	}

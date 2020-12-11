@@ -7,10 +7,10 @@
 
 namespace Akeeba\SocialLogin\Library\Exception\Login;
 
-use RuntimeException;
-
 // Protect from unauthorized access
-defined('_JEXEC') or die();
+defined('_JEXEC') || die();
+
+use RuntimeException;
 
 class SocialLoginRuntimeException extends RuntimeException {}
 {

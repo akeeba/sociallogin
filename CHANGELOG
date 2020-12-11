@@ -1,7 +1,9 @@
 <?php die(); ?>
 Akeeba SocialLogin 3.2.3
 ================================================================================
+- Dropped support for PHP 7.1.0
 ~ Login with Microsoft: Support Azure AD app registrations on top of the deprecated Windows Live SDK apps.
+~ PHP 8.0 support
 # [HIGH] The LinkedIn plugin was not installed when installing the package
 # [HIGH] Joomla 4 beta 6 changed how sessions work, breaking everything
 

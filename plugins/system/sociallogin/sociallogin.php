@@ -15,7 +15,7 @@ use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\CMS\Uri\Uri;
 
 // Prevent direct access
-defined('_JEXEC') or die;
+defined('_JEXEC') || die;
 
 // Register the autoloader
 JLoader::registerNamespace('Akeeba\\SocialLogin\\Features', __DIR__ . '/Features', false, false, 'psr4');

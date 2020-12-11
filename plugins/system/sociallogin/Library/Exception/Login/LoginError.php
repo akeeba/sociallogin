@@ -8,7 +8,7 @@
 namespace Akeeba\SocialLogin\Library\Exception\Login;
 
 // Protect from unauthorized access
-defined('_JEXEC') or die();
+defined('_JEXEC') || die();
 
 /**
  * Exception thrown when a login error occurs. The application must go through the failed login user plugin handlers.

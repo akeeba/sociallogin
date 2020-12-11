@@ -8,7 +8,7 @@
 namespace Akeeba\SocialLogin\Features;
 
 // Protect from unauthorized access
-defined('_JEXEC') or die();
+defined('_JEXEC') || die();
 
 use Akeeba\SocialLogin\Library\Helper\DynamicGroups;
 use Akeeba\SocialLogin\Library\Helper\Joomla;

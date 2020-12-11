@@ -6,11 +6,11 @@
  */
 
 // Prevent direct access
+defined('_JEXEC') || die;
+
 use Akeeba\SocialLogin\Library\Helper\Integrations;
 use Akeeba\SocialLogin\Library\Helper\Joomla;
 use Joomla\CMS\Form\FormField;
-
-defined('_JEXEC') or die;
 
 class JFormFieldSociallogin extends FormField
 {

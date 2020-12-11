@@ -8,9 +8,9 @@
 namespace Akeeba\SocialLogin\Facebook;
 
 // Protect from unauthorized access
-use Exception;
+defined('_JEXEC') || die();
 
-defined('_JEXEC') or die();
+use Exception;
 
 /**
  * Very brief Facebook API User class. Adapted from the Joomla Framework.

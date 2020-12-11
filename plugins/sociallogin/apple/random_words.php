@@ -5,7 +5,7 @@
  *  @license   GNU General Public License version 3, or later
  */
 
-defined('_JEXEC') or die;
+defined('_JEXEC') || die;
 
 /**
  * Generates random adjective-noun pairs.
@@ -867,8 +867,8 @@ class plgSocialloginAppleRandomWords
 		mt_srand($seed, MT_RAND_MT19937);
 
 		return [
-			self::$adjectives[mt_rand(0, count(self::$adjectives) - 1)],
-			self::$nouns[mt_rand(0, count(self::$nouns) - 1)],
+			self::$adjectives[random_int(0, count(self::$adjectives) - 1)],
+			self::$nouns[random_int(0, count(self::$nouns) - 1)],
 		];
 	}
 }

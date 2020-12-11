@@ -8,7 +8,7 @@
 namespace Akeeba\SocialLogin\Microsoft;
 
 // Protect from unauthorized access
-defined('_JEXEC') or die();
+defined('_JEXEC') || die();
 
 use Joomla\CMS\Http\Http;
 

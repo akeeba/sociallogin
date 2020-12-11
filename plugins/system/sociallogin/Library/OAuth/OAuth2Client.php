@@ -1,27 +1,25 @@
 <?php
 /**
- *  @package   AkeebaSocialLogin
- *  @copyright Copyright (c)2016-2020 Nicholas K. Dionysopoulos / Akeeba Ltd
- *  @license   GNU General Public License version 3, or later
+ * @package   AkeebaSocialLogin
+ * @copyright Copyright (c)2016-2020 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @license   GNU General Public License version 3, or later
  */
 
 namespace Akeeba\SocialLogin\Library\OAuth;
 
+// Protect from unauthorized access
+defined('_JEXEC') || die();
+
 use ArrayAccess;
 use Exception;
 use InvalidArgumentException;
-use JApplicationWeb;
-use JHttpFactory;
-use JInput;
 use Joomla\CMS\Application\CMSApplication;
+use Joomla\CMS\Application\WebApplication;
+use Joomla\CMS\Http\Http;
 use Joomla\CMS\Http\HttpFactory;
 use Joomla\CMS\Http\Response;
-use Joomla\Input\Input;
-use Joomla\CMS\Http\Http;
+use Joomla\CMS\Input\Input;
 use RuntimeException;
-
-// Protect from unauthorized access
-defined('_JEXEC') or die();
 
 /**
  * OAuth 2 client.
@@ -67,7 +65,7 @@ class OAuth2Client
 	 * @param   CMSApplication     $application  The application object
 	 *
 	 */
-	public function __construct($options = array(), $http = null, $input = null, $application = null)
+	public function __construct($options = [], $http = null, $input = null, $application = null)
 	{
 		if (!is_array($options) && !($options instanceof ArrayAccess))
 		{
@@ -77,24 +75,8 @@ class OAuth2Client
 		}
 
 		$this->options = $options;
-
-		if (class_exists('Joomla\\CMS\\Http\\HttpFactory'))
-		{
-			$this->http = $http ?: HttpFactory::getHttp($this->options);
-		}
-		else
-		{
-			$this->http = $http ?: JHttpFactory::getHttp($this->options);
-		}
-
-		if (class_exists('Joomla\\Input\\Input'))
-		{
-			$this->input = $input ?: ($application ? $application->input : new Input());
-		}
-		else
-		{
-			$this->input = $input ?: ($application ? $application->input : new JInput());
-		}
+		$this->http    = $http ?: HttpFactory::getHttp($this->options);
+		$this->input   = $input ?: ($application ? $application->input : new Input());
 
 		$this->application = $application;
 	}
@@ -110,9 +92,9 @@ class OAuth2Client
 	{
 		if ($data['code'] = $this->input->get('code', false, 'raw'))
 		{
-			$data['grant_type'] = $this->getOption('grant_type', 'authorization_code');
-			$data['redirect_uri'] = $this->getOption('redirecturi');
-			$data['client_id'] = $this->getOption('clientid');
+			$data['grant_type']    = $this->getOption('grant_type', 'authorization_code');
+			$data['redirect_uri']  = $this->getOption('redirecturi');
+			$data['client_id']     = $this->getOption('clientid');
 			$data['client_secret'] = $this->getOption('clientsecret');
 
 			$grantScope = $this->getOption('grant_scope', '');
@@ -145,12 +127,12 @@ class OAuth2Client
 
 			if (strpos($contentType, 'application/json') !== false)
 			{
-				$token = array_merge(json_decode($response->body, true), array('created' => time()));
+				$token = array_merge(json_decode($response->body, true), ['created' => time()]);
 			}
 			else
 			{
 				parse_str($response->body, $token);
-				$token = array_merge($token, array('created' => time()));
+				$token = array_merge($token, ['created' => time()]);
 			}
 
 			$this->setToken($token);
@@ -169,7 +151,7 @@ class OAuth2Client
 
 			if (class_exists('JApplicationCms'))
 			{
-				$isValidApplication = $isValidApplication || ($this->application instanceof JApplicationWeb);
+				$isValidApplication = $isValidApplication || ($this->application instanceof WebApplication);
 			}
 
 			if (!$isValidApplication)
@@ -268,7 +250,7 @@ class OAuth2Client
 	 * @throws  RuntimeException
 	 * @throws  Exception
 	 */
-	public function query($url, $data = null, $headers = array(), $method = 'get', $timeout = null)
+	public function query($url, $data = null, $headers = [], $method = 'get', $timeout = null)
 	{
 		$token = $this->getToken();
 
@@ -297,7 +279,7 @@ class OAuth2Client
 				$url .= '?';
 			}
 
-			$url .= $this->getOption('getparam') ? $this->getOption('getparam') : 'access_token';
+			$url .= $this->getOption('getparam') ?: 'access_token';
 			$url .= '=' . $token['access_token'];
 		}
 
@@ -307,13 +289,13 @@ class OAuth2Client
 			case 'get':
 			case 'delete':
 			case 'trace':
-				$response = call_user_func_array(array($this->http, $method), array($url, $headers, $timeout));
+				$response = call_user_func_array([$this->http, $method], [$url, $headers, $timeout]);
 				break;
 
 			case 'post':
 			case 'put':
 			case 'patch':
-				$response = call_user_func_array(array($this->http, $method), array($url, $data, $headers, $timeout));
+				$response = call_user_func_array([$this->http, $method], [$url, $data, $headers, $timeout]);
 				break;
 
 			default:
@@ -339,7 +321,7 @@ class OAuth2Client
 	 */
 	public function getOption($key, $default = null)
 	{
-		return isset($this->options[$key]) ? $this->options[$key] : $default;
+		return $this->options[$key] ?? $default;
 	}
 
 	/**
@@ -419,11 +401,11 @@ class OAuth2Client
 			$token = $token['refresh_token'];
 		}
 
-		$data['grant_type'] = 'refresh_token';
+		$data['grant_type']    = 'refresh_token';
 		$data['refresh_token'] = $token;
-		$data['client_id'] = $this->getOption('clientid');
+		$data['client_id']     = $this->getOption('clientid');
 		$data['client_secret'] = $this->getOption('clientsecret');
-		$response = $this->http->post($this->getOption('tokenurl'), $data);
+		$response              = $this->http->post($this->getOption('tokenurl'), $data);
 
 		if (!($response->code >= 200 || $response->code < 400))
 		{
@@ -435,12 +417,12 @@ class OAuth2Client
 
 		if (strpos($contentType, 'application/json') !== false)
 		{
-			$token = array_merge(json_decode($response->body, true), array('created' => time()));
+			$token = array_merge(json_decode($response->body, true), ['created' => time()]);
 		}
 		else
 		{
 			parse_str($response->body, $token);
-			$token = array_merge($token, array('created' => time()));
+			$token = array_merge($token, ['created' => time()]);
 		}
 
 		$this->setToken($token);

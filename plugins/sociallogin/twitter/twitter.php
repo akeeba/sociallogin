@@ -6,7 +6,7 @@
  */
 
 // Protect from unauthorized access
-defined('_JEXEC') or die();
+defined('_JEXEC') || die();
 
 use Akeeba\SocialLogin\Library\Data\UserData;
 use Akeeba\SocialLogin\Library\Exception\Login\LoginError;
@@ -56,7 +56,7 @@ class plgSocialloginTwitter extends AbstractPlugin
 		if (is_null($this->connector))
 		{
 			$options = array(
-				'callback'        => JUri::base() . 'index.php?option=com_ajax&group=sociallogin&plugin=' . $this->integrationName . '&format=raw',
+				'callback'        => Uri::base() . 'index.php?option=com_ajax&group=sociallogin&plugin=' . $this->integrationName . '&format=raw',
 				'consumer_key'    => $this->appId,
 				'consumer_secret' => $this->appSecret,
 				'sendheaders'     => true,

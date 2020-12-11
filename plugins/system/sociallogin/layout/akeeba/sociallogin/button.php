@@ -6,36 +6,13 @@
  */
 
 // Protect from unauthorized access
+defined('_JEXEC') || die();
+
 use Akeeba\SocialLogin\Library\Helper\Integrations;
 use Akeeba\SocialLogin\Library\Helper\Joomla;
+use Joomla\CMS\Layout\FileLayout;
 
-defined('_JEXEC') or die();
-
-/**
- * Renders a social login button, allowing the user to log into Joomla! using their social media presence. This is
- * typically used in login modules.
- *
- * Generic data
- *
- * @var   JLayoutFile  $this         The JLayout renderer
- * @var   array        $displayData  The data in array format. DO NOT USE.
- *
- * Layout specific data
- *
- * @var   string       $slug        The name of the button being rendered, e.g. facebook
- * @var   string       $link        URL for the button (href)
- * @var   string       $tooltip     Tooltip to show on the button
- * @var   string       $label       Text content of the button
- * @var   string       $icon_class  An icon class for the span inside the button
- * @var   string       $img         An <img> (or other) tag to use inside the button when $icon_class is empty
- * @var   bool         $relocate    Should I try to move the social login button next to the regular login button?
- * @var   string[]     $selectors   A list of CSS selectors I will use to find the regular login button in the module.
- */
-
-// BEGIN - MANDATORY CODE
-
-// Extract the data. Do not remove until the unset() line.
-extract(array_merge([
+$array_merge = array_merge([
 	'slug'       => '',
 	'link'       => '',
 	'tooltip'    => '',
@@ -49,7 +26,31 @@ extract(array_merge([
 		"[type=submit]",
 		"[id*=\"submit\"]",
 	],
-], $displayData));
+], $displayData);
+
+/**
+ * Renders a social login button, allowing the user to log into Joomla! using their social media presence. This is
+ * typically used in login modules.
+ *
+ * Generic data
+ *
+ * @var   FileLayout $this        The JLayout renderer
+ * @var   array      $displayData The data in array format. DO NOT USE.
+ *
+ * Layout specific data
+ *
+ * @var   string     $slug        The name of the button being rendered, e.g. facebook
+ * @var   string     $link        URL for the button (href)
+ * @var   string     $tooltip     Tooltip to show on the button
+ * @var   string     $label       Text content of the button
+ * @var   string     $icon_class  An icon class for the span inside the button
+ * @var   string     $img         An <img> (or other) tag to use inside the button when $icon_class is empty
+ * @var   bool       $relocate    Should I try to move the social login button next to the regular login button?
+ * @var   string[]   $selectors   A list of CSS selectors I will use to find the regular login button in the module.
+ */
+// BEGIN - MANDATORY CODE
+// Extract the data. Do not remove until the unset() line.
+extract($array_merge);
 
 $randomId = 'akeeba-sociallogin-' . Joomla::generateRandom(12) . '-' . Joomla::generateRandom(8);
 

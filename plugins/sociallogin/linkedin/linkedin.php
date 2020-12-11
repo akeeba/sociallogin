@@ -6,13 +6,14 @@
  */
 
 // Protect from unauthorized access
-defined('_JEXEC') or die();
+defined('_JEXEC') || die();
 
 use Akeeba\SocialLogin\Library\Data\UserData;
 use Akeeba\SocialLogin\Library\Helper\Joomla;
 use Akeeba\SocialLogin\Library\Plugin\AbstractPlugin;
 use Akeeba\SocialLogin\LinkedIn\OAuth as LinkedInOAuth;
 use Akeeba\SocialLogin\LinkedIn\UserQuery;
+use Joomla\CMS\Uri\Uri;
 use Joomla\Registry\Registry;
 
 if (!class_exists('Akeeba\\SocialLogin\\Library\\Plugin\\AbstractPlugin', true))
@@ -70,7 +71,7 @@ CSS;
 			$options = array(
 				'clientid'     => $this->appId,
 				'clientsecret' => $this->appSecret,
-				'redirecturi'  => JUri::base() . 'index.php?option=com_ajax&group=sociallogin&plugin=' . $this->integrationName . '&format=raw',
+				'redirecturi'  => Uri::base() . 'index.php?option=com_ajax&group=sociallogin&plugin=' . $this->integrationName . '&format=raw',
 			);
 			$httpClient      = Joomla::getHttpClient();
 			$this->connector = new LinkedInOAuth($options, $httpClient, $this->app->input, $this->app);

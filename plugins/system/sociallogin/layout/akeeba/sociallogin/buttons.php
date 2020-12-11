@@ -5,10 +5,14 @@
  *  @license   GNU General Public License version 3, or later
  */
 
+// Protect from unauthorized access
+defined('_JEXEC') || die();
+
 use Joomla\CMS\Layout\FileLayout;
 
-// Protect from unauthorized access
-defined('_JEXEC') or die();
+$array_merge = array_merge(array(
+        'buttons' => array()
+), $displayData);
 
 /**
  * Renders a list of Social Login buttons. The HTML of each button is rendered with the akeeba.sociallogin.button layout
@@ -26,9 +30,7 @@ defined('_JEXEC') or die();
  */
 
 // Extract the data. Do not remove until the unset() line.
-extract(array_merge(array(
-        'buttons' => array()
-), $displayData));
+extract($array_merge);
 
 // Start writing your template override code below this line
 ?>

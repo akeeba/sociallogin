@@ -8,7 +8,7 @@
 namespace Akeeba\SocialLogin\Library\Data;
 
 // Protect from unauthorized access
-defined('_JEXEC') or die();
+defined('_JEXEC') || die();
 
 /**
  * Information about the user account returned by the social media API
@@ -143,7 +143,7 @@ final class UserData
 		// If it's in the form +1:30 or -2:00 convert to float
 		if (strpos($timezone, ':'))
 		{
-			list($hours, $minutes) = explode(':', $timezone, 2);
+			[$hours, $minutes] = explode(':', $timezone, 2);
 
 			$timezone = (float) ($hours + $minutes / 60);
 		}

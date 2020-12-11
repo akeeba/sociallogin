@@ -8,7 +8,7 @@
 namespace Akeeba\SocialLogin\Features;
 
 // Prevent direct access
-defined('_JEXEC') or die;
+defined('_JEXEC') || die;
 
 use Akeeba\SocialLogin\Library\Helper\Joomla;
 use Exception;
@@ -136,7 +136,7 @@ trait Ajax
 
 					if (isset($result['message']))
 					{
-						$type = isset($result['type']) ? $result['type'] : 'info';
+						$type = $result['type'] ?? 'info';
 						$app->enqueueMessage($result['message'], $type);
 
 						$modifiers = " and setting a system message of type $type";

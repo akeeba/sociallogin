@@ -7,14 +7,14 @@
 
 namespace Akeeba\SocialLogin\Library\OAuth;
 
+// Protect from unauthorized access
+defined('_JEXEC') || die();
+
 use Akeeba\SocialLogin\Library\Helper\Joomla;
 use Joomla\CMS\Application\CMSApplication;
 use Joomla\CMS\Http\Http;
 use Joomla\CMS\Http\Response;
 use Joomla\Input\Input;
-
-// Protect from unauthorized access
-defined('_JEXEC') or die();
 
 /**
  * OAuth 1 client.
@@ -249,7 +249,7 @@ abstract class OAuth1Client
 			'oauth_consumer_key' => $this->getOption('consumer_key'),
 			'oauth_signature_method' => 'HMAC-SHA1',
 			'oauth_version' => '1.0',
-			'oauth_nonce' => $this->generateNonce(),
+			'oauth_nonce' => self::generateNonce(),
 			'oauth_timestamp' => time()
 		);
 
@@ -532,7 +532,7 @@ abstract class OAuth1Client
 	 */
 	public function getOption($key)
 	{
-		return isset($this->options[$key]) ? $this->options[$key] : null;
+		return $this->options[$key] ?? null;
 	}
 
 	/**

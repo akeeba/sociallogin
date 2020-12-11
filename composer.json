@@ -18,7 +18,8 @@
 		"ext-json": "*",
 		"lcobucci/jwt": "^3.3",
 		"codercat/jwk-to-pem": "<= 1.0.0",
-		"phpseclib/bcmath_compat": "^1.0.0"
+		"phpseclib/bcmath_compat": "^1.0.0",
+		"ext-simplexml": "*"
 	},
 	"suggest": {
 	}

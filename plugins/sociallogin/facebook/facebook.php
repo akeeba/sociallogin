@@ -6,7 +6,7 @@
  */
 
 // Protect from unauthorized access
-defined('_JEXEC') or die();
+defined('_JEXEC') || die();
 
 use Akeeba\SocialLogin\Facebook\OAuth as FacebookOAuth;
 use Akeeba\SocialLogin\Facebook\User as FacebookUser;
@@ -101,9 +101,9 @@ class plgSocialloginFacebook extends AbstractPlugin
 	protected function mapSocialProfileToUserData(array $socialProfile)
 	{
 		$userData           = new UserData();
-		$userData->name     = isset($socialProfile['name']) ? $socialProfile['name'] : '';
-		$userData->id       = isset($socialProfile['id']) ? $socialProfile['id'] : '';
-		$userData->email    = isset($socialProfile['email']) ? $socialProfile['email'] : '';
+		$userData->name     = $socialProfile['name'] ?? '';
+		$userData->id       = $socialProfile['id'] ?? '';
+		$userData->email    = $socialProfile['email'] ?? '';
 		// DO NOT USE empty() SINCE $userData->email IS A MAGIC PROPERTY (fetched through __get).
 		$userData->verified = $userData->email != '';
 

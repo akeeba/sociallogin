@@ -5,6 +5,13 @@
  *  @license   GNU General Public License version 3, or later
  */
 
+// Prevent direct access
+defined('_JEXEC') || die;
+
+use Joomla\CMS\Filesystem\Folder;
+use Joomla\CMS\Installer\Adapter\ComponentAdapter;
+use Joomla\CMS\Filesystem\File;
+
 class plgSystemSocialloginInstallerScript
 {
 	/**
@@ -27,7 +34,7 @@ class plgSystemSocialloginInstallerScript
 	 * database updates and similar housekeeping functions.
 	 *
 	 * @param   string                      $type   install, update or discover_update
-	 * @param   \JInstallerAdapterComponent $parent Parent object
+	 * @param   ComponentAdapter $parent Parent object
 	 *
 	 * @throws Exception
 	 *
@@ -58,7 +65,7 @@ class plgSystemSocialloginInstallerScript
 					continue;
 				}
 
-				JFile::delete($f);
+				File::delete($f);
 			}
 		}
 
@@ -74,7 +81,7 @@ class plgSystemSocialloginInstallerScript
 					continue;
 				}
 
-				JFolder::delete($f);
+				Folder::delete($f);
 			}
 		}
 	}

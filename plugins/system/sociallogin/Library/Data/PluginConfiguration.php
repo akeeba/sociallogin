@@ -8,7 +8,7 @@
 namespace Akeeba\SocialLogin\Library\Data;
 
 // Protect from unauthorized access
-defined('_JEXEC') or die();
+defined('_JEXEC') || die();
 
 /**
  * Configuration parameters of a social media integration plugin, used during login.

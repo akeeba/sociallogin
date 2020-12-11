@@ -7,13 +7,13 @@
 
 namespace Akeeba\SocialLogin\Library\Helper;
 
+// Protect from unauthorized access
+defined('_JEXEC') || die();
+
 use Exception;
 use Joomla\CMS\Application\BaseApplication;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\User\User;
-
-// Protect from unauthorized access
-defined('_JEXEC') or die();
 
 /**
  * Helper class for managing integrations

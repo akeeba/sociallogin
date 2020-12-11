@@ -7,12 +7,11 @@
 
 namespace Akeeba\SocialLogin\Facebook;
 
-use Joomla\CMS\Http\Http;
-use Joomla\Uri\Uri;
-use JUri;
-
 // Protect from unauthorized access
-defined('_JEXEC') or die();
+defined('_JEXEC') || die();
+
+use Joomla\CMS\Http\Http;
+use Joomla\CMS\Uri\Uri;
 
 /**
  * Facebook API object class. Adapted from the Joomla Framework.
@@ -70,16 +69,9 @@ abstract class AbstractFacebookObject
 	protected function fetchUrl($path, $limit = 0, $offset = 0, $until = null, $since = null)
 	{
 		// Get a new Uri object fousing the api url and given path.
-		$apiUrl = isset($this->options['api.url']) ? $this->options['api.url'] : null;
+		$apiUrl = $this->options['api.url'] ?? null;
 
-		if (class_exists('Joomla\\Uri\\Uri'))
-		{
-			$uri = new Uri($apiUrl . $path);
-		}
-		else
-		{
-			$uri = new JUri($apiUrl . $path);
-		}
+		$uri = new Uri($apiUrl . $path);
 
 		if ($limit > 0)
 		{

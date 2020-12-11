@@ -8,6 +8,8 @@
 namespace Akeeba\SocialLogin\Library\Helper;
 
 // Protect from unauthorized access
+defined('_JEXEC') || die();
+
 use Exception;
 use JDatabaseDriver;
 use JEventDispatcher;
@@ -27,8 +29,6 @@ use Joomla\CMS\User\User;
 use Joomla\CMS\User\UserHelper;
 use Joomla\Registry\Registry;
 use RuntimeException;
-
-defined('_JEXEC') or die();
 
 /**
  * A helper class for abstracting core features in Joomla! 3.4 and later, including 4.x
