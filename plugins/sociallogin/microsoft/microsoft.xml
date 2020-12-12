@@ -7,8 +7,8 @@
 
 <extension version="3.8.0" type="plugin" group="sociallogin" method="upgrade">
     <name>PLG_SOCIALLOGIN_MICROSOFT</name>
-    <version>3.2.2</version>
-    <creationDate>2020-11-17</creationDate>
+    <version>3.2.3</version>
+    <creationDate>2020-12-12</creationDate>
 
     <author>Akeeba Ltd</author>
     <authorEmail>no-reply@akeeba.com</authorEmail>
