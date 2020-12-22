@@ -1,4 +1,8 @@
 <?php die(); ?>
+Akeeba SocialLogin 3.2.4
+================================================================================
+# [LOW] Apple plugin: deprecation notices from a dependency could prevent access to the site if the plugin is not configured properly
+
 Akeeba SocialLogin 3.2.3
 ================================================================================
 - Dropped support for PHP 7.1.0

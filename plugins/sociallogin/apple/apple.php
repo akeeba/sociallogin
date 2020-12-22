@@ -302,16 +302,27 @@ class plgSocialloginApple extends AbstractPlugin
 		$signer     = new SignerE256();
 		$privateKey = new SignerKey($keyMaterial);
 
-		$time  = time();
-		$token = (new JWTBuilder())->issuedBy($teamID)
-			->withHeader('kid', $keyID)
-			->permittedFor('https://appleid.apple.com')
-			->issuedAt($time)
-			->expiresAt($time + 3600)
-			->relatedTo($this->appId)
-			->getToken($signer, $privateKey);
+		$time       = time();
+		$expiration = new DateTimeImmutable('@' . ($time + 3600));
+		$issuedAt   = new DateTimeImmutable('@' . $time);
 
-		return (string) $token;
+		try
+		{
+			$token = (new JWTBuilder())->issuedBy($teamID)
+				->withHeader('kid', $keyID)
+				->permittedFor('https://appleid.apple.com')
+				->issuedAt($issuedAt)
+				->expiresAt($expiration)
+				->relatedTo($this->appId)
+				->getToken($signer, $privateKey);
+
+			return (string) $token;
+		}
+		catch (Exception $e)
+		{
+			// Guards against bad configuration leading into internal error in the JWT library
+			return '';
+		}
 	}
 
 	/**
