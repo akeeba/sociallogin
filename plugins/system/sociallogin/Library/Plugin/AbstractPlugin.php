@@ -27,6 +27,7 @@ use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\User\User;
 use Joomla\Utilities\ArrayHelper;
+use RuntimeException;
 
 /**
  * Abstract Social Login plugin class
@@ -504,6 +505,11 @@ abstract class AbstractPlugin extends CMSPlugin
 				Joomla::log($this->integrationName, 'Retrieving social network profile information', Log::INFO);
 
 				$socialUserProfile = $this->getSocialNetworkProfileInformation($connector);
+
+				if (!is_array($socialUserProfile))
+				{
+					throw new RuntimeException('Social network did not return valid profile information. Did you cancel the login?');
+				}
 			}
 			catch (Exception $e)
 			{
@@ -609,8 +615,8 @@ abstract class AbstractPlugin extends CMSPlugin
 		}
 
 		// Load the built-in stylesheet
-		$pluginSlug = 'plg_sociallogin_' . strtolower($this->integrationName);
-		$stylesheet = sprintf("%s/button.css", $pluginSlug);
+		$pluginSlug   = 'plg_sociallogin_' . strtolower($this->integrationName);
+		$stylesheet   = sprintf("%s/button.css", $pluginSlug);
 		$absoluteFile = sprintf("%s/media/%s/css/button.css", JPATH_ROOT, $pluginSlug);
 		$mediaVersion = md5_file($absoluteFile);
 
