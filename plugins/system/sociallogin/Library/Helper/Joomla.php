@@ -1,8 +1,8 @@
 <?php
 /**
- *  @package   AkeebaSocialLogin
- *  @copyright Copyright (c)2016-2021 Nicholas K. Dionysopoulos / Akeeba Ltd
- *  @license   GNU General Public License version 3, or later
+ * @package   AkeebaSocialLogin
+ * @copyright Copyright (c)2016-2021 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @license   GNU General Public License version 3, or later
  */
 
 namespace Akeeba\SocialLogin\Library\Helper;
@@ -21,7 +21,6 @@ use Joomla\CMS\Http\Http;
 use Joomla\CMS\Http\HttpFactory;
 use Joomla\CMS\Layout\FileLayout;
 use Joomla\CMS\Log\Log;
-use Joomla\CMS\Log\LogEntry;
 use Joomla\CMS\Mail\Mail;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\String\PunycodeHelper;
@@ -175,24 +174,40 @@ abstract class Joomla
 	/**
 	 * Helper method to render a JLayout.
 	 *
-	 * @param   string  $layoutFile   Dot separated path to the layout file, relative to base path (plugins/system/sociallogin/layout)
+	 * @param   string  $layoutFile   Dot separated path to the layout file, relative to base path
+	 *                                (plugins/system/sociallogin/layout)
 	 * @param   object  $displayData  Object which properties are used inside the layout file to build displayed output
 	 * @param   string  $includePath  Additional path holding layout files
-	 * @param   mixed   $options      Optional custom options to load. Registry or array format. Set 'debug'=>true to output debug information.
+	 * @param   mixed   $options      Optional custom options to load. Registry or array format. Set 'debug'=>true to
+	 *                                output debug information.
 	 *
 	 * @return  string
 	 */
 	public static function renderLayout($layoutFile, $displayData = null, $includePath = '', $options = null)
 	{
 		$basePath = JPATH_SITE . '/plugins/system/sociallogin/layout';
-		$layout   = self::getJLayoutFromFile($layoutFile, $options, $basePath);
+		$layout   = self::getJLayoutFromFile($layoutFile, $options);
 
 		if (!empty($includePath))
 		{
 			$layout->addIncludePath($includePath);
 		}
 
-		return $layout->render($displayData);
+		$result = $layout->render($displayData);
+
+		if (empty($result))
+		{
+			$layout   = self::getJLayoutFromFile($layoutFile, $options, $basePath);
+
+			if (!empty($includePath))
+			{
+				$layout->addIncludePath($includePath);
+			}
+
+			$result = $layout->render($displayData);
+		}
+
+		return $result;
 	}
 
 	/**
@@ -268,30 +283,15 @@ abstract class Joomla
 	}
 
 	/**
-	 * Get the Joomla! session
-	 *
-	 * @return  \Joomla\CMS\Session\Session
-	 */
-	protected static function getSession()
-	{
-		if (version_compare(JVERSION, '3.99999.99999', 'lt'))
-		{
-			return Factory::getSession();
-		}
-
-		return Factory::getApplication()->getSession();
-	}
-
-	/**
 	 * Return a Joomla! layout object, creating from a layout file
 	 *
-	 * @param   string  $layoutFile  Path to the layout file
-	 * @param   array   $options     Options to the layout file
-	 * @param   string  $basePath    Base path for the layout file
+	 * @param   string       $layoutFile  Path to the layout file
+	 * @param   array        $options     Options to the layout file
+	 * @param   string|null  $basePath    Base path for the layout file
 	 *
 	 * @return  FileLayout
 	 */
-	public static function getJLayoutFromFile($layoutFile, $options, $basePath)
+	public static function getJLayoutFromFile($layoutFile, $options, $basePath = null)
 	{
 		return new FileLayout($layoutFile, $basePath, $options);
 	}
@@ -386,19 +386,6 @@ abstract class Joomla
 	public static function unsetSessionVar($name, $namespace = 'default')
 	{
 		self::setSessionVar($name, null, $namespace);
-	}
-
-	/**
-	 * @return  Registry
-	 */
-	protected static function getFakeSession()
-	{
-		if (!is_object(self::$fakeSession))
-		{
-			self::$fakeSession = new Registry();
-		}
-
-		return self::$fakeSession;
 	}
 
 	/**
@@ -513,7 +500,7 @@ abstract class Joomla
 	 */
 	public static function _($string)
 	{
-		return call_user_func_array(array('Joomla\\CMS\\Language\\Text', '_'), array($string));
+		return call_user_func_array(['Joomla\\CMS\\Language\\Text', '_'], [$string]);
 	}
 
 	/**
@@ -541,7 +528,7 @@ abstract class Joomla
 	{
 		$args = func_get_args();
 
-		return call_user_func_array(array('Joomla\\CMS\\Language\\Text', 'sprintf'), $args);
+		return call_user_func_array(['Joomla\\CMS\\Language\\Text', 'sprintf'], $args);
 	}
 
 	/**
@@ -551,7 +538,7 @@ abstract class Joomla
 	 *
 	 * @return  Http
 	 */
-	public static function getHttpClient(array $options = array())
+	public static function getHttpClient(array $options = [])
 	{
 		$optionRegistry = new Registry($options);
 
@@ -561,9 +548,9 @@ abstract class Joomla
 	/**
 	 * Writes a log message to the debug log
 	 *
-	 * @param   string       $plugin     The Social Login plugin which generated this log message
-	 * @param   string       $message    The message to write to the log
-	 * @param   int          $priority   Log message priority, default is Log::DEBUG
+	 * @param   string  $plugin    The Social Login plugin which generated this log message
+	 * @param   string  $message   The message to write to the log
+	 * @param   int     $priority  Log message priority, default is Log::DEBUG
 	 *
 	 * @return  void
 	 *
@@ -603,10 +590,38 @@ abstract class Joomla
 
 		// Add a formatted text logger
 		Log::addLogger([
-			'text_file' => "sociallogin_{$plugin}.php",
-			'text_entry_format' => '{DATETIME}	{PRIORITY} {CLIENTIP}	{MESSAGE}'
+			'text_file'         => "sociallogin_{$plugin}.php",
+			'text_entry_format' => '{DATETIME}	{PRIORITY} {CLIENTIP}	{MESSAGE}',
 		], $logLevels, [
-			"sociallogin.{$plugin}"
+			"sociallogin.{$plugin}",
 		]);
+	}
+
+	/**
+	 * Get the Joomla! session
+	 *
+	 * @return  \Joomla\CMS\Session\Session
+	 */
+	protected static function getSession()
+	{
+		if (version_compare(JVERSION, '3.99999.99999', 'lt'))
+		{
+			return Factory::getSession();
+		}
+
+		return Factory::getApplication()->getSession();
+	}
+
+	/**
+	 * @return  Registry
+	 */
+	protected static function getFakeSession()
+	{
+		if (!is_object(self::$fakeSession))
+		{
+			self::$fakeSession = new Registry();
+		}
+
+		return self::$fakeSession;
 	}
 }

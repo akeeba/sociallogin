@@ -2,6 +2,7 @@
 Akeeba SocialLogin 3.2.4
 ================================================================================
 # [MEDIUM] Joomla error page when the social network returns invalid data e.g. user canceled the login
+# [MEDIUM] Cannot override layout files
 # [LOW] Apple plugin: deprecation notices from a dependency could prevent access to the site if the plugin is not configured properly
 
 Akeeba SocialLogin 3.2.3
