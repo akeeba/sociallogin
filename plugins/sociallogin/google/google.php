@@ -1,8 +1,8 @@
 <?php
 /**
- *  @package   AkeebaSocialLogin
- *  @copyright Copyright (c)2016-2021 Nicholas K. Dionysopoulos / Akeeba Ltd
- *  @license   GNU General Public License version 3, or later
+ * @package   AkeebaSocialLogin
+ * @copyright Copyright (c)2016-2021 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @license   GNU General Public License version 3, or later
  */
 
 // Protect from unauthorized access
@@ -38,16 +38,23 @@ class plgSocialloginGoogle extends AbstractPlugin
 	 * Constructor. Loads the language files as well.
 	 *
 	 * @param   object  &$subject  The object to observe
-	 * @param   array   $config    An optional associative array of configuration settings.
+	 * @param   array    $config   An optional associative array of configuration settings.
 	 *                             Recognized key values include 'name', 'group', 'params', 'language'
 	 *                             (this list is not meant to be comprehensive).
 	 */
-	public function __construct($subject, array $config = array())
+	public function __construct($subject, array $config = [])
 	{
 		parent::__construct($subject, $config);
 
 		// Register the autoloader
-		JLoader::registerNamespace('Akeeba\\SocialLogin\\Google', __DIR__ . '/Google', false, false, 'psr4');
+		if (version_compare(JVERSION, '3.99999.99999', 'le'))
+		{
+			JLoader::registerNamespace('Akeeba\\SocialLogin\\Google', __DIR__ . '/Google', false, false, 'psr4');
+		}
+		else
+		{
+			JLoader::registerNamespace('Akeeba\\SocialLogin\\Google', __DIR__ . '/Google');
+		}
 
 		// Per-plugin customization
 		$this->buttonImage = 'plg_sociallogin_google/google.png';
@@ -64,7 +71,7 @@ class plgSocialloginGoogle extends AbstractPlugin
 	{
 		if (is_null($this->connector))
 		{
-			$options = array(
+			$options = [
 				'authurl'       => 'https://accounts.google.com/o/oauth2/auth',
 				'tokenurl'      => 'https://accounts.google.com/o/oauth2/token',
 				'clientid'      => $this->appId,
@@ -76,12 +83,12 @@ class plgSocialloginGoogle extends AbstractPlugin
 				 * @see https://developers.google.com/+/web/api/rest/oauth#authorization-scopes
 				 */
 				'scope'         => 'profile email',
-				'requestparams' => array(
+				'requestparams' => [
 					'access_type'            => 'online',
 					'include_granted_scopes' => 'true',
 					'prompt'                 => 'select_account',
-				),
-			);
+				],
+			];
 
 			$httpClient         = Joomla::getHttpClient();
 			$this->oAuth2Client = new OAuth2Client($options, $httpClient, $this->app->input, $this->app);
@@ -129,7 +136,7 @@ class plgSocialloginGoogle extends AbstractPlugin
 	 */
 	protected function getToken()
 	{
-		$connector    = $this->getConnector();
+		$connector = $this->getConnector();
 
 		/**
 		 * I have to do this because Joomla's Google OAuth2 connector is buggy :@ The googlize() method assumes that
@@ -137,11 +144,11 @@ class plgSocialloginGoogle extends AbstractPlugin
 		 * your original array into an object. Therefore trying to later access it as an array causes a PHP Fatal Error
 		 * about trying to access an stdClass object as an array...!
 		 */
-		$connector->setOption('requestparams', array(
+		$connector->setOption('requestparams', [
 			'access_type'            => 'online',
 			'include_granted_scopes' => 'true',
 			'prompt'                 => 'select_account',
-		));
+		]);
 
 		return [$connector->authenticate(), $connector];
 	}
@@ -169,7 +176,7 @@ class plgSocialloginGoogle extends AbstractPlugin
 	 * Maps the raw social network profile fields retrieved with getSocialNetworkProfileInformation() into a UserData
 	 * object we use in the Social Login library.
 	 *
-	 * @param   array $socialProfile The raw social profile fields
+	 * @param   array  $socialProfile  The raw social profile fields
 	 *
 	 * @return  UserData
 	 */

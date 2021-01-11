@@ -48,7 +48,14 @@ class plgSocialloginMicrosoft extends AbstractPlugin
 		parent::__construct($subject, $config);
 
 		// Register the autoloader
-		JLoader::registerNamespace('Akeeba\\SocialLogin\\Microsoft', __DIR__ . '/Microsoft', false, false, 'psr4');
+		if (version_compare(JVERSION, '3.99999.99999', 'le'))
+		{
+			JLoader::registerNamespace('Akeeba\\SocialLogin\\Microsoft', __DIR__ . '/Microsoft', false, false, 'psr4');
+		}
+		else
+		{
+			JLoader::registerNamespace('Akeeba\\SocialLogin\\Microsoft', __DIR__ . '/Microsoft');
+		}
 
 		// Per-plugin customization
 		$this->buttonImage = 'plg_sociallogin_microsoft/microsoft_mark.png';

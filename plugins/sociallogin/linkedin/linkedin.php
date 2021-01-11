@@ -1,8 +1,8 @@
 <?php
 /**
- *  @package   AkeebaSocialLogin
- *  @copyright Copyright (c)2016-2021 Nicholas K. Dionysopoulos / Akeeba Ltd
- *  @license   GNU General Public License version 3, or later
+ * @package   AkeebaSocialLogin
+ * @copyright Copyright (c)2016-2021 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @license   GNU General Public License version 3, or later
  */
 
 // Protect from unauthorized access
@@ -30,20 +30,27 @@ class plgSocialloginLinkedin extends AbstractPlugin
 	 * Constructor. Loads the language files as well.
 	 *
 	 * @param   object  &$subject  The object to observe
-	 * @param   array   $config    An optional associative array of configuration settings.
+	 * @param   array    $config   An optional associative array of configuration settings.
 	 *                             Recognized key values include 'name', 'group', 'params', 'language'
 	 *                             (this list is not meant to be comprehensive).
 	 */
-	public function __construct($subject, array $config = array())
+	public function __construct($subject, array $config = [])
 	{
 		parent::__construct($subject, $config);
 
 		// Register the autoloader
-		JLoader::registerNamespace('Akeeba\\SocialLogin\\LinkedIn', __DIR__ . '/LinkedIn', false, false, 'psr4');
+		if (version_compare(JVERSION, '3.99999.99999', 'le'))
+		{
+			JLoader::registerNamespace('Akeeba\\SocialLogin\\LinkedIn', __DIR__ . '/LinkedIn', false, false, 'psr4');
+		}
+		else
+		{
+			JLoader::registerNamespace('Akeeba\\SocialLogin\\LinkedIn', __DIR__ . '/LinkedIn');
+		}
 
 		// Per-plugin customization
 		$this->buttonImage = 'plg_sociallogin_linkedin/linkedin_34.png';
-		$this->customCSS = /** @lang CSS */
+		$this->customCSS   = /** @lang CSS */
 			<<< CSS
 .akeeba-sociallogin-link-button-linkedin, .akeeba-sociallogin-unlink-button-linkedin, .akeeba-sociallogin-button-linkedin { background-color: #ffffff; color: #000000; transition-duration: 0.33s; background-image: none; border-color: #86898C
 ; }
@@ -53,6 +60,18 @@ class plgSocialloginLinkedin extends AbstractPlugin
 .akeeba-sociallogin-link-button-linkedin img, .akeeba-sociallogin-unlink-button-linkedin img, .akeeba-sociallogin-button-linkedin img { display: inline-block; width: 22px; height: 16px; margin: 0 0.33em 0.1em 0; padding: 0 }
 
 CSS;
+	}
+
+	/**
+	 * Processes the authentication callback from LinkedIn.
+	 *
+	 * @return  void
+	 *
+	 * @throws  Exception
+	 */
+	public function onAjaxLinkedin()
+	{
+		$this->onSocialLoginAjax();
 	}
 
 	/**
@@ -68,11 +87,11 @@ CSS;
 	{
 		if (is_null($this->connector))
 		{
-			$options = array(
+			$options         = [
 				'clientid'     => $this->appId,
 				'clientsecret' => $this->appSecret,
 				'redirecturi'  => Uri::base() . 'index.php?option=com_ajax&group=sociallogin&plugin=' . $this->integrationName . '&format=raw',
-			);
+			];
 			$httpClient      = Joomla::getHttpClient();
 			$this->connector = new LinkedInOAuth($options, $httpClient, $this->app->input, $this->app);
 			$this->connector->setScope('r_liteprofile r_emailaddress');
@@ -111,7 +130,7 @@ CSS;
 	 * Maps the raw social network profile fields retrieved with getSocialNetworkProfileInformation() into a UserData
 	 * object we use in the Social Login library.
 	 *
-	 * @param   array $socialProfile The raw social profile fields
+	 * @param   array  $socialProfile  The raw social profile fields
 	 *
 	 * @return  UserData
 	 */
@@ -146,17 +165,5 @@ CSS;
 		}
 
 		return $userData;
-	}
-
-	/**
-	 * Processes the authentication callback from LinkedIn.
-	 *
-	 * @return  void
-	 *
-	 * @throws  Exception
-	 */
-	public function onAjaxLinkedin()
-	{
-		$this->onSocialLoginAjax();
 	}
 }

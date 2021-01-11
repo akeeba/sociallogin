@@ -101,16 +101,31 @@ $autoloader->addClassMap([
 	'plgSocialloginTwitter'               => __DIR__ . '/../plugins/sociallogin/twitter/twitter.php',
 
 	# Deprecated Joomla classes
-	'JArrayHelper'     => $joomlaPath . '/libraries/joomla/utilities/arrayhelper.php',
-	'JEventDispatcher' => $joomlaPath . '/libraries/joomla/event/dispatcher.php',
+	'JArrayHelper'                        => $joomlaPath . '/libraries/joomla/utilities/arrayhelper.php',
+	'JEventDispatcher'                    => $joomlaPath . '/libraries/joomla/event/dispatcher.php',
 ]);
 
-JLoader::registerNamespace('Akeeba\SocialLogin\Features\\', realpath(__DIR__ . '/../plugins/system/sociallogin/Features'), false, false, 'psr4');
-JLoader::registerNamespace('Akeeba\SocialLogin\Library\\', realpath(__DIR__ . '/../plugins/system/sociallogin/Library'), false, false, 'psr4');
+if (version_compare(JVERSION, '3.99999.99999', 'le'))
+{
+	JLoader::registerNamespace('Akeeba\SocialLogin\Features\\', realpath(__DIR__ . '/../plugins/system/sociallogin/Features'), false, false, 'psr4');
+	JLoader::registerNamespace('Akeeba\SocialLogin\Library\\', realpath(__DIR__ . '/../plugins/system/sociallogin/Library'), false, false, 'psr4');
 
-JLoader::registerNamespace('Akeeba\SocialLogin\Facebook\\', realpath(__DIR__ . '/../plugins/sociallogin/facebook/Facebook'), false, false, 'psr4');
-JLoader::registerNamespace('Akeeba\SocialLogin\GitHub\\', realpath(__DIR__ . '/../plugins/sociallogin/github/GitHub'), false, false, 'psr4');
-JLoader::registerNamespace('Akeeba\SocialLogin\Google\\', realpath(__DIR__ . '/../plugins/sociallogin/google/Google'), false, false, 'psr4');
-JLoader::registerNamespace('Akeeba\SocialLogin\LinkedIn\\', realpath(__DIR__ . '/../plugins/sociallogin/linkedin/LinkedIn'), false, false, 'psr4');
-JLoader::registerNamespace('Akeeba\SocialLogin\Microsoft\\', realpath(__DIR__ . '/../plugins/sociallogin/microsoft/Microsoft'), false, false, 'psr4');
-JLoader::registerNamespace('Akeeba\SocialLogin\Twitter\\', realpath(__DIR__ . '/../plugins/sociallogin/twitter/Twitter'), false, false, 'psr4');
+	JLoader::registerNamespace('Akeeba\SocialLogin\Facebook\\', realpath(__DIR__ . '/../plugins/sociallogin/facebook/Facebook'), false, false, 'psr4');
+	JLoader::registerNamespace('Akeeba\SocialLogin\GitHub\\', realpath(__DIR__ . '/../plugins/sociallogin/github/GitHub'), false, false, 'psr4');
+	JLoader::registerNamespace('Akeeba\SocialLogin\Google\\', realpath(__DIR__ . '/../plugins/sociallogin/google/Google'), false, false, 'psr4');
+	JLoader::registerNamespace('Akeeba\SocialLogin\LinkedIn\\', realpath(__DIR__ . '/../plugins/sociallogin/linkedin/LinkedIn'), false, false, 'psr4');
+	JLoader::registerNamespace('Akeeba\SocialLogin\Microsoft\\', realpath(__DIR__ . '/../plugins/sociallogin/microsoft/Microsoft'), false, false, 'psr4');
+}
+else
+{
+	JLoader::registerNamespace('Akeeba\SocialLogin\Twitter\\', realpath(__DIR__ . '/../plugins/sociallogin/twitter/Twitter'), false, false, 'psr4');
+	JLoader::registerNamespace('Akeeba\SocialLogin\Features\\', realpath(__DIR__ . '/../plugins/system/sociallogin/Features'), false, false, 'psr4');
+	JLoader::registerNamespace('Akeeba\SocialLogin\Library\\', realpath(__DIR__ . '/../plugins/system/sociallogin/Library'), false, false, 'psr4');
+
+	JLoader::registerNamespace('Akeeba\SocialLogin\Facebook\\', realpath(__DIR__ . '/../plugins/sociallogin/facebook/Facebook'), false, false, 'psr4');
+	JLoader::registerNamespace('Akeeba\SocialLogin\GitHub\\', realpath(__DIR__ . '/../plugins/sociallogin/github/GitHub'), false, false, 'psr4');
+	JLoader::registerNamespace('Akeeba\SocialLogin\Google\\', realpath(__DIR__ . '/../plugins/sociallogin/google/Google'), false, false, 'psr4');
+	JLoader::registerNamespace('Akeeba\SocialLogin\LinkedIn\\', realpath(__DIR__ . '/../plugins/sociallogin/linkedin/LinkedIn'), false, false, 'psr4');
+	JLoader::registerNamespace('Akeeba\SocialLogin\Microsoft\\', realpath(__DIR__ . '/../plugins/sociallogin/microsoft/Microsoft'), false, false, 'psr4');
+	JLoader::registerNamespace('Akeeba\SocialLogin\Twitter\\', realpath(__DIR__ . '/../plugins/sociallogin/twitter/Twitter'), false, false, 'psr4');
+}

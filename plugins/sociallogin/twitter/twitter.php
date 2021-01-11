@@ -1,8 +1,8 @@
 <?php
 /**
- *  @package   AkeebaSocialLogin
- *  @copyright Copyright (c)2016-2021 Nicholas K. Dionysopoulos / Akeeba Ltd
- *  @license   GNU General Public License version 3, or later
+ * @package   AkeebaSocialLogin
+ * @copyright Copyright (c)2016-2021 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @license   GNU General Public License version 3, or later
  */
 
 // Protect from unauthorized access
@@ -29,19 +29,68 @@ class plgSocialloginTwitter extends AbstractPlugin
 	 * Constructor. Loads the language files as well.
 	 *
 	 * @param   object  &$subject  The object to observe
-	 * @param   array   $config    An optional associative array of configuration settings.
+	 * @param   array    $config   An optional associative array of configuration settings.
 	 *                             Recognized key values include 'name', 'group', 'params', 'language'
 	 *                             (this list is not meant to be comprehensive).
 	 */
-	public function __construct($subject, array $config = array())
+	public function __construct($subject, array $config = [])
 	{
 		parent::__construct($subject, $config);
 
 		// Register the autoloader
-		JLoader::registerNamespace('Akeeba\\SocialLogin\\Twitter', __DIR__ . '/Twitter', false, false, 'psr4');
+		if (version_compare(JVERSION, '3.99999.99999', 'le'))
+		{
+			JLoader::registerNamespace('Akeeba\\SocialLogin\\Twitter', __DIR__ . '/Twitter', false, false, 'psr4');
+		}
+		else
+		{
+			JLoader::registerNamespace('Akeeba\\SocialLogin\\Twitter', __DIR__ . '/Twitter');
+		}
 
 		// Per-plugin customization
 		$this->buttonImage = 'plg_sociallogin_twitter/twitter.png';
+	}
+
+	/**
+	 * Initiate the user authentication (steps 1 & 2 per the Twitter documentation). Step 3 in the documentation is
+	 * Twitter calling back our site, i.e. the call to the onAjaxTwitter method.
+	 *
+	 * @param   string  $slug  The slug of the integration method being called.
+	 *
+	 * @throws Exception
+	 * @see https://dev.twitter.com/web/sign-in/implementing
+	 *
+	 */
+	public function onSocialLoginAuthenticate($slug)
+	{
+		// Make sure we are properly set up
+		if (!$this->isProperlySetUp())
+		{
+			return;
+		}
+
+		// Make sure it's our integration
+		if ($slug != $this->integrationName)
+		{
+			return;
+		}
+
+		// Perform the user redirection
+		$this->getConnector()->authenticate();
+	}
+
+	/**
+	 * Processes the authentication callback from Twitter.
+	 *
+	 * Note: this method is called from Joomla's com_ajax, not com_sociallogin itself
+	 *
+	 * @return  void
+	 *
+	 * @throws  Exception
+	 */
+	public function onAjaxTwitter()
+	{
+		$this->onSocialLoginAjax();
 	}
 
 	/**
@@ -55,12 +104,12 @@ class plgSocialloginTwitter extends AbstractPlugin
 	{
 		if (is_null($this->connector))
 		{
-			$options = array(
+			$options = [
 				'callback'        => Uri::base() . 'index.php?option=com_ajax&group=sociallogin&plugin=' . $this->integrationName . '&format=raw',
 				'consumer_key'    => $this->appId,
 				'consumer_secret' => $this->appSecret,
 				'sendheaders'     => true,
-			);
+			];
 
 			$httpClient      = Joomla::getHttpClient();
 			$this->connector = new OAuth($options, $httpClient, $this->app->input, $this->app);
@@ -124,7 +173,7 @@ class plgSocialloginTwitter extends AbstractPlugin
 	 * Maps the raw social network profile fields retrieved with getSocialNetworkProfileInformation() into a UserData
 	 * object we use in the Social Login library.
 	 *
-	 * @param   array $socialProfile The raw social profile fields
+	 * @param   array  $socialProfile  The raw social profile fields
 	 *
 	 * @return  UserData
 	 */
@@ -144,48 +193,6 @@ class plgSocialloginTwitter extends AbstractPlugin
 		}
 
 		return $userData;
-	}
-
-	/**
-	 * Initiate the user authentication (steps 1 & 2 per the Twitter documentation). Step 3 in the documentation is
-	 * Twitter calling back our site, i.e. the call to the onAjaxTwitter method.
-	 *
-	 * @param   string $slug The slug of the integration method being called.
-	 *
-	 * @see https://dev.twitter.com/web/sign-in/implementing
-	 *
-	 * @throws Exception
-	 */
-	public function onSocialLoginAuthenticate($slug)
-	{
-		// Make sure we are properly set up
-		if (!$this->isProperlySetUp())
-		{
-			return;
-		}
-
-		// Make sure it's our integration
-		if ($slug != $this->integrationName)
-		{
-			return;
-		}
-
-		// Perform the user redirection
-		$this->getConnector()->authenticate();
-	}
-
-	/**
-	 * Processes the authentication callback from Twitter.
-	 *
-	 * Note: this method is called from Joomla's com_ajax, not com_sociallogin itself
-	 *
-	 * @return  void
-	 *
-	 * @throws  Exception
-	 */
-	public function onAjaxTwitter()
-	{
-		$this->onSocialLoginAjax();
 	}
 
 }

@@ -18,7 +18,14 @@ use Joomla\CMS\Uri\Uri;
 defined('_JEXEC') || die;
 
 // Register the autoloader
-JLoader::registerNamespace('Akeeba\\SocialLogin\\Features', __DIR__ . '/Features', false, false, 'psr4');
+if (version_compare(JVERSION, '3.99999.99999', 'le'))
+{
+	JLoader::registerNamespace('Akeeba\\SocialLogin\\Features', __DIR__ . '/Features', false, false, 'psr4');
+}
+else
+{
+	JLoader::registerNamespace('Akeeba\\SocialLogin\\Features', __DIR__ . '/Features');
+}
 
 /**
  * SocialLogin System Plugin
@@ -110,7 +117,14 @@ class plgSystemSociallogin extends CMSPlugin
 		parent::__construct($subject, $config);
 
 		// Register the autoloader
-		JLoader::registerNamespace('Akeeba\\SocialLogin\\Library', __DIR__ . '/Library', false, false, 'psr4');
+		if (version_compare(JVERSION, '3.99999.99999', 'le'))
+		{
+			JLoader::registerNamespace('Akeeba\\SocialLogin\\Library', __DIR__ . '/Library', false, false, 'psr4');
+		}
+		else
+		{
+			JLoader::registerNamespace('Akeeba\\SocialLogin\\Library', __DIR__ . '/Library', false, false, 'psr4');
+		}
 
 		// Register the Composer autoloader
 		require_once __DIR__ . '/vendor/autoload.php';
