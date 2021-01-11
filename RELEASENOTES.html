@@ -1,23 +1,5 @@
 <h3>What's new?</h3>
 <p>
-	<strong>Login with Microsoft: Support Azure AD app registrations on top of the deprecated Windows Live SDK apps.</strong>
-	Microsoft removed the option for creating new Windows Live SDK application which were required for implementing the Login with Microsoft feature. They replaced it with Azure Active Directory applications, which are still free of charge to create – but they have a different API. We have updated our plugin and our documentation to address this change.
-</p>
-<p>
-	<strong>Dropped PHP 7.1 support</strong>. PHP 7.1 became End of Life on December 1st, 2019. Over the last year we saw its relative use among our clients drop from 11% of all sites in January 2020 to just under 3.8% in November 2020. According to our experience this is a good point in time to remove support for it. This allows us to introduce PHP 7.2 features in our code which will improve the type consistency of internal data. This will let us catch type consistency bugs in development, a class of bugs that has caused weird issues that were very hard to debug in the past.
-</p>
-<p>
-	<strong>PHP 8.0 support</strong>. PHP 8 was released just two weeks ago but we had already started working on supporting it months ago, since it was still in development. Now that Joomla itself supports PHP 8 we can finally validate our work, fix the remaining issues and confirm that PHP 8 can be officially supported. Please bear in mind that PHP 8 brings major changes to the PHP language and not all third party extensions support it yet. Before venturing into it please do make sure that <strong>all</strong> of your third party extensions, <em>including your templates</em>, are up to the task.
-</p>
-<p>
-	<strong>The LinkedIn plugin was not installed when installing the package</strong>.
-	Ecen though we have included the LinkedIn plugin in the installation package for a very long time it appears that a small typo led to it not being installed. We have addressed this issue and apologise for the inconvenience.
-</p>
-<p>
-	<strong>Joomla 4 beta 6 (pre-release) changes how the session works, breaking everything.</strong>. This is apparently a bug introduced after the Joomla 4 beta 5, breaking the way the Joomla session works. We had not reported it because it appeared to be an intentional, but undocumented, change. The Joomla 3 release lead noticed our workaround and had the Joomla 4 team address the underlying bug since it breaks the stated backwards compatibility goal with the upcoming Joomla 3.10. However, given the severity of this issue and the fact that it <em>did</em> appear to be an intentional change (the code commit was unambiguous about the underlying change that triggered this issue being intentional) we decided to keep our workaround in case the Joomla project changes its mind or makes another change which accidentally breaks the way sessions work. Better be safe than sorry.
-</p>
-
-<p>
 	<strong>Bug fixes and minor improvements</strong>. Please take a look at the CHANGELOG below.
 </p>
 
@@ -46,7 +28,7 @@
 	Please note that PHP 8.0 is, at the time of this writing, a very new PHP version which brings major changes to the PHP language. We strongly recommend holding off updating into it until April 2021 and only doing so after confirming that all of your extensions have been updated to support it. Do note that by “all extensions” we mean components, plugins, modules and <em>templates</em>.
 </p>
 <p>
-	Finally, please bear in mind that earlier PHP versions including but not limited to all PHP 4.x and 5.x versions, as well as PHP 7.0 are no longer supported. Our software no longer works on these old, unsupported versions of PHP. All of these versions of PHP have been end of life for several years. We <em>VERY STRONGLY</em> recommend upgrading to a version of PHP that's currently supported by the PHP project.
+	Finally, please bear in mind that earlier PHP versions including but not limited to all PHP 4.x and 5.x versions, as well as PHP 7.0 anmd 7.1 are no longer supported. Our software no longer works on these old, unsupported versions of PHP. All of these versions of PHP have been end of life for several years. We <em>VERY STRONGLY</em> recommend upgrading to a version of PHP that's currently supported by the PHP project.
 </p>
 <p>
 	Our policy with regards to PHP version support is to officially support the PHP versions that the PHP project itself considers a <a href="https://www.php.net/supported-versions">Currently Supported version</a>, i.e. all versions of PHP in the Active Support and Security Support phase. We will show you a warning when we detect a PHP version that has entered Security Support so you have the chance to plan and implement a PHP version update. After a PHP versions becomes <a href="https://www.php.net/eol.php">End of Life (EOL)</a> we will only support it for a further 6 to 9 months. If we detect such a version we will show you a message so you can urgently plan and implement a PHP version update. After 6 to 9 months after a PHP version becomes EOL we may stop providing support for it without any prior notice. We also track the development of new versions of PHP. New versions of PHP will be unofficially supported sometime during their Release Candidate phase and fully supported about 4 to 8 weeks after the first stable version of that branch is officially released by the PHP project. Your site's participation in the opt-out usage statistics helps us collect anonymous information about the use of PHP versions on your sites and decide when to withdraw support for EOL versions of PHP.

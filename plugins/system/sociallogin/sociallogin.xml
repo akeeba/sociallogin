@@ -7,8 +7,8 @@
 
 <extension version="3.8.0" type="plugin" group="system" method="upgrade">
 	<name>PLG_SYSTEM_SOCIALLOGIN</name>
-	<version>3.2.3</version>
-	<creationDate>2020-12-14</creationDate>
+	<version>3.2.4</version>
+	<creationDate>2021-01-11</creationDate>
 
 	<author>Akeeba Ltd</author>
 	<authorEmail>no-reply@akeeba.com</authorEmail>
