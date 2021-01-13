@@ -8,7 +8,7 @@
 <extension version="3.8.0" type="plugin" group="sociallogin" method="upgrade">
     <name>PLG_SOCIALLOGIN_GITHUB</name>
     <version>3.2.4</version>
-    <creationDate>2021-01-11</creationDate>
+    <creationDate>2021-01-13</creationDate>
 
     <author>Akeeba Ltd</author>
     <authorEmail>no-reply@akeeba.com</authorEmail>
