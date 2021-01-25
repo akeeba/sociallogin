@@ -139,8 +139,18 @@ trait ButtonInjection
 		}
 
 		// Make sure it is the right view / task
-		$view = $input->getCmd('view');
-		$task = $input->getCmd('task');
+		$fallbackView = version_compare(JVERSION, '3.999.999', 'ge')
+			? $input->getCmd('controller', '')
+			: '';
+		$view         = $input->getCmd('view', $fallbackView);
+		$task         = $input->getCmd('task');
+
+		if (strpos($task, '.') !== false)
+		{
+			$parts = explode('.', $task);
+			$view  = ($parts[0] ?? $view) ?: $view;
+			$task  = ($parts[1] ?? $task) ?: $task;
+		}
 
 		$check1 = is_null($view) && is_null($task);
 		$check2 = is_null($view) && ($task === 'login');
@@ -218,8 +228,8 @@ trait ButtonInjection
 
 		// Load the JavaScript
 		HTMLHelper::_('script', 'plg_system_sociallogin/dist/j4buttons.js', [
-			'relative'  => true,
-			'version'   => md5_file(JPATH_SITE . '/media/plg_system_sociallogin/js/dist/j4buttons.js'),
+			'relative' => true,
+			'version'  => md5_file(JPATH_SITE . '/media/plg_system_sociallogin/js/dist/j4buttons.js'),
 		], [
 			'defer' => 'defer',
 		]);

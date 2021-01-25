@@ -1,4 +1,8 @@
 <?php die(); ?>
+Akeeba SocialLogin 3.2.5
+================================================================================
++ Supports controller as alias for view under Joomla 4
+
 Akeeba SocialLogin 3.2.4
 ================================================================================
 # [MEDIUM] Joomla error page when the social network returns invalid data e.g. user canceled the login
