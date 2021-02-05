@@ -47,7 +47,7 @@ updates:
   -
     title: 'SocialLogin updates'
     connection: s3
-    directory: '/updates'
+    directory: 'updates'
     stream: 41
     base_name: 'pkgsociallogin'
     formats:
