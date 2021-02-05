@@ -1,4 +1,9 @@
 <?php die(); ?>
+Akeeba SocialLogin 3.2.6
+================================================================================
+~ Releasing the previous version without changes, due to server and CDN issues which resulted in inconsistent updates
++ Supports controller as alias for view under Joomla 4
+
 Akeeba SocialLogin 3.2.5
 ================================================================================
 + Supports controller as alias for view under Joomla 4
