@@ -1,4 +1,8 @@
 <?php die(); ?>
+Akeeba SocialLogin 3.2.7
+================================================================================
++ Yes/no fields now work correctly on Joomla 4.0 beta 7 and later
+
 Akeeba SocialLogin 3.2.6
 ================================================================================
 ~ Releasing the previous version without changes, due to server and CDN issues which resulted in inconsistent updates

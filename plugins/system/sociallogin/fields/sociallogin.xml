@@ -5,8 +5,8 @@
   ~  @license   GNU General Public License version 3, or later
   -->
 
-<form>
-	<fields name="sociallogin" addfieldpath="plugins/system/sociallogin/fields">
+<form addfieldpath="plugins/system/sociallogin/fields">
+	<fields name="sociallogin">
 		<fieldset name="sociallogin"
 			label="PLG_SYSTEM_SOCIALLOGIN_HEADER"
 		>
@@ -20,7 +20,9 @@
 				default=""
 			/>
 
-			<field name="dontremind" type="radio" default="0"
+			<field name="dontremind"
+				   type="fancyradio"
+				   default="0"
 				   label="PLG_SYSTEM_SOCIALLOGIN_FIELD_DONTREMIND_LABEL"
 				   description="PLG_SYSTEM_SOCIALLOGIN_FIELD_DONTREMIND_DESC"
 				   class="switcher btn-group">

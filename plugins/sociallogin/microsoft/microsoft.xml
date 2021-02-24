@@ -35,7 +35,7 @@
         <language tag="en-GB">en-GB/en-GB.plg_sociallogin_microsoft.sys.ini</language>
     </languages>
 
-    <config>
+    <config addfieldpath="plugins/system/sociallogin/fields">
         <fields name="params">
             <fieldset name="basic">
                 <field
@@ -87,7 +87,7 @@
 
                 <field
                         name="loginunlinked"
-                        type="radio"
+                        type="fancyradio"
                         label="PLG_SOCIALLOGIN_MICROSOFT_FIELD_LOGINUNLINKED_LABEL"
                         description="PLG_SOCIALLOGIN_MICROSOFT_FIELD_LOGINUNLINKED_DESC"
                         default="0"
@@ -99,7 +99,7 @@
 
                 <field
                         name="createnew"
-                        type="radio"
+                        type="fancyradio"
                         label="PLG_SOCIALLOGIN_MICROSOFT_FIELD_CREATENEW_LABEL"
                         description="PLG_SOCIALLOGIN_MICROSOFT_FIELD_CREATENEW_DESC"
                         default="0"
@@ -111,7 +111,7 @@
 
                 <field
                         name="forcenew"
-                        type="radio"
+                        type="fancyradio"
                         label="PLG_SOCIALLOGIN_MICROSOFT_FIELD_FORCENEW_LABEL"
                         description="PLG_SOCIALLOGIN_MICROSOFT_FIELD_FORCENEW_DESC"
                         default="0"
@@ -123,7 +123,7 @@
 
                 <field
                         name="bypassvalidation"
-                        type="radio"
+                        type="fancyradio"
                         label="PLG_SOCIALLOGIN_MICROSOFT_FIELD_BYPASSVALIDATION_LABEL"
                         description="PLG_SOCIALLOGIN_MICROSOFT_FIELD_BYPASSVALIDATION_DESC"
                         default="1"
@@ -135,7 +135,7 @@
 
                 <field
                         name="imagebutton"
-                        type="radio"
+                        type="fancyradio"
                         label="PLG_SOCIALLOGIN_MICROSOFT_FIELD_IMAGEBUTTON_LABEL"
                         description="PLG_SOCIALLOGIN_MICROSOFT_FIELD_IMAGEBUTTON_DESC"
                         default="1"
@@ -147,7 +147,7 @@
 
                 <field
                         name="customcss"
-                        type="radio"
+                        type="fancyradio"
                         label="PLG_SOCIALLOGIN_MICROSOFT_FIELD_CUSTOMCSS_LABEL"
                         description="PLG_SOCIALLOGIN_MICROSOFT_FIELD_CUSTOMCSS_DESC"
                         default="1"
