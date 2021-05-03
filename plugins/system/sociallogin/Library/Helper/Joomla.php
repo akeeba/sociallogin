@@ -12,21 +12,13 @@ defined('_JEXEC') || die();
 
 use Exception;
 use JDatabaseDriver;
-use JEventDispatcher;
 use Joomla\CMS\Application\BaseApplication;
-use Joomla\CMS\Application\CliApplication;
 use Joomla\CMS\Application\CMSApplication;
 use Joomla\CMS\Factory;
-use Joomla\CMS\Http\Http;
-use Joomla\CMS\Http\HttpFactory;
 use Joomla\CMS\Layout\FileLayout;
 use Joomla\CMS\Log\Log;
-use Joomla\CMS\Mail\Mail;
-use Joomla\CMS\Plugin\PluginHelper;
-use Joomla\CMS\String\PunycodeHelper;
 use Joomla\CMS\User\User;
-use Joomla\CMS\User\UserHelper;
-use Joomla\Registry\Registry;
+use Joomla\CMS\User\UserFactoryInterface;
 use RuntimeException;
 
 /**
@@ -35,26 +27,11 @@ use RuntimeException;
 abstract class Joomla
 {
 	/**
-	 * A fake session storage for CLI apps. Since CLI applications cannot have a session we are using a Registry object
-	 * we manage internally.
-	 *
-	 * @var   Registry
-	 */
-	protected static $fakeSession = null;
-
-	/**
 	 * Are we inside the administrator application
 	 *
 	 * @var   bool
 	 */
 	protected static $isAdmin = null;
-
-	/**
-	 * Are we inside a CLI application
-	 *
-	 * @var   bool
-	 */
-	protected static $isCli = null;
 
 	/**
 	 * Which plugins have already registered a text file logger. Prevents double registration of a log file.
@@ -63,72 +40,6 @@ abstract class Joomla
 	 * @since 2.1.0
 	 */
 	protected static $registeredLoggers = [];
-
-	/**
-	 * Are we inside an administrator page?
-	 *
-	 * @param   CMSApplication  $app  The current CMS application which tells us if we are inside an admin page
-	 *
-	 * @return  bool
-	 *
-	 * @throws  Exception
-	 */
-	public static function isAdminPage(CMSApplication $app = null)
-	{
-		if (is_null(self::$isAdmin))
-		{
-			if (is_null($app))
-			{
-				$app = self::getApplication();
-			}
-
-			self::$isAdmin = $app->isClient('administrator');
-		}
-
-		return self::$isAdmin;
-	}
-
-	/**
-	 * Are we inside a CLI application
-	 *
-	 * @param   CMSApplication  $app  The current CMS application which tells us if we are inside an admin page
-	 *
-	 * @return  bool
-	 */
-	public static function isCli(CMSApplication $app = null)
-	{
-		if (is_null(self::$isCli))
-		{
-			if (is_null($app))
-			{
-				try
-				{
-					$app = self::getApplication();
-				}
-				catch (Exception $e)
-				{
-					$app = null;
-				}
-			}
-
-			if (is_null($app))
-			{
-				self::$isCli = true;
-			}
-
-			if (is_object($app))
-			{
-				self::$isCli = $app instanceof \Exception;
-
-				if (class_exists('Joomla\\CMS\\Application\\CliApplication'))
-				{
-					self::$isCli = self::$isCli || $app instanceof CliApplication;
-				}
-			}
-		}
-
-		return self::$isCli;
-	}
 
 	/**
 	 * Is the current user allowed to edit the social login configuration of $user? To do so I must either be editing my
@@ -185,8 +96,8 @@ abstract class Joomla
 	 */
 	public static function renderLayout($layoutFile, $displayData = null, $includePath = '', $options = null)
 	{
-		$basePath = JPATH_SITE . '/plugins/system/sociallogin/layout';
-		$layout   = self::getJLayoutFromFile($layoutFile, $options);
+		$basePath = JPATH_PLUGINS . '/system/sociallogin/layout';
+		$layout   = new FileLayout($layoutFile, null, $options);
 
 		if (!empty($includePath))
 		{
@@ -197,7 +108,7 @@ abstract class Joomla
 
 		if (empty($result))
 		{
-			$layout   = self::getJLayoutFromFile($layoutFile, $options, $basePath);
+			$layout = new FileLayout($layoutFile, $basePath, $options);
 
 			if (!empty($includePath))
 			{
@@ -227,7 +138,7 @@ abstract class Joomla
 	{
 		if (!is_object($app))
 		{
-			$app = self::getApplication();
+			$app = Factory::getApplication();
 		}
 
 		if (method_exists($app, 'triggerEvent'))
@@ -235,39 +146,7 @@ abstract class Joomla
 			return $app->triggerEvent($event, $data);
 		}
 
-		if (class_exists('JEventDispatcher'))
-		{
-			return JEventDispatcher::getInstance()->trigger($event, $data);
-		}
-
 		throw new RuntimeException('Cannot run plugins');
-	}
-
-	/**
-	 * Tells Joomla! to load a plugin group.
-	 *
-	 * This is just a wrapper around JPluginHelper. We use our own helper method for future-proofing...
-	 *
-	 * @param   string       $group   The plugin group to import
-	 * @param   string|null  $plugin  The specific plugin to import
-	 *
-	 * @return  void
-	 */
-	public static function importPlugins($group, $plugin = null)
-	{
-		PluginHelper::importPlugin($group, $plugin);
-	}
-
-	/**
-	 * Get the CMS application object
-	 *
-	 * @return  CMSApplication
-	 *
-	 * @throws  Exception
-	 */
-	public static function getApplication()
-	{
-		return Factory::getApplication();
 	}
 
 	/**
@@ -279,166 +158,16 @@ abstract class Joomla
 	 */
 	public static function getUser($id = null)
 	{
-		return Factory::getUser($id);
-	}
+		$userFactory = Factory::getContainer()->get(UserFactoryInterface::class);
 
-	/**
-	 * Return a Joomla! layout object, creating from a layout file
-	 *
-	 * @param   string       $layoutFile  Path to the layout file
-	 * @param   array        $options     Options to the layout file
-	 * @param   string|null  $basePath    Base path for the layout file
-	 *
-	 * @return  FileLayout
-	 */
-	public static function getJLayoutFromFile($layoutFile, $options, $basePath = null)
-	{
-		return new FileLayout($layoutFile, $basePath, $options);
-	}
-
-	/**
-	 * Set a variable in the user session
-	 *
-	 * @param   string  $name       The name of the variable to set
-	 * @param   string  $value      (optional) The value to set it to, default is null
-	 * @param   string  $namespace  (optional) The variable's namespace e.g. the component name. Default: 'default'
-	 *
-	 * @return  void
-	 */
-	public static function setSessionVar($name, $value = null, $namespace = 'default')
-	{
-		$qualifiedKey = "$namespace.$name";
-
-		if (self::isCli())
+		if (is_null($id))
 		{
-			self::getFakeSession()->set($qualifiedKey, $value);
+			$app = Factory::getApplication();
 
-			return;
+			return $app->getIdentity() ?: $app->getSession()->get('user') ?: $userFactory->loadUserById(0);
 		}
 
-		if (version_compare(JVERSION, '3.99999.99999', 'lt'))
-		{
-			self::getSession()->set($name, $value, $namespace);
-
-			return;
-		}
-
-		if (empty($namespace))
-		{
-			self::getSession()->set($name, $value);
-		}
-
-		$registry = self::getSession()->get('registry');
-
-		if (is_null($registry))
-		{
-			$registry = new Registry();
-
-			self::getSession()->set('registry', $registry);
-		}
-
-		$registry->set($qualifiedKey, $value);
-	}
-
-	/**
-	 * Get a variable from the user session
-	 *
-	 * @param   string  $name       The name of the variable to set
-	 * @param   string  $default    (optional) The default value to return if the variable does not exit, default: null
-	 * @param   string  $namespace  (optional) The variable's namespace e.g. the component name. Default: 'default'
-	 *
-	 * @return  mixed
-	 */
-	public static function getSessionVar($name, $default = null, $namespace = 'default')
-	{
-		$qualifiedKey = "$namespace.$name";
-
-		if (self::isCli())
-		{
-			return self::getFakeSession()->get("$namespace.$name", $default);
-		}
-
-		if (version_compare(JVERSION, '3.99999.99999', 'lt'))
-		{
-			return self::getSession()->get($name, $default, $namespace);
-		}
-
-		$registry = self::getSession()->get('registry');
-
-		if (is_null($registry))
-		{
-			$registry = new Registry();
-
-			self::getSession()->set('registry', $registry);
-		}
-
-		return $registry->get($qualifiedKey, $default);
-	}
-
-	/**
-	 * Unset a variable from the user session
-	 *
-	 * @param   string  $name       The name of the variable to unset
-	 * @param   string  $namespace  (optional) The variable's namespace e.g. the component name. Default: 'default'
-	 *
-	 * @return  void
-	 */
-	public static function unsetSessionVar($name, $namespace = 'default')
-	{
-		self::setSessionVar($name, null, $namespace);
-	}
-
-	/**
-	 * Return the session token. Two types of tokens can be returned:
-	 *
-	 * @return  mixed
-	 */
-	public static function getToken()
-	{
-		// For CLI apps we implement our own fake token system
-		if (self::isCli())
-		{
-			$token = self::getSessionVar('session.token');
-
-			// Create a token
-			if (is_null($token))
-			{
-				$token = self::generateRandom(32);
-
-				self::setSessionVar('session.token', $token);
-			}
-
-			return $token;
-		}
-
-		// Web application, go through the regular Joomla! API.
-		$session = self::getSession();
-
-		return $session->getToken();
-	}
-
-	/**
-	 * Generate a random string
-	 *
-	 * @param   int  $length  Random string length
-	 *
-	 * @return  string
-	 */
-	public static function generateRandom($length)
-	{
-		return UserHelper::genRandomPassword($length);
-	}
-
-	/**
-	 * Converts an email to punycode
-	 *
-	 * @param   string  $email  The original email, with Unicode characters
-	 *
-	 * @return  string  The punycode-transcribed email address
-	 */
-	public static function emailToPunycode($email)
-	{
-		return PunycodeHelper::emailToPunycode($email);
+		return $userFactory->loadUserById($id);
 	}
 
 	/**
@@ -463,86 +192,7 @@ abstract class Joomla
 	 */
 	public static function getDbo()
 	{
-		return Factory::getDbo();
-	}
-
-	/**
-	 * Get the Joomla! global configuration object
-	 *
-	 * @return  Registry
-	 */
-	public static function getConfig()
-	{
-		return Factory::getConfig();
-	}
-
-	/**
-	 * Get the Joomla! mailer object
-	 *
-	 * @return  Mail
-	 */
-	public static function getMailer()
-	{
-		return Factory::getMailer();
-	}
-
-	public static function getUserId($username)
-	{
-		return UserHelper::getUserId($username);
-	}
-
-	/**
-	 * Return a translated string
-	 *
-	 * @param   string  $string  The translation key
-	 *
-	 * @return  string
-	 */
-	public static function _($string)
-	{
-		return call_user_func_array(['Joomla\\CMS\\Language\\Text', '_'], [$string]);
-	}
-
-	/**
-	 * Passes a string thru a sprintf.
-	 *
-	 * Note that this method can take a mixed number of arguments as for the sprintf function.
-	 *
-	 * The last argument can take an array of options:
-	 *
-	 * array('jsSafe'=>boolean, 'interpretBackSlashes'=>boolean, 'script'=>boolean)
-	 *
-	 * where:
-	 *
-	 * jsSafe is a boolean to generate a javascript safe strings.
-	 * interpretBackSlashes is a boolean to interpret backslashes \\->\, \n->new line, \t->tabulation.
-	 * script is a boolean to indicate that the string will be push in the javascript language store.
-	 *
-	 * @param   string  $string  The format string.
-	 *
-	 * @return  string
-	 *
-	 * @see     Text::sprintf().
-	 */
-	public static function sprintf($string)
-	{
-		$args = func_get_args();
-
-		return call_user_func_array(['Joomla\\CMS\\Language\\Text', 'sprintf'], $args);
-	}
-
-	/**
-	 * Get an HTTP client
-	 *
-	 * @param   array  $options  The options to pass to the factory when building the client.
-	 *
-	 * @return  Http
-	 */
-	public static function getHttpClient(array $options = [])
-	{
-		$optionRegistry = new Registry($options);
-
-		return HttpFactory::getHttp($optionRegistry);
+		return Factory::getContainer()->get('DatabaseDriver') ?: Factory::getDbo();
 	}
 
 	/**
@@ -595,33 +245,5 @@ abstract class Joomla
 		], $logLevels, [
 			"sociallogin.{$plugin}",
 		]);
-	}
-
-	/**
-	 * Get the Joomla! session
-	 *
-	 * @return  \Joomla\CMS\Session\Session
-	 */
-	protected static function getSession()
-	{
-		if (version_compare(JVERSION, '3.99999.99999', 'lt'))
-		{
-			return Factory::getSession();
-		}
-
-		return Factory::getApplication()->getSession();
-	}
-
-	/**
-	 * @return  Registry
-	 */
-	protected static function getFakeSession()
-	{
-		if (!is_object(self::$fakeSession))
-		{
-			self::$fakeSession = new Registry();
-		}
-
-		return self::$fakeSession;
 	}
 }

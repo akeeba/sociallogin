@@ -1,8 +1,8 @@
 <?php
 /**
- *  @package   AkeebaSocialLogin
- *  @copyright Copyright (c)2016-2021 Nicholas K. Dionysopoulos / Akeeba Ltd
- *  @license   GNU General Public License version 3, or later
+ * @package   AkeebaSocialLogin
+ * @copyright Copyright (c)2016-2021 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @license   GNU General Public License version 3, or later
  */
 
 namespace Akeeba\SocialLogin\Library\Helper;
@@ -23,15 +23,19 @@ use Joomla\CMS\Application\BaseApplication;
 use Joomla\CMS\Authentication\Authentication;
 use Joomla\CMS\Authentication\Authentication as JAuthentication;
 use Joomla\CMS\Authentication\AuthenticationResponse;
-use Joomla\CMS\Authentication\AuthenticationResponse as JAuthenticationResponse;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Component\ComponentHelper as JComponentHelper;
 use Joomla\CMS\Date\Date as JDate;
-use Joomla\CMS\Log\Log as JLog;
+use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
+use Joomla\CMS\Log\Log as JLog;
+use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Router\Route as JRoute;
+use Joomla\CMS\String\PunycodeHelper;
 use Joomla\CMS\Uri\Uri as JUri;
 use Joomla\CMS\User\User as JUser;
+use Joomla\CMS\User\UserHelper;
 use Joomla\Event\Event;
 use Joomla\Registry\Registry;
 use RuntimeException;
@@ -100,7 +104,7 @@ abstract class Login
 			if (!$userData->verified)
 			{
 				Joomla::log($slug, 'The social network user does not have a verified email. Because of that we will NOT check the plugin configuration (if we can log them in or create a new user).');
-				throw new LoginError(Joomla::_('PLG_SOCIALLOGIN_' . $slug . '_ERROR_LOCAL_NOT_FOUND'));
+				throw new LoginError(Text::_('PLG_SOCIALLOGIN_' . $slug . '_ERROR_LOCAL_NOT_FOUND'));
 			}
 
 			/**
@@ -112,7 +116,7 @@ abstract class Login
 			if (!$config->canLoginUnlinked && !empty($userId))
 			{
 				Joomla::log($slug, 'The social network user has a verified email which matches an existing user BUT "Allow social login to non-linked accounts" is disabled. As a result we need to complain about a user account conflict.');
-				throw new LoginError(Joomla::_('PLG_SOCIALLOGIN_' . $slug . '_ERROR_LOCAL_USERNAME_CONFLICT'));
+				throw new LoginError(Text::_('PLG_SOCIALLOGIN_' . $slug . '_ERROR_LOCAL_USERNAME_CONFLICT'));
 			}
 		}
 
@@ -128,21 +132,21 @@ abstract class Login
 			{
 				Joomla::log($slug, 'No email was sent by the social network. Cannot create a new user');
 
-				throw new LoginError(Joomla::_('PLG_SOCIALLOGIN_' . $slug . '_ERROR_LOCAL_NOT_FOUND'));
+				throw new LoginError(Text::_('PLG_SOCIALLOGIN_' . $slug . '_ERROR_LOCAL_NOT_FOUND'));
 			}
 
 			if (!$config->canCreateNewUsers)
 			{
 				Joomla::log($slug, '"Create new user accounts" is set to No. Cannot create a new user');
 
-				throw new LoginError(Joomla::_('PLG_SOCIALLOGIN_' . $slug . '_ERROR_LOCAL_NOT_FOUND'));
+				throw new LoginError(Text::_('PLG_SOCIALLOGIN_' . $slug . '_ERROR_LOCAL_NOT_FOUND'));
 			}
 
 			if (($allowUserRegistration == 0) && !$config->canCreateAlways)
 			{
 				Joomla::log($slug, 'Joomla user registration is disabled and "Ignore Joomla! setting for creating user accounts" is set to No. Cannot create a new user.');
 
-				throw new LoginError(Joomla::_('PLG_SOCIALLOGIN_' . $slug . '_ERROR_LOCAL_NOT_FOUND'));
+				throw new LoginError(Text::_('PLG_SOCIALLOGIN_' . $slug . '_ERROR_LOCAL_NOT_FOUND'));
 			}
 
 			try
@@ -160,28 +164,28 @@ abstract class Login
 				}
 
 				Joomla::log($slug, 'Creating user');
-				$userId             = self::createUser($email, $userData->name, $bypassVerification, $userData->timezone);
+				$userId = self::createUser($email, $userData->name, $bypassVerification, $userData->timezone);
 			}
 			catch (UnexpectedValueException $e)
 			{
 				Joomla::log($slug, 'Whoops! A user with the same username of email address already exists. Cannot create new user.', Log::ERROR);
 
-				throw new LoginError(Joomla::sprintf('PLG_SOCIALLOGIN_' . $slug . '_ERROR_CANNOT_CREATE', Joomla::_('PLG_SOCIALLOGIN_' . $slug . '_ERROR_LOCAL_USERNAME_CONFLICT')));
+				throw new LoginError(Text::sprintf('PLG_SOCIALLOGIN_' . $slug . '_ERROR_CANNOT_CREATE', Text::_('PLG_SOCIALLOGIN_' . $slug . '_ERROR_LOCAL_USERNAME_CONFLICT')));
 			}
 			catch (RuntimeException $e)
 			{
 				Joomla::log($slug, 'Joomla reported a failure trying to create a new user record.', Log::ERROR);
 
-				throw new LoginError(Joomla::sprintf('PLG_SOCIALLOGIN_' . $slug . '_ERROR_CANNOT_CREATE', $e->getMessage()));
+				throw new LoginError(Text::sprintf('PLG_SOCIALLOGIN_' . $slug . '_ERROR_CANNOT_CREATE', $e->getMessage()));
 			}
 
 			// Does the account need user or administrator verification?
-			if (in_array($userId, array('useractivate', 'adminactivate')))
+			if (in_array($userId, ['useractivate', 'adminactivate']))
 			{
 				Joomla::log($slug, 'The user account needs to be activated before it can be used. We will notify the user.');
 
 				// Do NOT go through processLoginFailure. This is NOT a login failure.
-				throw new GenericMessage(Joomla::_('PLG_SOCIALLOGIN_' . $slug . '_NOTICE_' . $userId));
+				throw new GenericMessage(Text::_('PLG_SOCIALLOGIN_' . $slug . '_NOTICE_' . $userId));
 			}
 		}
 
@@ -192,7 +196,7 @@ abstract class Login
 		if (empty($userId))
 		{
 			Joomla::log($slug, "YOU SHOULD NOT BE HERE. We cannot find a linked user, we are not allowed to log in non-linked users and we are not allowed to create new users. We should have already failed. Yet here we are. FAIL IMMEDIATELY.", Log::CRITICAL);
-			throw new LoginError(Joomla::_('PLG_SOCIALLOGIN_' . $slug . '_ERROR_LOCAL_NOT_FOUND'));
+			throw new LoginError(Text::_('PLG_SOCIALLOGIN_' . $slug . '_ERROR_LOCAL_NOT_FOUND'));
 		}
 
 		// Attach the social network link information to the user's profile
@@ -243,7 +247,8 @@ abstract class Login
 	 * Have Joomla! process a login failure
 	 *
 	 * @param   AuthenticationResponse  $response    The Joomla! auth response object
-	 * @param   BaseApplication         $app         The application we are running in. Skip to auto-detect (recommended).
+	 * @param   BaseApplication         $app         The application we are running in. Skip to auto-detect
+	 *                                               (recommended).
 	 * @param   string                  $logContext  Logging context (plugin name). Default: system.
 	 *
 	 * @return  bool
@@ -253,16 +258,16 @@ abstract class Login
 	public static function processLoginFailure($response, $app = null, $logContext = 'system')
 	{
 		// Import the user plugin group.
-		Joomla::importPlugins('user');
+		PluginHelper::importPlugin('user');
 
 		if (!is_object($app))
 		{
-			$app = Joomla::getApplication();
+			$app = Factory::getApplication();
 		}
 
 		// Trigger onUserLoginFailure Event.
 		Joomla::log($logContext, "Calling onUserLoginFailure plugin event");
-		Joomla::runPlugins('onUserLoginFailure', array((array) $response), $app);
+		Joomla::runPlugins('onUserLoginFailure', [(array) $response], $app);
 
 		// If status is success, any error will have been raised by the user plugin
 		if (class_exists('Joomla\CMS\Authentication\Authentication'))
@@ -313,10 +318,10 @@ abstract class Login
 
 		$db    = Joomla::getDbo();
 		$query = $db->getQuery(true)
-		            ->select('COUNT(*)')
-		            ->from($db->qn('#__user_profiles'))
-		            ->where($db->qn('user_id') . ' = ' . $db->q($user->id))
-		            ->where($db->qn('profile_key') . ' LIKE ' . $db->q('sociallogin.' . $slug . '.%'));
+			->select('COUNT(*)')
+			->from($db->qn('#__user_profiles'))
+			->where($db->qn('user_id') . ' = ' . $db->q($user->id))
+			->where($db->qn('profile_key') . ' LIKE ' . $db->q('sociallogin.' . $slug . '.%'));
 
 		try
 		{
@@ -333,6 +338,21 @@ abstract class Login
 	}
 
 	/**
+	 * Get the com_users options
+	 *
+	 * @return Registry
+	 */
+	protected static function getUsersParams()
+	{
+		if (class_exists('Joomla\\CMS\\Component\\ComponentHelper'))
+		{
+			return ComponentHelper::getParams('com_users');
+		}
+
+		return JComponentHelper::getParams('com_users');
+	}
+
+	/**
 	 * Returns the user ID, if a user exists, given an email address.
 	 *
 	 * @param   string  $email  The email to search on.
@@ -342,11 +362,11 @@ abstract class Login
 	private static function getUserIdByEmail($email)
 	{
 		// Initialise some variables
-		$db = Joomla::getDbo();
+		$db    = Joomla::getDbo();
 		$query = $db->getQuery(true)
-		            ->select($db->qn('id'))
-		            ->from($db->qn('#__users'))
-		            ->where($db->qn('email') . ' = ' . $db->q($email));
+			->select($db->qn('id'))
+			->from($db->qn('#__users'))
+			->where($db->qn('email') . ' = ' . $db->q($email));
 		$db->setQuery($query, 0, 1);
 
 		return $db->loadResult();
@@ -391,27 +411,27 @@ abstract class Login
 		}
 
 		// If the username already exists try using the email as the username
-		if (Joomla::getUserId($username))
+		if (UserHelper::getUserId($username))
 		{
 			$username = $email;
 
 			// If that exists too throw an exception
-			if (Joomla::getUserId($username))
+			if (UserHelper::getUserId($username))
 			{
 				throw new UnexpectedValueException();
 			}
 		}
 
-		$data = array(
+		$data = [
 			'name'     => $name,
 			'username' => $username,
 			'email'    => $email,
-		);
+		];
 
 		// Save the timezone into the user parameters
-		$userParams = array(
+		$userParams = [
 			'timezone' => $timezone,
-		);
+		];
 
 		return self::register($data, $userParams, $emailVerified);
 	}
@@ -436,7 +456,7 @@ abstract class Login
 		// Fake a successful login message
 		if (!is_object($app))
 		{
-			$app = Joomla::getApplication();
+			$app = Factory::getApplication();
 		}
 
 		$isAdmin = $app->isClient('administrator');
@@ -445,13 +465,13 @@ abstract class Login
 		// Does the user account have a pending activation?
 		if (!empty($user->activation))
 		{
-			throw new RuntimeException(Joomla::_('JGLOBAL_AUTH_ACCESS_DENIED'));
+			throw new RuntimeException(Text::_('JGLOBAL_AUTH_ACCESS_DENIED'));
 		}
 
 		// Is the user account blocked?
 		if ($user->block)
 		{
-			throw new RuntimeException(Joomla::_('JGLOBAL_AUTH_ACCESS_DENIED'));
+			throw new RuntimeException(Text::_('JGLOBAL_AUTH_ACCESS_DENIED'));
 		}
 
 		if (class_exists('Joomla\CMS\Authentication\Authentication'))
@@ -489,38 +509,38 @@ abstract class Login
 		 * insufficient privileges - the same thing that'd happen if you tried to use your front-end only username and
 		 * password in a back-end login form.
 		 */
-		$options = array(
+		$options = [
 			'remember' => true,
-		    'action' => 'core.login.site',
-		);
+			'action'   => 'core.login.site',
+		];
 
-		if (Joomla::isAdminPage())
+		if (Factory::getApplication()->isClient('administrator'))
 		{
 			$options['action'] = 'core.login.admin';
 		}
 
 		// Run the user plugins. They CAN block login by returning boolean false and setting $response->error_message.
-		Joomla::importPlugins('user');
-		$results = Joomla::runPlugins('onUserLogin', array((array) $response, $options), $app);
+		PluginHelper::importPlugin('user');
+		$results = Joomla::runPlugins('onUserLogin', [(array) $response, $options], $app);
 
 		// If there is no boolean FALSE result from any plugin the login is successful.
 		if (in_array(false, $results, true) == false)
 		{
 			// Set the user in the session, letting Joomla! know that we are logged in.
-			Joomla::setSessionVar('user', $user);
+			Factory::getApplication()->getSession()->set('user', $user);
 
 			// Trigger the onUserAfterLogin event
 			$options['user']         = $user;
 			$options['responseType'] = $response->type;
 
 			// The user is successfully logged in. Run the after login events
-			Joomla::runPlugins('onUserAfterLogin', array($options), $app);
+			Joomla::runPlugins('onUserAfterLogin', [$options], $app);
 
 			return;
 		}
 
 		// If we are here the plugins marked a login failure. Trigger the onUserLoginFailure Event.
-		Joomla::runPlugins('onUserLoginFailure', array((array) $response), $app);
+		Joomla::runPlugins('onUserLoginFailure', [(array) $response], $app);
 
 		// Log the failure
 		JLog::add($response->error_message, JLog::WARNING, 'jerror');
@@ -535,17 +555,18 @@ abstract class Login
 	 * @param   array            $data                The user data to save.
 	 * @param   array            $userParams          User parameters to save with the user account
 	 * @param   bool             $skipUserActivation  Should I forcibly skip user activation?
-	 * @param   BaseApplication  $app                 The application we are running in. Skip to auto-detect (recommended).
+	 * @param   BaseApplication  $app                 The application we are running in. Skip to auto-detect
+	 *                                                (recommended).
 	 *
 	 * @return  mixed  The user id on success, 'useractivate' or 'adminactivate' if activation is required
 	 *
 	 * @throws  Exception
 	 */
-	private static function register(array $data, array $userParams = array(), $skipUserActivation = false, $app = null)
+	private static function register(array $data, array $userParams = [], $skipUserActivation = false, $app = null)
 	{
 		if (!is_object($app))
 		{
-			$app = Joomla::getApplication();
+			$app = Factory::getApplication();
 		}
 
 		// Load com_users language files
@@ -557,13 +578,13 @@ abstract class Login
 
 		$params = self::getUsersParams();
 
-		$data = array_merge(array(
+		$data = array_merge([
 			'name'     => '',
 			'username' => '',
 			'password' => '',
 			'email'    => '',
-			'groups'   => array(),
-		), $data);
+			'groups'   => [],
+		], $data);
 
 		// Initialise the table with JUser.
 		$user = new JUser;
@@ -571,14 +592,14 @@ abstract class Login
 		// If no password was specified create a random one
 		if (!isset($data['password']) || empty($data['password']))
 		{
-			$data['password'] = Joomla::generateRandom(24);
+			$data['password'] = UserHelper::genRandomPassword(24);
 		}
 
 		// Convert the email to punycode if necessary
-		$data['email']    = Joomla::emailToPunycode($data['email']);
+		$data['email'] = PunycodeHelper::emailToPunycode($data['email']);
 
 		// Get the groups the user should be added to after registration.
-		$data['groups']   = array($params->get('new_usertype', 2));
+		$data['groups'] = [$params->get('new_usertype', 2)];
 
 		/**
 		 * Get the dispatcher and load the users plugins.
@@ -593,27 +614,15 @@ abstract class Login
 
 		try
 		{
-			if (version_compare(JVERSION, '3.99999.99999', 'lt'))
-			{
-				// Joomla! 3 method, using JEventDispatcher
-				$dispatcher = JEventDispatcher::getInstance();
-				Joomla::importPlugins('user');
+			// Joomla! 4 method, using DispatcherInterface from the Events package
+			$appDispatcher = $app->getDispatcher();
+			$dispatcher    = clone $appDispatcher;
 
-				// Trigger the data preparation event.
-				$results = $dispatcher->trigger($eventName, array('com_users.registration', $data));
-			}
-			else
-			{
-				// Joomla! 4 method, using DispatcherInterface from the Events package
-				$appDispatcher = $app->getDispatcher();
-				$dispatcher    = clone $appDispatcher;
+			PluginHelper::importPlugin('user');
 
-				Joomla::importPlugins('user');
-
-				$event       = new Event($eventName, array('com_users.registration', $data));
-				$eventReturn = $dispatcher->dispatch($eventName, $event);
-				$results     = !isset($eventReturn['result']) || is_null($eventReturn['result']) ? array() : $eventReturn['result'];
-			}
+			$event       = new Event($eventName, ['com_users.registration', $data]);
+			$eventReturn = $dispatcher->dispatch($eventName, $event);
+			$results     = !isset($eventReturn['result']) || is_null($eventReturn['result']) ? [] : $eventReturn['result'];
 		}
 		catch (Exception $e)
 		{
@@ -642,14 +651,14 @@ abstract class Login
 		{
 			if (class_exists('Joomla\\CMS\\Application\\ApplicationHelper'))
 			{
-				$data['activation'] = ApplicationHelper::getHash(Joomla::generateRandom(32));
+				$data['activation'] = ApplicationHelper::getHash(UserHelper::genRandomPassword(32));
 			}
 			else
 			{
-				$data['activation'] = JApplicationHelper::getHash(Joomla::generateRandom(32));
+				$data['activation'] = JApplicationHelper::getHash(UserHelper::genRandomPassword(32));
 			}
 
-			$data['block']      = 1;
+			$data['block'] = 1;
 		}
 
 		// Set the user parameters
@@ -658,31 +667,30 @@ abstract class Login
 		// Bind the data.
 		if (!$user->bind($data))
 		{
-			throw new RuntimeException(Joomla::sprintf('COM_USERS_REGISTRATION_BIND_FAILED', $user->getError()));
+			throw new RuntimeException(Text::sprintf('COM_USERS_REGISTRATION_BIND_FAILED', $user->getError()));
 		}
 
 		// Load the users plugin group.
-		Joomla::importPlugins('user');
+		PluginHelper::importPlugin('user');
 
 		// Store the data.
 		if (!$user->save())
 		{
-			throw new RuntimeException(Joomla::sprintf('COM_USERS_REGISTRATION_SAVE_FAILED', $user->getError()));
+			throw new RuntimeException(Text::sprintf('COM_USERS_REGISTRATION_SAVE_FAILED', $user->getError()));
 		}
 
-		$config = Joomla::getConfig();
-		$db     = Joomla::getDbo();
-		$query  = $db->getQuery(true);
+		$app   = Factory::getApplication();
+		$db    = Joomla::getDbo();
+		$query = $db->getQuery(true);
 
 		// Compile the notification mail values.
 		$data             = $user->getProperties();
-		$data['fromname'] = $config->get('fromname');
-		$data['mailfrom'] = $config->get('mailfrom');
-		$data['sitename'] = $config->get('sitename');
+		$data['fromname'] = $app->get('fromname');
+		$data['mailfrom'] = $app->get('mailfrom');
+		$data['sitename'] = $app->get('sitename');
 		$data['siteurl']  = JUri::root();
 
 		// Handle account activation/confirmation emails.
-		$app = Joomla::getApplication();
 		$isAdmin = $app->isClient('administrator');
 
 		switch ($userActivation)
@@ -692,7 +700,7 @@ abstract class Login
 			case 2:
 				// Set the link to confirm the user email.
 				$uri              = JUri::getInstance();
-				$base             = $uri->toString(array('scheme', 'user', 'pass', 'host', 'port'));
+				$base             = $uri->toString(['scheme', 'user', 'pass', 'host', 'port']);
 				$data['activate'] = $base . JRoute::_('index.php?option=com_users&task=registration.activate&token=' . $data['activation'], false);
 
 				// Remove administrator/ from activate url in case this method is called from admin
@@ -702,13 +710,13 @@ abstract class Login
 					$data['activate'] = substr_replace($data['activate'], '', $adminPos, 14);
 				}
 
-				$emailSubject = Joomla::sprintf(
+				$emailSubject = Text::sprintf(
 					'COM_USERS_EMAIL_ACCOUNT_DETAILS',
 					$data['name'],
 					$data['sitename']
 				);
 
-				$emailBody = Joomla::sprintf(
+				$emailBody = Text::sprintf(
 					'COM_USERS_EMAIL_REGISTERED_WITH_ADMIN_ACTIVATION_BODY_NOPW',
 					$data['name'],
 					$data['sitename'],
@@ -719,7 +727,7 @@ abstract class Login
 
 				if ($sendPassword)
 				{
-					$emailBody = Joomla::sprintf(
+					$emailBody = Text::sprintf(
 						'COM_USERS_EMAIL_REGISTERED_WITH_ADMIN_ACTIVATION_BODY',
 						$data['name'],
 						$data['sitename'],
@@ -735,7 +743,7 @@ abstract class Login
 			case 1:
 				// Set the link to activate the user account.
 				$uri              = JUri::getInstance();
-				$base             = $uri->toString(array('scheme', 'user', 'pass', 'host', 'port'));
+				$base             = $uri->toString(['scheme', 'user', 'pass', 'host', 'port']);
 				$data['activate'] = $base . JRoute::_('index.php?option=com_users&task=registration.activate&token=' . $data['activation'], false);
 
 				// Remove administrator/ from activate url in case this method is called from admin
@@ -745,13 +753,13 @@ abstract class Login
 					$data['activate'] = substr_replace($data['activate'], '', $adminPos, 14);
 				}
 
-				$emailSubject = Joomla::sprintf(
+				$emailSubject = Text::sprintf(
 					'COM_USERS_EMAIL_ACCOUNT_DETAILS',
 					$data['name'],
 					$data['sitename']
 				);
 
-				$emailBody = Joomla::sprintf(
+				$emailBody = Text::sprintf(
 					'COM_USERS_EMAIL_REGISTERED_WITH_ACTIVATION_BODY_NOPW',
 					$data['name'],
 					$data['sitename'],
@@ -762,7 +770,7 @@ abstract class Login
 
 				if ($sendPassword)
 				{
-					$emailBody = Joomla::sprintf(
+					$emailBody = Text::sprintf(
 						'COM_USERS_EMAIL_REGISTERED_WITH_ACTIVATION_BODY',
 						$data['name'],
 						$data['sitename'],
@@ -777,13 +785,13 @@ abstract class Login
 
 			// No activation required
 			case 0:
-				$emailSubject = Joomla::sprintf(
+				$emailSubject = Text::sprintf(
 					'COM_USERS_EMAIL_ACCOUNT_DETAILS',
 					$data['name'],
 					$data['sitename']
 				);
 
-				$emailBody = Joomla::sprintf(
+				$emailBody = Text::sprintf(
 					'COM_USERS_EMAIL_REGISTERED_BODY_NOPW',
 					$data['name'],
 					$data['sitename'],
@@ -792,7 +800,7 @@ abstract class Login
 
 				if ($sendPassword)
 				{
-					$emailBody = Joomla::sprintf(
+					$emailBody = Text::sprintf(
 						'COM_USERS_EMAIL_REGISTERED_BODY',
 						$data['name'],
 						$data['sitename'],
@@ -806,19 +814,19 @@ abstract class Login
 		}
 
 		// Send the registration email.
-		$return = Joomla::getMailer()
-		                  ->sendMail($data['mailfrom'], $data['fromname'], $data['email'], $emailSubject, $emailBody);
+		$return = Factory::getMailer()
+			->sendMail($data['mailfrom'], $data['fromname'], $data['email'], $emailSubject, $emailBody);
 
 		// Send Notification mail to administrators
 		if (($userActivation < 2) && ($sendEmailToAdmin == 1))
 		{
-			$emailSubject = Joomla::sprintf(
+			$emailSubject = Text::sprintf(
 				'COM_USERS_EMAIL_ACCOUNT_DETAILS',
 				$data['name'],
 				$data['sitename']
 			);
 
-			$emailBodyAdmin = Joomla::sprintf(
+			$emailBodyAdmin = Text::sprintf(
 				'COM_USERS_EMAIL_REGISTERED_NOTIFICATION_TO_ADMIN_BODY',
 				$data['name'],
 				$data['username'],
@@ -827,10 +835,10 @@ abstract class Login
 
 			// Get all admin users
 			$query->clear()
-			      ->select($db->quoteName(array('name', 'email', 'sendEmail')))
-			      ->from($db->quoteName('#__users'))
-			      ->where($db->quoteName('sendEmail') . ' = 1')
-			      ->where($db->quoteName('block') . ' = 0');
+				->select($db->quoteName(['name', 'email', 'sendEmail']))
+				->from($db->quoteName('#__users'))
+				->where($db->quoteName('sendEmail') . ' = 1')
+				->where($db->quoteName('block') . ' = 0');
 
 			$db->setQuery($query);
 
@@ -840,19 +848,19 @@ abstract class Login
 			}
 			catch (RuntimeException $e)
 			{
-				throw new RuntimeException(Joomla::sprintf('COM_USERS_DATABASE_ERROR', $e->getMessage()), 500);
+				throw new RuntimeException(Text::sprintf('COM_USERS_DATABASE_ERROR', $e->getMessage()), 500);
 			}
 
 			// Send mail to all Super Users
 			foreach ($rows as $row)
 			{
-				$return = Joomla::getMailer()
-				                  ->sendMail($data['mailfrom'], $data['fromname'], $row->email, $emailSubject, $emailBodyAdmin);
+				$return = Factory::getMailer()
+					->sendMail($data['mailfrom'], $data['fromname'], $row->email, $emailSubject, $emailBodyAdmin);
 
 				// Check for an error.
 				if ($return !== true)
 				{
-					throw new RuntimeException(Joomla::_('COM_USERS_REGISTRATION_ACTIVATION_NOTIFY_SEND_MAIL_FAILED'));
+					throw new RuntimeException(Text::_('COM_USERS_REGISTRATION_ACTIVATION_NOTIFY_SEND_MAIL_FAILED'));
 				}
 			}
 		}
@@ -863,10 +871,10 @@ abstract class Login
 			// Send a system message to administrators receiving system mails
 			$db = Joomla::getDbo();
 			$query->clear()
-			      ->select($db->qn('id'))
-			      ->from($db->qn('#__users'))
-			      ->where($db->qn('block') . ' = ' . (int) 0)
-			      ->where($db->qn('sendEmail') . ' = ' . (int) 1);
+				->select($db->qn('id'))
+				->from($db->qn('#__users'))
+				->where($db->qn('block') . ' = ' . (int) 0)
+				->where($db->qn('sendEmail') . ' = ' . (int) 1);
 			$db->setQuery($query);
 
 			try
@@ -875,7 +883,7 @@ abstract class Login
 			}
 			catch (RuntimeException $e)
 			{
-				throw new RuntimeException(Joomla::sprintf('COM_USERS_DATABASE_ERROR', $e->getMessage()), 500);
+				throw new RuntimeException(Text::sprintf('COM_USERS_DATABASE_ERROR', $e->getMessage()), 500);
 			}
 
 			if ((is_array($userids) || $userids instanceof \Countable ? count($userids) : 0) > 0)
@@ -885,23 +893,23 @@ abstract class Login
 				// Build the query to add the messages
 				foreach ($userids as $userid)
 				{
-					$values = array(
+					$values = [
 						$db->quote($userid),
 						$db->quote($userid),
 						$db->quote($jdate->toSql()),
-						$db->quote(Joomla::_('COM_USERS_MAIL_SEND_FAILURE_SUBJECT')),
-						$db->quote(Joomla::sprintf('COM_USERS_MAIL_SEND_FAILURE_BODY', $return, $data['username']))
-					);
+						$db->quote(Text::_('COM_USERS_MAIL_SEND_FAILURE_SUBJECT')),
+						$db->quote(Text::sprintf('COM_USERS_MAIL_SEND_FAILURE_BODY', $return, $data['username'])),
+					];
 					$query->clear()
-					      ->insert($db->quoteName('#__messages'))
-					      ->columns($db->quoteName(array(
-						      'user_id_from',
-						      'user_id_to',
-						      'date_time',
-						      'subject',
-						      'message'
-					      )))
-					      ->values(implode(',', $values));
+						->insert($db->quoteName('#__messages'))
+						->columns($db->quoteName([
+							'user_id_from',
+							'user_id_to',
+							'date_time',
+							'subject',
+							'message',
+						]))
+						->values(implode(',', $values));
 					$db->setQuery($query);
 
 					try
@@ -910,12 +918,12 @@ abstract class Login
 					}
 					catch (RuntimeException $e)
 					{
-						throw new RuntimeException(Joomla::sprintf('COM_USERS_DATABASE_ERROR', $e->getMessage()), 500);
+						throw new RuntimeException(Text::sprintf('COM_USERS_DATABASE_ERROR', $e->getMessage()), 500);
 					}
 				}
 			}
 
-			throw new RuntimeException(Joomla::_('COM_USERS_REGISTRATION_SEND_MAIL_FAILED'));
+			throw new RuntimeException(Text::_('COM_USERS_REGISTRATION_SEND_MAIL_FAILED'));
 		}
 
 		if ($userActivation == 1)
@@ -930,21 +938,6 @@ abstract class Login
 		{
 			return $user->id;
 		}
-	}
-
-	/**
-	 * Get the com_users options
-	 *
-	 * @return Registry
-	 */
-	protected static function getUsersParams()
-	{
-		if (class_exists('Joomla\\CMS\\Component\\ComponentHelper'))
-		{
-			return ComponentHelper::getParams('com_users');
-		}
-
-		return JComponentHelper::getParams('com_users');
 	}
 
 }

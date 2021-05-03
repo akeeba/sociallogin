@@ -14,7 +14,10 @@ use Akeeba\SocialLogin\Library\Helper\Integrations;
 use Akeeba\SocialLogin\Library\Helper\Joomla;
 use Exception;
 use Joomla\CMS\HTML\HTMLHelper;
+use Joomla\CMS\Router\Route;
+use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\User\UserHelper;
+use Joomla\Registry\Registry;
 
 /**
  * Feature: Button injection in login modules and login pages
@@ -31,153 +34,6 @@ trait ButtonInjection
 	 * @since 3.1.0
 	 */
 	private static $includedJ4ButtonHandlerJS = false;
-
-	/**
-	 * Intercepts module rendering, appending the Social Login buttons to the configured login modules.
-	 *
-	 * @param   object  $module   The module being rendered
-	 * @param   object  $attribs  The module rendering attributes
-	 *
-	 * @throws  Exception
-	 */
-	public function onRenderModule(&$module, &$attribs)
-	{
-		if (!$this->enabled || $this->useJ4Injection())
-		{
-			return;
-		}
-
-		// We need this convoluted check because the JDocument is not initialized on plugin object construction or even
-		// during onAfterInitialize. This is the only safe way to determine the document type.
-		static $docType = null;
-
-		if (is_null($docType))
-		{
-			try
-			{
-				$document = Joomla::getApplication()->getDocument();
-			}
-			catch (Exception $e)
-			{
-				$document = null;
-			}
-
-			$docType = (is_null($document)) ? 'error' : $document->getType();
-
-			if ($docType != 'html')
-			{
-				$this->enabled = false;
-
-				return;
-			}
-		}
-
-		// If it's not a module I need to intercept bail out
-		if (!in_array($module->module, $this->loginModules))
-		{
-			return;
-		}
-
-		// Append the social login buttons content
-		Joomla::log('system', "Injecting buttons to {$module->module} module.");
-		$selectors          = empty($this->relocateSelectors) ? [] : $this->relocateSelectors;
-		$socialLoginButtons = Integrations::getSocialLoginButtons(null, null, 'akeeba.sociallogin.button', 'akeeba.sociallogin.buttons', null, $this->relocateButton, $selectors);
-		$module->content    .= $socialLoginButtons;
-	}
-
-	/**
-	 * Called after a component has finished running, right after Joomla has set the component output to the buffer.
-	 * Used to inject our social login buttons in the front-end login page rendered by com_users.
-	 *
-	 * @return  void
-	 */
-	public function onAfterDispatch()
-	{
-		// Should I use this method?
-		if (!$this->enabled || $this->useJ4Injection())
-		{
-			return;
-		}
-
-		// Are we enabled?
-		if (!$this->interceptLogin)
-		{
-			return;
-		}
-
-		// Make sure I can get basic information
-		try
-		{
-			$app     = Joomla::getApplication();
-			$user    = Joomla::getUser();
-			$isAdmin = Joomla::isAdminPage($app);
-			$input   = $app->input;
-		}
-		catch (Exception $e)
-		{
-			return;
-		}
-
-		// No point showing a login button when you're already logged in
-		if (!$user->guest)
-		{
-			return;
-		}
-
-		// I can only operate in frontend pages
-		if ($isAdmin)
-		{
-			return;
-		}
-
-		// Make sure this is the Users component
-		$option = $input->getCmd('option');
-
-		if ($option !== 'com_users')
-		{
-			return;
-		}
-
-		// Make sure it is the right view / task
-		$fallbackView = version_compare(JVERSION, '3.999.999', 'ge')
-			? $input->getCmd('controller', '')
-			: '';
-		$view         = $input->getCmd('view', $fallbackView);
-		$task         = $input->getCmd('task');
-
-		if (strpos($task, '.') !== false)
-		{
-			$parts = explode('.', $task);
-			$view  = ($parts[0] ?? $view) ?: $view;
-			$task  = ($parts[1] ?? $task) ?: $task;
-		}
-
-		$check1 = is_null($view) && is_null($task);
-		$check2 = is_null($view) && ($task === 'login');
-		$check3 = ($view === 'login') && is_null($task);
-
-		if (!$check1 && !$check2 && !$check3)
-		{
-			return;
-		}
-
-		// Make sure it's an HTML document
-		$document = $app->getDocument();
-
-		if ($document->getType() != 'html')
-		{
-			return;
-		}
-
-		// Get the component output and append our buttons
-		$buttons = Integrations::getSocialLoginButtons(null, null, 'akeeba.sociallogin.button', 'akeeba.sociallogin.buttons', null, true);
-
-		$buffer = $document->getBuffer();
-
-		$componentOutput = $buffer['component'][''][''];
-		$componentOutput .= $buttons;
-		$document->setBuffer($componentOutput, 'component');
-	}
 
 	/**
 	 * Creates additional login buttons
@@ -204,19 +60,107 @@ trait ButtonInjection
 
 		$this->includeJ4ButtonHandler();
 
+		$returnUrl = $this->getReturnURLFromBackTrace();
+
 		return array_map(function (array $def) {
 			$randomId = sprintf("plg_system_sociallogin-%s-%s-%s",
 				$def['slug'], UserHelper::genRandomPassword(12), UserHelper::genRandomPassword(8));
 
+			$relImage = Uri::root() . HTMLHelper::_('image', $def['rawimage'], $def['label'], null, true, true);
+			// TODO...
+
 			return [
 				'label'          => $def['label'],
 				'icon'           => $def['icon_class'] ?? '',
-				'image'          => $def['img'] ?? '',
+				'image'          => $relImage,
 				'class'          => sprintf('akeeba-sociallogin-link-button-j4 akeeba-sociallogin-link-button-j4-%s akeeba-sociallogin-link-button-%1$s', $def['slug']),
 				'id'             => $randomId,
 				'data-socialurl' => $def['link'],
 			];
-		}, Integrations::getSocialLoginButtonDefinitions());
+		}, Integrations::getSocialLoginButtonDefinitions(null, $returnUrl));
+	}
+
+	/**
+	 * Extracts the login return URL from the execution backtrace.
+	 *
+	 * This method currently extracts the return URL from mod_login and com_users.
+	 *
+	 * @return  string|null  The return URL. NULL if none can be found.
+	 */
+	private function getReturnURLFromBackTrace(): ?string
+	{
+		if (!function_exists('debug_backtrace'))
+		{
+			return null;
+		}
+
+		foreach (debug_backtrace(0) as $item)
+		{
+			$function = $item['function'] ?? '';
+			$class    = $item['class'] ?? '';
+			$args     = $item['args'] ?? [];
+
+			// Extract from module definition.
+			if (($function === 'renderRawModule') && ($class === 'Joomla\CMS\Helper\ModuleHelper'))
+			{
+				$module = $args[0] ?? null;
+				$params = $args[1] ?? null;
+
+				if (!is_object($module) || empty($module))
+				{
+					continue;
+				}
+
+				if (!is_object($params) || !($module instanceof Registry))
+				{
+					$params = new Registry($module->params ?? '{}');
+				}
+
+				switch ($module->module ?? '')
+				{
+					case 'mod_login':
+						return $this->normalizeRedirectionURL($params->get('login') ?: null);
+						break;
+				}
+			}
+
+			// TODO com_users...
+		}
+
+		return null;
+	}
+
+	private function normalizeRedirectionURL($url): ?string
+	{
+		// No URL?
+		if (empty($url))
+		{
+			return null;
+		}
+
+		// Absolute URL?
+		if (
+			(substr($url, 0, 7) == 'http://') ||
+			(substr($url, 0, 8) == 'https://')
+		)
+		{
+			return $url;
+		}
+
+		// Non-SEF URL?
+		if ((substr($url, 0, 9) == 'index.php'))
+		{
+			return Route::_($url, false, true);
+		}
+
+		// Menu item ID?
+		if (is_numeric($url))
+		{
+			return Route::_(sprintf("index.php?Itemid=%d", (int) $url), false, false, true);
+		}
+
+		// I have no idea what this is!
+		return null;
 	}
 
 	private function includeJ4ButtonHandler()
@@ -248,11 +192,6 @@ trait ButtonInjection
 	 */
 	private function useJ4Injection(): bool
 	{
-		if ($this->params->get('j4buttons', 1) == 0)
-		{
-			return false;
-		}
-
-		return version_compare(JVERSION, '3.999.999', 'ge');
+		return $this->params->get('j4buttons', 1) != 0;
 	}
 }

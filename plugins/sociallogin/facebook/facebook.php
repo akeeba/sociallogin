@@ -13,6 +13,7 @@ use Akeeba\SocialLogin\Facebook\User as FacebookUser;
 use Akeeba\SocialLogin\Library\Data\UserData;
 use Akeeba\SocialLogin\Library\Helper\Joomla;
 use Akeeba\SocialLogin\Library\Plugin\AbstractPlugin;
+use Joomla\CMS\Http\HttpFactory;
 use Joomla\CMS\Uri\Uri;
 use Joomla\Registry\Registry;
 
@@ -82,7 +83,7 @@ class plgSocialloginFacebook extends AbstractPlugin
 				'clientsecret' => $this->appSecret,
 				'redirecturi'  => Uri::base() . 'index.php?option=com_ajax&group=sociallogin&plugin=' . $this->integrationName . '&format=raw',
 			];
-			$httpClient      = Joomla::getHttpClient();
+			$httpClient      = HttpFactory::getHttp();
 			$this->connector = new FacebookOAuth($options, $httpClient, $this->app->input, $this->app);
 			$this->connector->setScope('public_profile,email');
 		}

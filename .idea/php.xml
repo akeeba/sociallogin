@@ -2,7 +2,7 @@
 <project version="4">
   <component name="PhpIncludePathManager">
     <include_path>
-      <path value="$PROJECT_DIR$/../../master/joomla-cms" />
+      <path value="$PROJECT_DIR$/../../master/joomla4" />
       <path value="$PROJECT_DIR$/../../dionysopoulos/joomlatypehints/generated_hints" />
       <path value="$PROJECT_DIR$/plugins/system/sociallogin/vendor/composer" />
       <path value="$PROJECT_DIR$/plugins/system/sociallogin/vendor/lcobucci/jwt" />

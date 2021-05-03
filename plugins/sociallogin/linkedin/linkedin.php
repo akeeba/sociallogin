@@ -13,6 +13,7 @@ use Akeeba\SocialLogin\Library\Helper\Joomla;
 use Akeeba\SocialLogin\Library\Plugin\AbstractPlugin;
 use Akeeba\SocialLogin\LinkedIn\OAuth as LinkedInOAuth;
 use Akeeba\SocialLogin\LinkedIn\UserQuery;
+use Joomla\CMS\Http\HttpFactory;
 use Joomla\CMS\Uri\Uri;
 use Joomla\Registry\Registry;
 
@@ -92,7 +93,7 @@ CSS;
 				'clientsecret' => $this->appSecret,
 				'redirecturi'  => Uri::base() . 'index.php?option=com_ajax&group=sociallogin&plugin=' . $this->integrationName . '&format=raw',
 			];
-			$httpClient      = Joomla::getHttpClient();
+			$httpClient      = HttpFactory::getHttp();
 			$this->connector = new LinkedInOAuth($options, $httpClient, $this->app->input, $this->app);
 			$this->connector->setScope('r_liteprofile r_emailaddress');
 		}
@@ -118,7 +119,7 @@ CSS;
 		$options      = new Registry([
 			'userAgent' => 'Akeeba-Social-Login',
 		]);
-		$client       = \Joomla\CMS\Http\HttpFactory::getHttp($options);
+		$client       = HttpFactory::getHttp($options);
 		$liUserQuery  = new UserQuery($client, $tokenArray['access_token']);
 		$liUserFields = $liUserQuery->getUserInformation();
 		$emailFields  = $liUserQuery->getEmailAddress();

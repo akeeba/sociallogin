@@ -12,6 +12,8 @@ defined('_JEXEC') || die;
 
 use Akeeba\SocialLogin\Library\Helper\Joomla;
 use Exception;
+use Joomla\CMS\Factory;
+use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Uri\Uri;
 
 /**
@@ -37,7 +39,7 @@ trait Ajax
 	public function onAfterInitialise()
 	{
 		// Make sure this is the backend of the site...
-		if (!Joomla::isAdminPage())
+		if (!Factory::getApplication()->isClient('administrator'))
 		{
 			return;
 		}
@@ -48,7 +50,7 @@ trait Ajax
 			return;
 		}
 
-		$input = Joomla::getApplication()->input;
+		$input = Factory::getApplication()->input;
 
 		// ...and this is a request to com_ajax...
 		if ($input->getCmd('option', '') != 'com_ajax')
@@ -63,15 +65,15 @@ trait Ajax
 		}
 
 		// Reset the session flag; the AJAX operation may change whether the Joomla user is linked to a social media account
-		Joomla::setSessionVar('islinked', null, 'sociallogin');
+		Factory::getApplication()->getSession()->set('sociallogin.islinked', null);
 
 		// Load the plugin and execute the AJAX method
 		$plugin = $input->getCmd('plugin', '');
 
-		Joomla::importPlugins('sociallogin', $plugin);
+		PluginHelper::importPlugin('sociallogin', $plugin);
 		$methodName = 'onAjax' . ucfirst($plugin);
 
-		Joomla::getApplication()->triggerEvent($methodName);
+		Factory::getApplication()->triggerEvent($methodName);
 	}
 
 	/**
@@ -86,12 +88,12 @@ trait Ajax
 	public function onAjaxSociallogin()
 	{
 		$ajax  = new \Akeeba\SocialLogin\Library\Helper\Ajax();
-		$app   = Joomla::getApplication();
+		$app   = Factory::getApplication();
 		$input = $app->input;
 
 		// Get the return URL from the session
-		$returnURL = Joomla::getSessionVar('returnUrl', Uri::base(), 'plg_system_sociallogin');
-		Joomla::setSessionVar('returnUrl', null, 'plg_system_sociallogin');
+		$returnURL = Factory::getApplication()->getSession()->get('plg_system_sociallogin.returnUrl', Uri::base());
+		Factory::getApplication()->getSession()->set('plg_system_sociallogin.returnUrl', null);
 		$result = null;
 
 		try

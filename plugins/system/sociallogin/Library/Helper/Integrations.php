@@ -12,7 +12,8 @@ defined('_JEXEC') || die();
 
 use Exception;
 use Joomla\CMS\Application\BaseApplication;
-use Joomla\CMS\HTML\HTMLHelper;
+use Joomla\CMS\Factory;
+use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\User\User;
 
 /**
@@ -26,61 +27,6 @@ abstract class Integrations
 	 * @var   bool
 	 */
 	private static $includedRelocationJS = false;
-
-	/**
-	 * Gets the Social Login buttons for logging into the site (typically used in login modules)
-	 *
-	 * @param   string           $loginURL       The URL to return to upon successful login. Current URL if omitted.
-	 * @param   string           $failureURL     The URL to return to on login error. It's set automatically to
-	 *                                           $loginURL if omitted.
-	 * @param   string           $buttonLayout   JLayout for rendering a single login button
-	 * @param   string           $buttonsLayout  JLayout for rendering all the login buttons
-	 * @param   BaseApplication  $app            The application we are running in. Skip to auto-detect (recommended).
-	 * @param   bool             $relocate       Should I try to relocate the Social Login buttons next to an existing
-	 *                                           login button?
-	 * @param   array            $selectors      The selectors to use for identifying the existing login buttons.
-	 *
-	 * @return  string  The rendered HTML of the login buttons
-	 *
-	 * @throws  Exception
-	 */
-	public static function getSocialLoginButtons($loginURL = null, $failureURL = null, $buttonLayout = 'akeeba.sociallogin.button', $buttonsLayout = 'akeeba.sociallogin.buttons', $app = null, $relocate = false, array $selectors = [])
-	{
-		$buttonDefinitions = self::getSocialLoginButtonDefinitions($app, $loginURL, $failureURL);
-		$buttonsHTML       = [];
-
-		foreach ($buttonDefinitions as $buttonDefinition)
-		{
-			if (empty($buttonDefinition))
-			{
-				continue;
-			}
-
-			if ($relocate)
-			{
-				$buttonDefinition['relocate'] = true;
-			}
-
-			if (!empty($selectors))
-			{
-				$buttonDefinition['selectors'] = $selectors;
-			}
-
-			$includePath = JPATH_SITE . '/plugins/sociallogin/' . $buttonDefinition['slug'] . '/layout';
-
-			// First try the plugin-specific layout
-			$html = Joomla::renderLayout("$buttonLayout.{$buttonDefinition['slug']}", $buttonDefinition, $includePath);
-
-			if (empty($html))
-			{
-				$html = Joomla::renderLayout($buttonLayout, $buttonDefinition, $includePath);
-			}
-
-			$buttonsHTML[] = $html;
-		}
-
-		return Joomla::renderLayout($buttonsLayout, ['buttons' => $buttonsHTML]);
-	}
 
 	/**
 	 * Gets the Social Login buttons for linking and unlinking accounts (typically used in the My Account page).
@@ -100,10 +46,10 @@ abstract class Integrations
 	{
 		if (!is_object($app))
 		{
-			$app = Joomla::getApplication();
+			$app = Factory::getApplication();
 		}
 
-		Joomla::importPlugins('sociallogin');
+		PluginHelper::importPlugin('sociallogin');
 
 		$buttonDefinitions = Joomla::runPlugins('onSocialLoginGetLinkButton', [$user], $app);
 		$buttonsHTML       = [];
@@ -319,30 +265,6 @@ abstract class Integrations
 	}
 
 	/**
-	 * Injects the Javascript used to relocate login buttons, but only once per page load.
-	 *
-	 * @return  void
-	 */
-	public static function includeButtonRelocationJS()
-	{
-		if (self::$includedRelocationJS)
-		{
-			return;
-		}
-
-		// Load the JavaScript
-		HTMLHelper::_('script', 'plg_system_sociallogin/dist/buttons.js', [
-			'relative'  => true,
-			'version'   => md5_file(JPATH_SITE . '/media/plg_system_sociallogin/js/dist/buttons.js')
-		], [
-			'defer' => 'defer',
-		]);
-
-		// Set the "don't load again" flag
-		self::$includedRelocationJS = true;
-	}
-
-	/**
 	 * Returns the raw SocialLogin button definitions.
 	 *
 	 * Each definition is a dictionary (hashed) array with the following keys:
@@ -365,10 +287,10 @@ abstract class Integrations
 	{
 		if (!is_object($app))
 		{
-			$app = Joomla::getApplication();
+			$app = Factory::getApplication();
 		}
 
-		Joomla::importPlugins('sociallogin');
+		PluginHelper::importPlugin('sociallogin');
 
 		$buttonDefinitions = Joomla::runPlugins('onSocialLoginGetLoginButton', [
 			$loginURL,

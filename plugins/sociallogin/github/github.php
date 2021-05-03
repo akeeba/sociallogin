@@ -13,6 +13,7 @@ use Akeeba\SocialLogin\GitHub\UserQuery;
 use Akeeba\SocialLogin\Library\Data\UserData;
 use Akeeba\SocialLogin\Library\Helper\Joomla;
 use Akeeba\SocialLogin\Library\Plugin\AbstractPlugin;
+use Joomla\CMS\Http\HttpFactory;
 use Joomla\CMS\Uri\Uri;
 use Joomla\Registry\Registry;
 
@@ -82,7 +83,7 @@ class plgSocialloginGithub extends AbstractPlugin
 				'clientsecret' => $this->appSecret,
 				'redirecturi'  => Uri::base() . 'index.php?option=com_ajax&group=sociallogin&plugin=' . $this->integrationName . '&format=raw',
 			];
-			$httpClient      = Joomla::getHttpClient();
+			$httpClient      = HttpFactory::getHttp();
 			$this->connector = new GitHubOAuth($options, $httpClient, $this->app->input, $this->app);
 			$this->connector->setScope('user');
 		}
@@ -106,7 +107,7 @@ class plgSocialloginGithub extends AbstractPlugin
 		$options      = new Registry([
 			'userAgent' => 'Akeeba-Social-Login',
 		]);
-		$client       = \Joomla\CMS\Http\HttpFactory::getHttp($options);
+		$client       = HttpFactory::getHttp($options);
 		$ghUserQuery  = new UserQuery($client, $tokenArray['access_token']);
 		$ghUserFields = $ghUserQuery->getUserInformation();
 

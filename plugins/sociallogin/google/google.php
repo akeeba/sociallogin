@@ -14,6 +14,7 @@ use Akeeba\SocialLogin\Library\Data\UserData;
 use Akeeba\SocialLogin\Library\Helper\Joomla;
 use Akeeba\SocialLogin\Library\OAuth\OAuth2Client;
 use Akeeba\SocialLogin\Library\Plugin\AbstractPlugin;
+use Joomla\CMS\Http\HttpFactory;
 use Joomla\CMS\Uri\Uri;
 use Joomla\Registry\Registry;
 
@@ -90,7 +91,7 @@ class plgSocialloginGoogle extends AbstractPlugin
 				],
 			];
 
-			$httpClient         = Joomla::getHttpClient();
+			$httpClient         = HttpFactory::getHttp();
 			$this->oAuth2Client = new OAuth2Client($options, $httpClient, $this->app->input, $this->app);
 			$this->connector    = new OAuth2($options, $this->oAuth2Client);
 		}

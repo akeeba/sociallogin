@@ -13,6 +13,7 @@ use Akeeba\SocialLogin\Library\Helper\Joomla;
 use Akeeba\SocialLogin\Library\OAuth\OAuth2Client;
 use Akeeba\SocialLogin\Library\Plugin\AbstractPlugin;
 use Joomla\CMS\Crypt\Crypt;
+use Joomla\CMS\Http\HttpFactory;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Uri\Uri;
 use Lcobucci\JWT\Builder as JWTBuilder;
@@ -122,7 +123,7 @@ class plgSocialloginApple extends AbstractPlugin
 					'response_mode' => 'form_post',
 				],
 			];
-			$httpClient      = Joomla::getHttpClient();
+			$httpClient      = HttpFactory::getHttp();
 			$this->connector = new Akeeba\SocialLogin\Library\OAuth\OAuth2Client($options, $httpClient, $this->app->input, $this->app);
 
 		}

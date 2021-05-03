@@ -12,6 +12,7 @@ defined('_JEXEC') || die();
 
 use Akeeba\SocialLogin\Library\Helper\Joomla;
 use Joomla\CMS\Application\CMSApplication;
+use Joomla\CMS\Factory;
 use Joomla\CMS\Http\Http;
 use Joomla\CMS\Http\Response;
 use Joomla\Input\Input;
@@ -118,7 +119,7 @@ abstract class OAuth1Client
 		}
 
 		// Get token form session.
-		$this->token = array('key' => Joomla::getSessionVar('oauth_token.key', null), 'secret' => Joomla::getSessionVar('oauth_token.secret', null));
+		$this->token = array('key' => Factory::getApplication()->getSession()->get('oauth_token.key', null), 'secret' => Factory::getApplication()->getSession()->get('oauth_token.secret', null));
 
 		// Verify the returned request token.
 		if (strcmp($this->token['key'], $this->input->get('oauth_token')) !== 0)
@@ -175,8 +176,8 @@ abstract class OAuth1Client
 		$this->token = array('key' => $params['oauth_token'], 'secret' => $params['oauth_token_secret']);
 
 		// Save the request token in session
-		Joomla::setSessionVar('oauth_token.key', $this->token['key']);
-		Joomla::setSessionVar('oauth_token.secret', $this->token['secret']);
+		Factory::getApplication()->getSession()->set('oauth_token.key', $this->token['key']);
+		Factory::getApplication()->getSession()->set('oauth_token.secret', $this->token['secret']);
 	}
 
 	/**

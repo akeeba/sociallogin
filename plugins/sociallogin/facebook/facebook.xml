@@ -55,62 +55,62 @@
 
                 <field
                         name="loginunlinked"
-                        type="fancyradio"
+                        type="radio"
+                        layout="joomla.form.field.radio.switcher"
                         label="PLG_SOCIALLOGIN_FACEBOOK_FIELD_LOGINUNLINKED_LABEL"
                         description="PLG_SOCIALLOGIN_FACEBOOK_FIELD_LOGINUNLINKED_DESC"
                         default="0"
-                        class="btn-group btn-group-yesno"
                 >
-                    <option value="1">JYES</option>
                     <option value="0">JNO</option>
+                    <option value="1">JYES</option>
                 </field>
 
                 <field
                         name="createnew"
-                        type="fancyradio"
+                        type="radio"
+                        layout="joomla.form.field.radio.switcher"
                         label="PLG_SOCIALLOGIN_FACEBOOK_FIELD_CREATENEW_LABEL"
                         description="PLG_SOCIALLOGIN_FACEBOOK_FIELD_CREATENEW_DESC"
                         default="0"
-                        class="btn-group btn-group-yesno"
                 >
-                    <option value="1">JYES</option>
                     <option value="0">JNO</option>
+                    <option value="1">JYES</option>
                 </field>
 
                 <field
                         name="forcenew"
-                        type="fancyradio"
+                        type="radio"
+                        layout="joomla.form.field.radio.switcher"
                         label="PLG_SOCIALLOGIN_FACEBOOK_FIELD_FORCENEW_LABEL"
                         description="PLG_SOCIALLOGIN_FACEBOOK_FIELD_FORCENEW_DESC"
                         default="0"
-                        class="btn-group btn-group-yesno"
                 >
-                    <option value="1">JYES</option>
                     <option value="0">JNO</option>
+                    <option value="1">JYES</option>
                 </field>
 
                 <field
                         name="bypassvalidation"
-                        type="fancyradio"
+                        type="radio"
+                        layout="joomla.form.field.radio.switcher"
                         label="PLG_SOCIALLOGIN_FACEBOOK_FIELD_BYPASSVALIDATION_LABEL"
                         description="PLG_SOCIALLOGIN_FACEBOOK_FIELD_BYPASSVALIDATION_DESC"
                         default="1"
-                        class="btn-group btn-group-yesno"
                 >
-                    <option value="1">JYES</option>
                     <option value="0">JNO</option>
+                    <option value="1">JYES</option>
                 </field>
 
                 <field
                         name="customcss"
-                        type="fancyradio"
+                        type="radio"
+                        layout="joomla.form.field.radio.switcher"
                         label="PLG_SOCIALLOGIN_FACEBOOK_FIELD_CUSTOMCSS_LABEL"
                         description="PLG_SOCIALLOGIN_FACEBOOK_FIELD_CUSTOMCSS_DESC"
                         default="1"
-                        class="btn-group btn-group-yesno"
                 >
-                    <option value="1">JYES</option>
                     <option value="0">JNO</option>
+                    <option value="1">JYES</option>
                 </field>
 
                 <field

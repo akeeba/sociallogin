@@ -45,20 +45,6 @@ class plgSystemSociallogin extends CMSPlugin
 	use UserFields;
 
 	/**
-	 * Should I relocate the social login buttons next to the Login button in the login module?
-	 *
-	 * @var   bool
-	 */
-	protected $relocateButton = true;
-
-	/**
-	 * CSS selectors for the relocate feature
-	 *
-	 * @var   array
-	 */
-	protected $relocateSelectors = [];
-
-	/**
 	 * User group ID to add the user to if they have linked social network accounts to their profile
 	 *
 	 * @var   int
@@ -73,20 +59,6 @@ class plgSystemSociallogin extends CMSPlugin
 	 * @since 3.0.1
 	 */
 	protected $unlinkedUserGroup = 0;
-
-	/**
-	 * The names of the login modules to intercept. Default: mod_login
-	 *
-	 * @var   array
-	 */
-	private $loginModules = ['mod_login'];
-
-	/**
-	 * Should I intercept the login page of com_users and add social login buttons there?
-	 *
-	 * @var   bool
-	 */
-	private $interceptLogin = true;
 
 	/**
 	 * Should I add link/unlink buttons in the Edit User Profile page of com_users?
@@ -140,21 +112,8 @@ class plgSystemSociallogin extends CMSPlugin
 		// Load the language files
 		$this->loadLanguage();
 
-		// Get the configured list of login modules and convert it to an actual array
-		$isAdminPage           = Joomla::isAdminPage();
-		$loginModulesParameter = $isAdminPage ? 'backendloginmodules' : 'loginmodules';
-		$defaultModules        = $isAdminPage ? 'none' : 'mod_login';
-		$loginModules          = $this->params->get($loginModulesParameter);
-		$loginModules          = trim($loginModules);
-		$loginModules          = empty($loginModules) ? $defaultModules : $loginModules;
-		$loginModules          = explode(',', $loginModules);
-		$this->loginModules    = array_map('trim', $loginModules);
-
 		// Load the other plugin parameters
-		$this->interceptLogin       = $this->params->get('interceptlogin', 1);
 		$this->addLinkUnlinkButtons = $this->params->get('linkunlinkbuttons', 1);
-		$this->relocateButton       = $this->params->get('relocate', 1) == 1;
-		$this->relocateSelectors    = explode("\n", str_replace(',', "\n", $this->params->get('relocate_selectors', '')));
 		$this->linkedUserGroup      = (int) $this->params->get('linkedAccountUserGroup', 0);
 		$this->unlinkedUserGroup    = (int) $this->params->get('noLinkedAccountUserGroup', 0);
 	}

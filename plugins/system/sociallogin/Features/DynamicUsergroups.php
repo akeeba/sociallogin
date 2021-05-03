@@ -47,14 +47,14 @@ trait DynamicUsergroups
 		}
 
 		// Get the session flag
-		$isLinked = Joomla::getSessionVar('islinked', null, 'sociallogin');
+		$isLinked = Factory::getApplication()->getSession()->get('sociallogin.islinked', null);
 
 		// Session flag not set. Populate and store in session.
 		if (is_null($isLinked))
 		{
 			$isLinked = $this->getSocialLoginLinkedStatus($user);
 
-			Joomla::setSessionVar('islinked', $isLinked, 'sociallogin');
+			Factory::getApplication()->getSession()->set('sociallogin.islinked', $isLinked);
 		}
 
 		// Perform an action based on the sociallogin.islinked session flag.

@@ -113,7 +113,7 @@ trait UserFields
 			return true;
 		}
 
-		$layout = Joomla::getApplication()->input->getCmd('layout', 'default');
+		$layout = Factory::getApplication()->input->getCmd('layout', 'default');
 
 		/**
 		 * Joomla is kinda brain-dead. When we have a menu item to the Edit Profile page it does not push the layout
@@ -136,7 +136,7 @@ trait UserFields
 			}
 		}
 
-		if (!Joomla::isAdminPage() && ($layout != 'edit'))
+		if (!Factory::getApplication()->isClient('administrator') && ($layout != 'edit'))
 		{
 			return true;
 		}
@@ -232,7 +232,7 @@ trait UserFields
 		$db->setQuery($query)->execute();
 
 		// Reset the session flag; the user save operation may have changed the dontremind flag.
-		Joomla::setSessionVar('islinked', null, 'sociallogin');
+		Factory::getApplication()->getSession()->set('sociallogin.islinked', null);
 
 		return true;
 	}
@@ -257,14 +257,7 @@ trait UserFields
 			return false;
 		}
 
-		if (class_exists('Joomla\\Utilities\\ArrayHelper'))
-		{
-			$userId = ArrayHelper::getValue($user, 'id', 0, 'int');
-		}
-		else
-		{
-			$userId	= JArrayHelper::getValue($user, 'id', 0, 'int');
-		}
+		$userId = ArrayHelper::getValue($user, 'id', 0, 'int');
 
 		if ($userId)
 		{

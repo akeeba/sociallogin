@@ -13,6 +13,8 @@ defined('_JEXEC') || die();
 use Exception;
 use Joomla\CMS\Application\BaseApplication;
 use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\User\User;
 use RuntimeException;
 
@@ -40,18 +42,18 @@ final class Ajax
 
 		$input          = $app->input;
 		$akaction       = $input->getCmd('akaction');
-		$token          = Joomla::getToken();
+		$token          = Factory::getApplication()->getSession()->getToken();
 		$noTokenActions = ['dontremind'];
 
 		if (!in_array($akaction, $noTokenActions) && ($input->getInt($token, 0) != 1))
 		{
-			throw new RuntimeException(Joomla::_('JERROR_ALERTNOAUTHOR'));
+			throw new RuntimeException(Text::_('JERROR_ALERTNOAUTHOR'));
 		}
 
 		// Empty action? No bueno.
 		if (empty($akaction))
 		{
-			throw new RuntimeException(Joomla::_('PLG_SYSTEM_SOCIALLOGIN_ERR_AJAX_INVALIDACTION'));
+			throw new RuntimeException(Text::_('PLG_SYSTEM_SOCIALLOGIN_ERR_AJAX_INVALIDACTION'));
 		}
 
 		// A method ajaxSomething must exist.
@@ -59,7 +61,7 @@ final class Ajax
 
 		if (!method_exists($this, $method_name))
 		{
-			throw new RuntimeException(Joomla::_('PLG_SYSTEM_SOCIALLOGIN_ERR_AJAX_INVALIDACTION'));
+			throw new RuntimeException(Text::_('PLG_SYSTEM_SOCIALLOGIN_ERR_AJAX_INVALIDACTION'));
 		}
 
 		return call_user_func([$this, $method_name], $app);
@@ -85,30 +87,30 @@ final class Ajax
 		// No slug? No good.
 		if (empty($slug))
 		{
-			throw new RuntimeException(Joomla::_('PLG_SYSTEM_SOCIALLOGIN_ERR_AJAX_INVALIDSLUG'));
+			throw new RuntimeException(Text::_('PLG_SYSTEM_SOCIALLOGIN_ERR_AJAX_INVALIDSLUG'));
 		}
 
 		// Get the user ID and make sure it's ours or we are Super Users
-		$userId = Joomla::getSessionVar('userID', null, 'plg_system_sociallogin');
-		Joomla::setSessionVar('userID', null, 'plg_system_sociallogin');
+		$userId = Factory::getApplication()->getSession()->get('plg_system_sociallogin.userID', null);
+		Factory::getApplication()->getSession()->set('plg_system_sociallogin.userID', null);
 
 		/** @var   User $myUser Currently logged in user */
-		$myUser = Joomla::getSessionVar('user');
+		$myUser = Factory::getApplication()->getSession()->get('user');
 
 		// Make sure we are unlinking our own user or we are Super Users
 		if (empty($userId) || (!$myUser->authorise('core.manage') && ($myUser->id != $userId)))
 		{
-			throw new RuntimeException(Joomla::_('PLG_SYSTEM_SOCIALLOGIN_ERR_AJAX_INVALIDUSER'));
+			throw new RuntimeException(Text::_('PLG_SYSTEM_SOCIALLOGIN_ERR_AJAX_INVALIDUSER'));
 		}
 
 		// Reset the session flag; the AJAX operation will change whether the Joomla user is linked to a social media account
-		Joomla::setSessionVar('islinked', null, 'sociallogin');
+		Factory::getApplication()->getSession()->set('sociallogin.islinked', null);
 
 		// Get the user to unlink
 		$user = Joomla::getUser($userId);
 
 		// Call the plugin events to unlink the user
-		Joomla::importPlugins('sociallogin');
+		PluginHelper::importPlugin('sociallogin');
 		Joomla::runPlugins('onSocialLoginUnlink', array($slug, $user), $app);
 	}
 
@@ -133,11 +135,11 @@ final class Ajax
 		// No slug? No good.
 		if (empty($slug))
 		{
-			throw new RuntimeException(Joomla::_('PLG_SYSTEM_SOCIALLOGIN_ERR_AJAX_INVALIDSLUG'));
+			throw new RuntimeException(Text::_('PLG_SYSTEM_SOCIALLOGIN_ERR_AJAX_INVALIDSLUG'));
 		}
 
 		// Call the plugin events to unlink the user
-		Joomla::importPlugins('sociallogin');
+		PluginHelper::importPlugin('sociallogin');
 		Joomla::runPlugins('onSocialLoginAuthenticate', array($slug), $app);
 	}
 
@@ -187,7 +189,7 @@ final class Ajax
 		}
 
 		// Reset the session flag; we need to re-evaluate the flag in the next page load.
-		Joomla::setSessionVar('islinked', null, 'sociallogin');
+		Factory::getApplication()->getSession()->set('sociallogin.islinked', null);
 
 	}
 }

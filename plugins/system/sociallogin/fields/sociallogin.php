@@ -11,6 +11,7 @@ defined('_JEXEC') || die;
 use Akeeba\SocialLogin\Library\Helper\Integrations;
 use Akeeba\SocialLogin\Library\Helper\Joomla;
 use Joomla\CMS\Form\FormField;
+use Joomla\CMS\Language\Text;
 
 class JFormFieldSociallogin extends FormField
 {
@@ -27,7 +28,7 @@ class JFormFieldSociallogin extends FormField
 
 		if (is_null($user_id))
 		{
-			return Joomla::_('PLG_SYSTEM_SOCIALLOGIN_ERR_NOUSER');
+			return Text::_('PLG_SYSTEM_SOCIALLOGIN_ERR_NOUSER');
 		}
 
 		$user = Joomla::getUser($user_id);

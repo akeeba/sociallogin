@@ -13,6 +13,9 @@ use Akeeba\SocialLogin\Library\Exception\Login\LoginError;
 use Akeeba\SocialLogin\Library\Helper\Joomla;
 use Akeeba\SocialLogin\Library\Plugin\AbstractPlugin;
 use Akeeba\SocialLogin\Twitter\OAuth;
+use Joomla\CMS\Factory;
+use Joomla\CMS\Http\HttpFactory;
+use Joomla\CMS\Language\Text;
 use Joomla\CMS\Uri\Uri;
 
 if (!class_exists('Akeeba\\SocialLogin\\Library\\Plugin\\AbstractPlugin', true))
@@ -111,7 +114,7 @@ class plgSocialloginTwitter extends AbstractPlugin
 				'sendheaders'     => true,
 			];
 
-			$httpClient      = Joomla::getHttpClient();
+			$httpClient      = HttpFactory::getHttp();
 			$this->connector = new OAuth($options, $httpClient, $this->app->input, $this->app);
 		}
 
@@ -131,7 +134,7 @@ class plgSocialloginTwitter extends AbstractPlugin
 		 * Authentication has to go through a special com_ajax URL since the OAuth1 client needs to performs a Twitter
 		 * server query and then a redirection to authenticate the user.
 		 */
-		$token = Joomla::getToken();
+		$token = Factory::getApplication()->getSession()->getToken();
 
 		return Uri::base() . 'index.php?option=com_ajax&group=system&plugin=sociallogin&format=raw&akaction=authenticate&encoding=redirect&slug=' . $this->integrationName . '&' . $token . '=1';
 	}
@@ -163,7 +166,7 @@ class plgSocialloginTwitter extends AbstractPlugin
 
 		if ($response->code != 200)
 		{
-			throw new LoginError(Joomla::_('PLG_SOCIALLOGIN_TWITTER_ERROR_NOT_LOGGED_IN_TWITTER'));
+			throw new LoginError(Text::_('PLG_SOCIALLOGIN_TWITTER_ERROR_NOT_LOGGED_IN_TWITTER'));
 		}
 
 		return $twitterFields;

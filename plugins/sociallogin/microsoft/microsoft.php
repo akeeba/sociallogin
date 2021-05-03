@@ -117,7 +117,7 @@ class plgSocialloginMicrosoft extends AbstractPlugin
 				];
 			}
 
-			$httpClient      = Joomla::getHttpClient();
+			$httpClient      = HttpFactory::getHttp();
 			$this->connector = new MicrosoftOAuth($options, $httpClient, $this->app->input, $this->app);
 		}
 

@@ -21,7 +21,9 @@ use Exception;
 use Joomla\CMS\Application\CMSApplication;
 use Joomla\CMS\Authentication\Authentication;
 use Joomla\CMS\Document\HtmlDocument;
+use Joomla\CMS\Factory;
 use Joomla\CMS\HTML\HTMLHelper;
+use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\CMS\Uri\Uri;
@@ -188,8 +190,8 @@ abstract class AbstractPlugin extends CMSPlugin
 		}
 
 		// Save the return URLs into the session
-		Joomla::setSessionVar('loginUrl', $loginURL, 'plg_sociallogin_' . $this->integrationName);
-		Joomla::setSessionVar('failureUrl', $failureURL, 'plg_sociallogin_' . $this->integrationName);
+		Factory::getApplication()->getSession()->set('plg_sociallogin_' . $this->integrationName . '.loginUrl', $loginURL);
+		Factory::getApplication()->getSession()->set('plg_sociallogin_' . $this->integrationName . '.failureUrl', $failureURL);
 
 		// Add custom CSS
 		$this->addCustomCSS();
@@ -200,9 +202,9 @@ abstract class AbstractPlugin extends CMSPlugin
 			// The href attribute for the anchor tag.
 			'link'       => $this->getLoginButtonURL(),
 			// The tooltip of the anchor tag.
-			'tooltip'    => Joomla::_(sprintf('PLG_SOCIALLOGIN_%s_LOGIN_DESC', $this->integrationName)),
+			'tooltip'    => Text::_(sprintf('PLG_SOCIALLOGIN_%s_LOGIN_DESC', $this->integrationName)),
 			// What to put inside the anchor tag. Leave empty to put the image returned by onSocialLoginGetIntegration.
-			'label'      => Joomla::_(sprintf('PLG_SOCIALLOGIN_%s_LOGIN_LABEL', $this->integrationName)),
+			'label'      => Text::_(sprintf('PLG_SOCIALLOGIN_%s_LOGIN_LABEL', $this->integrationName)),
 			// The image to use if there is no icon class
 			'img'        => HTMLHelper::image($this->buttonImage, '', [], true),
 			// Raw button image URL
@@ -240,12 +242,12 @@ abstract class AbstractPlugin extends CMSPlugin
 		]);
 
 		// Save the return URL and user ID into the session
-		Joomla::setSessionVar('returnUrl', $returnURL, 'plg_system_sociallogin');
-		Joomla::setSessionVar('userID', $user->id, 'plg_system_sociallogin');
+		Factory::getApplication()->getSession()->set('plg_system_sociallogin.returnUrl', $returnURL);
+		Factory::getApplication()->getSession()->set('plg_system_sociallogin.userID', $user->id);
 
 		if ($this->isLinked($user))
 		{
-			$token     = Joomla::getToken();
+			$token     = Factory::getApplication()->getSession()->getToken();
 			$unlinkURL = Uri::base() . 'index.php?option=com_ajax&group=system&plugin=sociallogin&format=raw&akaction=unlink&encoding=redirect&slug=' . $this->integrationName . '&' . $token . '=1';
 
 			// Add custom CSS
@@ -260,9 +262,9 @@ abstract class AbstractPlugin extends CMSPlugin
 				// The href attribute for the anchor tag.
 				'link'       => $unlinkURL,
 				// The tooltip of the anchor tag.
-				'tooltip'    => Joomla::_(sprintf('PLG_SOCIALLOGIN_%s_UNLINK_DESC', $this->integrationName)),
+				'tooltip'    => Text::_(sprintf('PLG_SOCIALLOGIN_%s_UNLINK_DESC', $this->integrationName)),
 				// What to put inside the anchor tag. Leave empty to put the image returned by onSocialLoginGetIntegration.
-				'label'      => Joomla::_(sprintf('PLG_SOCIALLOGIN_%s_UNLINK_LABEL', $this->integrationName)),
+				'label'      => Text::_(sprintf('PLG_SOCIALLOGIN_%s_UNLINK_LABEL', $this->integrationName)),
 				// The image to use if there is no icon class
 				'img'        => HTMLHelper::image($this->buttonImage, '', [], true),
 				// An icon class for the span before the label inside the anchor tag. Nothing is shown if this is blank.
@@ -274,8 +276,8 @@ abstract class AbstractPlugin extends CMSPlugin
 		$loginURL = Uri::getInstance()->toString([
 			'scheme', 'user', 'pass', 'host', 'port', 'path', 'query', 'fragment',
 		]);
-		Joomla::setSessionVar('loginUrl', $loginURL, 'plg_sociallogin_' . $this->integrationName);
-		Joomla::setSessionVar('failureUrl', $loginURL, 'plg_sociallogin_' . $this->integrationName);
+		Factory::getApplication()->getSession()->set('plg_sociallogin_' . $this->integrationName . '.loginUrl', $loginURL);
+		Factory::getApplication()->getSession()->set('plg_sociallogin_' . $this->integrationName . '.failureUrl', $loginURL);
 
 		// Add custom CSS
 		$this->addCustomCSS();
@@ -288,9 +290,9 @@ abstract class AbstractPlugin extends CMSPlugin
 			// The href attribute for the anchor tag.
 			'link'       => $this->getLinkButtonURL(),
 			// The tooltip of the anchor tag.
-			'tooltip'    => Joomla::_(sprintf('PLG_SOCIALLOGIN_%s_LINK_DESC', $this->integrationName)),
+			'tooltip'    => Text::_(sprintf('PLG_SOCIALLOGIN_%s_LINK_DESC', $this->integrationName)),
 			// What to put inside the anchor tag. Leave empty to put the image returned by onSocialLoginGetIntegration.
-			'label'      => Joomla::_(sprintf('PLG_SOCIALLOGIN_%s_LINK_LABEL', $this->integrationName)),
+			'label'      => Text::_(sprintf('PLG_SOCIALLOGIN_%s_LINK_LABEL', $this->integrationName)),
 			// The image to use if there is no icon class
 			'img'        => HTMLHelper::image($this->buttonImage, '', [], true),
 			// An icon class for the span before the label inside the anchor tag. Nothing is shown if this is blank.
@@ -449,15 +451,13 @@ abstract class AbstractPlugin extends CMSPlugin
 	{
 		Joomla::log($this->integrationName, 'Begin handing of authentication callback');
 
-		// This is the return URL used by the Link button
-		$returnURL = Joomla::getSessionVar('returnUrl', Uri::base(), 'plg_system_sociallogin');
-		// And this is the login success URL used by the Login button
-		$loginUrl   = Joomla::getSessionVar('loginUrl', $returnURL, 'plg_sociallogin_' . $this->integrationName);
-		$failureUrl = Joomla::getSessionVar('failureUrl', $loginUrl, 'plg_sociallogin_' . $this->integrationName);
+		$returnURL  = Factory::getApplication()->getSession()->get('plg_system_sociallogin.returnUrl', Uri::base());
+		$loginUrl   = Factory::getApplication()->getSession()->get('plg_sociallogin_' . $this->integrationName . '.loginUrl', $returnURL);
+		$failureUrl = Factory::getApplication()->getSession()->get('plg_sociallogin_' . $this->integrationName . '.failureUrl', $loginUrl);
 
 		// Remove the return URLs from the session
-		Joomla::setSessionVar('loginUrl', null, 'plg_sociallogin_' . $this->integrationName);
-		Joomla::setSessionVar('failureUrl', null, 'plg_sociallogin_' . $this->integrationName);
+		Factory::getApplication()->getSession()->set('plg_sociallogin_' . $this->integrationName . '.loginUrl', null);
+		Factory::getApplication()->getSession()->set('plg_sociallogin_' . $this->integrationName . '.failureUrl', null);
 
 		// Try to exchange the code with a token
 		$app = $this->app;
@@ -486,7 +486,7 @@ abstract class AbstractPlugin extends CMSPlugin
 				{
 					Joomla::log($this->integrationName, 'Received token from social network is invalid or the user has declined application authorization', Log::ERROR);
 
-					$errorMessage = Joomla::_(sprintf('PLG_SOCIALLOGIN_%s_ERROR_NOT_LOGGED_IN_FB', $this->integrationName));
+					$errorMessage = Text::_(sprintf('PLG_SOCIALLOGIN_%s_ERROR_NOT_LOGGED_IN_FB', $this->integrationName));
 
 					if (defined('JDEBUG') && JDEBUG)
 					{
