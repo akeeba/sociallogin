@@ -40,14 +40,7 @@ class plgSocialloginTwitter extends AbstractPlugin
 		parent::__construct($subject, $config);
 
 		// Register the autoloader
-		if (version_compare(JVERSION, '3.99999.99999', 'le'))
-		{
-			JLoader::registerNamespace('Akeeba\\SocialLogin\\Twitter', __DIR__ . '/Twitter', false, false, 'psr4');
-		}
-		else
-		{
-			JLoader::registerNamespace('Akeeba\\SocialLogin\\Twitter', __DIR__ . '/Twitter');
-		}
+		JLoader::registerNamespace('Akeeba\\SocialLogin\\Twitter', __DIR__ . '/Twitter');
 
 		// Per-plugin customization
 		$this->buttonImage = 'plg_sociallogin_twitter/twitter.svg';

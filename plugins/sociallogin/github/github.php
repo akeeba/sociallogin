@@ -39,14 +39,7 @@ class plgSocialloginGithub extends AbstractPlugin
 		parent::__construct($subject, $config);
 
 		// Register the autoloader
-		if (version_compare(JVERSION, '3.99999.99999', 'le'))
-		{
-			JLoader::registerNamespace('Akeeba\\SocialLogin\\GitHub', __DIR__ . '/GitHub', false, false, 'psr4');
-		}
-		else
-		{
-			JLoader::registerNamespace('Akeeba\\SocialLogin\\GitHub', __DIR__ . '/GitHub');
-		}
+		JLoader::registerNamespace('Akeeba\\SocialLogin\\GitHub', __DIR__ . '/GitHub');
 
 		// Per-plugin customization
 		$this->buttonImage = 'plg_sociallogin_github/octocat.svg';

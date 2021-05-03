@@ -47,14 +47,7 @@ class plgSocialloginGoogle extends AbstractPlugin
 		parent::__construct($subject, $config);
 
 		// Register the autoloader
-		if (version_compare(JVERSION, '3.99999.99999', 'le'))
-		{
-			JLoader::registerNamespace('Akeeba\\SocialLogin\\Google', __DIR__ . '/Google', false, false, 'psr4');
-		}
-		else
-		{
-			JLoader::registerNamespace('Akeeba\\SocialLogin\\Google', __DIR__ . '/Google');
-		}
+		JLoader::registerNamespace('Akeeba\\SocialLogin\\Google', __DIR__ . '/Google');
 
 		// Per-plugin customization
 		$this->buttonImage = 'plg_sociallogin_google/google.svg';

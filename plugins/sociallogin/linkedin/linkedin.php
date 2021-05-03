@@ -39,14 +39,7 @@ class plgSocialloginLinkedin extends AbstractPlugin
 		parent::__construct($subject, $config);
 
 		// Register the autoloader
-		if (version_compare(JVERSION, '3.99999.99999', 'le'))
-		{
-			JLoader::registerNamespace('Akeeba\\SocialLogin\\LinkedIn', __DIR__ . '/LinkedIn', false, false, 'psr4');
-		}
-		else
-		{
-			JLoader::registerNamespace('Akeeba\\SocialLogin\\LinkedIn', __DIR__ . '/LinkedIn');
-		}
+		JLoader::registerNamespace('Akeeba\\SocialLogin\\LinkedIn', __DIR__ . '/LinkedIn');
 
 		// Per-plugin customization
 		$this->buttonImage = 'plg_sociallogin_linkedin/linkedin.svg';
