@@ -51,7 +51,7 @@ class plgSocialloginTwitter extends AbstractPlugin
 		}
 
 		// Per-plugin customization
-		$this->buttonImage = 'plg_sociallogin_twitter/twitter.png';
+		$this->buttonImage = 'plg_sociallogin_twitter/twitter.svg';
 	}
 
 	/**

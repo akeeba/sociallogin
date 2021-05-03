@@ -11,14 +11,14 @@ namespace Akeeba\SocialLogin\Library\Helper;
 defined('_JEXEC') || die();
 
 use Exception;
-use JDatabaseDriver;
-use Joomla\CMS\Application\BaseApplication;
+use Joomla\Application\AbstractApplication;
 use Joomla\CMS\Application\CMSApplication;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Layout\FileLayout;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\User\User;
 use Joomla\CMS\User\UserFactoryInterface;
+use Joomla\Database\DatabaseDriver;
 use RuntimeException;
 
 /**
@@ -124,10 +124,10 @@ abstract class Joomla
 	/**
 	 * Execute a plugin event and return the results
 	 *
-	 * @param   string           $event  The plugin event to trigger.
-	 * @param   array            $data   The data to pass to the event handlers.
-	 * @param   BaseApplication  $app    The application to run plugins against,
-	 *                                   default the currently loaded application.
+	 * @param   string               $event  The plugin event to trigger.
+	 * @param   array                $data   The data to pass to the event handlers.
+	 * @param   AbstractApplication  $app    The application to run plugins against,
+	 *                                       default the currently loaded application.
 	 *
 	 * @return  array  The plugin responses
 	 *
@@ -188,7 +188,7 @@ abstract class Joomla
 	}
 
 	/**
-	 * @return JDatabaseDriver
+	 * @return DatabaseDriver
 	 */
 	public static function getDbo()
 	{

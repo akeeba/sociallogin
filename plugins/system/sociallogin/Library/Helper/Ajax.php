@@ -1,8 +1,8 @@
 <?php
 /**
- *  @package   AkeebaSocialLogin
- *  @copyright Copyright (c)2016-2021 Nicholas K. Dionysopoulos / Akeeba Ltd
- *  @license   GNU General Public License version 3, or later
+ * @package   AkeebaSocialLogin
+ * @copyright Copyright (c)2016-2021 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @license   GNU General Public License version 3, or later
  */
 
 namespace Akeeba\SocialLogin\Library\Helper;
@@ -11,7 +11,7 @@ namespace Akeeba\SocialLogin\Library\Helper;
 defined('_JEXEC') || die();
 
 use Exception;
-use Joomla\CMS\Application\BaseApplication;
+use Joomla\Application\AbstractApplication;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Plugin\PluginHelper;
@@ -27,7 +27,7 @@ final class Ajax
 	/**
 	 * Handle an AJAX request
 	 *
-	 * @param   BaseApplication  $app  The application
+	 * @param   AbstractApplication  $app  The application
 	 *
 	 * @return  mixed
 	 *
@@ -70,7 +70,7 @@ final class Ajax
 	/**
 	 * Unlink a user account from its social media presence
 	 *
-	 * @param   BaseApplication  $app  The application
+	 * @param   AbstractApplication  $app  The application
 	 *
 	 * @throws  Exception
 	 */
@@ -111,14 +111,14 @@ final class Ajax
 
 		// Call the plugin events to unlink the user
 		PluginHelper::importPlugin('sociallogin');
-		Joomla::runPlugins('onSocialLoginUnlink', array($slug, $user), $app);
+		Joomla::runPlugins('onSocialLoginUnlink', [$slug, $user], $app);
 	}
 
 	/**
 	 * Initiate a user authentication against a remote server. Your plugin is supposed to perform a redirection to the
 	 * remote server or throw a RuntimeException in case of an error.
 	 *
-	 * @param   BaseApplication  $app  The application
+	 * @param   AbstractApplication  $app  The application
 	 *
 	 * @throws  Exception
 	 */
@@ -129,8 +129,8 @@ final class Ajax
 			return;
 		}
 
-		$input   = $app->input;
-		$slug    = $input->getCmd('slug');
+		$input = $app->input;
+		$slug  = $input->getCmd('slug');
 
 		// No slug? No good.
 		if (empty($slug))
@@ -140,7 +140,7 @@ final class Ajax
 
 		// Call the plugin events to unlink the user
 		PluginHelper::importPlugin('sociallogin');
-		Joomla::runPlugins('onSocialLoginAuthenticate', array($slug), $app);
+		Joomla::runPlugins('onSocialLoginAuthenticate', [$slug], $app);
 	}
 
 	/**
@@ -148,7 +148,7 @@ final class Ajax
 	 *
 	 * Call by accessing index.php?option=com_ajax&group=system&plugin=sociallogin&akaction=dontremind&format=raw
 	 *
-	 * @param   BaseApplication  $app  The application
+	 * @param   AbstractApplication  $app  The application
 	 */
 	protected function ajaxDontremind($app)
 	{

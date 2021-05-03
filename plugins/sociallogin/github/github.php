@@ -50,7 +50,7 @@ class plgSocialloginGithub extends AbstractPlugin
 		}
 
 		// Per-plugin customization
-		$this->buttonImage = 'plg_sociallogin_github/gh_white_32.png';
+		$this->buttonImage = 'plg_sociallogin_github/octocat.svg';
 	}
 
 	/**

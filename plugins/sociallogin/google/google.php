@@ -58,7 +58,7 @@ class plgSocialloginGoogle extends AbstractPlugin
 		}
 
 		// Per-plugin customization
-		$this->buttonImage = 'plg_sociallogin_google/google.png';
+		$this->buttonImage = 'plg_sociallogin_google/google.svg';
 	}
 
 	/**

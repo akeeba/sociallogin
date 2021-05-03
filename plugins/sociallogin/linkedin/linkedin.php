@@ -50,7 +50,7 @@ class plgSocialloginLinkedin extends AbstractPlugin
 		}
 
 		// Per-plugin customization
-		$this->buttonImage = 'plg_sociallogin_linkedin/linkedin_34.png';
+		$this->buttonImage = 'plg_sociallogin_linkedin/linkedin.svg';
 		$this->customCSS   = /** @lang CSS */
 			<<< CSS
 .akeeba-sociallogin-link-button-linkedin, .akeeba-sociallogin-unlink-button-linkedin, .akeeba-sociallogin-button-linkedin { background-color: #ffffff; color: #000000; transition-duration: 0.33s; background-image: none; border-color: #86898C

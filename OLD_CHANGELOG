@@ -1,0 +1,115 @@
+Akeeba SocialLogin 3.2.7
+================================================================================
++ Yes/no fields now work correctly on Joomla 4.0 beta 7 and later
+
+Akeeba SocialLogin 3.2.6
+================================================================================
+~ Releasing the previous version without changes, due to server and CDN issues which resulted in inconsistent updates
++ Supports controller as alias for view under Joomla 4
+
+Akeeba SocialLogin 3.2.5
+================================================================================
++ Supports controller as alias for view under Joomla 4
+
+Akeeba SocialLogin 3.2.4
+================================================================================
+# [MEDIUM] Joomla error page when the social network returns invalid data e.g. user canceled the login
+# [MEDIUM] Cannot override layout files
+# [LOW] Apple plugin: deprecation notices from a dependency could prevent access to the site if the plugin is not configured properly
+# [LOW] PHP Notice using JLoader::registerNamespace on Joomla 4
+
+Akeeba SocialLogin 3.2.3
+================================================================================
+- Dropped support for PHP 7.1.0
+~ Login with Microsoft: Support Azure AD app registrations on top of the deprecated Windows Live SDK apps.
+~ PHP 8.0 support
+# [HIGH] The LinkedIn plugin was not installed when installing the package
+# [HIGH] Joomla 4 beta 6 changed how sessions work, breaking everything
+
+Akeeba SocialLogin 3.2.2
+================================================================================
+# [LOW] PHP notice in the post-installation script (gh-60)
+# [LOW] Unnecessarily including mooTools in the frontend (gh-61)
+
+Akeeba SocialLogin 3.2.1
+================================================================================
+# [HIGH] Login with Apple was broken due to a problem in third party Composer dependencies
+
+Akeeba SocialLogin 3.2.0
+================================================================================
++ Now supports Sign In with Apple
+~ Better follow branding guidelines for the various third party services
+~ The post-installation script was not shipped with the system plugin
+# [HIGH] The LinkedIn plugin was not shipped with the package
+
+Akeeba SocialLogin 3.1.1
+================================================================================
+~ Made JavaScript loading deferred
+~ Make the Login with Microsoft button's appearance consistent with the other login buttons
+~ Add JS and CSS with media versioning queries
+# [LOW] Wrong label in system plugin's options
+
+Akeeba SocialLogin 3.1.0
+================================================================================
++ Joomla 4 integration with the new `onUserLoginButtons` event. **DOES NOT WORK IN JOOMLA 4.0 BETA 1 DUE TO A BUG IN JOOMLA ITSELF**.
+~ Minimum requirements: Joomla 3.9, PHP 7.1
+
+Akeeba SocialLogin 3.0.2
+================================================================================
++ Added back the LinkedIn integration
+
+Akeeba SocialLogin 3.0.1
+================================================================================
++ Dynamically add a logged in user to a user group if they have not yet linked any social media presence to their Joomla user account.
+- Removed Login with LinkedIn. The v2 API does not provide enough information to log in unlinked accounts or create new user accounts.
+# [HIGH] User profile fields do not appear when LoginGuard is also enabled
+# [HIGH] User Profile fields not displayed correctly when using an Edit Profile menu item
+# [LOW] Some servers return lowercase the content-type header instead of Content-Type.
+# [HIGH] Facebook login could not create new users
+
+Akeeba SocialLogin 3.0.0
+================================================================================
++ Login with Google using Google OpenID instead of the now defunct Google+ API
++ Debug logs for all Social Login plugins
++ Social Login buttons CSS is now loaded through .css files instead of inline styling for better performance
++ Social Login buttons can now be relocated next to the Login button in the login module using a bit of Javascript magic
++ Social Login buttons in the frontend login page (rendered by Joomla's com_users)
+
+Akeeba SocialLogin 2.0.3
+================================================================================
++ Login with LinkedIn
++ Login with Microsoft Account
+
+Akeeba SocialLogin 2.0.2
+================================================================================
++ Login with GitHub
+- Removed "Add buttons to login page" option since it doesn't do anything useful. You MUST use template overrides for the login page.
+# [HIGH] Missing file from the plugin manifest causes installation failure
+
+Akeeba SocialLogin 2.0.1
+================================================================================
+# [HIGH] Language files were not included in the package
+# [HIGH] SocialLogin buttons disappear on update if you are using template overrides because the SocialLoginHelperIntegrations class was renamed.
+
+Akeeba SocialLogin 2.0.0
+================================================================================
++ Compatible with Joomla! 3.4 to 3.8 (inclusive) and, now, also Joomla! 4.0.
+# [MEDIUM] gh-16 The buttons should not appear in the back-end of the site by default
+# [MEDIUM] gh-24 Validated user accounts still result in Joomla! email validation email being sent
+# [HIGH] Fatal error displaying the site's error page
+
+Akeeba SocialLogin 1.0.2
+================================================================================
+# [HIGH] gh-15 Twitter and Google plugins are not installed
+
+Akeeba SocialLogin 1.0.1
+================================================================================
+# [HIGH] Cannot create user account from social network login
+# [HIGH] Email verification sent with unusable, untranslated strings
+# [HIGH] Cannot log in under Joomla! 3.7
+
+Akeeba SocialLogin 1.0.0
+================================================================================
++ Login to Joomla! using your Facebook account
++ Login to Joomla! using your Google account
++ Login to Joomla! using your Twitter account

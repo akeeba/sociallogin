@@ -50,7 +50,7 @@ class plgSocialloginFacebook extends AbstractPlugin
 		}
 
 		// Per-plugin customization
-		$this->buttonImage = 'plg_sociallogin_facebook/fb_white_29.png';
+		$this->buttonImage = 'plg_sociallogin_facebook/facebook_logo.svg';
 	}
 
 	/**

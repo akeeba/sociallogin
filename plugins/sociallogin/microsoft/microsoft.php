@@ -58,7 +58,7 @@ class plgSocialloginMicrosoft extends AbstractPlugin
 		}
 
 		// Per-plugin customization
-		$this->buttonImage = 'plg_sociallogin_microsoft/microsoft_mark.png';
+		$this->buttonImage = 'plg_sociallogin_microsoft/microsoft_mark.svg';
 
 		// Customization for Microsoft Azure AD vs Live SDK applications
 		$this->isAzure   = $this->params->get('apptype', 'live') === 'azure';

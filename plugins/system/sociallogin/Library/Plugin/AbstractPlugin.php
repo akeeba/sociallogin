@@ -91,13 +91,6 @@ abstract class AbstractPlugin extends CMSPlugin
 	protected $useCustomCSS = true;
 
 	/**
-	 * The icon class to be used in the buttons.
-	 *
-	 * @var   string
-	 */
-	protected $iconClass = '';
-
-	/**
 	 * Relative media URL to the image used in buttons, e.g. 'plg_sociallogin_foobar/my_logo.png'.
 	 *
 	 * @var   string
@@ -152,7 +145,6 @@ abstract class AbstractPlugin extends CMSPlugin
 		$this->canCreateAlways     = $this->params->get('forcenew', true);
 		$this->canBypassValidation = $this->params->get('bypassvalidation', true);
 		$this->useCustomCSS        = $this->params->get('customcss', true);
-		$this->iconClass           = $this->params->get('icon_class', '');
 		$this->appId               = $this->params->get('appid', '');
 		$this->appSecret           = $this->params->get('appsecret', '');
 	}
@@ -198,19 +190,17 @@ abstract class AbstractPlugin extends CMSPlugin
 
 		return [
 			// The name of the plugin rendering this button. Used for customized JLayouts.
-			'slug'       => $this->integrationName,
+			'slug'     => $this->integrationName,
 			// The href attribute for the anchor tag.
-			'link'       => $this->getLoginButtonURL(),
+			'link'     => $this->getLoginButtonURL(),
 			// The tooltip of the anchor tag.
-			'tooltip'    => Text::_(sprintf('PLG_SOCIALLOGIN_%s_LOGIN_DESC', $this->integrationName)),
+			'tooltip'  => Text::_(sprintf('PLG_SOCIALLOGIN_%s_LOGIN_DESC', $this->integrationName)),
 			// What to put inside the anchor tag. Leave empty to put the image returned by onSocialLoginGetIntegration.
-			'label'      => Text::_(sprintf('PLG_SOCIALLOGIN_%s_LOGIN_LABEL', $this->integrationName)),
+			'label'    => Text::_(sprintf('PLG_SOCIALLOGIN_%s_LOGIN_LABEL', $this->integrationName)),
 			// The image to use if there is no icon class
-			'img'        => HTMLHelper::image($this->buttonImage, '', [], true),
+			'img'      => HTMLHelper::image($this->buttonImage, '', [], true),
 			// Raw button image URL
-			'rawimage'   => $this->buttonImage,
-			// An icon class for the span before the label inside the anchor tag. Nothing is shown if this is blank.
-			'icon_class' => $this->iconClass,
+			'rawimage' => $this->buttonImage,
 		];
 	}
 
@@ -256,19 +246,19 @@ abstract class AbstractPlugin extends CMSPlugin
 			// Render an unlink button
 			return [
 				// The name of the plugin rendering this button. Used for customized JLayouts.
-				'slug'       => $this->integrationName,
+				'slug'     => $this->integrationName,
 				// The type of the button: 'link' or 'unlink'
-				'type'       => 'unlink',
+				'type'     => 'unlink',
 				// The href attribute for the anchor tag.
-				'link'       => $unlinkURL,
+				'link'     => $unlinkURL,
 				// The tooltip of the anchor tag.
-				'tooltip'    => Text::_(sprintf('PLG_SOCIALLOGIN_%s_UNLINK_DESC', $this->integrationName)),
+				'tooltip'  => Text::_(sprintf('PLG_SOCIALLOGIN_%s_UNLINK_DESC', $this->integrationName)),
 				// What to put inside the anchor tag. Leave empty to put the image returned by onSocialLoginGetIntegration.
-				'label'      => Text::_(sprintf('PLG_SOCIALLOGIN_%s_UNLINK_LABEL', $this->integrationName)),
+				'label'    => Text::_(sprintf('PLG_SOCIALLOGIN_%s_UNLINK_LABEL', $this->integrationName)),
 				// The image to use if there is no icon class
-				'img'        => HTMLHelper::image($this->buttonImage, '', [], true),
-				// An icon class for the span before the label inside the anchor tag. Nothing is shown if this is blank.
-				'icon_class' => $this->iconClass,
+				'img'      => HTMLHelper::image($this->buttonImage, '', [], true),
+				// Raw button image URL
+				'rawimage' => $this->buttonImage,
 			];
 		}
 
@@ -284,19 +274,19 @@ abstract class AbstractPlugin extends CMSPlugin
 
 		return [
 			// The name of the plugin rendering this button. Used for customized JLayouts.
-			'slug'       => $this->integrationName,
+			'slug'     => $this->integrationName,
 			// The type of the button: 'link' or 'unlink'
-			'type'       => 'link',
+			'type'     => 'link',
 			// The href attribute for the anchor tag.
-			'link'       => $this->getLinkButtonURL(),
+			'link'     => $this->getLinkButtonURL(),
 			// The tooltip of the anchor tag.
-			'tooltip'    => Text::_(sprintf('PLG_SOCIALLOGIN_%s_LINK_DESC', $this->integrationName)),
+			'tooltip'  => Text::_(sprintf('PLG_SOCIALLOGIN_%s_LINK_DESC', $this->integrationName)),
 			// What to put inside the anchor tag. Leave empty to put the image returned by onSocialLoginGetIntegration.
-			'label'      => Text::_(sprintf('PLG_SOCIALLOGIN_%s_LINK_LABEL', $this->integrationName)),
+			'label'    => Text::_(sprintf('PLG_SOCIALLOGIN_%s_LINK_LABEL', $this->integrationName)),
 			// The image to use if there is no icon class
-			'img'        => HTMLHelper::image($this->buttonImage, '', [], true),
-			// An icon class for the span before the label inside the anchor tag. Nothing is shown if this is blank.
-			'icon_class' => $this->iconClass,
+			'img'      => HTMLHelper::image($this->buttonImage, '', [], true),
+			// Raw button image URL
+			'rawimage' => $this->buttonImage,
 		];
 	}
 

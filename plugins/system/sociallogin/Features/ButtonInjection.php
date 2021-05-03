@@ -15,7 +15,6 @@ use Akeeba\SocialLogin\Library\Helper\Joomla;
 use Exception;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Router\Route;
-use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\User\UserHelper;
 use Joomla\Registry\Registry;
 
@@ -66,13 +65,19 @@ trait ButtonInjection
 			$randomId = sprintf("plg_system_sociallogin-%s-%s-%s",
 				$def['slug'], UserHelper::genRandomPassword(12), UserHelper::genRandomPassword(8));
 
-			$relImage = Uri::root() . HTMLHelper::_('image', $def['rawimage'], $def['label'], null, true, true);
-			// TODO...
+			$imageKey     = 'image';
+			$imageContent = $def['img'];
+
+			if (substr($def['rawimage'], -4) === '.svg')
+			{
+				$imageKey     = 'svg';
+				$imageContent = file_get_contents(JPATH_ROOT . HTMLHelper::_('image', $def['rawimage'], $def['label'], null, true, true));
+			}
+
 
 			return [
 				'label'          => $def['label'],
-				'icon'           => $def['icon_class'] ?? '',
-				'image'          => $relImage,
+				$imageKey        => $imageContent,
 				'class'          => sprintf('akeeba-sociallogin-link-button-j4 akeeba-sociallogin-link-button-j4-%s akeeba-sociallogin-link-button-%1$s', $def['slug']),
 				'id'             => $randomId,
 				'data-socialurl' => $def['link'],

@@ -15,11 +15,9 @@ use Akeeba\SocialLogin\Library\Data\UserData;
 use Akeeba\SocialLogin\Library\Exception\Login\GenericMessage;
 use Akeeba\SocialLogin\Library\Exception\Login\LoginError;
 use Exception;
-use JEventDispatcher;
-use JLoader;
+use Joomla\Application\AbstractApplication;
 use Joomla\CMS\Application\ApplicationHelper;
 use Joomla\CMS\Application\ApplicationHelper as JApplicationHelper;
-use Joomla\CMS\Application\BaseApplication;
 use Joomla\CMS\Authentication\Authentication;
 use Joomla\CMS\Authentication\Authentication as JAuthentication;
 use Joomla\CMS\Authentication\AuthenticationResponse;
@@ -237,8 +235,7 @@ abstract class Login
 	public static function getAuthenticationResponseObject()
 	{
 		// Force the class auto-loader to load the JAuthentication class
-		JLoader::import('joomla.user.authentication');
-		class_exists('JAuthentication', true);
+		class_exists(JAuthentication::class, true);
 
 		return new AuthenticationResponse();
 	}
@@ -247,7 +244,7 @@ abstract class Login
 	 * Have Joomla! process a login failure
 	 *
 	 * @param   AuthenticationResponse  $response    The Joomla! auth response object
-	 * @param   BaseApplication         $app         The application we are running in. Skip to auto-detect
+	 * @param   AbstractApplication     $app         The application we are running in. Skip to auto-detect
 	 *                                               (recommended).
 	 * @param   string                  $logContext  Logging context (plugin name). Default: system.
 	 *
@@ -439,19 +436,15 @@ abstract class Login
 	/**
 	 * Logs in a user to the site, bypassing the authentication plugins.
 	 *
-	 * @param   int              $userId  The user ID to log in
-	 * @param   BaseApplication  $app     The application we are running in. Skip to auto-detect (recommended).
+	 * @param   int                  $userId  The user ID to log in
+	 * @param   AbstractApplication  $app     The application we are running in. Skip to auto-detect (recommended).
 	 *
 	 * @throws  Exception
 	 */
 	private static function loginUser($userId, $app = null)
 	{
 		// Trick the class auto-loader into loading the necessary classes
-		JLoader::import('joomla.user.authentication');
-		JLoader::import('joomla.plugin.helper');
-		JLoader::import('joomla.user.helper');
-		class_exists('JAuthentication', true);
-		class_exists('Joomla\\CMS\\Authentication\\Authentication', true);
+		class_exists(JAuthentication::class, true);
 
 		// Fake a successful login message
 		if (!is_object($app))
@@ -552,11 +545,11 @@ abstract class Login
 	/**
 	 * Method to register a new user account. Based on UsersModelRegistration::register().
 	 *
-	 * @param   array            $data                The user data to save.
-	 * @param   array            $userParams          User parameters to save with the user account
-	 * @param   bool             $skipUserActivation  Should I forcibly skip user activation?
-	 * @param   BaseApplication  $app                 The application we are running in. Skip to auto-detect
-	 *                                                (recommended).
+	 * @param   array                $data                The user data to save.
+	 * @param   array                $userParams          User parameters to save with the user account
+	 * @param   bool                 $skipUserActivation  Should I forcibly skip user activation?
+	 * @param   AbstractApplication  $app                 The application we are running in. Skip to auto-detect
+	 *                                                    (recommended).
 	 *
 	 * @return  mixed  The user id on success, 'useractivate' or 'adminactivate' if activation is required
 	 *

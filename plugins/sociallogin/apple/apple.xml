@@ -129,14 +129,6 @@
                     <option value="1">JYES</option>
                 </field>
 
-                <field
-                        name="icon_class"
-                        type="text"
-                        label="PLG_SOCIALLOGIN_APPLE_FIELD_ICONCLASS_LABEL"
-                        description="PLG_SOCIALLOGIN_APPLE_FIELD_ICONCLASS_DESC"
-                        default=""
-                />
-
             </fieldset>
         </fields>
     </config>

@@ -11,7 +11,7 @@ namespace Akeeba\SocialLogin\Library\Helper;
 defined('_JEXEC') || die();
 
 use Exception;
-use Joomla\CMS\Application\BaseApplication;
+use Joomla\Application\AbstractApplication;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\User\User;
@@ -31,11 +31,12 @@ abstract class Integrations
 	/**
 	 * Gets the Social Login buttons for linking and unlinking accounts (typically used in the My Account page).
 	 *
-	 * @param   User             $user           The Joomla! user object for which to get the buttons. Omit to use the
-	 *                                           currently logged in user.
-	 * @param   string           $buttonLayout   JLayout for rendering a single login button
-	 * @param   string           $buttonsLayout  JLayout for rendering all the login buttons
-	 * @param   BaseApplication  $app            The application we are running in. Skip to auto-detect (recommended).
+	 * @param   User                 $user           The Joomla! user object for which to get the buttons. Omit to use
+	 *                                               the currently logged in user.
+	 * @param   string               $buttonLayout   JLayout for rendering a single login button
+	 * @param   string               $buttonsLayout  JLayout for rendering all the login buttons
+	 * @param   AbstractApplication  $app            The application we are running in. Skip to auto-detect
+	 *                                               (recommended).
 	 *
 	 *
 	 * @return  string  The rendered HTML of the login buttons
@@ -273,17 +274,17 @@ abstract class Integrations
 	 * * `link`: The href attribute for the anchor tag.
 	 * * `tooltip`: The tooltip of the anchor tag.
 	 * * `label`: What to put inside the anchor tag.
-	 * * `img`: The image to use if there is no icon class.
-	 * * `icon_class`: An icon class for the span before the label inside the anchor tag. Nothing shown if blank.
+	 * * `img`: The IMG tag for the image to use
+	 * * `rawimage`: The relative image path e.g. `plg_sociallogin_example/foo.svg`
 	 *
-	 * @param   BaseApplication  $app
-	 * @param   string|null      $loginURL
-	 * @param   string|null      $failureURL
+	 * @param   AbstractApplication  $app
+	 * @param   string|null          $loginURL
+	 * @param   string|null          $failureURL
 	 *
 	 * @return array  Simple array of dictionary arrays. See method description for the format.
 	 * @throws Exception
 	 */
-	public static function getSocialLoginButtonDefinitions(BaseApplication $app = null, ?string $loginURL = null, ?string $failureURL = null): array
+	public static function getSocialLoginButtonDefinitions(AbstractApplication $app = null, ?string $loginURL = null, ?string $failureURL = null): array
 	{
 		if (!is_object($app))
 		{

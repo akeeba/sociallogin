@@ -79,7 +79,7 @@ class plgSocialloginApple extends AbstractPlugin
 		JLoader::register('plgSocialloginAppleRandomWords', __DIR__ . '/random_words.php');
 
 		// Per-plugin customization
-		$this->buttonImage = 'plg_sociallogin_apple/apple-white.png';
+		$this->buttonImage = 'plg_sociallogin_apple/apple-white.svg';
 	}
 
 	/**
