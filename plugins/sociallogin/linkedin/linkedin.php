@@ -36,6 +36,9 @@ class plgSocialloginLinkedin extends AbstractPlugin
 	 */
 	public function __construct($subject, array $config = [])
 	{
+		$this->fgColor = '#FFFFFF';
+		$this->bgColor = '#3077B0';
+
 		parent::__construct($subject, $config);
 
 		// Register the autoloader
@@ -43,16 +46,6 @@ class plgSocialloginLinkedin extends AbstractPlugin
 
 		// Per-plugin customization
 		$this->buttonImage = 'plg_sociallogin_linkedin/linkedin.svg';
-		$this->customCSS   = /** @lang CSS */
-			<<< CSS
-.akeeba-sociallogin-link-button-linkedin, .akeeba-sociallogin-unlink-button-linkedin, .akeeba-sociallogin-button-linkedin { background-color: #ffffff; color: #000000; transition-duration: 0.33s; background-image: none; border-color: #86898C
-; }
-.akeeba-sociallogin-link-button-linkedin:hover, .akeeba-sociallogin-unlink-button-linkedin:hover, .akeeba-sociallogin-button-linkedin:hover { background-color: #CFEDFB
- ; color: #000000; transition-duration: 0.33s; border-color: #00A0DC
- ; }
-.akeeba-sociallogin-link-button-linkedin img, .akeeba-sociallogin-unlink-button-linkedin img, .akeeba-sociallogin-button-linkedin img { display: inline-block; width: 22px; height: 16px; margin: 0 0.33em 0.1em 0; padding: 0 }
-
-CSS;
 	}
 
 	/**

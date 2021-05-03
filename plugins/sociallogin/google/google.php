@@ -44,6 +44,9 @@ class plgSocialloginGoogle extends AbstractPlugin
 	 */
 	public function __construct($subject, array $config = [])
 	{
+		$this->fgColor = '#FFFFFF';
+		$this->bgColor = '#4285F4';
+
 		parent::__construct($subject, $config);
 
 		// Register the autoloader

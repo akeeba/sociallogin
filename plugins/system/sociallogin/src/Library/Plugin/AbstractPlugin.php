@@ -13,7 +13,6 @@ defined('_JEXEC') || die();
 use Exception;
 use Joomla\CMS\Application\CMSApplication;
 use Joomla\CMS\Authentication\Authentication;
-use Joomla\CMS\Document\HtmlDocument;
 use Joomla\CMS\Factory;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
@@ -119,6 +118,20 @@ abstract class AbstractPlugin extends CMSPlugin
 	protected $connector;
 
 	/**
+	 * @var   string  Background color for the login and link/unlink buttons
+	 *
+	 * @since 4.0
+	 */
+	protected $bgColor = '#000000';
+
+	/**
+	 * @var   string  Foreground color for the login and link/unlink buttons
+	 *
+	 * @since 4.0
+	 */
+	protected $fgColor = '#FFFFFF';
+
+	/**
 	 * Constructor. Loads the language files as well.
 	 *
 	 * @param   object  &$subject  The object to observe
@@ -147,6 +160,8 @@ abstract class AbstractPlugin extends CMSPlugin
 		$this->useCustomCSS        = $this->params->get('customcss', true);
 		$this->appId               = $this->params->get('appid', '');
 		$this->appSecret           = $this->params->get('appsecret', '');
+		$this->bgColor             = $this->params->get('bgcolor', $this->bgColor);
+		$this->fgColor             = $this->params->get('fgcolor', $this->fgColor);
 	}
 
 	/**
@@ -185,22 +200,23 @@ abstract class AbstractPlugin extends CMSPlugin
 		Factory::getApplication()->getSession()->set('plg_sociallogin_' . $this->integrationName . '.loginUrl', $loginURL);
 		Factory::getApplication()->getSession()->set('plg_sociallogin_' . $this->integrationName . '.failureUrl', $failureURL);
 
-		// Add custom CSS
-		$this->addCustomCSS();
-
 		return [
 			// The name of the plugin rendering this button. Used for customized JLayouts.
-			'slug'     => $this->integrationName,
+			'slug'      => $this->integrationName,
 			// The href attribute for the anchor tag.
-			'link'     => $this->getLoginButtonURL(),
+			'link'      => $this->getLoginButtonURL(),
 			// The tooltip of the anchor tag.
-			'tooltip'  => Text::_(sprintf('PLG_SOCIALLOGIN_%s_LOGIN_DESC', $this->integrationName)),
+			'tooltip'   => Text::_(sprintf('PLG_SOCIALLOGIN_%s_LOGIN_DESC', $this->integrationName)),
 			// What to put inside the anchor tag. Leave empty to put the image returned by onSocialLoginGetIntegration.
-			'label'    => Text::_(sprintf('PLG_SOCIALLOGIN_%s_LOGIN_LABEL', $this->integrationName)),
+			'label'     => Text::_(sprintf('PLG_SOCIALLOGIN_%s_LOGIN_LABEL', $this->integrationName)),
 			// The image to use if there is no icon class
-			'img'      => HTMLHelper::image($this->buttonImage, '', [], true),
+			'img'       => HTMLHelper::image($this->buttonImage, '', [], true),
 			// Raw button image URL
-			'rawimage' => $this->buttonImage,
+			'rawimage'  => $this->buttonImage,
+			// Background and foreground color
+			'bgColor'   => $this->bgColor,
+			'fgColor'   => $this->fgColor,
+			'customCSS' => $this->useCustomCSS,
 		];
 	}
 
@@ -240,25 +256,26 @@ abstract class AbstractPlugin extends CMSPlugin
 			$token     = Factory::getApplication()->getSession()->getToken();
 			$unlinkURL = Uri::base() . 'index.php?option=com_ajax&group=system&plugin=sociallogin&format=raw&akaction=unlink&encoding=redirect&slug=' . $this->integrationName . '&' . $token . '=1';
 
-			// Add custom CSS
-			$this->addCustomCSS();
-
 			// Render an unlink button
 			return [
 				// The name of the plugin rendering this button. Used for customized JLayouts.
-				'slug'     => $this->integrationName,
+				'slug'      => $this->integrationName,
 				// The type of the button: 'link' or 'unlink'
-				'type'     => 'unlink',
+				'type'      => 'unlink',
 				// The href attribute for the anchor tag.
-				'link'     => $unlinkURL,
+				'link'      => $unlinkURL,
 				// The tooltip of the anchor tag.
-				'tooltip'  => Text::_(sprintf('PLG_SOCIALLOGIN_%s_UNLINK_DESC', $this->integrationName)),
+				'tooltip'   => Text::_(sprintf('PLG_SOCIALLOGIN_%s_UNLINK_DESC', $this->integrationName)),
 				// What to put inside the anchor tag. Leave empty to put the image returned by onSocialLoginGetIntegration.
-				'label'    => Text::_(sprintf('PLG_SOCIALLOGIN_%s_UNLINK_LABEL', $this->integrationName)),
+				'label'     => Text::_(sprintf('PLG_SOCIALLOGIN_%s_UNLINK_LABEL', $this->integrationName)),
 				// The image to use if there is no icon class
-				'img'      => HTMLHelper::image($this->buttonImage, '', [], true),
+				'img'       => HTMLHelper::image($this->buttonImage, '', [], true),
 				// Raw button image URL
-				'rawimage' => $this->buttonImage,
+				'rawimage'  => $this->buttonImage,
+				// Background and foreground color
+				'bgColor'   => $this->bgColor,
+				'fgColor'   => $this->fgColor,
+				'customCSS' => $this->useCustomCSS,
 			];
 		}
 
@@ -269,24 +286,25 @@ abstract class AbstractPlugin extends CMSPlugin
 		Factory::getApplication()->getSession()->set('plg_sociallogin_' . $this->integrationName . '.loginUrl', $loginURL);
 		Factory::getApplication()->getSession()->set('plg_sociallogin_' . $this->integrationName . '.failureUrl', $loginURL);
 
-		// Add custom CSS
-		$this->addCustomCSS();
-
 		return [
 			// The name of the plugin rendering this button. Used for customized JLayouts.
-			'slug'     => $this->integrationName,
+			'slug'      => $this->integrationName,
 			// The type of the button: 'link' or 'unlink'
-			'type'     => 'link',
+			'type'      => 'link',
 			// The href attribute for the anchor tag.
-			'link'     => $this->getLinkButtonURL(),
+			'link'      => $this->getLinkButtonURL(),
 			// The tooltip of the anchor tag.
-			'tooltip'  => Text::_(sprintf('PLG_SOCIALLOGIN_%s_LINK_DESC', $this->integrationName)),
+			'tooltip'   => Text::_(sprintf('PLG_SOCIALLOGIN_%s_LINK_DESC', $this->integrationName)),
 			// What to put inside the anchor tag. Leave empty to put the image returned by onSocialLoginGetIntegration.
-			'label'    => Text::_(sprintf('PLG_SOCIALLOGIN_%s_LINK_LABEL', $this->integrationName)),
+			'label'     => Text::_(sprintf('PLG_SOCIALLOGIN_%s_LINK_LABEL', $this->integrationName)),
 			// The image to use if there is no icon class
-			'img'      => HTMLHelper::image($this->buttonImage, '', [], true),
+			'img'       => HTMLHelper::image($this->buttonImage, '', [], true),
 			// Raw button image URL
-			'rawimage' => $this->buttonImage,
+			'rawimage'  => $this->buttonImage,
+			// Background and foreground color
+			'bgColor'   => $this->bgColor,
+			'fgColor'   => $this->fgColor,
+			'customCSS' => $this->useCustomCSS,
 		];
 	}
 
@@ -569,64 +587,4 @@ abstract class AbstractPlugin extends CMSPlugin
 		Joomla::log($this->integrationName, sprintf("Successful login. Redirecting to %s", $loginUrl), Log::INFO);
 		$app->redirect($loginUrl);
 	}
-
-	/**
-	 * Adds custom CSS to the page's head unless we're explicitly told not to. The CSS helps render the buttons with the
-	 * correct branding color.
-	 *
-	 * @return  void
-	 *
-	 * @throws  Exception
-	 */
-	protected function addCustomCSS()
-	{
-		// Make sure we only output the custom CSS once
-		static $hasOutputCustomCSS = false;
-
-		if ($hasOutputCustomCSS)
-		{
-			return;
-		}
-
-		$hasOutputCustomCSS = true;
-
-		// Am I allowed to add the built-in custom button styling?
-		if (!$this->useCustomCSS)
-		{
-			return;
-		}
-
-		// Is this an HTML document?
-		$jDocument = $this->app->getDocument();
-
-		if (empty($jDocument) || !is_object($jDocument) || !($jDocument instanceof HtmlDocument))
-		{
-			return;
-		}
-
-		// Load the built-in stylesheet
-		$pluginSlug   = 'plg_sociallogin_' . strtolower($this->integrationName);
-		$stylesheet   = sprintf("%s/button.css", $pluginSlug);
-		$absoluteFile = JPATH_ROOT . HTMLHelper::_('stylesheet', $stylesheet, [
-			'relative' => true,
-			'pathOnly' => true,
-		]);
-		$contents = trim(@file_get_contents($absoluteFile) ?: '');
-
-		if (!$contents)
-		{
-			return;
-		}
-
-		/** @var HtmlDocument $doc */
-		$doc = Factory::getApplication()->getDocument();
-
-		if (!($doc instanceof HtmlDocument))
-		{
-			return;
-		}
-
-		$doc->getWebAssetManager()->addInlineStyle($contents);
-	}
-
 }

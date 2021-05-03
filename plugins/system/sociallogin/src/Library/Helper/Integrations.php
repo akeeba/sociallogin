@@ -12,6 +12,7 @@ defined('_JEXEC') || die();
 
 use Exception;
 use Joomla\Application\AbstractApplication;
+use Joomla\CMS\Document\HtmlDocument;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\User\User;
@@ -54,6 +55,8 @@ abstract class Integrations
 
 		$buttonDefinitions = Joomla::runPlugins('onSocialLoginGetLinkButton', [$user], $app);
 		$buttonsHTML       = [];
+
+		self::customCss($buttonDefinitions);
 
 		foreach ($buttonDefinitions as $buttonDefinition)
 		{
@@ -306,5 +309,68 @@ abstract class Integrations
 		return array_filter($buttonDefinitions, function ($definition) {
 			return is_array($definition) && !empty($definition);
 		});
+	}
+
+	public static function customCss($buttonDefinitions)
+	{
+		static $alreadyRun = false;
+
+		if ($alreadyRun)
+		{
+			return;
+		}
+
+		$alreadyRun = true;
+		$customCSS  = [];
+
+		foreach ($buttonDefinitions as $def)
+		{
+			if (!($def['customCSS'] ?? false))
+			{
+				continue;
+			}
+
+			$customCSS[$def['slug'] ?: '__invalid'] = [
+				$def['bgColor'] ?: '#000000',
+				$def['fgColor'] ?: '#FFFFFF',
+			];
+		}
+
+		if (isset($customCSS['__invalid']))
+		{
+			unset($customCSS['__invalid']);
+		}
+
+		if (empty($customCSS))
+		{
+			return;
+		}
+
+		$css = '';
+
+		foreach ($customCSS as $slug => $colors)
+		{
+			[$bg, $fg] = $colors;
+			$css .= <<< CSS
+.akeeba-sociallogin-unlink-button-{$slug}, .akeeba-sociallogin-link-button-{$slug} { color: var(--sociallogin-{$slug}-fg, $fg) !important; background-color: var(--sociallogin-{$slug}-bg, $bg) !important; }
+
+CSS;
+		}
+
+		try
+		{
+			$document = Factory::getApplication()->getDocument();
+		}
+		catch (Exception $e)
+		{
+			return;
+		}
+
+		if (!($document instanceof HtmlDocument))
+		{
+			return;
+		}
+
+		$document->getWebAssetManager()->addInlineStyle($css);
 	}
 }

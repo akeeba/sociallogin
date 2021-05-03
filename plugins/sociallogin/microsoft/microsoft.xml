@@ -25,13 +25,12 @@
     </files>
 
     <media folder="media" destination="plg_sociallogin_microsoft">
-        <folder>css</folder>
         <folder>images</folder>
     </media>
 
     <languages folder="language">
-        <language tag="en-GB">en-GB/en-GB.plg_sociallogin_microsoft.ini</language>
-        <language tag="en-GB">en-GB/en-GB.plg_sociallogin_microsoft.sys.ini</language>
+        <language tag="en-GB">en-GB/plg_sociallogin_microsoft.ini</language>
+        <language tag="en-GB">en-GB/plg_sociallogin_microsoft.sys.ini</language>
     </languages>
 
     <config addfieldpath="plugins/system/sociallogin/fields">
@@ -115,6 +114,7 @@
                         label="PLG_SOCIALLOGIN_MICROSOFT_FIELD_FORCENEW_LABEL"
                         description="PLG_SOCIALLOGIN_MICROSOFT_FIELD_FORCENEW_DESC"
                         default="0"
+                        showon="createnew:1"
                 >
                     <option value="0">JNO</option>
                     <option value="1">JYES</option>
@@ -127,6 +127,7 @@
                         label="PLG_SOCIALLOGIN_MICROSOFT_FIELD_BYPASSVALIDATION_LABEL"
                         description="PLG_SOCIALLOGIN_MICROSOFT_FIELD_BYPASSVALIDATION_DESC"
                         default="1"
+                        showon="createnew:1"
                 >
                     <option value="0">JNO</option>
                     <option value="1">JYES</option>
@@ -143,6 +144,24 @@
                     <option value="0">JNO</option>
                     <option value="1">JYES</option>
                 </field>
+
+                <field
+                        name="fgcolor"
+                        type="color"
+                        default="#FFFFFF"
+                        label="PLG_SOCIALLOGIN_MICROSOFT_FIELD_FGCOLOR_LABEL"
+                        description="PLG_SOCIALLOGIN_MICROSOFT_FIELD_FGCOLOR_DESC"
+                        showon="customcss:1"
+                />
+
+                <field
+                        name="bgcolor"
+                        type="color"
+                        default="#2F2F2F"
+                        label="PLG_SOCIALLOGIN_MICROSOFT_FIELD_BGCOLOR_LABEL"
+                        description="PLG_SOCIALLOGIN_MICROSOFT_FIELD_BGCOLOR_DESC"
+                        showon="customcss:1"
+                />
             </fieldset>
         </fields>
     </config>
