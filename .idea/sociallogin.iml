@@ -13,11 +13,6 @@
       <excludeFolder url="file://$MODULE_DIR$/.github" />
       <excludeFolder url="file://$MODULE_DIR$/.idea" />
       <excludeFolder url="file://$MODULE_DIR$/modules" />
-      <excludeFolder url="file://$MODULE_DIR$/plugins/system/sociallogin/vendor/codercat/jwk-to-pem" />
-      <excludeFolder url="file://$MODULE_DIR$/plugins/system/sociallogin/vendor/composer" />
-      <excludeFolder url="file://$MODULE_DIR$/plugins/system/sociallogin/vendor/lcobucci/jwt" />
-      <excludeFolder url="file://$MODULE_DIR$/plugins/system/sociallogin/vendor/phpseclib/bcmath_compat" />
-      <excludeFolder url="file://$MODULE_DIR$/plugins/system/sociallogin/vendor/phpseclib/phpseclib" />
       <excludeFolder url="file://$MODULE_DIR$/release" />
     </content>
     <orderEntry type="inheritedJdk" />
