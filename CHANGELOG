@@ -1,4 +1,8 @@
 <?php die(); ?>
+Akeeba SocialLogin 3.2.8
+================================================================================
+# [LOW] Joomla 4.0 beta 7 changed how extra login button icons are handled. Again.
+
 Akeeba SocialLogin 3.2.7
 ================================================================================
 + Yes/no fields now work correctly on Joomla 4.0 beta 7 and later

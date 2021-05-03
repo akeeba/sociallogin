@@ -211,7 +211,7 @@ trait ButtonInjection
 			return [
 				'label'          => $def['label'],
 				'icon'           => $def['icon_class'] ?? '',
-				'image'          => $def['rawimage'] ?? '',
+				'image'          => $def['img'] ?? '',
 				'class'          => sprintf('akeeba-sociallogin-link-button-j4 akeeba-sociallogin-link-button-j4-%s akeeba-sociallogin-link-button-%1$s', $def['slug']),
 				'id'             => $randomId,
 				'data-socialurl' => $def['link'],
