@@ -8,14 +8,14 @@
 // Protect from unauthorized access
 defined('_JEXEC') || die();
 
-use Akeeba\SocialLogin\Library\Data\UserData;
-use Akeeba\SocialLogin\Library\Helper\Joomla;
-use Akeeba\SocialLogin\Library\OAuth\OAuth2Client;
-use Akeeba\SocialLogin\Library\Plugin\AbstractPlugin;
 use Joomla\CMS\Crypt\Crypt;
 use Joomla\CMS\Http\HttpFactory;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Uri\Uri;
+use Joomla\Plugin\System\SocialLogin\Library\Data\UserData;
+use Joomla\Plugin\System\SocialLogin\Library\Helper\Joomla;
+use Joomla\Plugin\System\SocialLogin\Library\OAuth\OAuth2Client;
+use Joomla\Plugin\System\SocialLogin\Library\Plugin\AbstractPlugin;
 use Lcobucci\JWT\Builder as JWTBuilder;
 use Lcobucci\JWT\Parser as JWTParser;
 use Lcobucci\JWT\Signer\Ecdsa\Sha256 as SignerE256;
@@ -23,7 +23,7 @@ use Lcobucci\JWT\Signer\Key as SignerKey;
 use Lcobucci\JWT\Token;
 use Lcobucci\JWT\ValidationData;
 
-if (!class_exists('Akeeba\\SocialLogin\\Library\\Plugin\\AbstractPlugin', true))
+if (!class_exists(AbstractPlugin::class, true))
 {
 	return;
 }
@@ -124,7 +124,7 @@ class plgSocialloginApple extends AbstractPlugin
 				],
 			];
 			$httpClient      = HttpFactory::getHttp();
-			$this->connector = new Akeeba\SocialLogin\Library\OAuth\OAuth2Client($options, $httpClient, $this->app->input, $this->app);
+			$this->connector = new \Joomla\Plugin\System\SocialLogin\Library\OAuth\OAuth2Client($options, $httpClient, $this->app->input, $this->app);
 
 		}
 

@@ -18,13 +18,16 @@
 	<license>GNU GPL v3 or later</license>
 
 	<description>PLG_SYSTEM_SOCIALLOGIN_DESCRIPTION</description>
+	<namespace path="src">Joomla\Plugin\System\SocialLogin</namespace>
 
 	<files>
 		<filename plugin="sociallogin">sociallogin.php</filename>
-		<folder>Features</folder>
-		<folder>fields</folder>
+
+		<folder>forms</folder>
+		<folder>language</folder>
 		<folder>layout</folder>
-		<folder>Library</folder>
+		<folder>services</folder>
+		<folder>src</folder>
 		<folder>vendor</folder>
 	</files>
 
@@ -33,8 +36,8 @@
 	</media>
 
 	<languages folder="language">
-		<language tag="en-GB">en-GB/en-GB.plg_system_sociallogin.ini</language>
-		<language tag="en-GB">en-GB/en-GB.plg_system_sociallogin.sys.ini</language>
+		<language tag="en-GB">en-GB/plg_system_sociallogin.ini</language>
+		<language tag="en-GB">en-GB/plg_system_sociallogin.sys.ini</language>
 	</languages>
 
 	<config>

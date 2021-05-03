@@ -8,16 +8,15 @@
 // Protect from unauthorized access
 defined('_JEXEC') || die();
 
-use Akeeba\SocialLogin\Library\Data\UserData;
-use Akeeba\SocialLogin\Library\Helper\Joomla;
-use Akeeba\SocialLogin\Library\Plugin\AbstractPlugin;
 use Akeeba\SocialLogin\LinkedIn\OAuth as LinkedInOAuth;
 use Akeeba\SocialLogin\LinkedIn\UserQuery;
 use Joomla\CMS\Http\HttpFactory;
 use Joomla\CMS\Uri\Uri;
+use Joomla\Plugin\System\SocialLogin\Library\Data\UserData;
+use Joomla\Plugin\System\SocialLogin\Library\Plugin\AbstractPlugin;
 use Joomla\Registry\Registry;
 
-if (!class_exists('Akeeba\\SocialLogin\\Library\\Plugin\\AbstractPlugin', true))
+if (!class_exists(AbstractPlugin::class, true))
 {
 	return;
 }

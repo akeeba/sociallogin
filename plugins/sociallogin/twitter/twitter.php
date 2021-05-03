@@ -8,17 +8,16 @@
 // Protect from unauthorized access
 defined('_JEXEC') || die();
 
-use Akeeba\SocialLogin\Library\Data\UserData;
-use Akeeba\SocialLogin\Library\Exception\Login\LoginError;
-use Akeeba\SocialLogin\Library\Helper\Joomla;
-use Akeeba\SocialLogin\Library\Plugin\AbstractPlugin;
 use Akeeba\SocialLogin\Twitter\OAuth;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Http\HttpFactory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Uri\Uri;
+use Joomla\Plugin\System\SocialLogin\Library\Data\UserData;
+use Joomla\Plugin\System\SocialLogin\Library\Exception\Login\LoginError;
+use Joomla\Plugin\System\SocialLogin\Library\Plugin\AbstractPlugin;
 
-if (!class_exists('Akeeba\\SocialLogin\\Library\\Plugin\\AbstractPlugin', true))
+if (!class_exists(AbstractPlugin::class, true))
 {
 	return;
 }

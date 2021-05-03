@@ -10,12 +10,11 @@ namespace Akeeba\SocialLogin\Twitter;
 // Protect from unauthorized access
 defined('_JEXEC') || die();
 
-use Akeeba\SocialLogin\Library\OAuth\OAuth1Client;
-use Exception;
 use Joomla\CMS\Application\CMSApplication;
 use Joomla\CMS\Http\Http;
 use Joomla\CMS\Http\Response;
 use Joomla\CMS\Input\Input;
+use Joomla\Plugin\System\SocialLogin\Library\OAuth\OAuth1Client;
 
 /**
  * Twitter OAuth authentication class. Adapted from the Joomla! Framework.

@@ -1,16 +1,16 @@
 <?php
 /**
- *  @package   AkeebaSocialLogin
- *  @copyright Copyright (c)2016-2021 Nicholas K. Dionysopoulos / Akeeba Ltd
- *  @license   GNU General Public License version 3, or later
+ * @package   AkeebaSocialLogin
+ * @copyright Copyright (c)2016-2021 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @license   GNU General Public License version 3, or later
  */
 
 // Prevent direct access
 defined('_JEXEC') || die;
 
+use Joomla\CMS\Filesystem\File;
 use Joomla\CMS\Filesystem\Folder;
 use Joomla\CMS\Installer\Adapter\ComponentAdapter;
-use Joomla\CMS\Filesystem\File;
 
 class plgSystemSocialloginInstallerScript
 {
@@ -19,26 +19,25 @@ class plgSystemSocialloginInstallerScript
 	 *
 	 * @var   array
 	 */
-	protected $removeFiles = array(
-		'files'   => array(
-		),
-		'folders' => array(
+	protected $removeFiles = [
+		'files'   => [
+		],
+		'folders' => [
 			// Version 1.x helpers, now migrated into Library
-			'plugins/system/sociallogin/helper',
-		),
-	);
+		],
+	];
 
 	/**
 	 * Runs after install, update or discover_update. In other words, it executes after Joomla! has finished installing
 	 * or updating your component. This is the last chance you've got to perform any additional installations, clean-up,
 	 * database updates and similar housekeeping functions.
 	 *
-	 * @param   string                      $type   install, update or discover_update
-	 * @param   ComponentAdapter $parent Parent object
-	 *
-	 * @throws Exception
+	 * @param   string            $type    install, update or discover_update
+	 * @param   ComponentAdapter  $parent  Parent object
 	 *
 	 * @return  void
+	 * @throws Exception
+	 *
 	 */
 	public function postflight($type, $parent)
 	{
@@ -49,7 +48,7 @@ class plgSystemSocialloginInstallerScript
 	/**
 	 * Removes obsolete files and folders
 	 *
-	 * @param   array $removeList The files and directories to remove
+	 * @param   array  $removeList  The files and directories to remove
 	 */
 	protected function removeFilesAndFolders($removeList)
 	{

@@ -10,8 +10,8 @@ namespace Akeeba\SocialLogin\Google;
 // Protect from unauthorized access
 defined('_JEXEC') || die();
 
-use Akeeba\SocialLogin\Library\OAuth\OAuth2Client;
 use Exception;
+use Joomla\Plugin\System\SocialLogin\Library\OAuth\OAuth2Client;
 
 /**
  * Google OAuth authentication class. Adapted from the Joomla! Framework.
