@@ -1,5 +1,1 @@
-/*!
- *  @package   AkeebaSocialLogin
- *  @copyright Copyright (c)2016-2021 Nicholas K. Dionysopoulos / Akeeba Ltd
- *  @license   GNU General Public License version 3, or later
- */.akeeba-sociallogin-link-button-github,.akeeba-sociallogin-unlink-button-github,.akeeba-sociallogin-button-github{background-color:#000 !important;color:#fff !important;text-shadow:none !important;background-image:none !important;border:none !important;padding:9px 8px !important}.akeeba-sociallogin-link-button-github img,.akeeba-sociallogin-unlink-button-github img,.akeeba-sociallogin-button-github img{display:inline-block !important;width:16px !important;height:16px !important;margin:0 .33em .1em 0 !important;padding:0 !important}
+:root{--sociallogin-github-bg:#000;--sociallogin-github-fg:#fff}.akeeba-sociallogin-link-button-github,.akeeba-sociallogin-unlink-button-github,.akeeba-sociallogin-button-github{background-color:var(--sociallogin-github-bg) !important;color:var(--sociallogin-github-fg) !important}

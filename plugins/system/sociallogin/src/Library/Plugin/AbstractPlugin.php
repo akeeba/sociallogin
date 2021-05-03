@@ -607,13 +607,26 @@ abstract class AbstractPlugin extends CMSPlugin
 		// Load the built-in stylesheet
 		$pluginSlug   = 'plg_sociallogin_' . strtolower($this->integrationName);
 		$stylesheet   = sprintf("%s/button.css", $pluginSlug);
-		$absoluteFile = sprintf("%s/media/%s/css/button.css", JPATH_ROOT, $pluginSlug);
-		$mediaVersion = md5_file($absoluteFile);
-
-		HTMLHelper::_('stylesheet', $stylesheet, [
-			'version'  => $mediaVersion,
+		$absoluteFile = JPATH_ROOT . HTMLHelper::_('stylesheet', $stylesheet, [
 			'relative' => true,
+			'pathOnly' => true,
 		]);
+		$contents = trim(@file_get_contents($absoluteFile) ?: '');
+
+		if (!$contents)
+		{
+			return;
+		}
+
+		/** @var HtmlDocument $doc */
+		$doc = Factory::getApplication()->getDocument();
+
+		if (!($doc instanceof HtmlDocument))
+		{
+			return;
+		}
+
+		$doc->getWebAssetManager()->addInlineStyle($contents);
 	}
 
 }

@@ -8,6 +8,7 @@
 // Protect from unauthorized access
 defined('_JEXEC') || die();
 
+use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Layout\FileLayout;
 
 $array_merge = array_merge(array(
@@ -17,6 +18,8 @@ $array_merge = array_merge(array(
 	'tooltip'    => '',
 	'label'      => '',
 	'img'        => '',
+	'svg'        => '',
+	'rawimage'   => '',
 ), $displayData);
 
 /**
@@ -39,15 +42,21 @@ $array_merge = array_merge(array(
  * @var   string       $tooltip     Tooltip to show on the button
  * @var   string       $label       Text content of the button
  * @var   string       $img         An <img> (or other) tag to use inside the button when $icon_class is empty
+ * @var   string       $rawimage    Relative image path, e.g. plg_sociallogin_example/foobar.svg
  */
 
 // Extract the data. Do not remove until the unset() line.
 extract($array_merge);
 
+if (substr($rawimage, -4) === '.svg')
+{
+	$img = file_get_contents(JPATH_ROOT . HTMLHelper::_('image', $rawimage, '', null, true, true));
+}
+
 // Start writing your template override code below this line
 ?>
-<a class="btn btn-default akeeba-sociallogin-linkunlink-button akeeba-sociallogin-<?php echo $type?>-button akeeba-sociallogin-<?php echo $type?>-button-<?php echo $slug?> hasTooltip"
-   href="<?php echo $link?>"  title="<?php echo $tooltip ?>">
+<a class="btn btn-default akeeba-sociallogin-linkunlink-button akeeba-sociallogin-<?php echo $type?>-button akeeba-sociallogin-<?php echo $type?>-button-<?php echo $slug?> hasTooltip w-100"
+   href="<?php echo $link?>" title="<?php echo $tooltip ?>">
     <?php echo $img ?>
     <?php echo $label ?>
 </a>

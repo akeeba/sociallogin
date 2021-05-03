@@ -74,7 +74,6 @@ trait ButtonInjection
 				$imageContent = file_get_contents(JPATH_ROOT . HTMLHelper::_('image', $def['rawimage'], $def['label'], null, true, true));
 			}
 
-
 			return [
 				'label'          => $def['label'],
 				$imageKey        => $imageContent,

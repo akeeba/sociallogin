@@ -1,5 +1,1 @@
-/*!
- *  @package   AkeebaSocialLogin
- *  @copyright Copyright (c)2016-2021 Nicholas K. Dionysopoulos / Akeeba Ltd
- *  @license   GNU General Public License version 3, or later
- */.akeeba-sociallogin-link-button-linkedin,.akeeba-sociallogin-unlink-button-linkedin,.akeeba-sociallogin-button-linkedin{background-color:#3077b0 !important;color:white !important;text-shadow:none !important;background-image:none !important;border:1px solid #999 !important;padding:8px 8px !important}.akeeba-sociallogin-link-button-linkedin img,.akeeba-sociallogin-unlink-button-linkedin img,.akeeba-sociallogin-button-linkedin img{display:inline-block !important;width:22px !important;height:16px !important;margin:0 .33em .1em 0 !important;padding:0 !important}.akeeba-sociallogin-button-linkedin--image img{display:revert;width:auto;height:auto}
+:root{--sociallogin-linkedin-bg:#3077b0;--sociallogin-linkedin-fg:white}.akeeba-sociallogin-link-button-linkedin,.akeeba-sociallogin-unlink-button-linkedin,.akeeba-sociallogin-button-linkedin{background-color:var(--sociallogin-linkedin-bg) !important;color:var(--sociallogin-linkedin-fg) !important}

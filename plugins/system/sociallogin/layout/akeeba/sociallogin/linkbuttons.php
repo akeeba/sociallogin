@@ -34,8 +34,10 @@ extract($array_merge);
 
 // Start writing your template override code below this line
 ?>
-<div class="akeeba-sociallogin-linkunlink-buttons">
+<div class="akeeba-sociallogin-linkunlink-buttons row row-cols-sm-2 row-cols-md-3">
 <?php foreach ($buttons as $button): ?>
-    <?php echo $button; ?>
+	<div class="col-sm p-1">
+    	<?php echo $button; ?>
+	</div>
 <?php endforeach; ?>
 </div>
