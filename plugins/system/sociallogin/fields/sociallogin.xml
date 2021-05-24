@@ -6,30 +6,31 @@
   -->
 
 <form addfieldpath="plugins/system/sociallogin/fields">
-	<fields name="sociallogin">
-		<fieldset name="sociallogin"
-			label="PLG_SYSTEM_SOCIALLOGIN_HEADER"
-		>
-			<field
-				name="sociallogin"
-				type="sociallogin"
-				label="PLG_SYSTEM_SOCIALLOGIN_FIELD_LABEL"
-				description="PLG_SYSTEM_SOCIALLOGIN_FIELD_DESC"
-				required="false"
-				readonly="false"
-				default=""
-			/>
+    <fields name="sociallogin">
+        <fieldset name="sociallogin"
+                  label="PLG_SYSTEM_SOCIALLOGIN_HEADER"
+                  addfieldpath="plugins/system/sociallogin/fields"
+        >
+            <field
+                    name="sociallogin"
+                    type="sociallogin"
+                    label="PLG_SYSTEM_SOCIALLOGIN_FIELD_LABEL"
+                    description="PLG_SYSTEM_SOCIALLOGIN_FIELD_DESC"
+                    required="false"
+                    readonly="false"
+                    default=""
+            />
 
-			<field name="dontremind"
-				   type="fancyradio"
-				   default="0"
-				   label="PLG_SYSTEM_SOCIALLOGIN_FIELD_DONTREMIND_LABEL"
-				   description="PLG_SYSTEM_SOCIALLOGIN_FIELD_DONTREMIND_DESC"
-				   class="switcher btn-group">
-				<option value="0">JNo</option>
-				<option value="1">JYes</option>
-			</field>
+            <field name="dontremind"
+                   type="fancyradio"
+                   default="0"
+                   label="PLG_SYSTEM_SOCIALLOGIN_FIELD_DONTREMIND_LABEL"
+                   description="PLG_SYSTEM_SOCIALLOGIN_FIELD_DONTREMIND_DESC"
+                   class="switcher btn-group">
+                <option value="0">JNo</option>
+                <option value="1">JYes</option>
+            </field>
 
-		</fieldset>
-	</fields>
+        </fieldset>
+    </fields>
 </form>
