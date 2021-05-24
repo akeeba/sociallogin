@@ -150,7 +150,7 @@ CSS;
 
 		$userData           = new UserData();
 		$userData->name     = implode(' ', $nameParts);
-		$userData->name     = empty($userData->name) ? 'John Doe' : $userData->name;
+		$userData->name     = $userData->name ?: 'John Doe';
 		$userData->id       = $socialProfile['id'];
 		$userData->verified = false;
 		$userData->email    = 'invalid@example.com';
