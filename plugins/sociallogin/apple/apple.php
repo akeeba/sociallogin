@@ -16,12 +16,10 @@ use Joomla\Plugin\System\SocialLogin\Library\Data\UserData;
 use Joomla\Plugin\System\SocialLogin\Library\Helper\Joomla;
 use Joomla\Plugin\System\SocialLogin\Library\OAuth\OAuth2Client;
 use Joomla\Plugin\System\SocialLogin\Library\Plugin\AbstractPlugin;
-use Lcobucci\JWT\Builder as JWTBuilder;
-use Lcobucci\JWT\Parser as JWTParser;
-use Lcobucci\JWT\Signer\Ecdsa\Sha256 as SignerE256;
-use Lcobucci\JWT\Signer\Key as SignerKey;
+use Lcobucci\JWT\Configuration as JWTConfig;
+use Lcobucci\JWT\Signer\Ecdsa\Sha256 as SignerES256;
+use Lcobucci\JWT\Signer\Key\InMemory;
 use Lcobucci\JWT\Token;
-use Lcobucci\JWT\ValidationData;
 
 if (!class_exists(AbstractPlugin::class, true))
 {
@@ -193,14 +191,17 @@ class plgSocialloginApple extends AbstractPlugin
 		}
 
 		// Parse the JWT token
-		$token = (new JWTParser())->parse($jwt);
+		$keyMaterial = $this->params->get('keyMaterial', '');
+		$config      = JWTConfig::forSymmetricSigner(SignerES256::create(), InMemory::plainText($keyMaterial));
+		$token       = $config->parser()->parse($jwt);
 
 		// Verify the token's signature – if we can connect to Apple's servers to retrieve the valid keys.
 		$keyJson   = @file_get_contents('https://appleid.apple.com/auth/keys');
-		$appleKeys = @json_decode($keyJson, true);
+		$appleKeys = @json_decode($keyJson ?: '[]', true);
 		$appleKeys = $appleKeys ?? [];
 		$jwkArray  = $appleKeys['keys'] ?? [];
 
+		// We don't use the validator directly because we need to check against ANY of the valid signatures.
 		if (!$this->validateJWTSignature($token, $jwkArray))
 		{
 			Joomla::log('apple', 'Invalid signature in received JWT: ' . $jwt, Log::ERROR);
@@ -209,19 +210,19 @@ class plgSocialloginApple extends AbstractPlugin
 		}
 
 		// Validate the issuer, audience and time of the token
-		$data = new ValidationData(time(), 30);
-		$data->setIssuer('https://appleid.apple.com');
-		$data->has('sub');
-		$data->setAudience($this->appId);
-
-		if (!$token->validate($data))
+		if (!$config->validator()->validate($token,
+			new \Lcobucci\JWT\Validation\Constraint\LooseValidAt(Lcobucci\Clock\SystemClock::fromUTC(), new DateInterval('PT30S')),
+			new \Lcobucci\JWT\Validation\Constraint\IssuedBy('https://appleid.apple.com'),
+			new \Lcobucci\JWT\Validation\Constraint\PermittedFor($this->appId)
+		))
 		{
 			throw new RuntimeException('The login response received lacks the necessary fields set by Apple.');
 		}
 
 		// Verify the nonce (Joomla's anti-CSRF token).
-		$nonceSupported = $token->getClaim('nonce_supported', false);
-		$nonce          = $token->getClaim('nonce', '');
+		$claims         = $token->claims();
+		$nonceSupported = $claims->get('nonce_supported', false);
+		$nonce          = $claims->get('nonce', '');
 
 		if ($nonceSupported && !Crypt::timingSafeCompare($this->app->getSession()->getToken(), $nonce))
 		{
@@ -229,9 +230,9 @@ class plgSocialloginApple extends AbstractPlugin
 		}
 
 		// Pass through information from the JWT. Note that the name is NEVER passed through the JWT (Apple doesn't have it)
-		$ret['id']       = $token->getClaim('sub', '');
-		$ret['email']    = $token->getClaim('email', '');
-		$ret['verified'] = ($token->getClaim('real_user_status', 0) == 2) || ($token->getClaim('email_verified', 'false') === 'true');
+		$ret['id']       = $claims->get('sub', '');
+		$ret['email']    = $claims->get('email', '');
+		$ret['verified'] = ($claims->get('real_user_status', 0) == 2) || ($claims->get('email_verified', 'false') === 'true');
 
 		return $ret;
 	}
@@ -303,8 +304,7 @@ class plgSocialloginApple extends AbstractPlugin
 			return '';
 		}
 
-		$signer     = new SignerE256();
-		$privateKey = new SignerKey($keyMaterial);
+		$config = JWTConfig::forSymmetricSigner(SignerES256::create(), InMemory::plainText($keyMaterial));
 
 		$time       = time();
 		$expiration = new DateTimeImmutable('@' . ($time + 3600));
@@ -312,15 +312,16 @@ class plgSocialloginApple extends AbstractPlugin
 
 		try
 		{
-			$token = (new JWTBuilder())->issuedBy($teamID)
+			$token = $config->builder()
+				->issuedBy($teamID)
 				->withHeader('kid', $keyID)
 				->permittedFor('https://appleid.apple.com')
 				->issuedAt($issuedAt)
 				->expiresAt($expiration)
 				->relatedTo($this->appId)
-				->getToken($signer, $privateKey);
+				->getToken($config->signer(), $config->signingKey());
 
-			return (string) $token;
+			return $token->toString();
 		}
 		catch (Exception $e)
 		{
@@ -347,13 +348,13 @@ class plgSocialloginApple extends AbstractPlugin
 	private function validateJWTSignature(Token $token, array $jwkArray): bool
 	{
 		// No keys? I will say it's valid.
-		if (empty($jwtArray))
+		if (empty($jwkArray))
 		{
 			return true;
 		}
 
 		// Get the correct signer based on the algorithm set in the JWT
-		switch ($token->getHeader('alg'))
+		switch ($token->headers()->get('alg'))
 		{
 			case 'RS256':
 			default:
@@ -369,15 +370,15 @@ class plgSocialloginApple extends AbstractPlugin
 				break;
 
 			case 'ES256':
-				$signer = new \Lcobucci\JWT\Signer\Ecdsa\Sha256();
+				$signer = \Lcobucci\JWT\Signer\Ecdsa\Sha256::create();
 				break;
 
 			case 'ES384':
-				$signer = new \Lcobucci\JWT\Signer\Ecdsa\Sha384();
+				$signer = \Lcobucci\JWT\Signer\Ecdsa\Sha384::create();
 				break;
 
 			case 'ES512':
-				$signer = new \Lcobucci\JWT\Signer\Ecdsa\Sha512();
+				$signer = \Lcobucci\JWT\Signer\Ecdsa\Sha512::create();
 				break;
 
 			case 'HS256':
@@ -393,7 +394,10 @@ class plgSocialloginApple extends AbstractPlugin
 				break;
 		}
 
-		$keyID        = $token->getHeader('kid');
+		$keyMaterial = $this->params->get('keyMaterial', '');
+		$config      = JWTConfig::forSymmetricSigner(SignerES256::create(), InMemory::plainText($keyMaterial));
+
+		$keyID        = $token->headers()->get('kid');
 		$jwkConverter = new \CoderCat\JWKToPEM\JWKConverter();
 
 		foreach ($jwkArray as $jwk)
@@ -405,10 +409,9 @@ class plgSocialloginApple extends AbstractPlugin
 			}
 
 			// Convert the JSON Web Key to PEM-encoded PKCS#8 format and validate the JWT's signature.
-			$pemFile  = $jwkConverter->toPEM($jwk);
-			$validKey = $token->verify($signer, $pemFile);
+			$pemFile = $jwkConverter->toPEM($jwk);
 
-			if ($validKey)
+			if ($config->validator()->validate($token, new \Lcobucci\JWT\Validation\Constraint\SignedWith($signer, InMemory::plainText($pemFile))))
 			{
 				return true;
 			}
