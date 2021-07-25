@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="SshConfigs">
+    <configs>
+      <sshConfig host="uk601.directrouter.com" id="044c8645-6c25-4fdb-be18-a98885dd89a3" keyPath="$USER_HOME$/.ssh/id_rsa" port="22" customName="Blog" nameFormat="CUSTOM" username="xsjwksuw">
+        <option name="customName" value="Blog" />
+      </sshConfig>
+    </configs>
+  </component>
+</project>

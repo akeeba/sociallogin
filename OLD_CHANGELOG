@@ -1,3 +1,9 @@
+Akeeba SocialLogin 3.2.8
+================================================================================
+# [MEDIUM] LinkedIn integration was not passing along the user's name correctly.
+# [LOW] Joomla 4.0 beta 7 changed how extra login button icons are handled. Again.
+# [LOW] Failed to work on PHP 7.2 due to a Composer version check.
+
 Akeeba SocialLogin 3.2.7
 ================================================================================
 + Yes/no fields now work correctly on Joomla 4.0 beta 7 and later
