@@ -2,3 +2,4 @@
 Akeeba SocialLogin 4.0.0
 ================================================================================
 ~ Rewritten for Joomla 4
+~ Bump minimum PHP version to 7.4

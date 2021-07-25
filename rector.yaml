@@ -17,8 +17,8 @@ parameters:
   # Custom autoloader for our classes
   autoload_paths:
     - 'tools/autoloader_for_rector.php'
-  # Use PHP 7.2 features only
-  php_version_features: '7.2'
+  # Use PHP 7.4 features only
+  php_version_features: '7.4'
   # Paths to include
   paths:
     - 'plugins'

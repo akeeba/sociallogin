@@ -19,7 +19,7 @@ class Pkg_SocialloginInstallerScript
 	 *
 	 * @var   string
 	 */
-	protected $minimumPHPVersion = '7.1.0';
+	protected $minimumPHPVersion = '7.4.0';
 
 	/**
 	 * The minimum Joomla! version required to install this extension
