@@ -1,4 +1,8 @@
 <?php die(); ?>
+Akeeba SocialLogin 3.2.9
+================================================================================
+# [HIGH] Uninstallation broken on Joomla 4 due to different installation script event handling.
+
 Akeeba SocialLogin 3.2.8
 ================================================================================
 # [MEDIUM] LinkedIn integration was not passing along the user's name correctly.
