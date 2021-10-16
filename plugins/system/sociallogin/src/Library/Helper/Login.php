@@ -12,25 +12,19 @@ defined('_JEXEC') || die();
 
 use Exception;
 use Joomla\Application\AbstractApplication;
-use Joomla\CMS\Application\ApplicationHelper;
-use Joomla\CMS\Application\ApplicationHelper as JApplicationHelper;
 use Joomla\CMS\Authentication\Authentication;
 use Joomla\CMS\Authentication\Authentication as JAuthentication;
 use Joomla\CMS\Authentication\AuthenticationResponse;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Component\ComponentHelper as JComponentHelper;
-use Joomla\CMS\Date\Date as JDate;
 use Joomla\CMS\Factory;
+use Joomla\CMS\Form\Form;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Log\Log as JLog;
 use Joomla\CMS\Plugin\PluginHelper;
-use Joomla\CMS\Router\Route as JRoute;
-use Joomla\CMS\String\PunycodeHelper;
-use Joomla\CMS\Uri\Uri as JUri;
 use Joomla\CMS\User\User as JUser;
 use Joomla\CMS\User\UserHelper;
-use Joomla\Event\Event;
 use Joomla\Plugin\System\SocialLogin\Library\Data\PluginConfiguration;
 use Joomla\Plugin\System\SocialLogin\Library\Data\UserData;
 use Joomla\Plugin\System\SocialLogin\Library\Exception\Login\GenericMessage;
@@ -422,7 +416,7 @@ abstract class Login
 		$data = [
 			'name'     => $name,
 			'username' => $username,
-			'email'    => $email,
+			'email1'    => $email,
 		];
 
 		// Save the timezone into the user parameters
@@ -562,375 +556,46 @@ abstract class Login
 			$app = Factory::getApplication();
 		}
 
-		// Load com_users language files
-		$lang = $app->getLanguage();
-		$lang->load('com_users', JPATH_BASE . '/components/com_users', 'en-GB', false, false);
-		$lang->load('com_users', JPATH_BASE, 'en-GB', false, false);
-		$lang->load('com_users', JPATH_BASE . '/components/com_users', null, false, false);
-		$lang->load('com_users', JPATH_BASE, null, false, false);
-
-		$params = self::getUsersParams();
+		$cParams = self::getUsersParams();
 
 		$data = array_merge([
-			'name'     => '',
-			'username' => '',
-			'password' => '',
-			'email'    => '',
-			'groups'   => [],
+			'name'      => '',
+			'username'  => '',
+			'password1' => UserHelper::genRandomPassword(24),
+			'email1'    => '',
+			'groups'    => [$cParams->get('new_usertype', 2)],
+			'params'    => $userParams,
 		], $data);
 
-		// Initialise the table with JUser.
-		$user = new JUser;
+		$data['email2']    = $data['email2'] ?? $data['email1'];
+		$data['password2'] = $data['password2'] ?? $data['password1'];
 
-		// If no password was specified create a random one
-		if (!isset($data['password']) || empty($data['password']))
-		{
-			$data['password'] = UserHelper::genRandomPassword(24);
-		}
+		$userActivation = $cParams->get('useractivation', 0);
 
-		// Convert the email to punycode if necessary
-		$data['email'] = PunycodeHelper::emailToPunycode($data['email']);
-
-		// Get the groups the user should be added to after registration.
-		$data['groups'] = [$params->get('new_usertype', 2)];
-
-		/**
-		 * Get the dispatcher and load the users plugins.
-		 *
-		 * IMPORTANT: We cannot go through the JApplicationCms object directly since user plugins will set the error
-		 * message on the dispatcher instead of throwing an exception. See the plugins/user/profile/profile.php plugin
-		 * file's onContentPrepareData method to understand this questionable approach. Until Joomla! stops supporting
-		 * legacy error handling we cannot switch to Joomla::runPlugins and a regular exceptions
-		 * handler around it :(
-		 */
-		$eventName = 'onContentPrepareData';
-
-		try
-		{
-			// Joomla! 4 method, using DispatcherInterface from the Events package
-			$appDispatcher = $app->getDispatcher();
-			$dispatcher    = clone $appDispatcher;
-
-			PluginHelper::importPlugin('user');
-
-			$event       = new Event($eventName, ['com_users.registration', $data]);
-			$eventReturn = $dispatcher->dispatch($eventName, $event);
-			$results     = !isset($eventReturn['result']) || is_null($eventReturn['result']) ? [] : $eventReturn['result'];
-		}
-		catch (Exception $e)
-		{
-			throw new RuntimeException($e->getMessage());
-		}
-
-		// Check for errors encountered while preparing the data. YOU CANNOT REMOVE THIS. READ THE BIG COMMENT ABOVE.
-		if (count($results) && in_array(false, $results, true))
-		{
-			throw new RuntimeException($dispatcher->getError());
-		}
-
-		// Get the parameters affecting the behavior
-		$userActivation   = $params->get('useractivation');
-		$sendPassword     = $params->get('sendpassword', 1);
-		$sendEmailToAdmin = $params->get('mail_to_admin');
-
-		// Do we have to forcibly skip user activation?
 		if ($skipUserActivation)
 		{
-			$userActivation = 0;
+			$cParams->set('useractivation', 0);
 		}
 
-		// Check if the user needs to activate their account.
-		if (($userActivation == 1) || ($userActivation == 2))
-		{
-			if (class_exists('Joomla\\CMS\\Application\\ApplicationHelper'))
-			{
-				$data['activation'] = ApplicationHelper::getHash(UserHelper::genRandomPassword(32));
-			}
-			else
-			{
-				$data['activation'] = JApplicationHelper::getHash(UserHelper::genRandomPassword(32));
-			}
+		$comUsersPath = JPATH_SITE . '/components/com_users';
 
-			$data['block'] = 1;
-		}
+		Form::addFormPath($comUsersPath . '/forms');
+		Form::addFormPath($comUsersPath . '/models/forms');
+		Form::addFieldPath($comUsersPath . '/models/fields');
+		Form::addFormPath($comUsersPath . '/model/form');
+		Form::addFieldPath($comUsersPath . '/model/field');
 
-		// Set the user parameters
-		$data['params'] = $userParams;
+		$app->getLanguage()->load('com_users');
 
-		// Bind the data.
-		if (!$user->bind($data))
-		{
-			throw new RuntimeException(Text::sprintf('COM_USERS_REGISTRATION_BIND_FAILED', $user->getError()));
-		}
+		/** @var \Joomla\Component\Users\Site\Model\RegistrationModel $registrationModel */
+		$registrationModel = $app->bootComponent('com_users')->getMVCFactory()
+			->createModel('Registration', 'Site', ['ignore_request' => true]);
 
-		// Load the users plugin group.
-		PluginHelper::importPlugin('user');
+		$return = $registrationModel->register($data);
 
-		// Store the data.
-		if (!$user->save())
-		{
-			throw new RuntimeException(Text::sprintf('COM_USERS_REGISTRATION_SAVE_FAILED', $user->getError()));
-		}
+		$cParams->set('useractivation', $userActivation);
 
-		$app   = Factory::getApplication();
-		$db    = Joomla::getDbo();
-		$query = $db->getQuery(true);
-
-		// Compile the notification mail values.
-		$data             = $user->getProperties();
-		$data['fromname'] = $app->get('fromname');
-		$data['mailfrom'] = $app->get('mailfrom');
-		$data['sitename'] = $app->get('sitename');
-		$data['siteurl']  = JUri::root();
-
-		// Handle account activation/confirmation emails.
-		$isAdmin = $app->isClient('administrator');
-
-		switch ($userActivation)
-		{
-			// Self-activation of user account
-			default:
-			case 2:
-				// Set the link to confirm the user email.
-				$uri              = JUri::getInstance();
-				$base             = $uri->toString(['scheme', 'user', 'pass', 'host', 'port']);
-				$data['activate'] = $base . JRoute::_('index.php?option=com_users&task=registration.activate&token=' . $data['activation'], false);
-
-				// Remove administrator/ from activate url in case this method is called from admin
-				if ($isAdmin)
-				{
-					$adminPos         = strrpos($data['activate'], 'administrator/');
-					$data['activate'] = substr_replace($data['activate'], '', $adminPos, 14);
-				}
-
-				$emailSubject = Text::sprintf(
-					'COM_USERS_EMAIL_ACCOUNT_DETAILS',
-					$data['name'],
-					$data['sitename']
-				);
-
-				$emailBody = Text::sprintf(
-					'COM_USERS_EMAIL_REGISTERED_WITH_ADMIN_ACTIVATION_BODY_NOPW',
-					$data['name'],
-					$data['sitename'],
-					$data['activate'],
-					$data['siteurl'],
-					$data['username']
-				);
-
-				if ($sendPassword)
-				{
-					$emailBody = Text::sprintf(
-						'COM_USERS_EMAIL_REGISTERED_WITH_ADMIN_ACTIVATION_BODY',
-						$data['name'],
-						$data['sitename'],
-						$data['activate'],
-						$data['siteurl'],
-						$data['username'],
-						$data['password_clear']
-					);
-				}
-				break;
-
-			// Administrator activation of user account
-			case 1:
-				// Set the link to activate the user account.
-				$uri              = JUri::getInstance();
-				$base             = $uri->toString(['scheme', 'user', 'pass', 'host', 'port']);
-				$data['activate'] = $base . JRoute::_('index.php?option=com_users&task=registration.activate&token=' . $data['activation'], false);
-
-				// Remove administrator/ from activate url in case this method is called from admin
-				if ($isAdmin)
-				{
-					$adminPos         = strrpos($data['activate'], 'administrator/');
-					$data['activate'] = substr_replace($data['activate'], '', $adminPos, 14);
-				}
-
-				$emailSubject = Text::sprintf(
-					'COM_USERS_EMAIL_ACCOUNT_DETAILS',
-					$data['name'],
-					$data['sitename']
-				);
-
-				$emailBody = Text::sprintf(
-					'COM_USERS_EMAIL_REGISTERED_WITH_ACTIVATION_BODY_NOPW',
-					$data['name'],
-					$data['sitename'],
-					$data['activate'],
-					$data['siteurl'],
-					$data['username']
-				);
-
-				if ($sendPassword)
-				{
-					$emailBody = Text::sprintf(
-						'COM_USERS_EMAIL_REGISTERED_WITH_ACTIVATION_BODY',
-						$data['name'],
-						$data['sitename'],
-						$data['activate'],
-						$data['siteurl'],
-						$data['username'],
-						$data['password_clear']
-					);
-				}
-
-				break;
-
-			// No activation required
-			case 0:
-				$emailSubject = Text::sprintf(
-					'COM_USERS_EMAIL_ACCOUNT_DETAILS',
-					$data['name'],
-					$data['sitename']
-				);
-
-				$emailBody = Text::sprintf(
-					'COM_USERS_EMAIL_REGISTERED_BODY_NOPW',
-					$data['name'],
-					$data['sitename'],
-					$data['siteurl']
-				);
-
-				if ($sendPassword)
-				{
-					$emailBody = Text::sprintf(
-						'COM_USERS_EMAIL_REGISTERED_BODY',
-						$data['name'],
-						$data['sitename'],
-						$data['siteurl'],
-						$data['username'],
-						$data['password_clear']
-					);
-				}
-
-				break;
-		}
-
-		// Send the registration email.
-		$return = Factory::getMailer()
-			->sendMail($data['mailfrom'], $data['fromname'], $data['email'], $emailSubject, $emailBody);
-
-		// Send Notification mail to administrators
-		if (($userActivation < 2) && ($sendEmailToAdmin == 1))
-		{
-			$emailSubject = Text::sprintf(
-				'COM_USERS_EMAIL_ACCOUNT_DETAILS',
-				$data['name'],
-				$data['sitename']
-			);
-
-			$emailBodyAdmin = Text::sprintf(
-				'COM_USERS_EMAIL_REGISTERED_NOTIFICATION_TO_ADMIN_BODY',
-				$data['name'],
-				$data['username'],
-				$data['siteurl']
-			);
-
-			// Get all admin users
-			$query->clear()
-				->select($db->quoteName(['name', 'email', 'sendEmail']))
-				->from($db->quoteName('#__users'))
-				->where($db->quoteName('sendEmail') . ' = 1')
-				->where($db->quoteName('block') . ' = 0');
-
-			$db->setQuery($query);
-
-			try
-			{
-				$rows = $db->loadObjectList();
-			}
-			catch (RuntimeException $e)
-			{
-				throw new RuntimeException(Text::sprintf('COM_USERS_DATABASE_ERROR', $e->getMessage()), 500);
-			}
-
-			// Send mail to all Super Users
-			foreach ($rows as $row)
-			{
-				$return = Factory::getMailer()
-					->sendMail($data['mailfrom'], $data['fromname'], $row->email, $emailSubject, $emailBodyAdmin);
-
-				// Check for an error.
-				if ($return !== true)
-				{
-					throw new RuntimeException(Text::_('COM_USERS_REGISTRATION_ACTIVATION_NOTIFY_SEND_MAIL_FAILED'));
-				}
-			}
-		}
-
-		// Check for an error.
-		if ($return !== true)
-		{
-			// Send a system message to administrators receiving system mails
-			$db = Joomla::getDbo();
-			$query->clear()
-				->select($db->qn('id'))
-				->from($db->qn('#__users'))
-				->where($db->qn('block') . ' = ' . (int) 0)
-				->where($db->qn('sendEmail') . ' = ' . (int) 1);
-			$db->setQuery($query);
-
-			try
-			{
-				$userids = $db->loadColumn();
-			}
-			catch (RuntimeException $e)
-			{
-				throw new RuntimeException(Text::sprintf('COM_USERS_DATABASE_ERROR', $e->getMessage()), 500);
-			}
-
-			if ((is_array($userids) || $userids instanceof \Countable ? count($userids) : 0) > 0)
-			{
-				$jdate = new JDate;
-
-				// Build the query to add the messages
-				foreach ($userids as $userid)
-				{
-					$values = [
-						$db->quote($userid),
-						$db->quote($userid),
-						$db->quote($jdate->toSql()),
-						$db->quote(Text::_('COM_USERS_MAIL_SEND_FAILURE_SUBJECT')),
-						$db->quote(Text::sprintf('COM_USERS_MAIL_SEND_FAILURE_BODY', $return, $data['username'])),
-					];
-					$query->clear()
-						->insert($db->quoteName('#__messages'))
-						->columns($db->quoteName([
-							'user_id_from',
-							'user_id_to',
-							'date_time',
-							'subject',
-							'message',
-						]))
-						->values(implode(',', $values));
-					$db->setQuery($query);
-
-					try
-					{
-						$db->execute();
-					}
-					catch (RuntimeException $e)
-					{
-						throw new RuntimeException(Text::sprintf('COM_USERS_DATABASE_ERROR', $e->getMessage()), 500);
-					}
-				}
-			}
-
-			throw new RuntimeException(Text::_('COM_USERS_REGISTRATION_SEND_MAIL_FAILED'));
-		}
-
-		if ($userActivation == 1)
-		{
-			return 'useractivate';
-		}
-		elseif ($userActivation == 2)
-		{
-			return 'adminactivate';
-		}
-		else
-		{
-			return $user->id;
-		}
+		return $return;
 	}
 
 }

@@ -2,6 +2,7 @@
 Akeeba SocialLogin 4.0.1
 ================================================================================
 # [MEDIUM] SVG images do not display on sites installed in subdirectories
+# [MEDIUM] User registration email sent with raw language strings instead of going through com_mails
 
 Akeeba SocialLogin 4.0.0
 ================================================================================
