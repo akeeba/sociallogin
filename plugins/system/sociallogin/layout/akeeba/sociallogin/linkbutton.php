@@ -10,6 +10,7 @@ defined('_JEXEC') || die();
 
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Layout\FileLayout;
+use Joomla\CMS\Uri\Uri;
 
 $array_merge = array_merge(array(
 	'slug'       => '',
@@ -50,7 +51,9 @@ extract($array_merge);
 
 if (substr($rawimage, -4) === '.svg')
 {
-	$img = file_get_contents(JPATH_ROOT . HTMLHelper::_('image', $rawimage, '', null, true, true));
+	$image = HTMLHelper::_('image', $rawimage, '', '', true, true);
+	$image = $image ? JPATH_ROOT . substr($image, \strlen(Uri::root(true))) : '';
+	$img   = file_get_contents($image);
 }
 
 // Start writing your template override code below this line

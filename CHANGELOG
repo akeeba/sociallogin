@@ -1,4 +1,8 @@
 <?php die(); ?>
+Akeeba SocialLogin 4.0.1
+================================================================================
+# [MEDIUM] SVG images do not display on sites installed in subdirectories
+
 Akeeba SocialLogin 4.0.0
 ================================================================================
 ~ Rewritten for Joomla 4

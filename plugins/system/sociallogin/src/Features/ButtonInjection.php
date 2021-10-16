@@ -13,6 +13,7 @@ defined('_JEXEC') || die;
 use Exception;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Router\Route;
+use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\User\UserHelper;
 use Joomla\Plugin\System\SocialLogin\Library\Helper\Integrations;
 use Joomla\Plugin\System\SocialLogin\Library\Helper\Joomla;
@@ -74,7 +75,9 @@ trait ButtonInjection
 			if (substr($def['rawimage'], -4) === '.svg')
 			{
 				$imageKey     = 'svg';
-				$imageContent = file_get_contents(JPATH_ROOT . HTMLHelper::_('image', $def['rawimage'], $def['label'], null, true, true));
+				$image        = HTMLHelper::_('image', $def['rawimage'], '', '', true, true);
+				$image        = $image ? JPATH_ROOT . substr($image, \strlen(Uri::root(true))) : '';
+				$imageContent = file_get_contents($image);
 			}
 
 			return [
