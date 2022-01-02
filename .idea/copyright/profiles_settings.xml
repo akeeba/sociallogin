@@ -3,5 +3,9 @@
     <module2copyright>
       <element module="Copyright" copyright="Akeeba" />
     </module2copyright>
+    <LanguageOptions name="__TEMPLATE__">
+      <option name="separateBefore" value="true" />
+      <option name="lenBefore" value="1" />
+    </LanguageOptions>
   </settings>
 </component>
