@@ -1,4 +1,8 @@
 <?php die(); ?>
+Akeeba SocialLogin 4.0.3
+================================================================================
+# [HIGH] PHP exception on login page / module on Joomla 4.2 if the Apple plugin is enabled
+
 Akeeba SocialLogin 4.0.2
 ================================================================================
 # [MEDIUM] Could not install on Joomla 4.1

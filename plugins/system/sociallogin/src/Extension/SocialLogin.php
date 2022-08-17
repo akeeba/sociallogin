@@ -11,6 +11,7 @@ namespace Joomla\Plugin\System\SocialLogin\Extension;
 defined('_JEXEC') || die;
 
 use Exception;
+use JLoader;
 use Joomla\Plugin\System\SocialLogin\Features\Ajax;
 use Joomla\Plugin\System\SocialLogin\Features\ButtonInjection;
 use Joomla\Plugin\System\SocialLogin\Features\DynamicUsergroups;
@@ -69,7 +70,14 @@ class SocialLogin extends CMSPlugin
 		parent::__construct($subject, $config);
 
 		// Register the Composer autoloader
-		require_once __DIR__ . '/../../vendor/autoload.php';
+		if (version_compare(JVERSION, '4.2', 'lt'))
+		{
+			require_once __DIR__ . '/../../vendor/autoload.php';
+		}
+		else
+		{
+			JLoader::registerNamespace('CoderCat\\JWKToPEM', __DIR__ . '/../../vendor/codercat/jwk-to-pem/src');
+		}
 
 		Joomla::addLogger('system');
 

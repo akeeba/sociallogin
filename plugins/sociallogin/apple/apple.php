@@ -192,7 +192,9 @@ class plgSocialloginApple extends AbstractPlugin
 
 		// Parse the JWT token
 		$keyMaterial = $this->params->get('keyMaterial', '');
-		$config      = JWTConfig::forSymmetricSigner(SignerES256::create(), InMemory::plainText($keyMaterial));
+		$config      = version_compare(JVERSION, '4.2.0', 'lt')
+			? JWTConfig::forSymmetricSigner(SignerES256::create(), InMemory::plainText($keyMaterial))
+			: JWTConfig::forSymmetricSigner(new SignerES256(null), InMemory::plainText($keyMaterial));
 		$token       = $config->parser()->parse($jwt);
 
 		// Verify the token's signature – if we can connect to Apple's servers to retrieve the valid keys.
@@ -304,7 +306,9 @@ class plgSocialloginApple extends AbstractPlugin
 			return '';
 		}
 
-		$config = JWTConfig::forSymmetricSigner(SignerES256::create(), InMemory::plainText($keyMaterial));
+		$config      = version_compare(JVERSION, '4.2.0', 'lt')
+			? JWTConfig::forSymmetricSigner(SignerES256::create(), InMemory::plainText($keyMaterial))
+			: JWTConfig::forSymmetricSigner(new SignerES256(null), InMemory::plainText($keyMaterial));
 
 		$time       = time();
 		$expiration = new DateTimeImmutable('@' . ($time + 3600));
@@ -395,7 +399,9 @@ class plgSocialloginApple extends AbstractPlugin
 		}
 
 		$keyMaterial = $this->params->get('keyMaterial', '');
-		$config      = JWTConfig::forSymmetricSigner(SignerES256::create(), InMemory::plainText($keyMaterial));
+		$config      = version_compare(JVERSION, '4.2.0', 'lt')
+			? JWTConfig::forSymmetricSigner(SignerES256::create(), InMemory::plainText($keyMaterial))
+			: JWTConfig::forSymmetricSigner(new SignerES256(null), InMemory::plainText($keyMaterial));
 
 		$keyID        = $token->headers()->get('kid');
 		$jwkConverter = new \CoderCat\JWKToPEM\JWKConverter();
