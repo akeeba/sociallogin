@@ -153,11 +153,11 @@ abstract class AbstractPlugin extends CMSPlugin
 		Joomla::addLogger($this->integrationName);
 
 		// Load the plugin options into properties
-		$this->canLoginUnlinked    = $this->params->get('loginunlinked', false);
-		$this->canCreateNewUsers   = $this->params->get('createnew', false);
-		$this->canCreateAlways     = $this->params->get('forcenew', true);
-		$this->canBypassValidation = $this->params->get('bypassvalidation', true);
-		$this->useCustomCSS        = $this->params->get('customcss', true);
+		$this->canLoginUnlinked    = $this->params->get('loginunlinked', 0) != 0;
+		$this->canCreateNewUsers   = $this->params->get('createnew', 0) != 0;
+		$this->canCreateAlways     = $this->params->get('forcenew', 1) != 0;
+		$this->canBypassValidation = $this->params->get('bypassvalidation', 1) != 0;
+		$this->useCustomCSS        = $this->params->get('customcss', 1) != 0;
 		$this->appId               = $this->params->get('appid', '');
 		$this->appSecret           = $this->params->get('appsecret', '');
 		$this->bgColor             = $this->params->get('bgcolor', $this->bgColor);

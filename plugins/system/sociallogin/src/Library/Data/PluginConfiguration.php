@@ -93,7 +93,7 @@ final class PluginConfiguration
 			case 'canLoginUnlinked':
 			case 'canCreateNewUsers':
 			case 'canCreateAlways':
-			case 'canByPassValidation':
+			case 'canBypassValidation':
 				$this->{$name} = (bool) $value;
 				break;
 		}

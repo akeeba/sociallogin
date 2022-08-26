@@ -1,4 +1,8 @@
 <?php die(); ?>
+Akeeba SocialLogin 4.0.4
+================================================================================
+# [LOW] The “Bypass user validation” option was not applied
+
 Akeeba SocialLogin 4.0.3
 ================================================================================
 # [HIGH] PHP exception on login page / module on Joomla 4.2 if the Apple plugin is enabled
