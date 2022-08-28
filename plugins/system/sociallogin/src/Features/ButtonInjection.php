@@ -12,6 +12,7 @@ defined('_JEXEC') || die;
 
 use Exception;
 use Joomla\CMS\HTML\HTMLHelper;
+use Joomla\CMS\Log\Log;
 use Joomla\CMS\Router\Route;
 use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\User\UserHelper;
@@ -57,7 +58,11 @@ trait ButtonInjection
 		}
 
 		// Append the social login buttons content
-		Joomla::log('system', "Injecting buttons using the Joomla 4 way.");
+		Log::add(
+			'Injecting buttons using the Joomla 4 way.',
+			Log::DEBUG,
+			'sociallogin.system'
+		);
 
 		$this->includeJ4ButtonHandler();
 

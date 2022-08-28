@@ -201,7 +201,11 @@ abstract class AbstractPlugin extends CMSPlugin implements SubscriberInterface
 	 */
 	public function onSocialLoginAjax(?Event $e = null): void
 	{
-		Joomla::log($this->integrationName, 'Begin handing of authentication callback');
+		Log::add(
+			'Begin handing of authentication callback',
+			Log::DEBUG,
+			'sociallogin.' . $this->integrationName
+		);
 
 		$returnURL  = $this->app->getSession()->get('plg_system_sociallogin.returnUrl', Uri::base());
 		$loginUrl   = $this->app->getSession()->get('plg_sociallogin_' . $this->integrationName . '.loginUrl', $returnURL);
@@ -230,13 +234,21 @@ abstract class AbstractPlugin extends CMSPlugin implements SubscriberInterface
 		{
 			try
 			{
-				Joomla::log($this->integrationName, 'Receive token from the social network', Log::INFO);
+				Log::add(
+					'Receive token from the social network',
+					Log::INFO,
+					'sociallogin.' . $this->integrationName
+				);
 
 				[$token, $connector] = $this->getToken();
 
 				if ($token === false)
 				{
-					Joomla::log($this->integrationName, 'Received token from social network is invalid or the user has declined application authorization', Log::ERROR);
+					Log::add(
+						'Received token from social network is invalid or the user has declined application authorization',
+						Log::ERROR,
+						'sociallogin.' . $this->integrationName
+					);
 
 					$errorMessage = Text::_(sprintf('PLG_SOCIALLOGIN_%s_ERROR_NOT_LOGGED_IN_FB', $this->integrationName));
 
@@ -254,7 +266,11 @@ abstract class AbstractPlugin extends CMSPlugin implements SubscriberInterface
 				}
 
 				// Get information about the user from the social network
-				Joomla::log($this->integrationName, 'Retrieving social network profile information', Log::INFO);
+				Log::add(
+					'Retrieving social network profile information',
+					Log::INFO,
+					'sociallogin.' . $this->integrationName
+				);
 
 				$socialUserProfile = $this->getSocialNetworkProfileInformation($connector);
 
@@ -265,12 +281,26 @@ abstract class AbstractPlugin extends CMSPlugin implements SubscriberInterface
 			}
 			catch (Exception $e)
 			{
-				Joomla::log($this->integrationName, "Returning login error '{$e->getMessage()}'", Log::ERROR);
+				Log::add(
+					sprintf(
+						"Returning login error '%s'",
+						$e->getMessage()
+					),
+					Log::ERROR,
+					'sociallogin.' . $this->integrationName
+				);
 
 				throw new LoginError($e->getMessage());
 			}
 
-			Joomla::log($this->integrationName, sprintf("Retrieved information: %s", ArrayHelper::toString($socialUserProfile)));
+			Log::add(
+				sprintf(
+					'Retrieved information: %s',
+					ArrayHelper::toString($socialUserProfile)
+				),
+				Log::DEBUG,
+				'sociallogin.' . $this->integrationName
+			);
 
 			// The data used to log in or create a user
 			$userData = $this->mapSocialProfileToUserData($socialUserProfile);
@@ -297,7 +327,14 @@ abstract class AbstractPlugin extends CMSPlugin implements SubscriberInterface
 				unset($userProfileData['pictureUrl']);
 			}
 
-			Joomla::log($this->integrationName, sprintf("Calling Social Login login handler with the following information: %s", ArrayHelper::toString($userProfileData)));
+			Log::add(
+				sprintf(
+					'Calling Social Login login handler with the following information: %s',
+					ArrayHelper::toString($userProfileData)
+				),
+				Log::DEBUG,
+				'sociallogin.' . $this->integrationName
+			);
 
 			$this->handleSocialLogin($this->integrationName, $pluginConfiguration, $userData, $userProfileData);
 		}
@@ -308,7 +345,14 @@ abstract class AbstractPlugin extends CMSPlugin implements SubscriberInterface
 			$response->status        = Authentication::STATUS_UNKNOWN;
 			$response->error_message = $e->getMessage();
 
-			Joomla::log($this->integrationName, sprintf("Received login failure. Message: %s", $e->getMessage()), Log::ERROR);
+			Log::add(
+				sprintf(
+					"Received login failure. Message: %s",
+					$e->getMessage()
+				),
+				Log::ERROR,
+				'sociallogin.' . $this->integrationName
+			);
 
 			// This also enqueues the login failure message for display after redirection. Look for JLog in that method.
 			$this->processLoginFailure($response, $this->integrationName);
@@ -320,15 +364,39 @@ abstract class AbstractPlugin extends CMSPlugin implements SubscriberInterface
 		catch (GenericMessage $e)
 		{
 			// Do NOT go through processLoginFailure. This is NOT a login failure.
-			Joomla::log($this->integrationName, sprintf("Report non-login failure message to user: %s", $e->getMessage()), Log::NOTICE);
-			Joomla::log($this->integrationName, sprintf("Redirecting to %s", $failureUrl));
+			Log::add(
+				sprintf(
+					'Report non-login failure message to user: %s',
+					$e->getMessage()
+				),
+				Log::NOTICE,
+				'sociallogin.' . $this->integrationName
+			);
+
+			Log::add(
+				sprintf(
+					'Redirecting to %s',
+					$failureUrl
+				),
+				Log::DEBUG,
+				'sociallogin.' . $this->integrationName
+			);
+
 			$app->enqueueMessage($e->getMessage(), 'info');
 			$app->redirect($failureUrl);
 
 			return;
 		}
 
-		Joomla::log($this->integrationName, sprintf("Successful login. Redirecting to %s", $loginUrl), Log::INFO);
+		Log::add(
+			sprintf(
+				'Successful login. Redirecting to %s',
+				$loginUrl
+			),
+			Log::INFO,
+			'sociallogin.' . $this->integrationName
+		);
+
 		$app->redirect($loginUrl);
 	}
 

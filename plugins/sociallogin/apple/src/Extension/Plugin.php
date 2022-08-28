@@ -178,7 +178,14 @@ class Plugin extends AbstractPlugin
 		// We don't use the validator directly because we need to check against ANY of the valid signatures.
 		if (!$this->validateJWTSignature($token, $jwkArray))
 		{
-			Joomla::log('apple', 'Invalid signature in received JWT: ' . $jwt, Log::ERROR);
+			Log::add(
+				sprintf(
+					'Invalid signature in received JWT: %s',
+					$jwt
+				),
+				Log::ERROR,
+				'sociallogin.apple'
+			);
 
 			throw new RuntimeException('The login response received is not signed properly by Apple.');
 		}

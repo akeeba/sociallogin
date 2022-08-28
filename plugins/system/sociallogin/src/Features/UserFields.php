@@ -12,6 +12,7 @@ defined('_JEXEC') || die;
 
 use Exception;
 use Joomla\CMS\Form\Form as JForm;
+use Joomla\CMS\Log\Log;
 use Joomla\CMS\Table\Menu;
 use Joomla\CMS\Table\Table;
 use Joomla\CMS\Uri\Uri;
@@ -193,7 +194,12 @@ trait UserFields
 		}
 
 		// Add the fields to the form. The custom Sociallogin field uses the Integrations to render the buttons.
-		Joomla::log('system', 'Injecting Social Login fields in user profile edit page');
+		Log::add(
+			'Injecting Social Login fields in user profile edit page',
+			Log::DEBUG,
+			'sociallogin.system'
+		);
+
 		$this->loadLanguage();
 		JForm::addFormPath(__DIR__ . '/../../forms');
 		$form->loadFile('sociallogin', false);
@@ -239,12 +245,13 @@ trait UserFields
 
 		if ($userId)
 		{
-			Joomla::log(
-				'system',
+			Log::add(
 				sprintf(
 					'Removing Social Login information for deleted user #%s',
 					$userId
-				)
+				),
+				Log::DEBUG,
+				'sociallogin.system'
 			);
 			$db = Joomla::getDbo();
 

@@ -1,8 +1,8 @@
 <?php
 /**
- *  @package   AkeebaSocialLogin
- *  @copyright Copyright (c)2016-2022 Nicholas K. Dionysopoulos / Akeeba Ltd
- *  @license   GNU General Public License version 3, or later
+ * @package   AkeebaSocialLogin
+ * @copyright Copyright (c)2016-2022 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @license   GNU General Public License version 3, or later
  */
 
 namespace Joomla\Plugin\System\SocialLogin\Features;
@@ -11,6 +11,7 @@ namespace Joomla\Plugin\System\SocialLogin\Features;
 defined('_JEXEC') || die;
 
 use Exception;
+use Joomla\CMS\Log\Log;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Uri\Uri;
 use Joomla\Event\Event;
@@ -19,8 +20,8 @@ use Joomla\Plugin\System\SocialLogin\Library\Helper\Joomla;
 /**
  * Feature: AJAX request handling
  *
- * @package Akeeba\SocialLogin\Features
  * @since   3.0.1
+ * @package Akeeba\SocialLogin\Features
  */
 trait Ajax
 {
@@ -101,12 +102,25 @@ trait Ajax
 
 		try
 		{
-			Joomla::log('system', "Received AJAX callback.");
+			Log::add(
+				'Received AJAX callback.',
+				Log::DEBUG,
+				'sociallogin.system'
+			);
+
 			$result = $ajax->handle($app);
 		}
 		catch (Exception $e)
 		{
-			Joomla::log('system', "Callback failure, redirecting to $returnURL.");
+			Log::add(
+				sprintf(
+					'Callback failure, redirecting to %s.',
+					$returnURL
+				),
+				Log::DEBUG,
+				'sociallogin.system'
+			);
+
 			$app->enqueueMessage($e->getMessage(), 'error');
 			$app->redirect($returnURL);
 
@@ -119,19 +133,34 @@ trait Ajax
 			{
 				default:
 				case 'json':
-					Joomla::log('system', "Callback complete, returning JSON.");
+					Log::add(
+						'Callback complete, returning JSON.',
+						Log::DEBUG,
+						'sociallogin.system'
+					);
+
 					echo json_encode($result);
 
 					break;
 
 				case 'jsonhash':
-					Joomla::log('system', "Callback complete, returning JSON inside ### markers.");
+					Log::add(
+						'Callback complete, returning JSON inside ### markers.',
+						Log::DEBUG,
+						'sociallogin.system'
+					);
+
 					echo '###' . json_encode($result) . '###';
 
 					break;
 
 				case 'raw':
-					Joomla::log('system', "Callback complete, returning raw response.");
+					Log::add(
+						'Callback complete, returning raw response.',
+						Log::DEBUG,
+						'sociallogin.system'
+					);
+
 					echo $result;
 
 					break;
@@ -149,24 +178,27 @@ trait Ajax
 
 					if (isset($result['url']))
 					{
-						Joomla::log(
-							'system',
+						Log::add(
 							sprintf(
 								'Callback complete, performing redirection to %s%s.',
 								$result['url'], $modifiers
-							)
+							),
+							Log::DEBUG,
+							'sociallogin.system'
 						);
+
 						$app->redirect($result['url']);
 					}
 
-
-					Joomla::log(
-						'system',
+					Log::add(
 						sprintf(
 							'Callback complete, performing redirection to %s%s.',
 							$result, $modifiers
-						)
+						),
+						Log::DEBUG,
+						'sociallogin.system'
 					);
+
 					$app->redirect($result);
 
 					return;
@@ -175,7 +207,14 @@ trait Ajax
 			$app->close(200);
 		}
 
-		Joomla::log('system', "Null response from AJAX callback, redirecting to $returnURL");
+		Log::add(
+			sprintf(
+				'Null response from AJAX callback, redirecting to %s',
+				$returnURL
+			),
+			Log::DEBUG,
+			'sociallogin.system'
+		);
 
 		$app->redirect($returnURL);
 	}

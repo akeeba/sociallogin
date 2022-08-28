@@ -31,7 +31,7 @@ abstract class Joomla
 	 *
 	 * @var   bool
 	 */
-	protected static $isAdmin = null;
+	protected static ?bool $isAdmin = null;
 
 	/**
 	 * Which plugins have already registered a text file logger. Prevents double registration of a log file.
@@ -39,7 +39,7 @@ abstract class Joomla
 	 * @var   array
 	 * @since 2.1.0
 	 */
-	protected static $registeredLoggers = [];
+	protected static array $registeredLoggers = [];
 
 	/**
 	 * Is the current user allowed to edit the social login configuration of $user? To do so I must either be editing my
@@ -193,22 +193,6 @@ abstract class Joomla
 	public static function getDbo()
 	{
 		return Factory::getContainer()->get('DatabaseDriver') ?: Factory::getDbo();
-	}
-
-	/**
-	 * Writes a log message to the debug log
-	 *
-	 * @param   string  $plugin    The Social Login plugin which generated this log message
-	 * @param   string  $message   The message to write to the log
-	 * @param   int     $priority  Log message priority, default is Log::DEBUG
-	 *
-	 * @return  void
-	 *
-	 * @since   2.1.0
-	 */
-	public static function log($plugin, $message, $priority = Log::DEBUG)
-	{
-		Log::add($message, $priority, 'sociallogin.' . $plugin);
 	}
 
 	/**
