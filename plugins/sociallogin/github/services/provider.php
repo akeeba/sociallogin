@@ -12,7 +12,6 @@ use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\DI\Container;
 use Joomla\DI\ServiceProviderInterface;
 use Joomla\Event\DispatcherInterface;
-use Joomla\Plugin\System\SocialLogin\Extension\SocialLogin;
 
 return new class implements ServiceProviderInterface {
 	/**
@@ -22,7 +21,7 @@ return new class implements ServiceProviderInterface {
 	 *
 	 * @return  void
 	 *
-	 * @since   4.0.0
+	 * @since   4.1.0
 	 */
 	public function register(Container $container)
 	{
@@ -30,9 +29,9 @@ return new class implements ServiceProviderInterface {
 			PluginInterface::class,
 			function (Container $container) {
 				$subject = $container->get(DispatcherInterface::class);
-				$config  = (array) PluginHelper::getPlugin('system', 'sociallogin');
+				$config  = (array) PluginHelper::getPlugin('sociallogin', 'github');
 
-				return new SocialLogin($subject, $config);
+				return new Joomla\Plugin\Sociallogin\Github\Extension\Plugin($subject, $config);
 			}
 		);
 	}
