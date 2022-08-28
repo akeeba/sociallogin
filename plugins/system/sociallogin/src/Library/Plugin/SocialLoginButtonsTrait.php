@@ -13,7 +13,6 @@ use Joomla\CMS\Document\HtmlDocument;
 use Joomla\CMS\Layout\FileLayout;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\User\User;
-use Joomla\Plugin\System\SocialLogin\Library\Helper\Joomla;
 
 trait SocialLoginButtonsTrait
 {
@@ -41,7 +40,7 @@ trait SocialLoginButtonsTrait
 
 		PluginHelper::importPlugin('sociallogin');
 
-		$buttonDefinitions = Joomla::runPlugins('onSocialLoginGetLinkButton', [$user], $app);
+		$buttonDefinitions = $this->runPlugins('onSocialLoginGetLinkButton', [$user], $app);
 		$buttonsHTML       = [];
 
 		$this->customCss($buttonDefinitions);
@@ -97,7 +96,7 @@ trait SocialLoginButtonsTrait
 
 		PluginHelper::importPlugin('sociallogin');
 
-		$buttonDefinitions = Joomla::runPlugins('onSocialLoginGetLoginButton', [
+		$buttonDefinitions = $this->runPlugins('onSocialLoginGetLoginButton', [
 			$loginURL,
 			$failureURL,
 		], $app);

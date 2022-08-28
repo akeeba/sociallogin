@@ -27,6 +27,7 @@ use Joomla\Plugin\System\SocialLogin\Features\ButtonInjection;
 use Joomla\Plugin\System\SocialLogin\Features\DynamicUsergroups;
 use Joomla\Plugin\System\SocialLogin\Features\UserFields;
 use Joomla\Plugin\System\SocialLogin\Library\Plugin\AddLoggerTrait;
+use Joomla\Plugin\System\SocialLogin\Library\Plugin\RunPluginsTrait;
 use Joomla\Plugin\System\SocialLogin\Library\Plugin\SocialLoginButtonsTrait;
 
 class SocialLogin extends CMSPlugin implements SubscriberInterface
@@ -41,6 +42,7 @@ class SocialLogin extends CMSPlugin implements SubscriberInterface
 	use UserFields;
 	use AddLoggerTrait;
 	use SocialLoginButtonsTrait;
+	use RunPluginsTrait;
 
 	/** @var CMSApplication|SiteApplication|AdministratorApplication */
 	public $app;

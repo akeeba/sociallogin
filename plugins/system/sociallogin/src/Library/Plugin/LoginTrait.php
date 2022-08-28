@@ -24,7 +24,6 @@ use Joomla\Plugin\System\SocialLogin\Library\Data\PluginConfiguration;
 use Joomla\Plugin\System\SocialLogin\Library\Data\UserData;
 use Joomla\Plugin\System\SocialLogin\Library\Exception\Login\GenericMessage;
 use Joomla\Plugin\System\SocialLogin\Library\Exception\Login\LoginError;
-use Joomla\Plugin\System\SocialLogin\Library\Helper\Joomla;
 use RuntimeException;
 use UnexpectedValueException;
 
@@ -486,7 +485,7 @@ trait LoginTrait
 			'sociallogin.' . $logContext
 		);
 
-		Joomla::runPlugins('onUserLoginFailure', [(array) $response], $this->app);
+		$this->runPlugins('onUserLoginFailure', [(array) $response], $this->app);
 
 		// If status is success, any error will have been raised by the user plugin
 		$expectedStatus = Authentication::STATUS_SUCCESS;
@@ -714,7 +713,7 @@ trait LoginTrait
 
 		// Run the user plugins. They CAN block login by returning boolean false and setting $response->error_message.
 		PluginHelper::importPlugin('user');
-		$results = Joomla::runPlugins('onUserLogin', [(array) $response, $options], $this->app);
+		$results = $this->runPlugins('onUserLogin', [(array) $response, $options], $this->app);
 
 		// If there is no boolean FALSE result from any plugin the login is successful.
 		if (!in_array(false, $results, true))
@@ -727,13 +726,13 @@ trait LoginTrait
 			$options['responseType'] = $response->type;
 
 			// The user is successfully logged in. Run the after login events
-			Joomla::runPlugins('onUserAfterLogin', [$options], $this->app);
+			$this->runPlugins('onUserAfterLogin', [$options], $this->app);
 
 			return;
 		}
 
 		// If we are here the plugins marked a login failure. Trigger the onUserLoginFailure Event.
-		Joomla::runPlugins('onUserLoginFailure', [(array) $response], $this->app);
+		$this->runPlugins('onUserLoginFailure', [(array) $response], $this->app);
 
 		// Log the failure
 		Log::add($response->error_message, Log::WARNING, 'jerror');

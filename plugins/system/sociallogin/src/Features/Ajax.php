@@ -91,7 +91,7 @@ trait Ajax
 	 */
 	public function onAjaxSociallogin(Event $event): void
 	{
-		$ajax  = new \Joomla\Plugin\System\SocialLogin\Library\Helper\Ajax();
+		$ajax  = new \Joomla\Plugin\System\SocialLogin\Library\Helper\Ajax($this, $this->app, $this->db);
 		$app   = $this->app;
 		$input = $app->input;
 
@@ -107,7 +107,7 @@ trait Ajax
 				'sociallogin.system'
 			);
 
-			$result = $ajax->handle($app);
+			$result = $ajax->handle();
 		}
 		catch (Exception $e)
 		{

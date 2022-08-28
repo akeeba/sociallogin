@@ -40,6 +40,7 @@ abstract class AbstractPlugin extends CMSPlugin implements SubscriberInterface
 {
 	use LoginTrait;
 	use AddLoggerTrait;
+	use RunPluginsTrait;
 
 	/**
 	 * The CMS application object

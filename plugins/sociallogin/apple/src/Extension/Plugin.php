@@ -19,7 +19,6 @@ use Joomla\CMS\Uri\Uri;
 use Joomla\Event\DispatcherInterface;
 use Joomla\Plugin\Sociallogin\Apple\Util\RandomWords;
 use Joomla\Plugin\System\SocialLogin\Library\Data\UserData;
-use Joomla\Plugin\System\SocialLogin\Library\Helper\Joomla;
 use Joomla\Plugin\System\SocialLogin\Library\OAuth\OAuth2Client;
 use Joomla\Plugin\System\SocialLogin\Library\Plugin\AbstractPlugin;
 use Lcobucci\JWT\Configuration as JWTConfig;
