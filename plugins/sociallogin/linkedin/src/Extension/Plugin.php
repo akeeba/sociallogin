@@ -1,8 +1,8 @@
 <?php
 /**
- *  @package   AkeebaSocialLogin
- *  @copyright Copyright (c)2016-2022 Nicholas K. Dionysopoulos / Akeeba Ltd
- *  @license   GNU General Public License version 3, or later
+ * @package   AkeebaSocialLogin
+ * @copyright Copyright (c)2016-2022 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @license   GNU General Public License version 3, or later
  */
 
 // Protect from unauthorized access
@@ -13,6 +13,7 @@ defined('_JEXEC') || die();
 use Exception;
 use Joomla\CMS\Http\HttpFactory;
 use Joomla\CMS\Uri\Uri;
+use Joomla\Event\DispatcherInterface;
 use Joomla\Plugin\Sociallogin\Linkedin\Integration\OAuth as LinkedInOAuth;
 use Joomla\Plugin\Sociallogin\Linkedin\Integration\UserQuery;
 use Joomla\Plugin\System\SocialLogin\Library\Data\UserData;
@@ -32,10 +33,10 @@ class Plugin extends AbstractPlugin
 	/**
 	 * Constructor. Loads the language files as well.
 	 *
-	 * @param   object  &$subject  The object to observe
-	 * @param   array    $config   An optional associative array of configuration settings.
-	 *                             Recognized key values include 'name', 'group', 'params', 'language'
-	 *                             (this list is not meant to be comprehensive).
+	 * @param   DispatcherInterface  &$subject  The object to observe
+	 * @param   array                 $config   An optional associative array of configuration settings.
+	 *                                          Recognized key values include 'name', 'group', 'params', 'language'
+	 *                                          (this list is not meant to be comprehensive).
 	 */
 	public function __construct($subject, array $config = [])
 	{
@@ -48,16 +49,15 @@ class Plugin extends AbstractPlugin
 		$this->buttonImage = 'plg_sociallogin_linkedin/linkedin.svg';
 	}
 
-	/**
-	 * Processes the authentication callback from LinkedIn.
-	 *
-	 * @return  void
-	 *
-	 * @throws  Exception
-	 */
-	public function onAjaxLinkedin()
+	/** @inheritDoc */
+	public static function getSubscribedEvents(): array
 	{
-		$this->onSocialLoginAjax();
+		return array_merge(
+			parent::getSubscribedEvents(),
+			[
+				'onAjaxLinkedin' => 'onSocialLoginAjax',
+			]
+		);
 	}
 
 	/**
@@ -69,7 +69,7 @@ class Plugin extends AbstractPlugin
 	 *
 	 * @see  https://docs.microsoft.com/en-us/linkedin/shared/authentication/authorization-code-flow?context=linkedin/consumer/context
 	 */
-	protected function getConnector()
+	protected function getConnector(): LinkedInOAuth
 	{
 		if (is_null($this->connector))
 		{
@@ -97,7 +97,7 @@ class Plugin extends AbstractPlugin
 	 *
 	 * @see  https://docs.microsoft.com/en-us/linkedin/consumer/integrations/self-serve/sign-in-with-linkedin
 	 */
-	protected function getSocialNetworkProfileInformation($connector)
+	protected function getSocialNetworkProfileInformation(object $connector): array
 	{
 		$tokenArray = $connector->getToken();
 
@@ -120,7 +120,7 @@ class Plugin extends AbstractPlugin
 	 *
 	 * @return  UserData
 	 */
-	protected function mapSocialProfileToUserData(array $socialProfile)
+	protected function mapSocialProfileToUserData(array $socialProfile): UserData
 	{
 		$nameParts = [];
 

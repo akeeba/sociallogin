@@ -1,8 +1,8 @@
 <?php
 /**
- *  @package   AkeebaSocialLogin
- *  @copyright Copyright (c)2016-2022 Nicholas K. Dionysopoulos / Akeeba Ltd
- *  @license   GNU General Public License version 3, or later
+ * @package   AkeebaSocialLogin
+ * @copyright Copyright (c)2016-2022 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @license   GNU General Public License version 3, or later
  */
 
 // Protect from unauthorized access
@@ -15,6 +15,8 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Http\HttpFactory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Uri\Uri;
+use Joomla\Event\DispatcherInterface;
+use Joomla\Event\Event;
 use Joomla\Plugin\Sociallogin\Twitter\Integration\OAuth;
 use Joomla\Plugin\System\SocialLogin\Library\Data\UserData;
 use Joomla\Plugin\System\SocialLogin\Library\Exception\Login\LoginError;
@@ -33,10 +35,10 @@ class Plugin extends AbstractPlugin
 	/**
 	 * Constructor. Loads the language files as well.
 	 *
-	 * @param   object  &$subject  The object to observe
-	 * @param   array    $config   An optional associative array of configuration settings.
-	 *                             Recognized key values include 'name', 'group', 'params', 'language'
-	 *                             (this list is not meant to be comprehensive).
+	 * @param   DispatcherInterface  &$subject  The object to observe
+	 * @param   array                 $config   An optional associative array of configuration settings.
+	 *                                          Recognized key values include 'name', 'group', 'params', 'language'
+	 *                                          (this list is not meant to be comprehensive).
 	 */
 	public function __construct($subject, array $config = [])
 	{
@@ -49,18 +51,34 @@ class Plugin extends AbstractPlugin
 		$this->buttonImage = 'plg_sociallogin_twitter/twitter.svg';
 	}
 
+	/** @inheritDoc */
+	public static function getSubscribedEvents(): array
+	{
+		return array_merge(
+			parent::getSubscribedEvents(),
+			[
+				'onAjaxTwitter'             => 'onSocialLoginAjax',
+				'onSocialLoginAuthenticate' => 'onSocialLoginAuthenticate',
+			]
+		);
+	}
+
 	/**
 	 * Initiate the user authentication (steps 1 & 2 per the Twitter documentation). Step 3 in the documentation is
 	 * Twitter calling back our site, i.e. the call to the onAjaxTwitter method.
 	 *
-	 * @param   string  $slug  The slug of the integration method being called.
-	 *
 	 * @throws Exception
-	 * @see https://dev.twitter.com/web/sign-in/implementing
+	 * @see          https://dev.twitter.com/web/sign-in/implementing
 	 *
+	 * @noinspection PhpUnused
 	 */
-	public function onSocialLoginAuthenticate($slug)
+	public function onSocialLoginAuthenticate(Event $event): void
 	{
+		/**
+		 * @var string $slug The slug of the integration method being called.
+		 */
+		[$slug] = $event->getArguments();
+
 		// Make sure we are properly set up
 		if (!$this->isProperlySetUp())
 		{
@@ -78,27 +96,13 @@ class Plugin extends AbstractPlugin
 	}
 
 	/**
-	 * Processes the authentication callback from Twitter.
-	 *
-	 * Note: this method is called from Joomla's com_ajax, not com_sociallogin itself
-	 *
-	 * @return  void
-	 *
-	 * @throws  Exception
-	 */
-	public function onAjaxTwitter()
-	{
-		$this->onSocialLoginAjax();
-	}
-
-	/**
 	 * Returns an OAuth object
 	 *
 	 * @return  OAuth
 	 *
 	 * @throws Exception
 	 */
-	protected function getConnector()
+	protected function getConnector(): OAuth
 	{
 		if (is_null($this->connector))
 		{
@@ -123,7 +127,7 @@ class Plugin extends AbstractPlugin
 	 *
 	 * @throws  Exception
 	 */
-	protected function getLoginButtonURL()
+	protected function getLoginButtonURL(): string
 	{
 		/**
 		 * Authentication has to go through a special com_ajax URL since the OAuth1 client needs to performs a Twitter
@@ -143,7 +147,7 @@ class Plugin extends AbstractPlugin
 	 *
 	 * @throws  Exception
 	 */
-	protected function getSocialNetworkProfileInformation($connector)
+	protected function getSocialNetworkProfileInformation(object $connector): array
 	{
 		/** @var OAuth $connector */
 		$token = $connector->getToken();
@@ -175,7 +179,7 @@ class Plugin extends AbstractPlugin
 	 *
 	 * @return  UserData
 	 */
-	protected function mapSocialProfileToUserData(array $socialProfile)
+	protected function mapSocialProfileToUserData(array $socialProfile): UserData
 	{
 		$userData           = new UserData();
 		$userData->name     = $socialProfile['name'];

@@ -1,8 +1,8 @@
 <?php
 /**
- *  @package   AkeebaSocialLogin
- *  @copyright Copyright (c)2016-2022 Nicholas K. Dionysopoulos / Akeeba Ltd
- *  @license   GNU General Public License version 3, or later
+ * @package   AkeebaSocialLogin
+ * @copyright Copyright (c)2016-2022 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @license   GNU General Public License version 3, or later
  */
 
 // Protect from unauthorized access
@@ -13,6 +13,7 @@ defined('_JEXEC') || die();
 use Exception;
 use Joomla\CMS\Http\HttpFactory;
 use Joomla\CMS\Uri\Uri;
+use Joomla\Event\DispatcherInterface;
 use Joomla\Plugin\Sociallogin\Facebook\Integration\OAuth as FacebookOAuth;
 use Joomla\Plugin\Sociallogin\Facebook\Integration\User as FacebookUser;
 use Joomla\Plugin\System\SocialLogin\Library\Data\UserData;
@@ -32,10 +33,10 @@ class Plugin extends AbstractPlugin
 	/**
 	 * Constructor. Loads the language files as well.
 	 *
-	 * @param   object  &$subject  The object to observe
-	 * @param   array    $config   An optional associative array of configuration settings.
-	 *                             Recognized key values include 'name', 'group', 'params', 'language'
-	 *                             (this list is not meant to be comprehensive).
+	 * @param   DispatcherInterface  &$subject  The object to observe
+	 * @param   array                 $config   An optional associative array of configuration settings.
+	 *                                          Recognized key values include 'name', 'group', 'params', 'language'
+	 *                                          (this list is not meant to be comprehensive).
 	 */
 	public function __construct($subject, array $config = [])
 	{
@@ -48,18 +49,15 @@ class Plugin extends AbstractPlugin
 		$this->buttonImage = 'plg_sociallogin_facebook/facebook_logo.svg';
 	}
 
-	/**
-	 * Processes the authentication callback from Facebook.
-	 *
-	 * Note: this method is called from Joomla's com_ajax, not com_sociallogin itself
-	 *
-	 * @return  void
-	 *
-	 * @throws  Exception
-	 */
-	public function onAjaxFacebook()
+	/** @inheritDoc */
+	public static function getSubscribedEvents(): array
 	{
-		$this->onSocialLoginAjax();
+		return array_merge(
+			parent::getSubscribedEvents(),
+			[
+				'onAjaxFacebook' => 'onSocialLoginAjax',
+			]
+		);
 	}
 
 	/**
@@ -69,7 +67,7 @@ class Plugin extends AbstractPlugin
 	 *
 	 * @throws  Exception
 	 */
-	protected function getConnector()
+	protected function getConnector(): FacebookOAuth
 	{
 		if (is_null($this->connector))
 		{
@@ -95,7 +93,7 @@ class Plugin extends AbstractPlugin
 	 *
 	 * @throws  Exception
 	 */
-	protected function getSocialNetworkProfileInformation($connector)
+	protected function getSocialNetworkProfileInformation(object $connector): array
 	{
 		$options = new Registry();
 
@@ -115,7 +113,7 @@ class Plugin extends AbstractPlugin
 	 *
 	 * @return  UserData
 	 */
-	protected function mapSocialProfileToUserData(array $socialProfile)
+	protected function mapSocialProfileToUserData(array $socialProfile): UserData
 	{
 		$userData        = new UserData();
 		$userData->name  = $socialProfile['name'] ?? '';

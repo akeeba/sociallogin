@@ -13,7 +13,7 @@ defined('_JEXEC') || die();
 use Joomla\CMS\Application\CMSApplication;
 use Joomla\CMS\Http\Http;
 use Joomla\CMS\Http\Response;
-use Joomla\CMS\Input\Input;
+use Joomla\Input\Input;
 use Joomla\Plugin\System\SocialLogin\Library\OAuth\OAuth1Client;
 
 /**

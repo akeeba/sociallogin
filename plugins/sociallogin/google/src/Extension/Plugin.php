@@ -1,8 +1,8 @@
 <?php
 /**
- *  @package   AkeebaSocialLogin
- *  @copyright Copyright (c)2016-2022 Nicholas K. Dionysopoulos / Akeeba Ltd
- *  @license   GNU General Public License version 3, or later
+ * @package   AkeebaSocialLogin
+ * @copyright Copyright (c)2016-2022 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @license   GNU General Public License version 3, or later
  */
 
 // Protect from unauthorized access
@@ -13,6 +13,7 @@ defined('_JEXEC') || die();
 use Exception;
 use Joomla\CMS\Http\HttpFactory;
 use Joomla\CMS\Uri\Uri;
+use Joomla\Event\DispatcherInterface;
 use Joomla\Plugin\Sociallogin\Google\Integration\OAuth2;
 use Joomla\Plugin\Sociallogin\Google\Integration\OpenID;
 use Joomla\Plugin\System\SocialLogin\Library\Data\UserData;
@@ -33,14 +34,14 @@ class Plugin extends AbstractPlugin
 	/**
 	 * The OAuth2 client object used by the Google OAuth connector
 	 *
-	 * @var   OAuth2Client
+	 * @var   OAuth2Client|null
 	 */
-	private $oAuth2Client;
+	private ?OAuth2Client $oAuth2Client = null;
 
 	/**
 	 * Constructor. Loads the language files as well.
 	 *
-	 * @param   object  &$subject  The object to observe
+	 * @param   DispatcherInterface  &$subject  The object to observe
 	 * @param   array    $config   An optional associative array of configuration settings.
 	 *                             Recognized key values include 'name', 'group', 'params', 'language'
 	 *                             (this list is not meant to be comprehensive).
@@ -56,6 +57,17 @@ class Plugin extends AbstractPlugin
 		$this->buttonImage = 'plg_sociallogin_google/google.svg';
 	}
 
+	/** @inheritDoc */
+	public static function getSubscribedEvents(): array
+	{
+		return array_merge(
+			parent::getSubscribedEvents(),
+			[
+				'onAjaxGoogle' => 'onSocialLoginAjax',
+			]
+		);
+	}
+
 	/**
 	 * Returns a OAuth2 object
 	 *
@@ -63,7 +75,7 @@ class Plugin extends AbstractPlugin
 	 *
 	 * @throws  Exception
 	 */
-	protected function getConnector()
+	protected function getConnector(): OAuth2
 	{
 		if (is_null($this->connector))
 		{
@@ -95,32 +107,33 @@ class Plugin extends AbstractPlugin
 	}
 
 	/**
-	 * Returns the OAuth2Client we use to authenticate to Google
-	 *
-	 * @return  OAuth2Client
-	 *
-	 * @throws Exception
-	 */
-	private function getClient()
-	{
-		if (is_null($this->oAuth2Client))
-		{
-			$this->getConnector();
-		}
-
-		return $this->oAuth2Client;
-	}
-
-	/**
 	 * Return the URL for the login button
 	 *
 	 * @return  string
 	 *
 	 * @throws  Exception
 	 */
-	protected function getLoginButtonURL()
+	protected function getLoginButtonURL(): string
 	{
 		return $this->getClient()->createUrl();
+	}
+
+	/**
+	 * Get the raw user profile information from the social network.
+	 *
+	 * @param   object  $connector  The internal connector object.
+	 *
+	 * @return  array
+	 *
+	 * @throws  Exception
+	 */
+	protected function getSocialNetworkProfileInformation(object $connector): array
+	{
+		/** @var OAuth2 $connector */
+		$options       = new Registry();
+		$googleUserApi = new OpenID($options, $connector);
+
+		return $googleUserApi->getOpenIDProfile();
 	}
 
 	/**
@@ -130,14 +143,14 @@ class Plugin extends AbstractPlugin
 	 *
 	 * @throws  Exception
 	 */
-	protected function getToken()
+	protected function getToken(): array
 	{
 		$connector = $this->getConnector();
 
 		/**
 		 * I have to do this because Joomla's Google OAuth2 connector is buggy :@ The googlize() method assumes that
 		 * the requestparams option is an array. However, when you construct the object Joomla! will "helpfully" convert
-		 * your original array into an object. Therefore trying to later access it as an array causes a PHP Fatal Error
+		 * your original array into an object. Therefore, trying to later access it as an array causes a PHP Fatal Error
 		 * about trying to access an stdClass object as an array...!
 		 */
 		$connector->setOption('requestparams', [
@@ -150,25 +163,6 @@ class Plugin extends AbstractPlugin
 	}
 
 	/**
-	 * Get the raw user profile information from the social network.
-	 *
-	 * @param   object  $connector  The internal connector object.
-	 *
-	 * @return  array
-	 *
-	 * @throws  Exception
-	 */
-	protected function getSocialNetworkProfileInformation($connector)
-	{
-		/** @var OAuth2 $connector */
-		$options       = new Registry();
-		$googleUserApi = new OpenID($options, $connector);
-		$openIDProfile = $googleUserApi->getOpenIDProfile();
-
-		return $openIDProfile;
-	}
-
-	/**
 	 * Maps the raw social network profile fields retrieved with getSocialNetworkProfileInformation() into a UserData
 	 * object we use in the Social Login library.
 	 *
@@ -176,7 +170,7 @@ class Plugin extends AbstractPlugin
 	 *
 	 * @return  UserData
 	 */
-	protected function mapSocialProfileToUserData(array $socialProfile)
+	protected function mapSocialProfileToUserData(array $socialProfile): UserData
 	{
 		$userData           = new UserData();
 		$userData->name     = $socialProfile['name'] ?? '';
@@ -189,17 +183,19 @@ class Plugin extends AbstractPlugin
 	}
 
 	/**
-	 * Processes the authentication callback from Google.
+	 * Returns the OAuth2Client we use to authenticate to Google
 	 *
-	 * Note: this method is called from Joomla's com_ajax, not com_sociallogin itself
+	 * @return  OAuth2Client
 	 *
-	 * @return  void
-	 *
-	 * @throws  Exception
+	 * @throws Exception
 	 */
-	public function onAjaxGoogle()
+	private function getClient(): ?OAuth2Client
 	{
-		$this->onSocialLoginAjax();
-	}
+		if (is_null($this->oAuth2Client))
+		{
+			$this->getConnector();
+		}
 
+		return $this->oAuth2Client;
+	}
 }

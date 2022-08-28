@@ -1,8 +1,8 @@
 <?php
 /**
- *  @package   AkeebaSocialLogin
- *  @copyright Copyright (c)2016-2022 Nicholas K. Dionysopoulos / Akeeba Ltd
- *  @license   GNU General Public License version 3, or later
+ * @package   AkeebaSocialLogin
+ * @copyright Copyright (c)2016-2022 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @license   GNU General Public License version 3, or later
  */
 
 namespace Joomla\Plugin\Sociallogin\Apple\Extension;
@@ -16,6 +16,7 @@ use Joomla\CMS\Crypt\Crypt;
 use Joomla\CMS\Http\HttpFactory;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Uri\Uri;
+use Joomla\Event\DispatcherInterface;
 use Joomla\Plugin\Sociallogin\Apple\Util\RandomWords;
 use Joomla\Plugin\System\SocialLogin\Library\Data\UserData;
 use Joomla\Plugin\System\SocialLogin\Library\Helper\Joomla;
@@ -42,36 +43,36 @@ if (!class_exists(AbstractPlugin::class, true))
 class Plugin extends AbstractPlugin
 {
 	/**
+	 * The email address of the user logging in with Apple
+	 *
+	 * @since 3.2.0
+	 * @var   string
+	 */
+	private string $email;
+
+	/**
 	 * The first name of the user logging in with Apple
 	 *
-	 * @var   string
 	 * @since 3.2.0
+	 * @var   string
 	 */
-	private $firstName;
+	private string $firstName;
 
 	/**
 	 * The last name of the user logging in with Apple
 	 *
-	 * @var   string
 	 * @since 3.2.0
-	 */
-	private $lastName;
-
-	/**
-	 * The email address of the user logging in with Apple
-	 *
 	 * @var   string
-	 * @since 3.2.0
 	 */
-	private $email;
+	private string $lastName;
 
 	/**
 	 * Constructor. Loads the language files as well.
 	 *
-	 * @param   object  &$subject  The object to observe
-	 * @param   array    $config   An optional associative array of configuration settings.
-	 *                             Recognized key values include 'name', 'group', 'params', 'language'
-	 *                             (this list is not meant to be comprehensive).
+	 * @param   DispatcherInterface  &$subject  The object to observe
+	 * @param   array                 $config   An optional associative array of configuration settings.
+	 *                                          Recognized key values include 'name', 'group', 'params', 'language'
+	 *                                          (this list is not meant to be comprehensive).
 	 *
 	 * @since   3.2.0
 	 */
@@ -86,19 +87,15 @@ class Plugin extends AbstractPlugin
 		$this->buttonImage = 'plg_sociallogin_apple/apple-white.svg';
 	}
 
-	/**
-	 * Processes the authentication callback from Apple.
-	 *
-	 * Note: this method is called from Joomla's com_ajax, not com_sociallogin itself
-	 *
-	 * @return  void
-	 *
-	 * @throws  Exception
-	 * @since   3.2.0
-	 */
-	public function onAjaxApple()
+	/** @inheritDoc */
+	public static function getSubscribedEvents(): array
 	{
-		$this->onSocialLoginAjax();
+		return array_merge(
+			parent::getSubscribedEvents(),
+			[
+				'onAjaxApple' => 'onSocialLoginAjax',
+			]
+		);
 	}
 
 	/**
@@ -109,7 +106,7 @@ class Plugin extends AbstractPlugin
 	 * @throws  Exception
 	 * @since   3.2.0
 	 */
-	protected function getConnector()
+	protected function getConnector(): OAuth2Client
 	{
 		if (is_null($this->connector))
 		{
@@ -128,11 +125,94 @@ class Plugin extends AbstractPlugin
 				],
 			];
 			$httpClient      = HttpFactory::getHttp();
-			$this->connector = new \Joomla\Plugin\System\SocialLogin\Library\OAuth\OAuth2Client($options, $httpClient, $this->app->input, $this->app);
+			$this->connector = new OAuth2Client($options, $httpClient, $this->app->input, $this->app);
 
 		}
 
 		return $this->connector;
+	}
+
+	/**
+	 * Get the raw user profile information from Apple.
+	 *
+	 * @param   object  $connector  The internal connector object.
+	 *
+	 * @return  array
+	 *
+	 * @throws  Exception
+	 * @since   3.2.0
+	 *
+	 * @see     https://developer.apple.com/documentation/sign_in_with_apple/generate_and_validate_tokens
+	 */
+	protected function getSocialNetworkProfileInformation(object $connector): array
+	{
+		$token = $connector->getToken();
+		$jwt   = $token['id_token'] ?? null;
+
+		$ret = [
+			'id'       => '',
+			'name'     => trim($this->firstName . ' ' . $this->lastName),
+			'email'    => $this->email,
+			'verified' => '',
+		];
+
+		if (empty($jwt))
+		{
+			return $ret;
+		}
+
+		// Parse the JWT token
+		$keyMaterial = $this->params->get('keyMaterial', '');
+		/** @noinspection PhpParamsInspection */
+		$config = version_compare(JVERSION, '4.2.0', 'lt')
+			? JWTConfig::forSymmetricSigner(SignerES256::create(), InMemory::plainText($keyMaterial))
+			: JWTConfig::forSymmetricSigner(new SignerES256(null), InMemory::plainText($keyMaterial));
+		$token  = $config->parser()->parse($jwt);
+
+		// Verify the token's signature – if we can connect to Apple's servers to retrieve the valid keys.
+		$keyJson   = @file_get_contents('https://appleid.apple.com/auth/keys');
+		$appleKeys = @json_decode($keyJson ?: '[]', true);
+		$appleKeys = $appleKeys ?? [];
+		$jwkArray  = $appleKeys['keys'] ?? [];
+
+		// We don't use the validator directly because we need to check against ANY of the valid signatures.
+		if (!$this->validateJWTSignature($token, $jwkArray))
+		{
+			Joomla::log('apple', 'Invalid signature in received JWT: ' . $jwt, Log::ERROR);
+
+			throw new RuntimeException('The login response received is not signed properly by Apple.');
+		}
+
+		// Validate the issuer, audience and time of the token
+		/** @noinspection PhpUndefinedClassInspection */
+		/** @noinspection PhpUndefinedNamespaceInspection */
+		/** @noinspection PhpParamsInspection */
+		if (!$config->validator()->validate(
+			$token,
+			new \Lcobucci\JWT\Validation\Constraint\LooseValidAt(Lcobucci\Clock\SystemClock::fromUTC(), new DateInterval('PT30S')),
+			new \Lcobucci\JWT\Validation\Constraint\IssuedBy('https://appleid.apple.com'),
+			new \Lcobucci\JWT\Validation\Constraint\PermittedFor($this->appId)
+		))
+		{
+			throw new RuntimeException('The login response received lacks the necessary fields set by Apple.');
+		}
+
+		// Verify the nonce (Joomla's anti-CSRF token).
+		$claims         = $token->claims();
+		$nonceSupported = $claims->get('nonce_supported', false);
+		$nonce          = $claims->get('nonce', '');
+
+		if ($nonceSupported && !Crypt::timingSafeCompare($this->app->getSession()->getToken(), $nonce))
+		{
+			throw new RuntimeException('Invalid request.');
+		}
+
+		// Pass through information from the JWT. Note that the name is NEVER passed through the JWT (Apple doesn't have it)
+		$ret['id']       = $claims->get('sub', '');
+		$ret['email']    = $claims->get('email', '');
+		$ret['verified'] = ($claims->get('real_user_status', 0) == 2) || ($claims->get('email_verified', 'false') === 'true');
+
+		return $ret;
 	}
 
 	/**
@@ -165,81 +245,18 @@ class Plugin extends AbstractPlugin
 	}
 
 	/**
-	 * Get the raw user profile information from Apple.
+	 * Is this integration properly set up and ready for use?
 	 *
-	 * @param   OAuth2Client  $connector  The internal connector object.
-	 *
-	 * @return  array
-	 *
-	 * @throws  Exception
+	 * @return  bool
 	 * @since   3.2.0
-	 *
-	 * @see     https://developer.apple.com/documentation/sign_in_with_apple/generate_and_validate_tokens
 	 */
-	protected function getSocialNetworkProfileInformation($connector)
+	protected function isProperlySetUp(): bool
 	{
-		$token = $connector->getToken();
-		$jwt   = $token['id_token'] ?? null;
-
-		$ret = [
-			'id'       => '',
-			'name'     => trim($this->firstName . ' ' . $this->lastName),
-			'email'    => $this->email,
-			'verified' => '',
-		];
-
-		if (empty($jwt))
-		{
-			return $ret;
-		}
-
-		// Parse the JWT token
 		$keyMaterial = $this->params->get('keyMaterial', '');
-		$config      = version_compare(JVERSION, '4.2.0', 'lt')
-			? JWTConfig::forSymmetricSigner(SignerES256::create(), InMemory::plainText($keyMaterial))
-			: JWTConfig::forSymmetricSigner(new SignerES256(null), InMemory::plainText($keyMaterial));
-		$token       = $config->parser()->parse($jwt);
+		$keyID       = $this->params->get('keyID', '');
+		$teamID      = $this->params->get('teamID', '');
 
-		// Verify the token's signature – if we can connect to Apple's servers to retrieve the valid keys.
-		$keyJson   = @file_get_contents('https://appleid.apple.com/auth/keys');
-		$appleKeys = @json_decode($keyJson ?: '[]', true);
-		$appleKeys = $appleKeys ?? [];
-		$jwkArray  = $appleKeys['keys'] ?? [];
-
-		// We don't use the validator directly because we need to check against ANY of the valid signatures.
-		if (!$this->validateJWTSignature($token, $jwkArray))
-		{
-			Joomla::log('apple', 'Invalid signature in received JWT: ' . $jwt, Log::ERROR);
-
-			throw new RuntimeException('The login response received is not signed properly by Apple.');
-		}
-
-		// Validate the issuer, audience and time of the token
-		if (!$config->validator()->validate($token,
-			new \Lcobucci\JWT\Validation\Constraint\LooseValidAt(Lcobucci\Clock\SystemClock::fromUTC(), new DateInterval('PT30S')),
-			new \Lcobucci\JWT\Validation\Constraint\IssuedBy('https://appleid.apple.com'),
-			new \Lcobucci\JWT\Validation\Constraint\PermittedFor($this->appId)
-		))
-		{
-			throw new RuntimeException('The login response received lacks the necessary fields set by Apple.');
-		}
-
-		// Verify the nonce (Joomla's anti-CSRF token).
-		$claims         = $token->claims();
-		$nonceSupported = $claims->get('nonce_supported', false);
-		$nonce          = $claims->get('nonce', '');
-
-		if ($nonceSupported && !Crypt::timingSafeCompare($this->app->getSession()->getToken(), $nonce))
-		{
-			throw new RuntimeException('Invalid request.');
-		}
-
-		// Pass through information from the JWT. Note that the name is NEVER passed through the JWT (Apple doesn't have it)
-		$ret['id']       = $claims->get('sub', '');
-		$ret['email']    = $claims->get('email', '');
-		$ret['verified'] = ($claims->get('real_user_status', 0) == 2) || ($claims->get('email_verified', 'false') === 'true');
-
-		return $ret;
+		return !(empty($this->appId) || empty($keyMaterial) || empty($keyID) || empty($teamID));
 	}
 
 	/**
@@ -251,7 +268,7 @@ class Plugin extends AbstractPlugin
 	 * @return  UserData
 	 * @since   3.2.0
 	 */
-	protected function mapSocialProfileToUserData(array $socialProfile)
+	protected function mapSocialProfileToUserData(array $socialProfile): UserData
 	{
 		/**
 		 * It is possible that no name was passed to me by Apple. In this case I need to create a fake name since it
@@ -275,27 +292,13 @@ class Plugin extends AbstractPlugin
 	}
 
 	/**
-	 * Is this integration properly set up and ready for use?
-	 *
-	 * @return  bool
-	 * @since   3.2.0
-	 */
-	protected function isProperlySetUp()
-	{
-		$keyMaterial = $this->params->get('keyMaterial', '');
-		$keyID       = $this->params->get('keyID', '');
-		$teamID      = $this->params->get('teamID', '');
-
-		return !(empty($this->appId) || empty($keyMaterial) || empty($keyID) || empty($teamID));
-	}
-
-	/**
 	 * Creates the JWT which will serve as a secret key for the Apple OAuth2 implementation.
 	 *
 	 * They key is derived from the Services ID, Team ID, Key ID and the PEM-encoded private key. All of that
 	 * information comes from the Apple Developer site and is part of your setup of Login with Apple.
 	 *
 	 * @return  string
+	 * @throws  Exception
 	 * @since   3.2.0
 	 */
 	private function getSecretKey(): string
@@ -309,7 +312,8 @@ class Plugin extends AbstractPlugin
 			return '';
 		}
 
-		$config      = version_compare(JVERSION, '4.2.0', 'lt')
+		/** @noinspection PhpParamsInspection */
+		$config = version_compare(JVERSION, '4.2.0', 'lt')
 			? JWTConfig::forSymmetricSigner(SignerES256::create(), InMemory::plainText($keyMaterial))
 			: JWTConfig::forSymmetricSigner(new SignerES256(null), InMemory::plainText($keyMaterial));
 
@@ -320,13 +324,13 @@ class Plugin extends AbstractPlugin
 		try
 		{
 			$token = $config->builder()
-				->issuedBy($teamID)
-				->withHeader('kid', $keyID)
-				->permittedFor('https://appleid.apple.com')
-				->issuedAt($issuedAt)
-				->expiresAt($expiration)
-				->relatedTo($this->appId)
-				->getToken($config->signer(), $config->signingKey());
+			                ->issuedBy($teamID)
+			                ->withHeader('kid', $keyID)
+			                ->permittedFor('https://appleid.apple.com')
+			                ->issuedAt($issuedAt)
+			                ->expiresAt($expiration)
+			                ->relatedTo($this->appId)
+			                ->getToken($config->signer(), $config->signingKey());
 
 			return $token->toString();
 		}
@@ -402,7 +406,8 @@ class Plugin extends AbstractPlugin
 		}
 
 		$keyMaterial = $this->params->get('keyMaterial', '');
-		$config      = version_compare(JVERSION, '4.2.0', 'lt')
+		/** @noinspection PhpParamsInspection */
+		$config = version_compare(JVERSION, '4.2.0', 'lt')
 			? JWTConfig::forSymmetricSigner(SignerES256::create(), InMemory::plainText($keyMaterial))
 			: JWTConfig::forSymmetricSigner(new SignerES256(null), InMemory::plainText($keyMaterial));
 
