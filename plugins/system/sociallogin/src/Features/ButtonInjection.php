@@ -34,24 +34,23 @@ trait ButtonInjection
 	 * @var   bool
 	 * @since 3.1.0
 	 */
-	private static $includedJ4ButtonHandlerJS = false;
+	private static bool $includedJ4ButtonHandlerJS = false;
 
 	/**
 	 * Creates additional login buttons
 	 *
-	 * @return  array
+	 * @param   Event  $event
 	 *
-	 * @throws  Exception
+	 * @return  void
 	 *
+	 * @throws Exception
+	 * @since   3.1.0
 	 * @see     AuthenticationHelper::getLoginButtons()
 	 *
-	 * @since   3.1.0
+	 * @noinspection PhpUnused
 	 */
 	public function onUserLoginButtons(Event $event): void
 	{
-		/** @var string $form The HTML ID of the form we are enclosed in */
-		[$form] = $event->getArguments();
-
 		if (!$this->enabled)
 		{
 			return;
@@ -78,7 +77,7 @@ trait ButtonInjection
 			{
 				$imageKey     = 'svg';
 				$image        = HTMLHelper::_('image', $def['rawimage'], '', '', true, true);
-				$image        = $image ? JPATH_ROOT . substr($image, \strlen(Uri::root(true))) : '';
+				$image        = $image ? JPATH_ROOT . substr($image, strlen(Uri::root(true))) : '';
 				$imageContent = file_get_contents($image);
 			}
 
@@ -138,11 +137,9 @@ trait ButtonInjection
 					$params = new Registry($module->params ?? '{}');
 				}
 
-				switch ($module->module ?? '')
+				if (($module->module ?? '') == 'mod_login')
 				{
-					case 'mod_login':
-						return $this->normalizeRedirectionURL($params->get('login') ?: null);
-						break;
+					return $this->normalizeRedirectionURL($params->get('login') ?: null);
 				}
 			}
 

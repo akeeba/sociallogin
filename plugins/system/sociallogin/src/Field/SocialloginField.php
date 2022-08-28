@@ -14,6 +14,9 @@ use Joomla\CMS\Language\Text;
 use Joomla\Plugin\System\SocialLogin\Library\Helper\Integrations;
 use Joomla\Plugin\System\SocialLogin\Library\Helper\Joomla;
 
+/**
+ * @noinspection PhpUnused
+ */
 class SocialloginField extends FormField
 {
 	/**

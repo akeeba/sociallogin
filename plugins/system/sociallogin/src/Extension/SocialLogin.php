@@ -12,6 +12,9 @@ defined('_JEXEC') || die;
 
 use Exception;
 use JLoader;
+use Joomla\CMS\Application\AdministratorApplication;
+use Joomla\CMS\Application\CMSApplication;
+use Joomla\CMS\Application\SiteApplication;
 use Joomla\CMS\Language\LanguageHelper;
 use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\CMS\Uri\Uri;
@@ -27,7 +30,7 @@ use Joomla\Plugin\System\SocialLogin\Library\Helper\Joomla;
 
 class SocialLogin extends CMSPlugin implements SubscriberInterface
 {
-	/** @var \Joomla\CMS\Application\CMSApplication */
+	/** @var CMSApplication|SiteApplication|AdministratorApplication */
 	public $app;
 
 	/** @var DatabaseDriver|DatabaseInterface */
@@ -48,7 +51,7 @@ class SocialLogin extends CMSPlugin implements SubscriberInterface
 	 * @since 3.0.1
 	 * @var   int
 	 */
-	protected $linkedUserGroup = 0;
+	protected int $linkedUserGroup = 0;
 
 	/**
 	 * User group ID to add the user to if they have NOT linked social network accounts to their profile
@@ -56,21 +59,21 @@ class SocialLogin extends CMSPlugin implements SubscriberInterface
 	 * @since 3.0.1
 	 * @var   int
 	 */
-	protected $unlinkedUserGroup = 0;
+	protected int $unlinkedUserGroup = 0;
 
 	/**
 	 * Should I add link/unlink buttons in the Edit User Profile page of com_users?
 	 *
 	 * @var   bool
 	 */
-	private $addLinkUnlinkButtons = true;
+	private bool $addLinkUnlinkButtons = true;
 
 	/**
 	 * Are the substitutions enabled?
 	 *
 	 * @var   bool
 	 */
-	private $enabled = true;
+	private bool $enabled = true;
 
 	public function __construct(&$subject, $config = [])
 	{
@@ -195,7 +198,7 @@ class SocialLogin extends CMSPlugin implements SubscriberInterface
 	 *
 	 * @return  bool
 	 */
-	private function isEnabled()
+	private function isEnabled(): bool
 	{
 		// It only make sense to let people log in when they are not already logged in ;)
 		if (!Joomla::getUser()->guest)

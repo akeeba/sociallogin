@@ -1,8 +1,8 @@
 <?php
 /**
- *  @package   AkeebaSocialLogin
- *  @copyright Copyright (c)2016-2022 Nicholas K. Dionysopoulos / Akeeba Ltd
- *  @license   GNU General Public License version 3, or later
+ * @package   AkeebaSocialLogin
+ * @copyright Copyright (c)2016-2022 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @license   GNU General Public License version 3, or later
  */
 
 namespace Joomla\Plugin\System\SocialLogin\Features;
@@ -11,7 +11,6 @@ namespace Joomla\Plugin\System\SocialLogin\Features;
 defined('_JEXEC') || die;
 
 use Exception;
-use Joomla\CMS\Factory;
 use Joomla\CMS\Form\Form as JForm;
 use Joomla\CMS\Table\Menu;
 use Joomla\CMS\Table\Table;
@@ -27,17 +26,19 @@ trait UserFields
 	 * Add the SocialLogin custom user profile field data to the core Joomla user profile data. This is required to
 	 * populate the "sociallogin.dontremind" field with its current value.
 	 *
-	 * @return	void
+	 * @param   Event  $event
+	 *
+	 * @return    void
 	 */
 	public function onContentPrepareData(Event $event): void
 	{
 		/**
-		 * @param	string	$context  The context for the data (form name)
-		 * @param	object  $data	  The user profile data
+		 * @param   string  $context  The context for the data (form name)
+		 * @param   object  $data     The user profile data
 		 */
 		[$context, $data] = $event->getArguments();
-		$result = $event->getArgument('result') ?: [];
-		$result = is_array($result) ? $result : [$result];
+		$result   = $event->getArgument('result') ?: [];
+		$result   = is_array($result) ? $result : [$result];
 		$result[] = true;
 
 		$event->setArgument('result', $result);
@@ -65,11 +66,11 @@ trait UserFields
 		$db = $this->db;
 
 		$query = $db->getQuery(true)
-			->select([$db->qn('profile_key'), $db->qn('profile_value')])
-			->from($db->qn('#__user_profiles'))
-			->where($db->qn('user_id') . ' = ' . $db->q($userId))
-			->where($db->qn('profile_key') . ' LIKE ' . $db->q('sociallogin.%', false))
-			->order($db->qn('ordering'));
+		            ->select([$db->qn('profile_key'), $db->qn('profile_value')])
+		            ->from($db->qn('#__user_profiles'))
+		            ->where($db->qn('user_id') . ' = ' . $db->q($userId))
+		            ->where($db->qn('profile_key') . ' LIKE ' . $db->q('sociallogin.%', false))
+		            ->order($db->qn('ordering'));
 
 		try
 		{
@@ -91,16 +92,15 @@ trait UserFields
 
 		$result[] = true;
 		$event->setArgument('result', $result);
-
-		return;
 	}
 
 	/**
 	 * Adds additional fields to the user editing form
 	 *
+	 * @param   Event  $event
+	 *
 	 * @return  void
 	 *
-	 * @throws  Exception
 	 */
 	public function onContentPrepareForm(Event $event): void
 	{
@@ -109,8 +109,8 @@ trait UserFields
 		 * @param   mixed  $data  The associated data for the form.
 		 */
 		[$form, $data] = $event->getArguments();
-		$result = $event->getArgument('result') ?: [];
-		$result = is_array($result) ? $result : [$result];
+		$result   = $event->getArgument('result') ?: [];
+		$result   = is_array($result) ? $result : [$result];
 		$result[] = true;
 
 		$event->setArgument('result', $result);
@@ -128,7 +128,7 @@ trait UserFields
 
 		$name = $form->getName();
 
-		if (!in_array($name, array('com_admin.profile', 'com_users.user', 'com_users.profile', 'com_users.registration')))
+		if (!in_array($name, ['com_admin.profile', 'com_users.user', 'com_users.profile', 'com_users.registration']))
 		{
 			return;
 		}
@@ -148,6 +148,7 @@ trait UserFields
 				/** @var Menu $menuItem */
 				$menuItem = Table::getInstance('Menu');
 				$menuItem->load($itemId);
+				/** @noinspection PhpUndefinedFieldInspection */
 				$uri    = new Uri($menuItem->link);
 				$layout = $uri->getVar('layout', $layout);
 			}
@@ -168,11 +169,11 @@ trait UserFields
 		{
 			$id = $data['id'] ?? null;
 		}
-		elseif (is_object($data) && is_null($data) && ($data instanceof JRegistry))
+		elseif ($data instanceof JRegistry)
 		{
 			$id = $data->get('id');
 		}
-		elseif (is_object($data) && !is_null($data))
+		elseif (is_object($data))
 		{
 			$id = $data->id ?? null;
 		}
@@ -202,25 +203,83 @@ trait UserFields
 		{
 			$form->removeField('dontremind', 'sociallogin');
 		}
+	}
 
-		return;
+	/**
+	 * Remove all user profile information for the given user ID
+	 *
+	 * Method is called after user data is deleted from the database
+	 *
+	 * @param   Event  $event
+	 *
+	 * @return  void
+	 *
+	 */
+	public function onUserAfterDelete(Event $event): void
+	{
+		/**
+		 * @var   array   $user     Holds the user data
+		 * @var   bool    $success  True if user was successfully stored in the database
+		 * @var   string  $msg      Message
+		 */
+		[$user, $success, $msg] = $event->getArguments();
+		$result = $event->getArgument('result') ?: [];
+		$result = is_array($result) ? $result : [$result];
+
+		if (!$success)
+		{
+			$result[] = false;
+
+			$event->setArgument('result', $result);
+
+			return;
+		}
+
+		$userId = ArrayHelper::getValue($user, 'id', 0, 'int');
+
+		if ($userId)
+		{
+			Joomla::log(
+				'system',
+				sprintf(
+					'Removing Social Login information for deleted user #%s',
+					$userId
+				)
+			);
+			$db = Joomla::getDbo();
+
+			/** @noinspection SqlResolve */
+			$query = $db->getQuery(true)
+			            ->delete($db->qn('#__user_profiles'))
+			            ->where($db->qn('user_id') . ' = ' . $db->q($userId))
+			            ->where($db->qn('profile_key') . ' LIKE ' . $db->q('sociallogin.%', false));
+
+			$db->setQuery($query)->execute();
+		}
+
+		$result[] = true;
+
+		$event->setArgument('result', $result);
 	}
 
 	/**
 	 * Save the custom SocialLogin user profile fields. It's called after Joomla saves a user to the database.
 	 *
-	 * @param   array   $data    The user profile data which was saved.
-	 * @param   bool    $isNew   Is this a new user? (ignored)
-	 * @param   bool    $result  Was the user saved successfully?
-	 * @param   mixed   $error   (ignored)
+	 * @param   Event  $event
 	 *
 	 * @return  void
 	 */
 	public function onUserAfterSave(Event $event)
 	{
+		/**
+		 * @var   array  $data    The user profile data which was saved.
+		 * @var   bool   $isNew   Is this a new user? (ignored)
+		 * @var   bool   $result  Was the user saved successfully?
+		 * @var   mixed  $error   (ignored)
+		 */
 		[$data, $isNew, $result, $error] = $event->getArguments();
-		$result = $event->getArgument('result') ?: [];
-		$result = is_array($result) ? $result : [$result];
+		$result   = $event->getArgument('result') ?: [];
+		$result   = is_array($result) ? $result : [$result];
 		$result[] = true;
 
 		$event->setArgument('result', $result);
@@ -239,17 +298,19 @@ trait UserFields
 		}, array_keys($data['sociallogin']));
 
 		$query = $db->getQuery(true)
-			->delete($db->qn('#__user_profiles'))
-			->where($db->qn('user_id') . ' = ' . $db->q($userId))
-			->where($db->qn('profile_key') . ' IN (' . implode(',', $fieldNames) . ')');
+		            ->delete($db->qn('#__user_profiles'))
+		            ->where($db->qn('user_id') . ' = ' . $db->q($userId))
+		            ->where($db->qn('profile_key') . ' IN (' . implode(',', $fieldNames) . ')');
 
 		$db->setQuery($query)->execute();
 
 		$order = 1;
 
 		$query = $db->getQuery(true)
-			->insert($db->qn('#__user_profiles'))
-			->columns([$db->qn('user_id'), $db->qn('profile_key'), $db->qn('profile_value'), $db->qn('ordering')]);
+		            ->insert($db->qn('#__user_profiles'))
+		            ->columns([
+			            $db->qn('user_id'), $db->qn('profile_key'), $db->qn('profile_value'), $db->qn('ordering'),
+		            ]);
 
 		foreach ($data['sociallogin'] as $k => $v)
 		{
@@ -260,53 +321,5 @@ trait UserFields
 
 		// Reset the session flag; the user save operation may have changed the dontremind flag.
 		$this->app->getSession()->set('sociallogin.islinked', null);
-	}
-
-	/**
-	 * Remove all user profile information for the given user ID
-	 *
-	 * Method is called after user data is deleted from the database
-	 *
-	 * @param   array   $user     Holds the user data
-	 * @param   bool    $success  True if user was successfully stored in the database
-	 * @param   string  $msg      Message
-	 *
-	 * @return  void
-	 *
-	 * @throws  Exception
-	 */
-	public function onUserAfterDelete(Event $event): void
-	{
-		[$user, $success, $msg] = $event->getArguments();
-		$result = $event->getArgument('result') ?: [];
-		$result = is_array($result) ? $result : [$result];
-
-		if (!$success)
-		{
-			$result[] = false;
-
-			$event->setArgument('result', $result);
-
-			return;
-		}
-
-		$userId = ArrayHelper::getValue($user, 'id', 0, 'int');
-
-		if ($userId)
-		{
-			Joomla::log('system', "Removing Social Login information for deleted user #{$userId}");
-			$db = Joomla::getDbo();
-
-			$query = $db->getQuery(true)
-				->delete($db->qn('#__user_profiles'))
-				->where($db->qn('user_id').' = '.$db->q($userId))
-				->where($db->qn('profile_key').' LIKE '.$db->q('sociallogin.%', false));
-
-			$db->setQuery($query)->execute();
-		}
-
-		$result[] = true;
-
-		$event->setArgument('result', $result);
 	}
 }

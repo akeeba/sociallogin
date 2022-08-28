@@ -10,9 +10,7 @@ namespace Joomla\Plugin\System\SocialLogin\Features;
 // Protect from unauthorized access
 defined('_JEXEC') || die();
 
-use Joomla\CMS\Factory;
 use Joomla\CMS\User\User;
-use Joomla\Database\DatabaseDriver;
 use Joomla\Event\Event;
 use Joomla\Plugin\System\SocialLogin\Library\Helper\DynamicGroups;
 
@@ -26,6 +24,8 @@ trait DynamicUsergroups
 {
 	/**
 	 * Dynamically assign users to user groups
+	 *
+	 * @param   Event  $e
 	 *
 	 * @return  void
 	 *

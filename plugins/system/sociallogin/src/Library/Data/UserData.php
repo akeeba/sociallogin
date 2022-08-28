@@ -74,7 +74,6 @@ final class UserData
 			case 'timezone':
 			case 'verified':
 				return $this->{$name};
-				break;
 
 			default:
 				return null;

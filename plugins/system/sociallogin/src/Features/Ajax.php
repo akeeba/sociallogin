@@ -11,7 +11,6 @@ namespace Joomla\Plugin\System\SocialLogin\Features;
 defined('_JEXEC') || die;
 
 use Exception;
-use Joomla\CMS\Factory;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Uri\Uri;
 use Joomla\Event\Event;
@@ -33,9 +32,10 @@ trait Ajax
 	 * Yes, you guessed it right. I AM GOING TO ABUSE onAfterInitialize. Pay attention, kids, that's how grown-ups make
 	 * Joomla submit to their will.
 	 *
+	 * @param   Event  $e
+	 *
 	 * @return  void
 	 *
-	 * @throws  Exception
 	 */
 	public function onAfterInitialise(Event $e): void
 	{
@@ -82,11 +82,14 @@ trait Ajax
 	 *
 	 * Note: this method is called from Joomla's com_ajax
 	 *
+	 * @param   Event  $event
+	 *
 	 * @return  void
 	 *
-	 * @throws  Exception
+	 * @noinspection PhpUnused
+	 * @noinspection PhpUnusedParameterInspection
 	 */
-	public function onAjaxSociallogin(Event $e): void
+	public function onAjaxSociallogin(Event $event): void
 	{
 		$ajax  = new \Joomla\Plugin\System\SocialLogin\Library\Helper\Ajax();
 		$app   = $this->app;
@@ -95,7 +98,6 @@ trait Ajax
 		// Get the return URL from the session
 		$returnURL = $this->app->getSession()->get('plg_system_sociallogin.returnUrl', Uri::base());
 		$this->app->getSession()->set('plg_system_sociallogin.returnUrl', null);
-		$result = null;
 
 		try
 		{
@@ -147,16 +149,27 @@ trait Ajax
 
 					if (isset($result['url']))
 					{
-						Joomla::log('system', "Callback complete, performing redirection to {$result['url']}{$modifiers}.");
+						Joomla::log(
+							'system',
+							sprintf(
+								'Callback complete, performing redirection to %s%s.',
+								$result['url'], $modifiers
+							)
+						);
 						$app->redirect($result['url']);
 					}
 
 
-					Joomla::log('system', "Callback complete, performing redirection to {$result}{$modifiers}.");
+					Joomla::log(
+						'system',
+						sprintf(
+							'Callback complete, performing redirection to %s%s.',
+							$result, $modifiers
+						)
+					);
 					$app->redirect($result);
 
 					return;
-					break;
 			}
 
 			$app->close(200);
