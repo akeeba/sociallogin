@@ -11,7 +11,6 @@ namespace Joomla\Plugin\System\SocialLogin\Library\OAuth;
 defined('_JEXEC') || die();
 
 use Joomla\CMS\Application\CMSApplication;
-use Joomla\CMS\Factory;
 use Joomla\CMS\Http\Http;
 use Joomla\CMS\Http\Response;
 use Joomla\Input\Input;

@@ -17,8 +17,6 @@ use Joomla\CMS\Router\Route;
 use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\User\UserHelper;
 use Joomla\Event\Event;
-use Joomla\Plugin\System\SocialLogin\Library\Helper\Integrations;
-use Joomla\Plugin\System\SocialLogin\Library\Helper\Joomla;
 use Joomla\Registry\Registry;
 
 /**

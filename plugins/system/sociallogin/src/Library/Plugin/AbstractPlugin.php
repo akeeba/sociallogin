@@ -30,8 +30,6 @@ use Joomla\Plugin\System\SocialLogin\Library\Data\PluginConfiguration;
 use Joomla\Plugin\System\SocialLogin\Library\Data\UserData;
 use Joomla\Plugin\System\SocialLogin\Library\Exception\Login\GenericMessage;
 use Joomla\Plugin\System\SocialLogin\Library\Exception\Login\LoginError;
-use Joomla\Plugin\System\SocialLogin\Library\Helper\Integrations;
-use Joomla\Plugin\System\SocialLogin\Library\Helper\Joomla;
 use Joomla\Utilities\ArrayHelper;
 use RuntimeException;
 

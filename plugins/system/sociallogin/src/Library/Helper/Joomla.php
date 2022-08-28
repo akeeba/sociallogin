@@ -12,12 +12,7 @@ defined('_JEXEC') || die();
 
 use Exception;
 use Joomla\Application\AbstractApplication;
-use Joomla\CMS\Application\EventAware;
-use Joomla\CMS\Event\GenericEvent;
 use Joomla\CMS\Factory;
-use Joomla\CMS\Layout\FileLayout;
-use Joomla\CMS\Log\Log;
-use Joomla\Database\DatabaseDriver;
 use RuntimeException;
 
 /**
@@ -25,52 +20,6 @@ use RuntimeException;
  */
 abstract class Joomla
 {
-	/**
-	 * Are we inside the administrator application
-	 *
-	 * @var   bool
-	 */
-	protected static ?bool $isAdmin = null;
-
-	/**
-	 * Helper method to render a JLayout.
-	 *
-	 * @param   string  $layoutFile   Dot separated path to the layout file, relative to base path
-	 *                                (plugins/system/sociallogin/layout)
-	 * @param   object  $displayData  Object which properties are used inside the layout file to build displayed output
-	 * @param   string  $includePath  Additional path holding layout files
-	 * @param   mixed   $options      Optional custom options to load. Registry or array format. Set 'debug'=>true to
-	 *                                output debug information.
-	 *
-	 * @return  string
-	 */
-	public static function renderLayout($layoutFile, $displayData = null, $includePath = '', $options = null)
-	{
-		$basePath = JPATH_PLUGINS . '/system/sociallogin/layout';
-		$layout   = new FileLayout($layoutFile, null, $options);
-
-		if (!empty($includePath))
-		{
-			$layout->addIncludePath($includePath);
-		}
-
-		$result = $layout->render($displayData);
-
-		if (empty($result))
-		{
-			$layout = new FileLayout($layoutFile, $basePath, $options);
-
-			if (!empty($includePath))
-			{
-				$layout->addIncludePath($includePath);
-			}
-
-			$result = $layout->render($displayData);
-		}
-
-		return $result;
-	}
-
 	/**
 	 * Execute a plugin event and return the results
 	 *
@@ -97,13 +46,5 @@ abstract class Joomla
 		}
 
 		throw new RuntimeException('Cannot run plugins');
-	}
-
-	/**
-	 * @return DatabaseDriver
-	 */
-	public static function getDbo()
-	{
-		return Factory::getContainer()->get('DatabaseDriver') ?: Factory::getDbo();
 	}
 }

@@ -20,7 +20,6 @@ use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\User\User;
 use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\Event\Event;
-use Joomla\Plugin\System\SocialLogin\Library\Helper\Joomla;
 use Joomla\Registry\Registry as JRegistry;
 use Joomla\Utilities\ArrayHelper;
 

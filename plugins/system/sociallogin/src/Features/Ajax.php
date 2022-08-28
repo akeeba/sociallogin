@@ -15,7 +15,6 @@ use Joomla\CMS\Log\Log;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Uri\Uri;
 use Joomla\Event\Event;
-use Joomla\Plugin\System\SocialLogin\Library\Helper\Joomla;
 
 /**
  * Feature: AJAX request handling

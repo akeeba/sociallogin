@@ -10,6 +10,7 @@ namespace Joomla\Plugin\System\SocialLogin\Library\Plugin;
 use Exception;
 use Joomla\Application\AbstractApplication;
 use Joomla\CMS\Document\HtmlDocument;
+use Joomla\CMS\Layout\FileLayout;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\User\User;
 use Joomla\Plugin\System\SocialLogin\Library\Helper\Joomla;
@@ -55,17 +56,17 @@ trait SocialLoginButtonsTrait
 			$includePath = JPATH_SITE . '/plugins/sociallogin/' . $buttonDefinition['slug'] . '/layout';
 
 			// First try the plugin-specific layout
-			$html = Joomla::renderLayout("$buttonLayout.{$buttonDefinition['slug']}", $buttonDefinition, $includePath);
+			$html = $this->renderLayout("$buttonLayout.{$buttonDefinition['slug']}", $buttonDefinition, $includePath);
 
 			if (empty($html))
 			{
-				$html = Joomla::renderLayout($buttonLayout, $buttonDefinition, $includePath);
+				$html = $this->renderLayout($buttonLayout, $buttonDefinition, $includePath);
 			}
 
 			$buttonsHTML[] = $html;
 		}
 
-		return Joomla::renderLayout($buttonsLayout, ['buttons' => $buttonsHTML]);
+		return $this->renderLayout($buttonsLayout, ['buttons' => $buttonsHTML]);
 	}
 
 	/**
@@ -172,6 +173,45 @@ CSS;
 		}
 
 		$document->getWebAssetManager()->addInlineStyle($css);
+	}
+
+	/**
+	 * Helper method to render a JLayout.
+	 *
+	 * @param   string  $layoutFile   Dot separated path to the layout file, relative to base path
+	 *                                (plugins/system/sociallogin/layout)
+	 * @param   object  $displayData  Object which properties are used inside the layout file to build displayed output
+	 * @param   string  $includePath  Additional path holding layout files
+	 * @param   mixed   $options      Optional custom options to load. Registry or array format. Set 'debug'=>true to
+	 *                                output debug information.
+	 *
+	 * @return  string
+	 */
+	protected static function renderLayout($layoutFile, $displayData = null, $includePath = '', $options = null)
+	{
+		$basePath = JPATH_PLUGINS . '/system/sociallogin/layout';
+		$layout   = new FileLayout($layoutFile, null, $options);
+
+		if (!empty($includePath))
+		{
+			$layout->addIncludePath($includePath);
+		}
+
+		$result = $layout->render($displayData);
+
+		if (empty($result))
+		{
+			$layout = new FileLayout($layoutFile, $basePath, $options);
+
+			if (!empty($includePath))
+			{
+				$layout->addIncludePath($includePath);
+			}
+
+			$result = $layout->render($displayData);
+		}
+
+		return $result;
 	}
 
 }
