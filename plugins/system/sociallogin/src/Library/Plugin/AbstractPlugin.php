@@ -19,6 +19,8 @@ use Joomla\CMS\Log\Log;
 use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\User\User;
+use Joomla\Database\DatabaseDriver;
+use Joomla\Database\DatabaseInterface;
 use Joomla\Event\DispatcherInterface;
 use Joomla\Event\Event;
 use Joomla\Event\SubscriberInterface;
@@ -28,7 +30,6 @@ use Joomla\Plugin\System\SocialLogin\Library\Exception\Login\GenericMessage;
 use Joomla\Plugin\System\SocialLogin\Library\Exception\Login\LoginError;
 use Joomla\Plugin\System\SocialLogin\Library\Helper\Integrations;
 use Joomla\Plugin\System\SocialLogin\Library\Helper\Joomla;
-use Joomla\Plugin\System\SocialLogin\Library\Helper\Login;
 use Joomla\Utilities\ArrayHelper;
 use RuntimeException;
 
@@ -37,12 +38,22 @@ use RuntimeException;
  */
 abstract class AbstractPlugin extends CMSPlugin implements SubscriberInterface
 {
+	use LoginTrait;
+
 	/**
 	 * The CMS application object
 	 *
 	 * @var  CMSApplication
 	 */
 	public $app;
+
+	/**
+	 * The Joomla database driver object.
+	 *
+	 * @var   DatabaseInterface|DatabaseDriver
+	 * @since 4.1.0
+	 */
+	public $db;
 
 	/**
 	 * OAuth application's ID
@@ -288,19 +299,19 @@ abstract class AbstractPlugin extends CMSPlugin implements SubscriberInterface
 
 			Joomla::log($this->integrationName, sprintf("Calling Social Login login handler with the following information: %s", ArrayHelper::toString($userProfileData)));
 
-			Login::handleSocialLogin($this->integrationName, $pluginConfiguration, $userData, $userProfileData);
+			$this->handleSocialLogin($this->integrationName, $pluginConfiguration, $userData, $userProfileData);
 		}
 		catch (LoginError  $e)
 		{
 			// Log failed login
-			$response                = Login::getAuthenticationResponseObject();
+			$response                = $this->getAuthenticationResponseObject();
 			$response->status        = Authentication::STATUS_UNKNOWN;
 			$response->error_message = $e->getMessage();
 
 			Joomla::log($this->integrationName, sprintf("Received login failure. Message: %s", $e->getMessage()), Log::ERROR);
 
 			// This also enqueues the login failure message for display after redirection. Look for JLog in that method.
-			Login::processLoginFailure($response, null, $this->integrationName);
+			$this->processLoginFailure($response, $this->integrationName);
 
 			$app->redirect($failureUrl);
 
@@ -608,7 +619,7 @@ abstract class AbstractPlugin extends CMSPlugin implements SubscriberInterface
 			return false;
 		}
 
-		return Login::isLinkedUser($this->integrationName, $user);
+		return $this->isLinkedUser($this->integrationName, $user);
 	}
 
 	/**
