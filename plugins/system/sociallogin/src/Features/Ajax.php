@@ -47,7 +47,7 @@ trait Ajax
 		}
 
 		// ...and we are not already logged in...
-		if (!Joomla::getUser()->guest)
+		if (!$this->app->getIdentity()->guest)
 		{
 			return;
 		}

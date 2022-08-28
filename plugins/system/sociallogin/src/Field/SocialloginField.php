@@ -9,10 +9,11 @@ namespace Joomla\Plugin\System\SocialLogin\Field;
 
 defined('_JEXEC') || die;
 
+use Joomla\CMS\Factory;
 use Joomla\CMS\Form\FormField;
 use Joomla\CMS\Language\Text;
+use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\Plugin\System\SocialLogin\Library\Helper\Integrations;
-use Joomla\Plugin\System\SocialLogin\Library\Helper\Joomla;
 
 /**
  * @noinspection PhpUnused
@@ -35,7 +36,7 @@ class SocialloginField extends FormField
 			return Text::_('PLG_SYSTEM_SOCIALLOGIN_ERR_NOUSER');
 		}
 
-		$user = Joomla::getUser($user_id);
+		$user = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($user_id);
 
 		// Render and return buttons
 		return Integrations::getSocialLinkButtons($user);

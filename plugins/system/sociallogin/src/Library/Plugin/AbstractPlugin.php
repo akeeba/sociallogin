@@ -13,12 +13,14 @@ defined('_JEXEC') || die();
 use Exception;
 use Joomla\CMS\Application\CMSApplication;
 use Joomla\CMS\Authentication\Authentication;
+use Joomla\CMS\Factory;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\User\User;
+use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\Database\DatabaseDriver;
 use Joomla\Database\DatabaseInterface;
 use Joomla\Event\DispatcherInterface;
@@ -39,6 +41,7 @@ use RuntimeException;
 abstract class AbstractPlugin extends CMSPlugin implements SubscriberInterface
 {
 	use LoginTrait;
+	use AddLoggerTrait;
 
 	/**
 	 * The CMS application object
@@ -163,7 +166,7 @@ abstract class AbstractPlugin extends CMSPlugin implements SubscriberInterface
 		$this->integrationName = $config['sociallogin.integrationName'] ?? $this->_name;
 
 		// Register a debug log file writer
-		Joomla::addLogger($this->integrationName);
+		$this->addLogger($this->integrationName);
 
 		// Load the plugin options into properties
 		$this->canLoginUnlinked    = $this->params->get('loginunlinked', 0) != 0;
@@ -425,7 +428,7 @@ abstract class AbstractPlugin extends CMSPlugin implements SubscriberInterface
 
 		if (empty($user))
 		{
-			$user = Joomla::getUser();
+			$user = $this->app->getIdentity();
 		}
 
 		// Get the return URL
@@ -593,10 +596,10 @@ abstract class AbstractPlugin extends CMSPlugin implements SubscriberInterface
 		// Make sure we have a user
 		if (is_null($user))
 		{
-			$user = Joomla::getUser();
+			$user = $this->app->getIdentity();
 		}
 
-		Integrations::removeUserProfileData($user->id, 'sociallogin.' . $this->integrationName);
+		$this->removeUserProfileData($user->id, 'sociallogin.' . $this->integrationName);
 	}
 
 	/**
@@ -709,4 +712,30 @@ abstract class AbstractPlugin extends CMSPlugin implements SubscriberInterface
 	 * @return  UserData
 	 */
 	protected abstract function mapSocialProfileToUserData(array $socialProfile): UserData;
+
+	/**
+	 * Delete all data with a common key name from the user profile table #__user_profiles.
+	 *
+	 * @param   int     $userId  The user ID to remove data from
+	 * @param   string  $slug    Common prefix for all keys, e.g. 'sociallogin.mysocialnetwork'
+	 */
+	protected function removeUserProfileData(int $userId, string $slug)
+	{
+		// Make sure we have a user
+		$user = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($userId);
+
+		// Cannot unlink data from a guest user
+		if ($user->guest || empty($user->id))
+		{
+			return;
+		}
+
+		$db = $this->db;
+
+		$query = $db->getQuery(true)
+		            ->delete($db->qn('#__user_profiles'))
+		            ->where($db->qn('user_id') . ' = ' . $db->q($userId))
+		            ->where($db->qn('profile_key') . ' LIKE ' . $db->q($slug . '.%'));
+		$db->setQuery($query)->execute();
+	}
 }

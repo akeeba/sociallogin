@@ -11,11 +11,14 @@ namespace Joomla\Plugin\System\SocialLogin\Features;
 defined('_JEXEC') || die;
 
 use Exception;
+use Joomla\CMS\Factory;
 use Joomla\CMS\Form\Form as JForm;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Table\Menu;
 use Joomla\CMS\Table\Table;
 use Joomla\CMS\Uri\Uri;
+use Joomla\CMS\User\User;
+use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\Event\Event;
 use Joomla\Plugin\System\SocialLogin\Library\Helper\Joomla;
 use Joomla\Registry\Registry as JRegistry;
@@ -179,7 +182,7 @@ trait UserFields
 			$id = $data->id ?? null;
 		}
 
-		$user = Joomla::getUser($id);
+		$user = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($id);
 
 		// Make sure the loaded user is the correct one
 		if ($user->id != $id)
@@ -188,7 +191,7 @@ trait UserFields
 		}
 
 		// Make sure I am either editing myself OR I am a Super User
-		if (!Joomla::canEditUser($user))
+		if (!$this->canEditUser($user))
 		{
 			return;
 		}
@@ -253,7 +256,7 @@ trait UserFields
 				Log::DEBUG,
 				'sociallogin.system'
 			);
-			$db = Joomla::getDbo();
+			$db = $this->db;
 
 			/** @noinspection SqlResolve */
 			$query = $db->getQuery(true)
@@ -329,4 +332,47 @@ trait UserFields
 		// Reset the session flag; the user save operation may have changed the dontremind flag.
 		$this->app->getSession()->set('sociallogin.islinked', null);
 	}
+
+	/**
+	 * Is the current user allowed to edit the social login configuration of $user? To do so I must either be editing my
+	 * own account OR I have to be a Super User.
+	 *
+	 * @param   User  $user  The user you want to know if we're allowed to edit
+	 *
+	 * @return  bool
+	 * @since   4.1.0
+	 */
+	public function canEditUser($user = null)
+	{
+		// I can edit myself
+		if (empty($user))
+		{
+			return true;
+		}
+
+		// Guests can't have social logins associated
+		if ($user->guest)
+		{
+			return false;
+		}
+
+		// Get the currently logged in used
+		$myUser = $this->app->getIdentity();
+
+		// Same user? I can edit myself
+		if ($myUser->id == $user->id)
+		{
+			return true;
+		}
+
+		// To edit a different user I must be a Super User myself. If I'm not, I can't edit another user!
+		if (!$myUser->authorise('core.admin'))
+		{
+			return false;
+		}
+
+		// I am a Super User editing another user. That's allowed.
+		return true;
+	}
+
 }

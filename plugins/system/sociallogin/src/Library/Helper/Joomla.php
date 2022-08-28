@@ -12,12 +12,11 @@ defined('_JEXEC') || die();
 
 use Exception;
 use Joomla\Application\AbstractApplication;
-use Joomla\CMS\Application\CMSApplication;
+use Joomla\CMS\Application\EventAware;
+use Joomla\CMS\Event\GenericEvent;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Layout\FileLayout;
 use Joomla\CMS\Log\Log;
-use Joomla\CMS\User\User;
-use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\Database\DatabaseDriver;
 use RuntimeException;
 
@@ -32,55 +31,6 @@ abstract class Joomla
 	 * @var   bool
 	 */
 	protected static ?bool $isAdmin = null;
-
-	/**
-	 * Which plugins have already registered a text file logger. Prevents double registration of a log file.
-	 *
-	 * @var   array
-	 * @since 2.1.0
-	 */
-	protected static array $registeredLoggers = [];
-
-	/**
-	 * Is the current user allowed to edit the social login configuration of $user? To do so I must either be editing my
-	 * own account OR I have to be a Super User.
-	 *
-	 * @param   User  $user  The user you want to know if we're allowed to edit
-	 *
-	 * @return  bool
-	 */
-	public static function canEditUser($user = null)
-	{
-		// I can edit myself
-		if (empty($user))
-		{
-			return true;
-		}
-
-		// Guests can't have social logins associated
-		if ($user->guest)
-		{
-			return false;
-		}
-
-		// Get the currently logged in used
-		$myUser = self::getUser();
-
-		// Same user? I can edit myself
-		if ($myUser->id == $user->id)
-		{
-			return true;
-		}
-
-		// To edit a different user I must be a Super User myself. If I'm not, I can't edit another user!
-		if (!$myUser->authorise('core.admin'))
-		{
-			return false;
-		}
-
-		// I am a Super User editing another user. That's allowed.
-		return true;
-	}
 
 	/**
 	 * Helper method to render a JLayout.
@@ -134,7 +84,7 @@ abstract class Joomla
 	 * @throws  RuntimeException  When we cannot run the plugins
 	 * @throws  Exception         When we cannot create the application
 	 */
-	public static function runPlugins($event, $data, $app = null)
+	public static function runPlugins(string $event, array $data, $app = null)
 	{
 		if (!is_object($app))
 		{
@@ -150,84 +100,10 @@ abstract class Joomla
 	}
 
 	/**
-	 * Returns the user, delegates to JFactory/Factory.
-	 *
-	 * @param   int|null  $id  The ID of the Joomla! user to load, default null (currently logged in user)
-	 *
-	 * @return  User
-	 */
-	public static function getUser($id = null)
-	{
-		$userFactory = Factory::getContainer()->get(UserFactoryInterface::class);
-
-		if (is_null($id))
-		{
-			$app = Factory::getApplication();
-
-			return $app->getIdentity() ?: $app->getSession()->get('user') ?: $userFactory->loadUserById(0);
-		}
-
-		return $userFactory->loadUserById($id);
-	}
-
-	/**
-	 * Is the variable an CMS application object?
-	 *
-	 * @param   mixed  $app
-	 *
-	 * @return  bool
-	 */
-	public static function isCmsApplication($app)
-	{
-		if (!is_object($app))
-		{
-			return false;
-		}
-
-		return $app instanceof CMSApplication;
-	}
-
-	/**
 	 * @return DatabaseDriver
 	 */
 	public static function getDbo()
 	{
 		return Factory::getContainer()->get('DatabaseDriver') ?: Factory::getDbo();
-	}
-
-	/**
-	 * Register a debug log file writer for a Social Login plugin.
-	 *
-	 * @param   string  $plugin  The Social Login plugin for which to register a debug log file writer
-	 *
-	 * @return  void
-	 *
-	 * @since   2.1.0
-	 */
-	public static function addLogger($plugin)
-	{
-		// Make sure this logger is not already registered
-		if (in_array($plugin, self::$registeredLoggers))
-		{
-			return;
-		}
-
-		self::$registeredLoggers[] = $plugin;
-
-		// We only log errors unless Site Debug is enabled
-		$logLevels = Log::ERROR | Log::CRITICAL | Log::ALERT | Log::EMERGENCY;
-
-		if (defined('JDEBUG') && JDEBUG)
-		{
-			$logLevels = Log::ALL;
-		}
-
-		// Add a formatted text logger
-		Log::addLogger([
-			'text_file'         => "sociallogin_{$plugin}.php",
-			'text_entry_format' => '{DATETIME}	{PRIORITY} {CLIENTIP}	{MESSAGE}',
-		], $logLevels, [
-			"sociallogin.{$plugin}",
-		]);
 	}
 }

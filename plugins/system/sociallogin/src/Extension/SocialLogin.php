@@ -26,16 +26,11 @@ use Joomla\Plugin\System\SocialLogin\Features\Ajax;
 use Joomla\Plugin\System\SocialLogin\Features\ButtonInjection;
 use Joomla\Plugin\System\SocialLogin\Features\DynamicUsergroups;
 use Joomla\Plugin\System\SocialLogin\Features\UserFields;
-use Joomla\Plugin\System\SocialLogin\Library\Helper\Joomla;
+use Joomla\Plugin\System\SocialLogin\Library\Plugin\AddLoggerTrait;
+use Joomla\Plugin\System\SocialLogin\Library\Plugin\SocialLoginButtonsTrait;
 
 class SocialLogin extends CMSPlugin implements SubscriberInterface
 {
-	/** @var CMSApplication|SiteApplication|AdministratorApplication */
-	public $app;
-
-	/** @var DatabaseDriver|DatabaseInterface */
-	public $db;
-
 	// Load the features, implemented as traits (for easier code management)
 	use Ajax, DynamicUsergroups
 	{
@@ -44,6 +39,14 @@ class SocialLogin extends CMSPlugin implements SubscriberInterface
 	}
 	use ButtonInjection;
 	use UserFields;
+	use AddLoggerTrait;
+	use SocialLoginButtonsTrait;
+
+	/** @var CMSApplication|SiteApplication|AdministratorApplication */
+	public $app;
+
+	/** @var DatabaseDriver|DatabaseInterface */
+	public $db;
 
 	/**
 	 * User group ID to add the user to if they have linked social network accounts to their profile
@@ -89,7 +92,7 @@ class SocialLogin extends CMSPlugin implements SubscriberInterface
 			JLoader::registerNamespace('CoderCat\\JWKToPEM', __DIR__ . '/../../vendor/codercat/jwk-to-pem/src');
 		}
 
-		Joomla::addLogger('system');
+		$this->addLogger('system');
 
 		// Am I enabled?
 		$this->enabled = $this->isEnabled();
@@ -200,12 +203,7 @@ class SocialLogin extends CMSPlugin implements SubscriberInterface
 	 */
 	private function isEnabled(): bool
 	{
-		// It only make sense to let people log in when they are not already logged in ;)
-		if (!Joomla::getUser()->guest)
-		{
-			return false;
-		}
-
-		return true;
+		// It only makes sense to let people log in when they are not already logged in ;)
+		return (bool) $this->app->getIdentity()->guest;
 	}
 }

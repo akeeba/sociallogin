@@ -67,9 +67,9 @@ trait ButtonInjection
 		$this->includeJ4ButtonHandler();
 
 		$returnUrl = $this->getReturnURLFromBackTrace();
-		$buttonDefinitions = Integrations::getSocialLoginButtonDefinitions(null, $returnUrl);
+		$buttonDefinitions = $this->getSocialLoginButtonDefinitions(null, $returnUrl);
 
-		Integrations::customCss($buttonDefinitions);
+		$this->customCss($buttonDefinitions);
 
 		$ret                          = array_map(function (array $def) {
 			$randomId = sprintf("plg_system_sociallogin-%s-%s-%s",

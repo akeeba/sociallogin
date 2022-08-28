@@ -12,10 +12,12 @@ defined('_JEXEC') || die();
 
 use Exception;
 use Joomla\Application\AbstractApplication;
+use Joomla\CMS\Application\CMSApplication;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\User\User;
+use Joomla\CMS\User\UserFactoryInterface;
 use RuntimeException;
 
 
@@ -35,7 +37,7 @@ final class Ajax
 	 */
 	public function handle($app)
 	{
-		if (!Joomla::isCmsApplication($app))
+		if (!$app instanceof CMSApplication)
 		{
 			return null;
 		}
@@ -76,7 +78,7 @@ final class Ajax
 	 */
 	protected function ajaxUnlink($app)
 	{
-		if (!Joomla::isCmsApplication($app))
+		if (!$app instanceof CMSApplication)
 		{
 			return;
 		}
@@ -107,7 +109,7 @@ final class Ajax
 		Factory::getApplication()->getSession()->set('sociallogin.islinked', null);
 
 		// Get the user to unlink
-		$user = Joomla::getUser($userId);
+		$user = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($userId);
 
 		// Call the plugin events to unlink the user
 		PluginHelper::importPlugin('sociallogin');
@@ -124,7 +126,7 @@ final class Ajax
 	 */
 	protected function ajaxAuthenticate($app)
 	{
-		if (!Joomla::isCmsApplication($app))
+		if (!$app instanceof CMSApplication)
 		{
 			return;
 		}
@@ -152,7 +154,7 @@ final class Ajax
 	 */
 	protected function ajaxDontremind($app)
 	{
-		if (!Joomla::isCmsApplication($app))
+		if (!$app instanceof CMSApplication)
 		{
 			return;
 		}

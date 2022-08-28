@@ -24,7 +24,6 @@ use Joomla\Plugin\System\SocialLogin\Library\Data\PluginConfiguration;
 use Joomla\Plugin\System\SocialLogin\Library\Data\UserData;
 use Joomla\Plugin\System\SocialLogin\Library\Exception\Login\GenericMessage;
 use Joomla\Plugin\System\SocialLogin\Library\Exception\Login\LoginError;
-use Joomla\Plugin\System\SocialLogin\Library\Helper\Integrations;
 use Joomla\Plugin\System\SocialLogin\Library\Helper\Joomla;
 use RuntimeException;
 use UnexpectedValueException;
@@ -83,7 +82,7 @@ trait LoginTrait
 				'sociallogin.' . $slug
 			);
 
-			$userId = Integrations::getUserIdByProfileData('sociallogin.' . $slug . '.' . $primaryKey, $userData->id);
+			$userId = $this->getUserIdByProfileData('sociallogin.' . $slug . '.' . $primaryKey, $userData->id);
 		}
 
 		// We need to extract this value since empty() cannot work on properties accessed with magic __get
@@ -513,6 +512,54 @@ trait LoginTrait
 		);
 
 		return false;
+	}
+
+	/**
+	 * Get the user ID which matches the given profile data. Namely, the #__user_profiles table must have an entry for
+	 * that user where profile_key == $profileKey and profile_value == $profileValue.
+	 *
+	 * @param   string  $profileKey    The key in the user profiles table to look up
+	 * @param   string  $profileValue  The value in the user profiles table to look for
+	 *
+	 * @return  int  The user ID or 0 if no matching user is found / the user found no longer exists in the system.
+	 */
+	protected function getUserIdByProfileData(string $profileKey, string $profileValue): int
+	{
+		$db    = $this->db;
+		$query = $db->getQuery(true)
+		            ->select([
+			            $db->qn('user_id'),
+		            ])->from($db->qn('#__user_profiles'))
+		            ->where($db->qn('profile_key') . ' = ' . $db->q($profileKey))
+		            ->where($db->qn('profile_value') . ' = ' . $db->q($profileValue));
+
+		try
+		{
+			$id = $db->setQuery($query, 0, 1)->loadResult();
+
+			// Not found?
+			if (empty($id))
+			{
+				return 0;
+			}
+
+			/**
+			 * If you delete a user its profile fields are left behind and confuse our code. Therefore we have to check
+			 * if the user *really* exists. However we can't just go through Factory::getUser() because if the user
+			 * does not exist we'll end up with an ugly Warning on our page with a text similar to "JUser: :_load:
+			 * Unable to load user with ID: 1234". This cannot be disabled so we have to be, um, a bit creative :/
+			 */
+			$query      = $db->getQuery(true)
+			                 ->select('COUNT(*)')->from($db->qn('#__users'))
+			                 ->where($db->qn('id') . ' = ' . $db->q($id));
+			$userExists = $db->setQuery($query)->loadResult();
+
+			return ($userExists == 0) ? 0 : $id;
+		}
+		catch (Exception $e)
+		{
+			return 0;
+		}
 	}
 
 	/**
