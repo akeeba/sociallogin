@@ -15,6 +15,7 @@ use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Router\Route;
 use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\User\UserHelper;
+use Joomla\Event\Event;
 use Joomla\Plugin\System\SocialLogin\Library\Helper\Integrations;
 use Joomla\Plugin\System\SocialLogin\Library\Helper\Joomla;
 use Joomla\Registry\Registry;
@@ -38,8 +39,6 @@ trait ButtonInjection
 	/**
 	 * Creates additional login buttons
 	 *
-	 * @param   string  $form  The HTML ID of the form we are enclosed in
-	 *
 	 * @return  array
 	 *
 	 * @throws  Exception
@@ -48,11 +47,14 @@ trait ButtonInjection
 	 *
 	 * @since   3.1.0
 	 */
-	public function onUserLoginButtons(string $form): array
+	public function onUserLoginButtons(Event $event): void
 	{
+		/** @var string $form The HTML ID of the form we are enclosed in */
+		[$form] = $event->getArguments();
+
 		if (!$this->enabled)
 		{
-			return [];
+			return;
 		}
 
 		// Append the social login buttons content
@@ -89,7 +91,15 @@ trait ButtonInjection
 			];
 		}, $buttonDefinitions);
 
-		return $ret;
+		$result = $event->getArgument('result') ?: [];
+
+		if (!is_array($result)) {
+			$result = [$result];
+		}
+
+		$result[] = $ret;
+
+		$event->setArgument('result', $result);
 	}
 
 	/**

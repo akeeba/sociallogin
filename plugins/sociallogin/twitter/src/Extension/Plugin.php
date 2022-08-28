@@ -6,16 +6,16 @@
  */
 
 // Protect from unauthorized access
-namespace Akeeba\SocialLogin\Twitter\Extension;
+namespace Joomla\Plugin\Sociallogin\Twitter\Extension;
 
 defined('_JEXEC') || die();
 
-use Akeeba\SocialLogin\Twitter\Integration\OAuth;
 use Exception;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Http\HttpFactory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Uri\Uri;
+use Joomla\Plugin\Sociallogin\Twitter\Integration\OAuth;
 use Joomla\Plugin\System\SocialLogin\Library\Data\UserData;
 use Joomla\Plugin\System\SocialLogin\Library\Exception\Login\LoginError;
 use Joomla\Plugin\System\SocialLogin\Library\Plugin\AbstractPlugin;

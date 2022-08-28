@@ -6,15 +6,15 @@
  */
 
 // Protect from unauthorized access
-namespace Akeeba\SocialLogin\Facebook\Extension;
+namespace Joomla\Plugin\Sociallogin\Facebook\Extension;
 
 defined('_JEXEC') || die();
 
-use Akeeba\SocialLogin\Facebook\Integration\OAuth as FacebookOAuth;
-use Akeeba\SocialLogin\Facebook\Integration\User as FacebookUser;
 use Exception;
 use Joomla\CMS\Http\HttpFactory;
 use Joomla\CMS\Uri\Uri;
+use Joomla\Plugin\Sociallogin\Facebook\Integration\OAuth as FacebookOAuth;
+use Joomla\Plugin\Sociallogin\Facebook\Integration\User as FacebookUser;
 use Joomla\Plugin\System\SocialLogin\Library\Data\UserData;
 use Joomla\Plugin\System\SocialLogin\Library\Plugin\AbstractPlugin;
 use Joomla\Registry\Registry;

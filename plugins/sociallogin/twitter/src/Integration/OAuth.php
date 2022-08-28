@@ -5,7 +5,7 @@
  *  @license   GNU General Public License version 3, or later
  */
 
-namespace Akeeba\SocialLogin\Twitter\Integration;
+namespace Joomla\Plugin\Sociallogin\Twitter\Integration;
 
 // Protect from unauthorized access
 defined('_JEXEC') || die();

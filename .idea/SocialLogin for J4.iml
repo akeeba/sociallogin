@@ -2,15 +2,14 @@
 <module type="WEB_MODULE" version="4">
   <component name="NewModuleRootManager">
     <content url="file://$MODULE_DIR$">
-      <sourceFolder url="file://$MODULE_DIR$/plugins/sociallogin/apple/Apple" isTestSource="false" packagePrefix="Akeeba\SocialLogin\Apple" />
-      <sourceFolder url="file://$MODULE_DIR$/plugins/sociallogin/apple/src" isTestSource="false" packagePrefix="Joomla\Plugin\Sociallogin\Apple\" />
-      <sourceFolder url="file://$MODULE_DIR$/plugins/system/sociallogin/src" isTestSource="false" packagePrefix="Joomla\Plugin\System\SocialLogin\" />
-      <sourceFolder url="file://$MODULE_DIR$/plugins/sociallogin/facebook/src" isTestSource="false" packagePrefix="Akeeba\SocialLogin\Facebook" />
-      <sourceFolder url="file://$MODULE_DIR$/plugins/sociallogin/github/src" isTestSource="false" packagePrefix="Akeeba\SocialLogin\GitHub" />
-      <sourceFolder url="file://$MODULE_DIR$/plugins/sociallogin/google/src" isTestSource="false" packagePrefix="Akeeba\SocialLogin\Google" />
-      <sourceFolder url="file://$MODULE_DIR$/plugins/sociallogin/linkedin/src" isTestSource="false" packagePrefix="Akeeba\SocialLogin\LinkedIn" />
-      <sourceFolder url="file://$MODULE_DIR$/plugins/sociallogin/microsoft/src" isTestSource="false" packagePrefix="Akeeba\SocialLogin\Microsoft" />
-      <sourceFolder url="file://$MODULE_DIR$/plugins/sociallogin/twitter/src" isTestSource="false" packagePrefix="Akeeba\SocialLogin\Twitter" />
+      <sourceFolder url="file://$MODULE_DIR$/plugins/sociallogin/apple/src" isTestSource="false" packagePrefix="Joomla\Plugin\Sociallogin\Apple" />
+      <sourceFolder url="file://$MODULE_DIR$/plugins/system/sociallogin/src" isTestSource="false" packagePrefix="Joomla\Plugin\System\SocialLogin" />
+      <sourceFolder url="file://$MODULE_DIR$/plugins/sociallogin/facebook/src" isTestSource="false" packagePrefix="Joomla\Plugin\Sociallogin\Facebook" />
+      <sourceFolder url="file://$MODULE_DIR$/plugins/sociallogin/github/src" isTestSource="false" packagePrefix="Joomla\Plugin\Sociallogin\Github" />
+      <sourceFolder url="file://$MODULE_DIR$/plugins/sociallogin/google/src" isTestSource="false" packagePrefix="Joomla\Plugin\Sociallogin\Google" />
+      <sourceFolder url="file://$MODULE_DIR$/plugins/sociallogin/linkedin/src" isTestSource="false" packagePrefix="Joomla\Plugin\Sociallogin\Linkedin" />
+      <sourceFolder url="file://$MODULE_DIR$/plugins/sociallogin/microsoft/src" isTestSource="false" packagePrefix="Joomla\Plugin\Sociallogin\Microsoft" />
+      <sourceFolder url="file://$MODULE_DIR$/plugins/sociallogin/twitter/src" isTestSource="false" packagePrefix="Joomla\Plugin\Sociallogin\Twitter" />
       <excludeFolder url="file://$MODULE_DIR$/.github" />
       <excludeFolder url="file://$MODULE_DIR$/.idea" />
       <excludeFolder url="file://$MODULE_DIR$/modules" />

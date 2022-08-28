@@ -14,6 +14,7 @@ use Exception;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Uri\Uri;
+use Joomla\Event\Event;
 use Joomla\Plugin\System\SocialLogin\Library\Helper\Joomla;
 
 /**
@@ -36,10 +37,10 @@ trait Ajax
 	 *
 	 * @throws  Exception
 	 */
-	public function onAfterInitialise()
+	public function onAfterInitialise(Event $e): void
 	{
 		// Make sure this is the backend of the site...
-		if (!Factory::getApplication()->isClient('administrator'))
+		if (!$this->app->isClient('administrator'))
 		{
 			return;
 		}
@@ -50,7 +51,7 @@ trait Ajax
 			return;
 		}
 
-		$input = Factory::getApplication()->input;
+		$input = $this->app->input;
 
 		// ...and this is a request to com_ajax...
 		if ($input->getCmd('option', '') != 'com_ajax')
@@ -65,7 +66,7 @@ trait Ajax
 		}
 
 		// Reset the session flag; the AJAX operation may change whether the Joomla user is linked to a social media account
-		Factory::getApplication()->getSession()->set('sociallogin.islinked', null);
+		$this->app->getSession()->set('sociallogin.islinked', null);
 
 		// Load the plugin and execute the AJAX method
 		$plugin = $input->getCmd('plugin', '');
@@ -73,7 +74,7 @@ trait Ajax
 		PluginHelper::importPlugin('sociallogin', $plugin);
 		$methodName = 'onAjax' . ucfirst($plugin);
 
-		Factory::getApplication()->triggerEvent($methodName);
+		$this->app->triggerEvent($methodName);
 	}
 
 	/**
@@ -85,15 +86,15 @@ trait Ajax
 	 *
 	 * @throws  Exception
 	 */
-	public function onAjaxSociallogin()
+	public function onAjaxSociallogin(Event $e): void
 	{
 		$ajax  = new \Joomla\Plugin\System\SocialLogin\Library\Helper\Ajax();
-		$app   = Factory::getApplication();
+		$app   = $this->app;
 		$input = $app->input;
 
 		// Get the return URL from the session
-		$returnURL = Factory::getApplication()->getSession()->get('plg_system_sociallogin.returnUrl', Uri::base());
-		Factory::getApplication()->getSession()->set('plg_system_sociallogin.returnUrl', null);
+		$returnURL = $this->app->getSession()->get('plg_system_sociallogin.returnUrl', Uri::base());
+		$this->app->getSession()->set('plg_system_sociallogin.returnUrl', null);
 		$result = null;
 
 		try

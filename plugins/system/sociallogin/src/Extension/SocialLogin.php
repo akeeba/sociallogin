@@ -1,8 +1,8 @@
 <?php
 /**
- *  @package   AkeebaSocialLogin
- *  @copyright Copyright (c)2016-2022 Nicholas K. Dionysopoulos / Akeeba Ltd
- *  @license   GNU General Public License version 3, or later
+ * @package   AkeebaSocialLogin
+ * @copyright Copyright (c)2016-2022 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @license   GNU General Public License version 3, or later
  */
 
 namespace Joomla\Plugin\System\SocialLogin\Extension;
@@ -12,19 +12,26 @@ defined('_JEXEC') || die;
 
 use Exception;
 use JLoader;
+use Joomla\CMS\Language\LanguageHelper;
+use Joomla\CMS\Plugin\CMSPlugin;
+use Joomla\CMS\Uri\Uri;
+use Joomla\Database\DatabaseDriver;
+use Joomla\Database\DatabaseInterface;
+use Joomla\Event\Event;
+use Joomla\Event\SubscriberInterface;
 use Joomla\Plugin\System\SocialLogin\Features\Ajax;
 use Joomla\Plugin\System\SocialLogin\Features\ButtonInjection;
 use Joomla\Plugin\System\SocialLogin\Features\DynamicUsergroups;
 use Joomla\Plugin\System\SocialLogin\Features\UserFields;
 use Joomla\Plugin\System\SocialLogin\Library\Helper\Joomla;
-use Joomla\CMS\Language\LanguageHelper;
-use Joomla\CMS\Plugin\CMSPlugin;
-use Joomla\CMS\Uri\Uri;
 
-class SocialLogin extends CMSPlugin
+class SocialLogin extends CMSPlugin implements SubscriberInterface
 {
 	/** @var \Joomla\CMS\Application\CMSApplication */
 	public $app;
+
+	/** @var DatabaseDriver|DatabaseInterface */
+	public $db;
 
 	// Load the features, implemented as traits (for easier code management)
 	use Ajax, DynamicUsergroups
@@ -38,16 +45,16 @@ class SocialLogin extends CMSPlugin
 	/**
 	 * User group ID to add the user to if they have linked social network accounts to their profile
 	 *
-	 * @var   int
 	 * @since 3.0.1
+	 * @var   int
 	 */
 	protected $linkedUserGroup = 0;
 
 	/**
 	 * User group ID to add the user to if they have NOT linked social network accounts to their profile
 	 *
-	 * @var   int
 	 * @since 3.0.1
+	 * @var   int
 	 */
 	protected $unlinkedUserGroup = 0;
 
@@ -93,16 +100,29 @@ class SocialLogin extends CMSPlugin
 		$this->unlinkedUserGroup    = (int) $this->params->get('noLinkedAccountUserGroup', 0);
 	}
 
+	public static function getSubscribedEvents(): array
+	{
+		return [
+			'onAfterInitialise'    => 'onAfterInitialise',
+			'onAjaxSociallogin'    => 'onAjaxSociallogin',
+			'onUserLoginButtons'   => 'onUserLoginButtons',
+			'onContentPrepareData' => 'onContentPrepareData',
+			'onContentPrepareForm' => 'onContentPrepareForm',
+			'onUserAfterSave'      => 'onUserAfterSave',
+			'onUserAfterDelete'    => 'onUserAfterDelete',
+		];
+	}
+
 	/**
 	 * Assemble the onAfterInitialise event from code belonging to many features' traits.
 	 *
 	 * @throws Exception
 	 */
-	public function onAfterInitialise()
+	public function onAfterInitialise(Event $e)
 	{
 		$this->magicRoute();
-		$this->onAfterInitialise_DynamicUserGroups();
-		$this->onAfterIntialise_Ajax();
+		$this->onAfterInitialise_DynamicUserGroups($e);
+		$this->onAfterIntialise_Ajax($e);
 	}
 
 	protected function magicRoute()

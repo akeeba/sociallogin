@@ -6,15 +6,15 @@
  */
 
 // Protect from unauthorized access
-namespace Akeeba\SocialLogin\GitHub\Extension;
+namespace Joomla\Plugin\Sociallogin\Github\Extension;
 
 defined('_JEXEC') || die();
 
-use Akeeba\SocialLogin\GitHub\Integration\OAuth as GitHubOAuth;
-use Akeeba\SocialLogin\GitHub\Integration\UserQuery;
 use Exception;
 use Joomla\CMS\Http\HttpFactory;
 use Joomla\CMS\Uri\Uri;
+use Joomla\Plugin\Sociallogin\Github\Integration\OAuth as GitHubOAuth;
+use Joomla\Plugin\Sociallogin\Github\Integration\UserQuery;
 use Joomla\Plugin\System\SocialLogin\Library\Data\UserData;
 use Joomla\Plugin\System\SocialLogin\Library\Plugin\AbstractPlugin;
 use Joomla\Registry\Registry;

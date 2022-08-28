@@ -197,8 +197,8 @@ abstract class AbstractPlugin extends CMSPlugin
 		}
 
 		// Save the return URLs into the session
-		Factory::getApplication()->getSession()->set('plg_sociallogin_' . $this->integrationName . '.loginUrl', $loginURL);
-		Factory::getApplication()->getSession()->set('plg_sociallogin_' . $this->integrationName . '.failureUrl', $failureURL);
+		$this->app->getSession()->set('plg_sociallogin_' . $this->integrationName . '.loginUrl', $loginURL);
+		$this->app->getSession()->set('plg_sociallogin_' . $this->integrationName . '.failureUrl', $failureURL);
 
 		return [
 			// The name of the plugin rendering this button. Used for customized JLayouts.
@@ -248,12 +248,12 @@ abstract class AbstractPlugin extends CMSPlugin
 		]);
 
 		// Save the return URL and user ID into the session
-		Factory::getApplication()->getSession()->set('plg_system_sociallogin.returnUrl', $returnURL);
-		Factory::getApplication()->getSession()->set('plg_system_sociallogin.userID', $user->id);
+		$this->app->getSession()->set('plg_system_sociallogin.returnUrl', $returnURL);
+		$this->app->getSession()->set('plg_system_sociallogin.userID', $user->id);
 
 		if ($this->isLinked($user))
 		{
-			$token     = Factory::getApplication()->getSession()->getToken();
+			$token     = $this->app->getSession()->getToken();
 			$unlinkURL = Uri::base() . 'index.php?option=com_ajax&group=system&plugin=sociallogin&format=raw&akaction=unlink&encoding=redirect&slug=' . $this->integrationName . '&' . $token . '=1';
 
 			// Render an unlink button
@@ -283,8 +283,8 @@ abstract class AbstractPlugin extends CMSPlugin
 		$loginURL = Uri::getInstance()->toString([
 			'scheme', 'user', 'pass', 'host', 'port', 'path', 'query', 'fragment',
 		]);
-		Factory::getApplication()->getSession()->set('plg_sociallogin_' . $this->integrationName . '.loginUrl', $loginURL);
-		Factory::getApplication()->getSession()->set('plg_sociallogin_' . $this->integrationName . '.failureUrl', $loginURL);
+		$this->app->getSession()->set('plg_sociallogin_' . $this->integrationName . '.loginUrl', $loginURL);
+		$this->app->getSession()->set('plg_sociallogin_' . $this->integrationName . '.failureUrl', $loginURL);
 
 		return [
 			// The name of the plugin rendering this button. Used for customized JLayouts.
@@ -459,13 +459,13 @@ abstract class AbstractPlugin extends CMSPlugin
 	{
 		Joomla::log($this->integrationName, 'Begin handing of authentication callback');
 
-		$returnURL  = Factory::getApplication()->getSession()->get('plg_system_sociallogin.returnUrl', Uri::base());
-		$loginUrl   = Factory::getApplication()->getSession()->get('plg_sociallogin_' . $this->integrationName . '.loginUrl', $returnURL);
-		$failureUrl = Factory::getApplication()->getSession()->get('plg_sociallogin_' . $this->integrationName . '.failureUrl', $loginUrl);
+		$returnURL  = $this->app->getSession()->get('plg_system_sociallogin.returnUrl', Uri::base());
+		$loginUrl   = $this->app->getSession()->get('plg_sociallogin_' . $this->integrationName . '.loginUrl', $returnURL);
+		$failureUrl = $this->app->getSession()->get('plg_sociallogin_' . $this->integrationName . '.failureUrl', $loginUrl);
 
 		// Remove the return URLs from the session
-		Factory::getApplication()->getSession()->set('plg_sociallogin_' . $this->integrationName . '.loginUrl', null);
-		Factory::getApplication()->getSession()->set('plg_sociallogin_' . $this->integrationName . '.failureUrl', null);
+		$this->app->getSession()->set('plg_sociallogin_' . $this->integrationName . '.loginUrl', null);
+		$this->app->getSession()->set('plg_sociallogin_' . $this->integrationName . '.failureUrl', null);
 
 		// Try to exchange the code with a token
 		$app = $this->app;

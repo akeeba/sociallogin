@@ -118,7 +118,7 @@ abstract class OAuth1Client
 		}
 
 		// Get token form session.
-		$this->token = array('key' => Factory::getApplication()->getSession()->get('oauth_token.key', null), 'secret' => Factory::getApplication()->getSession()->get('oauth_token.secret', null));
+		$this->token = array('key' => $this->app->getSession()->get('oauth_token.key', null), 'secret' => $this->app->getSession()->get('oauth_token.secret', null));
 
 		// Verify the returned request token.
 		if (strcmp($this->token['key'], $this->input->get('oauth_token')) !== 0)
@@ -175,8 +175,8 @@ abstract class OAuth1Client
 		$this->token = array('key' => $params['oauth_token'], 'secret' => $params['oauth_token_secret']);
 
 		// Save the request token in session
-		Factory::getApplication()->getSession()->set('oauth_token.key', $this->token['key']);
-		Factory::getApplication()->getSession()->set('oauth_token.secret', $this->token['secret']);
+		$this->app->getSession()->set('oauth_token.key', $this->token['key']);
+		$this->app->getSession()->set('oauth_token.secret', $this->token['secret']);
 	}
 
 	/**

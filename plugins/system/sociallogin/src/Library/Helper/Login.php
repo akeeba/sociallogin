@@ -253,7 +253,7 @@ abstract class Login
 
 		if (!is_object($app))
 		{
-			$app = Factory::getApplication();
+			$app = $this->app;
 		}
 
 		// Trigger onUserLoginFailure Event.
@@ -443,7 +443,7 @@ abstract class Login
 		// Fake a successful login message
 		if (!is_object($app))
 		{
-			$app = Factory::getApplication();
+			$app = $this->app;
 		}
 
 		$isAdmin = $app->isClient('administrator');
@@ -501,7 +501,7 @@ abstract class Login
 			'action'   => 'core.login.site',
 		];
 
-		if (Factory::getApplication()->isClient('administrator'))
+		if ($this->app->isClient('administrator'))
 		{
 			$options['action'] = 'core.login.admin';
 		}
@@ -514,7 +514,7 @@ abstract class Login
 		if (in_array(false, $results, true) == false)
 		{
 			// Set the user in the session, letting Joomla! know that we are logged in.
-			Factory::getApplication()->getSession()->set('user', $user);
+			$this->app->getSession()->set('user', $user);
 
 			// Trigger the onUserAfterLogin event
 			$options['user']         = $user;
@@ -553,7 +553,7 @@ abstract class Login
 	{
 		if (!is_object($app))
 		{
-			$app = Factory::getApplication();
+			$app = $this->app;
 		}
 
 		$cParams = self::getUsersParams();

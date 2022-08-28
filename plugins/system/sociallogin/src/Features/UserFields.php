@@ -16,6 +16,7 @@ use Joomla\CMS\Form\Form as JForm;
 use Joomla\CMS\Table\Menu;
 use Joomla\CMS\Table\Table;
 use Joomla\CMS\Uri\Uri;
+use Joomla\Event\Event;
 use Joomla\Plugin\System\SocialLogin\Library\Helper\Joomla;
 use Joomla\Registry\Registry as JRegistry;
 use Joomla\Utilities\ArrayHelper;
@@ -26,33 +27,42 @@ trait UserFields
 	 * Add the SocialLogin custom user profile field data to the core Joomla user profile data. This is required to
 	 * populate the "sociallogin.dontremind" field with its current value.
 	 *
-	 * @param	string	$context  The context for the data (form name)
-	 * @param	object  $data	  The user profile data
-	 *
-	 * @return	bool
+	 * @return	void
 	 */
-	public function onContentPrepareData($context, $data)
+	public function onContentPrepareData(Event $event): void
 	{
+		/**
+		 * @param	string	$context  The context for the data (form name)
+		 * @param	object  $data	  The user profile data
+		 */
+		[$context, $data] = $event->getArguments();
+		$result = $event->getArgument('result') ?: [];
+		$result = is_array($result) ? $result : [$result];
+		$result[] = true;
+
+		$event->setArgument('result', $result);
+
 		// Check we are manipulating a valid form.
 		if (!in_array($context, ['com_admin.profile', 'com_users.user', 'com_users.profile', 'com_users.registration']))
 		{
-			return true;
+			return;
 		}
 
 		if (!is_object($data))
 		{
-			return true;
+			return;
+
 		}
 
 		$userId = $data->id ?? 0;
 
 		if (isset($data->profile) || ($userId <= 0))
 		{
-			return true;
+			return;
 		}
 
 		// Load the profile data from the database.
-		$db = Factory::getDbo();
+		$db = $this->db;
 
 		$query = $db->getQuery(true)
 			->select([$db->qn('profile_key'), $db->qn('profile_value')])
@@ -67,7 +77,7 @@ trait UserFields
 		}
 		catch (Exception $e)
 		{
-			return true;
+			return;
 		}
 
 		// Merge the profile data.
@@ -79,46 +89,57 @@ trait UserFields
 			$data->sociallogin[$k] = $v[1];
 		}
 
-		return true;
+		$result[] = true;
+		$event->setArgument('result', $result);
+
+		return;
 	}
 
 	/**
 	 * Adds additional fields to the user editing form
 	 *
-	 * @param   JForm  $form  The form to be altered.
-	 * @param   mixed  $data  The associated data for the form.
-	 *
-	 * @return  boolean
+	 * @return  void
 	 *
 	 * @throws  Exception
 	 */
-	public function onContentPrepareForm($form, $data)
+	public function onContentPrepareForm(Event $event): void
 	{
+		/**
+		 * @param   JForm  $form  The form to be altered.
+		 * @param   mixed  $data  The associated data for the form.
+		 */
+		[$form, $data] = $event->getArguments();
+		$result = $event->getArgument('result') ?: [];
+		$result = is_array($result) ? $result : [$result];
+		$result[] = true;
+
+		$event->setArgument('result', $result);
+
 		if (!$this->addLinkUnlinkButtons)
 		{
-			return true;
+			return;
 		}
 
 		// Check we are manipulating a valid form.
 		if (!($form instanceof JForm))
 		{
-			return true;
+			return;
 		}
 
 		$name = $form->getName();
 
 		if (!in_array($name, array('com_admin.profile', 'com_users.user', 'com_users.profile', 'com_users.registration')))
 		{
-			return true;
+			return;
 		}
 
-		$layout = Factory::getApplication()->input->getCmd('layout', 'default');
+		$layout = $this->app->input->getCmd('layout', 'default');
 
 		/**
 		 * Joomla is kinda brain-dead. When we have a menu item to the Edit Profile page it does not push the layout
 		 * into the Input (as opposed with option and view) so I have to go in and dig it out myself. Yikes!
 		 */
-		$itemId = Factory::getApplication()->input->getInt('Itemid');
+		$itemId = $this->app->input->getInt('Itemid');
 
 		if ($itemId)
 		{
@@ -135,9 +156,9 @@ trait UserFields
 			}
 		}
 
-		if (!Factory::getApplication()->isClient('administrator') && ($layout != 'edit'))
+		if (!$this->app->isClient('administrator') && ($layout != 'edit'))
 		{
-			return true;
+			return;
 		}
 
 		// Get the user ID
@@ -161,13 +182,13 @@ trait UserFields
 		// Make sure the loaded user is the correct one
 		if ($user->id != $id)
 		{
-			return true;
+			return;
 		}
 
 		// Make sure I am either editing myself OR I am a Super User
 		if (!Joomla::canEditUser($user))
 		{
-			return true;
+			return;
 		}
 
 		// Add the fields to the form. The custom Sociallogin field uses the Integrations to render the buttons.
@@ -182,7 +203,7 @@ trait UserFields
 			$form->removeField('dontremind', 'sociallogin');
 		}
 
-		return true;
+		return;
 	}
 
 	/**
@@ -193,19 +214,26 @@ trait UserFields
 	 * @param   bool    $result  Was the user saved successfully?
 	 * @param   mixed   $error   (ignored)
 	 *
-	 * @return bool
+	 * @return  void
 	 */
-	public function onUserAfterSave($data, $isNew, $result, $error)
+	public function onUserAfterSave(Event $event)
 	{
+		[$data, $isNew, $result, $error] = $event->getArguments();
+		$result = $event->getArgument('result') ?: [];
+		$result = is_array($result) ? $result : [$result];
+		$result[] = true;
+
+		$event->setArgument('result', $result);
+
 		$userId = ArrayHelper::getValue($data, 'id', 0, 'int');
 
 		if (!$userId || !$result || !isset($data['sociallogin']) || !is_array($data['sociallogin']) || !count($data['sociallogin']))
 		{
-			return true;
+			return;
 		}
 
 
-		$db         = Factory::getDbo();
+		$db         = $this->db;
 		$fieldNames = array_map(function ($key) use ($db) {
 			return $db->q('sociallogin.' . $key);
 		}, array_keys($data['sociallogin']));
@@ -231,9 +259,7 @@ trait UserFields
 		$db->setQuery($query)->execute();
 
 		// Reset the session flag; the user save operation may have changed the dontremind flag.
-		Factory::getApplication()->getSession()->set('sociallogin.islinked', null);
-
-		return true;
+		$this->app->getSession()->set('sociallogin.islinked', null);
 	}
 
 	/**
@@ -245,15 +271,23 @@ trait UserFields
 	 * @param   bool    $success  True if user was successfully stored in the database
 	 * @param   string  $msg      Message
 	 *
-	 * @return  bool
+	 * @return  void
 	 *
 	 * @throws  Exception
 	 */
-	public function onUserAfterDelete($user, $success, $msg)
+	public function onUserAfterDelete(Event $event): void
 	{
+		[$user, $success, $msg] = $event->getArguments();
+		$result = $event->getArgument('result') ?: [];
+		$result = is_array($result) ? $result : [$result];
+
 		if (!$success)
 		{
-			return false;
+			$result[] = false;
+
+			$event->setArgument('result', $result);
+
+			return;
 		}
 
 		$userId = ArrayHelper::getValue($user, 'id', 0, 'int');
@@ -271,6 +305,8 @@ trait UserFields
 			$db->setQuery($query)->execute();
 		}
 
-		return true;
+		$result[] = true;
+
+		$event->setArgument('result', $result);
 	}
 }

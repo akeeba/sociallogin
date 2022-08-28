@@ -12,6 +12,8 @@ defined('_JEXEC') || die();
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\User\User;
+use Joomla\Database\DatabaseDriver;
+use Joomla\Event\Event;
 use Joomla\Plugin\System\SocialLogin\Library\Helper\DynamicGroups;
 
 /**
@@ -29,9 +31,9 @@ trait DynamicUsergroups
 	 *
 	 * @since   3.0.1
 	 */
-	public function onAfterInitialise()
+	public function onAfterInitialise(Event $e): void
 	{
-		$user = Factory::getUser();
+		$user = $this->app->getIdentity();
 
 		// Nothing to do for guest users
 		if ($user->guest)
@@ -46,14 +48,14 @@ trait DynamicUsergroups
 		}
 
 		// Get the session flag
-		$isLinked = Factory::getApplication()->getSession()->get('sociallogin.islinked', null);
+		$isLinked = $this->app->getSession()->get('sociallogin.islinked', null);
 
 		// Session flag not set. Populate and store in session.
 		if (is_null($isLinked))
 		{
 			$isLinked = $this->getSocialLoginLinkedStatus($user);
 
-			Factory::getApplication()->getSession()->set('sociallogin.islinked', $isLinked);
+			$this->app->getSession()->set('sociallogin.islinked', $isLinked);
 		}
 
 		// Perform an action based on the sociallogin.islinked session flag.
@@ -92,7 +94,7 @@ trait DynamicUsergroups
 	 */
 	private function getSocialLoginLinkedStatus(User $user)
 	{
-		$db = Factory::getDbo();
+		$db = $this->db;
 		$query = $db->getQuery(true)
 			->select([
 				$db->qn('profile_key'),

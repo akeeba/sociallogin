@@ -6,16 +6,16 @@
  */
 
 // Protect from unauthorized access
-namespace Akeeba\SocialLogin\Microsoft\Extension;
+namespace Joomla\Plugin\Sociallogin\Microsoft\Extension;
 
 defined('_JEXEC') || die();
 
-use Akeeba\SocialLogin\Microsoft\Integration\OAuth as MicrosoftOAuth;
-use Akeeba\SocialLogin\Microsoft\Integration\UserGraphQuery;
-use Akeeba\SocialLogin\Microsoft\Integration\UserQuery;
 use Exception;
 use Joomla\CMS\Http\HttpFactory;
 use Joomla\CMS\Uri\Uri;
+use Joomla\Plugin\Sociallogin\Microsoft\Integration\OAuth as MicrosoftOAuth;
+use Joomla\Plugin\Sociallogin\Microsoft\Integration\UserGraphQuery;
+use Joomla\Plugin\Sociallogin\Microsoft\Integration\UserQuery;
 use Joomla\Plugin\System\SocialLogin\Library\Data\UserData;
 use Joomla\Plugin\System\SocialLogin\Library\Plugin\AbstractPlugin;
 use Joomla\Registry\Registry;
