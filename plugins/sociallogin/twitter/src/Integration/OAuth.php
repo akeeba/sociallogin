@@ -1,8 +1,8 @@
 <?php
 /**
- *  @package   AkeebaSocialLogin
- *  @copyright Copyright (c)2016-2022 Nicholas K. Dionysopoulos / Akeeba Ltd
- *  @license   GNU General Public License version 3, or later
+ * @package   AkeebaSocialLogin
+ * @copyright Copyright (c)2016-2022 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @license   GNU General Public License version 3, or later
  */
 
 namespace Joomla\Plugin\Sociallogin\Twitter\Integration;
@@ -65,20 +65,6 @@ class OAuth extends OAuth1Client
 	}
 
 	/**
-	 * Method to verify if the access token is valid by making a request.
-	 *
-	 * @return  boolean  Returns true if the access token is valid and false otherwise.
-	 */
-	public function verifyCredentials()
-	{
-		$token      = $this->getToken();
-		$parameters = array('oauth_token' => $token['key']);
-		$path       = 'https://api.twitter.com/1.1/account/verify_credentials.json';
-		$response   = $this->oauthRequest($path, 'GET', $parameters);
-
-		return $response->code == 200;
-	}
-	/**
 	 * Ends the session of the authenticating user, returning a null cookie.
 	 *
 	 * @return  array  The decoded JSON response
@@ -86,7 +72,7 @@ class OAuth extends OAuth1Client
 	public function endSession()
 	{
 		$token      = $this->getToken();
-		$parameters = array('oauth_token' => $token['key']);
+		$parameters = ['oauth_token' => $token['key']];
 		$path       = 'https://api.twitter.com/1.1/account/end_session.json';
 		$response   = $this->oauthRequest($path, 'POST', $parameters);
 
@@ -118,5 +104,20 @@ class OAuth extends OAuth1Client
 
 			throw new \DomainException($error[0]->message, $error[0]->code);
 		}
+	}
+
+	/**
+	 * Method to verify if the access token is valid by making a request.
+	 *
+	 * @return  boolean  Returns true if the access token is valid and false otherwise.
+	 */
+	public function verifyCredentials()
+	{
+		$token      = $this->getToken();
+		$parameters = ['oauth_token' => $token['key']];
+		$path       = 'https://api.twitter.com/1.1/account/verify_credentials.json';
+		$response   = $this->oauthRequest($path, 'GET', $parameters);
+
+		return $response->code == 200;
 	}
 }

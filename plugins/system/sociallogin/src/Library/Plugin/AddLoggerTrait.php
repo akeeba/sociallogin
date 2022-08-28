@@ -1,8 +1,8 @@
 <?php
 /**
- *  @package   AkeebaSocialLogin
- *  @copyright Copyright (c)2016-2022 Nicholas K. Dionysopoulos / Akeeba Ltd
- *  @license   GNU General Public License version 3, or later
+ * @package   AkeebaSocialLogin
+ * @copyright Copyright (c)2016-2022 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @license   GNU General Public License version 3, or later
  */
 
 namespace Joomla\Plugin\System\SocialLogin\Library\Plugin;
@@ -14,8 +14,8 @@ trait AddLoggerTrait
 	/**
 	 * Which plugins have already registered a text file logger. Prevents double registration of a log file.
 	 *
-	 * @var   array
 	 * @since 2.1.0
+	 * @var   array
 	 */
 	protected static array $registeredLoggers = [];
 

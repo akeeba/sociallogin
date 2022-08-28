@@ -42,9 +42,9 @@ class Plugin extends AbstractPlugin
 	 * Constructor. Loads the language files as well.
 	 *
 	 * @param   DispatcherInterface  &$subject  The object to observe
-	 * @param   array    $config   An optional associative array of configuration settings.
-	 *                             Recognized key values include 'name', 'group', 'params', 'language'
-	 *                             (this list is not meant to be comprehensive).
+	 * @param   array                 $config   An optional associative array of configuration settings.
+	 *                                          Recognized key values include 'name', 'group', 'params', 'language'
+	 *                                          (this list is not meant to be comprehensive).
 	 */
 	public function __construct($subject, array $config = [])
 	{

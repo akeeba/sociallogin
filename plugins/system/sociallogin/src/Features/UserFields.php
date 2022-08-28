@@ -26,6 +26,48 @@ use Joomla\Utilities\ArrayHelper;
 trait UserFields
 {
 	/**
+	 * Is the current user allowed to edit the social login configuration of $user? To do so I must either be editing my
+	 * own account OR I have to be a Super User.
+	 *
+	 * @param   User  $user  The user you want to know if we're allowed to edit
+	 *
+	 * @return  bool
+	 * @since   4.1.0
+	 */
+	public function canEditUser($user = null)
+	{
+		// I can edit myself
+		if (empty($user))
+		{
+			return true;
+		}
+
+		// Guests can't have social logins associated
+		if ($user->guest)
+		{
+			return false;
+		}
+
+		// Get the currently logged in used
+		$myUser = $this->app->getIdentity();
+
+		// Same user? I can edit myself
+		if ($myUser->id == $user->id)
+		{
+			return true;
+		}
+
+		// To edit a different user I must be a Super User myself. If I'm not, I can't edit another user!
+		if (!$myUser->authorise('core.admin'))
+		{
+			return false;
+		}
+
+		// I am a Super User editing another user. That's allowed.
+		return true;
+	}
+
+	/**
 	 * Add the SocialLogin custom user profile field data to the core Joomla user profile data. This is required to
 	 * populate the "sociallogin.dontremind" field with its current value.
 	 *
@@ -226,9 +268,9 @@ trait UserFields
 	public function onUserAfterDelete(Event $event): void
 	{
 		/**
-		 * @var   array   $user     Holds the user data
-		 * @var   bool    $success  True if user was successfully stored in the database
-		 * @var   string  $msg      Message
+		 * @var   array  $user    Holds the user data
+		 * @var   bool   $success True if user was successfully stored in the database
+		 * @var   string $msg     Message
 		 */
 		[$user, $success, $msg] = $event->getArguments();
 		$result = $event->getArgument('result') ?: [];
@@ -281,10 +323,10 @@ trait UserFields
 	public function onUserAfterSave(Event $event)
 	{
 		/**
-		 * @var   array  $data    The user profile data which was saved.
-		 * @var   bool   $isNew   Is this a new user? (ignored)
-		 * @var   bool   $result  Was the user saved successfully?
-		 * @var   mixed  $error   (ignored)
+		 * @var   array $data   The user profile data which was saved.
+		 * @var   bool  $isNew  Is this a new user? (ignored)
+		 * @var   bool  $result Was the user saved successfully?
+		 * @var   mixed $error  (ignored)
 		 */
 		[$data, $isNew, $result, $error] = $event->getArguments();
 		$result   = $event->getArgument('result') ?: [];
@@ -330,48 +372,6 @@ trait UserFields
 
 		// Reset the session flag; the user save operation may have changed the dontremind flag.
 		$this->app->getSession()->set('sociallogin.islinked', null);
-	}
-
-	/**
-	 * Is the current user allowed to edit the social login configuration of $user? To do so I must either be editing my
-	 * own account OR I have to be a Super User.
-	 *
-	 * @param   User  $user  The user you want to know if we're allowed to edit
-	 *
-	 * @return  bool
-	 * @since   4.1.0
-	 */
-	public function canEditUser($user = null)
-	{
-		// I can edit myself
-		if (empty($user))
-		{
-			return true;
-		}
-
-		// Guests can't have social logins associated
-		if ($user->guest)
-		{
-			return false;
-		}
-
-		// Get the currently logged in used
-		$myUser = $this->app->getIdentity();
-
-		// Same user? I can edit myself
-		if ($myUser->id == $user->id)
-		{
-			return true;
-		}
-
-		// To edit a different user I must be a Super User myself. If I'm not, I can't edit another user!
-		if (!$myUser->authorise('core.admin'))
-		{
-			return false;
-		}
-
-		// I am a Super User editing another user. That's allowed.
-		return true;
 	}
 
 }

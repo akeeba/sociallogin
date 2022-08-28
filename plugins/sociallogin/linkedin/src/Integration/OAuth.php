@@ -1,8 +1,8 @@
 <?php
 /**
- *  @package   AkeebaSocialLogin
- *  @copyright Copyright (c)2016-2022 Nicholas K. Dionysopoulos / Akeeba Ltd
- *  @license   GNU General Public License version 3, or later
+ * @package   AkeebaSocialLogin
+ * @copyright Copyright (c)2016-2022 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @license   GNU General Public License version 3, or later
  */
 
 namespace Joomla\Plugin\Sociallogin\Linkedin\Integration;
@@ -60,6 +60,16 @@ class OAuth extends OAuth2Client
 	}
 
 	/**
+	 * Method to get the current scope
+	 *
+	 * @return  string Comma separated list of permissions.
+	 */
+	public function getScope()
+	{
+		return $this->getOption('scope');
+	}
+
+	/**
 	 * Method used to set permissions.
 	 *
 	 * @param   string  $scope  Comma separated list of permissions.
@@ -71,16 +81,6 @@ class OAuth extends OAuth2Client
 		$this->setOption('scope', $scope);
 
 		return $this;
-	}
-
-	/**
-	 * Method to get the current scope
-	 *
-	 * @return  string Comma separated list of permissions.
-	 */
-	public function getScope()
-	{
-		return $this->getOption('scope');
 	}
 
 }

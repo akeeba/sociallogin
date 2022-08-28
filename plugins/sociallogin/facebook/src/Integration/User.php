@@ -1,8 +1,8 @@
 <?php
 /**
- *  @package   AkeebaSocialLogin
- *  @copyright Copyright (c)2016-2022 Nicholas K. Dionysopoulos / Akeeba Ltd
- *  @license   GNU General Public License version 3, or later
+ * @package   AkeebaSocialLogin
+ * @copyright Copyright (c)2016-2022 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @license   GNU General Public License version 3, or later
  */
 
 namespace Joomla\Plugin\Sociallogin\Facebook\Integration;
@@ -19,20 +19,6 @@ use Exception;
  */
 class User extends AbstractFacebookObject
 {
-	/**
-	 * Method to get the specified user's details. Authentication is required only for some fields.
-	 *
-	 * @param   mixed  $user  Either an integer containing the user ID or a string containing the username.
-	 *
-	 * @return  mixed   The decoded JSON response or false if the client is not authenticated.
-	 *
-	 * @throws  Exception
-	 */
-	public function getUser($user)
-	{
-		return $this->get($user);
-	}
-
 	/**
 	 * Method to get the user's profile picture. Requires authentication.
 	 *
@@ -59,5 +45,19 @@ class User extends AbstractFacebookObject
 		}
 
 		return $this->getConnection($user, 'picture', $extra_fields);
+	}
+
+	/**
+	 * Method to get the specified user's details. Authentication is required only for some fields.
+	 *
+	 * @param   mixed  $user  Either an integer containing the user ID or a string containing the username.
+	 *
+	 * @return  mixed   The decoded JSON response or false if the client is not authenticated.
+	 *
+	 * @throws  Exception
+	 */
+	public function getUser($user)
+	{
+		return $this->get($user);
 	}
 }

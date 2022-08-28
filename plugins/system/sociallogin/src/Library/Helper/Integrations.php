@@ -29,6 +29,7 @@ abstract class Integrations
 	 * @param   string               $buttonsLayout  JLayout for rendering all the login buttons
 	 * @param   AbstractApplication  $app            The application we are running in. Skip to auto-detect
 	 *                                               (recommended).
+	 *
 	 * @return  string  The rendered HTML of the login buttons
 	 *
 	 * @throws  Exception

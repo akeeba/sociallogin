@@ -1,8 +1,8 @@
 <?php
 /**
- *  @package   AkeebaSocialLogin
- *  @copyright Copyright (c)2016-2022 Nicholas K. Dionysopoulos / Akeeba Ltd
- *  @license   GNU General Public License version 3, or later
+ * @package   AkeebaSocialLogin
+ * @copyright Copyright (c)2016-2022 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @license   GNU General Public License version 3, or later
  */
 
 namespace Joomla\Plugin\System\SocialLogin\Library\Helper;
@@ -27,17 +27,17 @@ use RuntimeException;
  */
 final class Ajax
 {
+	private ?CMSApplication $app = null;
+
 	private ?DatabaseInterface $db = null;
 
 	private ?CMSPlugin $plugin = null;
 
-	private ?CMSApplication $app = null;
-
 	public function __construct(CMSPlugin $plugin, CMSApplication $app, DatabaseInterface $db)
 	{
 		$this->plugin = $plugin;
-		$this->app = $app;
-		$this->db = $db;
+		$this->app    = $app;
+		$this->db     = $db;
 	}
 
 	/**
@@ -74,46 +74,6 @@ final class Ajax
 		}
 
 		return call_user_func([$this, $method_name]);
-	}
-
-	/**
-	 * Unlink a user account from its social media presence
-	 *
-	 * @throws  Exception
-	 */
-	protected function ajaxUnlink()
-	{
-		$input = $this->app->input;
-		$slug  = $input->getCmd('slug');
-
-		// No slug? No good.
-		if (empty($slug))
-		{
-			throw new RuntimeException(Text::_('PLG_SYSTEM_SOCIALLOGIN_ERR_AJAX_INVALIDSLUG'));
-		}
-
-		// Get the user ID and make sure it's ours or we are Super Users
-		$userId = $this->app->getSession()->get('plg_system_sociallogin.userID', null);
-		$this->app->getSession()->set('plg_system_sociallogin.userID', null);
-
-		/** @var   User $myUser Currently logged in user */
-		$myUser = $this->app->getSession()->get('user');
-
-		// Make sure we are unlinking our own user or we are Super Users
-		if (empty($userId) || (!$myUser->authorise('core.manage') && ($myUser->id != $userId)))
-		{
-			throw new RuntimeException(Text::_('PLG_SYSTEM_SOCIALLOGIN_ERR_AJAX_INVALIDUSER'));
-		}
-
-		// Reset the session flag; the AJAX operation will change whether the Joomla user is linked to a social media account
-		$this->app->getSession()->set('sociallogin.islinked', null);
-
-		// Get the user to unlink
-		$user = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($userId);
-
-		// Call the plugin events to unlink the user
-		PluginHelper::importPlugin('sociallogin');
-		$this->plugin->runPlugins('onSocialLoginUnlink', [$slug, $user]);
 	}
 
 	/**
@@ -157,9 +117,9 @@ final class Ajax
 		{
 			// Delete an existing profile value
 			$query = $db->getQuery(true)
-				->delete($db->qn('#__user_profiles'))
-				->where($db->qn('user_id') . ' = ' . $db->q($myUser->id))
-				->where($db->qn('profile_key') . ' = ' . $db->q('sociallogin.dontremind'));
+			            ->delete($db->qn('#__user_profiles'))
+			            ->where($db->qn('user_id') . ' = ' . $db->q($myUser->id))
+			            ->where($db->qn('profile_key') . ' = ' . $db->q('sociallogin.dontremind'));
 			$db->setQuery($query)->execute();
 
 			// Set the new profile value
@@ -179,5 +139,45 @@ final class Ajax
 		// Reset the session flag; we need to re-evaluate the flag in the next page load.
 		$this->app->getSession()->set('sociallogin.islinked', null);
 
+	}
+
+	/**
+	 * Unlink a user account from its social media presence
+	 *
+	 * @throws  Exception
+	 */
+	protected function ajaxUnlink()
+	{
+		$input = $this->app->input;
+		$slug  = $input->getCmd('slug');
+
+		// No slug? No good.
+		if (empty($slug))
+		{
+			throw new RuntimeException(Text::_('PLG_SYSTEM_SOCIALLOGIN_ERR_AJAX_INVALIDSLUG'));
+		}
+
+		// Get the user ID and make sure it's ours or we are Super Users
+		$userId = $this->app->getSession()->get('plg_system_sociallogin.userID', null);
+		$this->app->getSession()->set('plg_system_sociallogin.userID', null);
+
+		/** @var   User $myUser Currently logged in user */
+		$myUser = $this->app->getSession()->get('user');
+
+		// Make sure we are unlinking our own user or we are Super Users
+		if (empty($userId) || (!$myUser->authorise('core.manage') && ($myUser->id != $userId)))
+		{
+			throw new RuntimeException(Text::_('PLG_SYSTEM_SOCIALLOGIN_ERR_AJAX_INVALIDUSER'));
+		}
+
+		// Reset the session flag; the AJAX operation will change whether the Joomla user is linked to a social media account
+		$this->app->getSession()->set('sociallogin.islinked', null);
+
+		// Get the user to unlink
+		$user = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($userId);
+
+		// Call the plugin events to unlink the user
+		PluginHelper::importPlugin('sociallogin');
+		$this->plugin->runPlugins('onSocialLoginUnlink', [$slug, $user]);
 	}
 }

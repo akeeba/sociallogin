@@ -52,8 +52,8 @@ abstract class AbstractPlugin extends CMSPlugin implements SubscriberInterface
 	/**
 	 * The Joomla database driver object.
 	 *
-	 * @var   DatabaseInterface|DatabaseDriver
 	 * @since 4.1.0
+	 * @var   DatabaseInterface|DatabaseDriver
 	 */
 	public $db;
 

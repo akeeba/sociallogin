@@ -1,8 +1,8 @@
 <?php
 /**
- *  @package   AkeebaSocialLogin
- *  @copyright Copyright (c)2016-2022 Nicholas K. Dionysopoulos / Akeeba Ltd
- *  @license   GNU General Public License version 3, or later
+ * @package   AkeebaSocialLogin
+ * @copyright Copyright (c)2016-2022 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @license   GNU General Public License version 3, or later
  */
 
 namespace Joomla\Plugin\System\SocialLogin\Library\OAuth;
@@ -23,14 +23,9 @@ use Joomla\Input\Input;
 abstract class OAuth1Client
 {
 	/**
-	 * @var    array  Options for the Client object.
+	 * @var    CMSApplication  The application object to send HTTP headers for redirects.
 	 */
-	protected $options;
-
-	/**
-	 * @var    array  Contains access token key, secret and verifier.
-	 */
-	protected $token = array();
+	protected $application;
 
 	/**
 	 * @var    Http  The HTTP client object to use in sending HTTP requests.
@@ -43,9 +38,14 @@ abstract class OAuth1Client
 	protected $input;
 
 	/**
-	 * @var    CMSApplication  The application object to send HTTP headers for redirects.
+	 * @var    array  Options for the Client object.
 	 */
-	protected $application;
+	protected $options;
+
+	/**
+	 * @var    array  Contains access token key, secret and verifier.
+	 */
+	protected $token = [];
 
 	/**
 	 * @var    string  Selects which version of OAuth to use: 1.0 or 1.0a.
@@ -69,6 +69,22 @@ abstract class OAuth1Client
 		$this->input       = $input ?: ($application ? $application->input : new Input());
 		$this->application = $application;
 		$this->version     = $version;
+	}
+
+	/**
+	 * Method used to generate the current nonce.
+	 *
+	 * @return  string  The current nonce.
+	 *
+	 * @throws \Exception
+	 */
+	public static function generateNonce()
+	{
+		$mt   = microtime();
+		$rand = random_bytes(16);
+
+		// The md5s look nicer than numbers.
+		return md5($mt . $rand);
 	}
 
 	/**
@@ -113,11 +129,13 @@ abstract class OAuth1Client
 			// Authenticate the user and authorise the app.
 			$this->authorise();
 
-			return array();
+			return [];
 		}
 
 		// Get token form session.
-		$this->token = array('key' => $this->app->getSession()->get('oauth_token.key', null), 'secret' => $this->app->getSession()->get('oauth_token.secret', null));
+		$this->token = ['key'    => $this->app->getSession()->get('oauth_token.key', null),
+		                'secret' => $this->app->getSession()->get('oauth_token.secret', null),
+		];
 
 		// Verify the returned request token.
 		if (strcmp($this->token['key'], $this->input->get('oauth_token')) !== 0)
@@ -139,92 +157,42 @@ abstract class OAuth1Client
 	}
 
 	/**
-	 * Method used to get a request token.
+	 * Get an option from the OAuth1 Client instance.
 	 *
-	 * @return  void
+	 * @param   string  $key  The name of the option to get
 	 *
-	 * @throws  \DomainException
-	 * @throws  \Exception
+	 * @return  mixed  The option value
+	 *
 	 */
-	private function generateRequestToken()
+	public function getOption($key)
 	{
-		// Set the callback URL.
-		if ($this->getOption('callback'))
-		{
-			$parameters = array(
-				'oauth_callback' => $this->getOption('callback')
-			);
-		}
-		else
-		{
-			$parameters = array();
-		}
-
-		// Make an OAuth request for the Request Token.
-		$response = $this->oauthRequest($this->getOption('requestTokenURL'), 'POST', $parameters);
-
-		parse_str($response->body, $params);
-
-		if (strcmp($this->version, '1.0a') === 0 && strcmp($params['oauth_callback_confirmed'], 'true') !== 0)
-		{
-			throw new \DomainException('Bad request token!');
-		}
-
-		// Save the request token.
-		$this->token = array('key' => $params['oauth_token'], 'secret' => $params['oauth_token_secret']);
-
-		// Save the request token in session
-		$this->app->getSession()->set('oauth_token.key', $this->token['key']);
-		$this->app->getSession()->set('oauth_token.secret', $this->token['secret']);
+		return $this->options[$key] ?? null;
 	}
 
 	/**
-	 * Method used to authorise the application.
+	 * Get the oauth token key or secret.
 	 *
-	 * @return  void
+	 * @return  array  The oauth token key and secret.
+	 *
 	 */
-	private function authorise()
+	public function getToken()
 	{
-		$url = $this->getOption('authoriseURL') . '?oauth_token=' . $this->token['key'];
-
-		if ($this->getOption('scope'))
-		{
-			$scope = is_array($this->getOption('scope')) ? implode(' ', $this->getOption('scope')) : $this->getOption('scope');
-			$url .= '&scope=' . urlencode($scope);
-		}
-
-		if ($this->getOption('sendheaders'))
-		{
-			$this->application->redirect($url);
-		}
+		return $this->token;
 	}
 
 	/**
-	 * Method used to get an access token.
+	 * Set the oauth token.
 	 *
-	 * @return  void
+	 * @param   array  $token  The access token key and secret.
 	 *
-	 * @throws \Exception
+	 * @return  self  This object for method chaining.
+	 *
 	 */
-	private function generateAccessToken()
+	public function setToken($token)
 	{
-		// Set the parameters.
-		$parameters = array(
-			'oauth_token' => $this->token['key']
-		);
+		$this->token = $token;
 
-		if (strcmp($this->version, '1.0a') === 0)
-		{
-			$parameters = array_merge($parameters, array('oauth_verifier' => $this->token['verifier']));
-		}
-
-		// Make an OAuth request for the Access Token.
-		$response = $this->oauthRequest($this->getOption('accessTokenURL'), 'POST', $parameters);
-
-		parse_str($response->body, $params);
-
-		// Save the access token.
-		$this->token = array('key' => $params['oauth_token'], 'secret' => $params['oauth_token_secret']);
+		return $this;
 	}
 
 	/**
@@ -241,16 +209,16 @@ abstract class OAuth1Client
 	 * @throws  \DomainException
 	 * @throws  \Exception
 	 */
-	public function oauthRequest($url, $method, $parameters, $data = array(), $headers = array())
+	public function oauthRequest($url, $method, $parameters, $data = [], $headers = [])
 	{
 		// Set the parameters.
-		$defaults = array(
-			'oauth_consumer_key' => $this->getOption('consumer_key'),
+		$defaults = [
+			'oauth_consumer_key'     => $this->getOption('consumer_key'),
 			'oauth_signature_method' => 'HMAC-SHA1',
-			'oauth_version' => '1.0',
-			'oauth_nonce' => self::generateNonce(),
-			'oauth_timestamp' => time()
-		);
+			'oauth_version'          => '1.0',
+			'oauth_nonce'            => self::generateNonce(),
+			'oauth_timestamp'        => time(),
+		];
 
 		$parameters = array_merge($parameters, $defaults);
 
@@ -279,19 +247,19 @@ abstract class OAuth1Client
 		{
 			case 'GET':
 			default:
-				$url = $this->toUrl($url, $data);
-				$response = $this->client->get($url, array('Authorization' => $this->createHeader($oauthHeaders)));
+				$url      = $this->toUrl($url, $data);
+				$response = $this->client->get($url, ['Authorization' => $this->createHeader($oauthHeaders)]);
 				break;
 			case 'POST':
-				$headers = array_merge($headers, array('Authorization' => $this->createHeader($oauthHeaders)));
+				$headers  = array_merge($headers, ['Authorization' => $this->createHeader($oauthHeaders)]);
 				$response = $this->client->post($url, $data, $headers);
 				break;
 			case 'PUT':
-				$headers = array_merge($headers, array('Authorization' => $this->createHeader($oauthHeaders)));
+				$headers  = array_merge($headers, ['Authorization' => $this->createHeader($oauthHeaders)]);
 				$response = $this->client->put($url, $data, $headers);
 				break;
 			case 'DELETE':
-				$headers = array_merge($headers, array('Authorization' => $this->createHeader($oauthHeaders)));
+				$headers  = array_merge($headers, ['Authorization' => $this->createHeader($oauthHeaders)]);
 				$response = $this->client->delete($url, $headers);
 				break;
 		}
@@ -303,41 +271,42 @@ abstract class OAuth1Client
 	}
 
 	/**
-	 * Method to validate a response.
+	 * Encodes the string or array passed in a way compatible with OAuth.
+	 * If an array is passed each array value will will be encoded.
 	 *
-	 * @param   string    $url       The request URL.
-	 * @param   Response  $response  The response to validate.
+	 * @param   string  $data  The scalar to encode.
 	 *
-	 * @return  void
+	 * @return  string  $data encoded in a way compatible with OAuth.
 	 *
-	 * @throws  \DomainException
 	 */
-	abstract public function validateResponse($url, $response);
-
-	/**
-	 * Method used to create the header for the POST request.
-	 *
-	 * @param   array  $parameters  Array containing request parameters.
-	 *
-	 * @return  string  The header.
-	 */
-	private function createHeader($parameters)
+	public function safeEncode($data)
 	{
-		$header = 'OAuth ';
-
-		foreach ($parameters as $key => $value)
+		if (is_scalar($data))
 		{
-			if (!strcmp($header, 'OAuth '))
-			{
-				$header .= $key . '="' . $this->safeEncode($value) . '"';
-			}
-			else
-			{
-				$header .= ', ' . $key . '="' . $value . '"';
-			}
+			return str_ireplace(
+				['+', '%7E'],
+				[' ', '~'],
+				rawurlencode($data)
+			);
 		}
 
-		return $header;
+		return '';
+	}
+
+	/**
+	 * Set an option for the OAuth1 Client instance.
+	 *
+	 * @param   string  $key    The name of the option to set
+	 * @param   mixed   $value  The option value to set
+	 *
+	 * @return  self  This object for method chaining
+	 *
+	 */
+	public function setOption($key, $value)
+	{
+		$this->options[$key] = $value;
+
+		return $this;
 	}
 
 	/**
@@ -389,26 +358,45 @@ abstract class OAuth1Client
 	}
 
 	/**
-	 * Method used to sign requests.
+	 * Method to validate a response.
 	 *
-	 * @param   string  $url         The URL to sign.
-	 * @param   string  $method      The request method.
-	 * @param   array   $parameters  Array containing request parameters.
+	 * @param   string    $url       The request URL.
+	 * @param   Response  $response  The response to validate.
 	 *
-	 * @return  array  The array containing the request parameters, including signature.
+	 * @return  void
+	 *
+	 * @throws  \DomainException
 	 */
-	private function signRequest($url, $method, $parameters)
+	abstract public function validateResponse($url, $response);
+
+	/**
+	 * Returns an HTTP 200 OK response code and a representation of the requesting user if authentication was
+	 * successful; returns a 401 status code and an error message if not.
+	 *
+	 * @return  array  The decoded JSON response
+	 *
+	 */
+	abstract public function verifyCredentials();
+
+	/**
+	 * Method used to authorise the application.
+	 *
+	 * @return  void
+	 */
+	private function authorise()
 	{
-		// Create the signature base string.
-		$base = $this->baseString($url, $method, $parameters);
+		$url = $this->getOption('authoriseURL') . '?oauth_token=' . $this->token['key'];
 
-		$parameters['oauth_signature'] = $this->safeEncode(
-			base64_encode(
-				hash_hmac('sha1', $base, $this->prepareSigningKey(), true)
-			)
-		);
+		if ($this->getOption('scope'))
+		{
+			$scope = is_array($this->getOption('scope')) ? implode(' ', $this->getOption('scope')) : $this->getOption('scope');
+			$url   .= '&scope=' . urlencode($scope);
+		}
 
-		return $parameters;
+		if ($this->getOption('sendheaders'))
+		{
+			$this->application->redirect($url);
+		}
 	}
 
 	/**
@@ -464,42 +452,97 @@ abstract class OAuth1Client
 	}
 
 	/**
-	 * Encodes the string or array passed in a way compatible with OAuth.
-	 * If an array is passed each array value will will be encoded.
+	 * Method used to create the header for the POST request.
 	 *
-	 * @param   string  $data  The scalar to encode.
+	 * @param   array  $parameters  Array containing request parameters.
 	 *
-	 * @return  string  $data encoded in a way compatible with OAuth.
-	 *
+	 * @return  string  The header.
 	 */
-	public function safeEncode($data)
+	private function createHeader($parameters)
 	{
-		if (is_scalar($data))
+		$header = 'OAuth ';
+
+		foreach ($parameters as $key => $value)
 		{
-			return str_ireplace(
-				array('+', '%7E'),
-				array(' ', '~'),
-				rawurlencode($data)
-			);
+			if (!strcmp($header, 'OAuth '))
+			{
+				$header .= $key . '="' . $this->safeEncode($value) . '"';
+			}
+			else
+			{
+				$header .= ', ' . $key . '="' . $value . '"';
+			}
 		}
 
-		return '';
+		return $header;
 	}
 
 	/**
-	 * Method used to generate the current nonce.
+	 * Method used to get an access token.
 	 *
-	 * @return  string  The current nonce.
+	 * @return  void
 	 *
 	 * @throws \Exception
 	 */
-	public static function generateNonce()
+	private function generateAccessToken()
 	{
-		$mt = microtime();
-		$rand = random_bytes(16);
+		// Set the parameters.
+		$parameters = [
+			'oauth_token' => $this->token['key'],
+		];
 
-		// The md5s look nicer than numbers.
-		return md5($mt . $rand);
+		if (strcmp($this->version, '1.0a') === 0)
+		{
+			$parameters = array_merge($parameters, ['oauth_verifier' => $this->token['verifier']]);
+		}
+
+		// Make an OAuth request for the Access Token.
+		$response = $this->oauthRequest($this->getOption('accessTokenURL'), 'POST', $parameters);
+
+		parse_str($response->body, $params);
+
+		// Save the access token.
+		$this->token = ['key' => $params['oauth_token'], 'secret' => $params['oauth_token_secret']];
+	}
+
+	/**
+	 * Method used to get a request token.
+	 *
+	 * @return  void
+	 *
+	 * @throws  \DomainException
+	 * @throws  \Exception
+	 */
+	private function generateRequestToken()
+	{
+		// Set the callback URL.
+		if ($this->getOption('callback'))
+		{
+			$parameters = [
+				'oauth_callback' => $this->getOption('callback'),
+			];
+		}
+		else
+		{
+			$parameters = [];
+		}
+
+		// Make an OAuth request for the Request Token.
+		$response = $this->oauthRequest($this->getOption('requestTokenURL'), 'POST', $parameters);
+
+		parse_str($response->body, $params);
+
+		if (strcmp($this->version, '1.0a') === 0 && strcmp($params['oauth_callback_confirmed'], 'true') !== 0)
+		{
+			throw new \DomainException('Bad request token!');
+		}
+
+		// Save the request token.
+		$this->token = ['key' => $params['oauth_token'], 'secret' => $params['oauth_token_secret']];
+
+		// Save the request token in session
+		$this->app->getSession()->set('oauth_token.key', $this->token['key']);
+		$this->app->getSession()->set('oauth_token.secret', $this->token['secret']);
 	}
 
 	/**
@@ -513,67 +556,26 @@ abstract class OAuth1Client
 	}
 
 	/**
-	 * Returns an HTTP 200 OK response code and a representation of the requesting user if authentication was successful;
-	 * returns a 401 status code and an error message if not.
+	 * Method used to sign requests.
 	 *
-	 * @return  array  The decoded JSON response
+	 * @param   string  $url         The URL to sign.
+	 * @param   string  $method      The request method.
+	 * @param   array   $parameters  Array containing request parameters.
 	 *
+	 * @return  array  The array containing the request parameters, including signature.
 	 */
-	abstract public function verifyCredentials();
-
-	/**
-	 * Get an option from the OAuth1 Client instance.
-	 *
-	 * @param   string  $key  The name of the option to get
-	 *
-	 * @return  mixed  The option value
-	 *
-	 */
-	public function getOption($key)
+	private function signRequest($url, $method, $parameters)
 	{
-		return $this->options[$key] ?? null;
-	}
+		// Create the signature base string.
+		$base = $this->baseString($url, $method, $parameters);
 
-	/**
-	 * Set an option for the OAuth1 Client instance.
-	 *
-	 * @param   string  $key    The name of the option to set
-	 * @param   mixed   $value  The option value to set
-	 *
-	 * @return  self  This object for method chaining
-	 *
-	 */
-	public function setOption($key, $value)
-	{
-		$this->options[$key] = $value;
+		$parameters['oauth_signature'] = $this->safeEncode(
+			base64_encode(
+				hash_hmac('sha1', $base, $this->prepareSigningKey(), true)
+			)
+		);
 
-		return $this;
-	}
-
-	/**
-	 * Get the oauth token key or secret.
-	 *
-	 * @return  array  The oauth token key and secret.
-	 *
-	 */
-	public function getToken()
-	{
-		return $this->token;
-	}
-
-	/**
-	 * Set the oauth token.
-	 *
-	 * @param   array  $token  The access token key and secret.
-	 *
-	 * @return  self  This object for method chaining.
-	 *
-	 */
-	public function setToken($token)
-	{
-		$this->token = $token;
-
-		return $this;
+		return $parameters;
 	}
 
 }

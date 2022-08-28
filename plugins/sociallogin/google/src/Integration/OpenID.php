@@ -1,8 +1,8 @@
 <?php
 /**
- *  @package   AkeebaSocialLogin
- *  @copyright Copyright (c)2016-2022 Nicholas K. Dionysopoulos / Akeeba Ltd
- *  @license   GNU General Public License version 3, or later
+ * @package   AkeebaSocialLogin
+ * @copyright Copyright (c)2016-2022 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @license   GNU General Public License version 3, or later
  */
 
 namespace Joomla\Plugin\Sociallogin\Google\Integration;
@@ -21,14 +21,14 @@ use UnexpectedValueException;
 class OpenID
 {
 	/**
-	 * @var    array  Options for the Google data object.
-	 */
-	protected $options;
-
-	/**
 	 * @var    OAuth2  Authentication client for the Google data object.
 	 */
 	protected $auth;
+
+	/**
+	 * @var    array  Options for the Google data object.
+	 */
+	protected $options;
 
 	/**
 	 * Constructor.
@@ -56,26 +56,6 @@ class OpenID
 	}
 
 	/**
-	 * Method to authenticate to Google
-	 *
-	 * @return  boolean  True on success.
-	 */
-	public function authenticate()
-	{
-		return $this->auth->authenticate();
-	}
-
-	/**
-	 * Check authentication
-	 *
-	 * @return  boolean  True if authenticated.
-	 */
-	public function isAuthenticated()
-	{
-		return $this->auth->isAuthenticated();
-	}
-
-	/**
 	 * Method to validate XML
 	 *
 	 * @param   string  $data  XML data to be parsed
@@ -97,30 +77,13 @@ class OpenID
 	}
 
 	/**
-	 * Get an option from the Data instance.
+	 * Method to authenticate to Google
 	 *
-	 * @param   string  $key  The name of the option to get.
-	 *
-	 * @return  mixed  The option value.
+	 * @return  boolean  True on success.
 	 */
-	public function getOption($key)
+	public function authenticate()
 	{
-		return $this->options[$key] ?? null;
-	}
-
-	/**
-	 * Set an option for the Data instance.
-	 *
-	 * @param   string  $key    The name of the option to set.
-	 * @param   mixed   $value  The option value to set.
-	 *
-	 * @return  self  This object for method chaining.
-	 */
-	public function setOption($key, $value)
-	{
-		$this->options[$key] = $value;
-
-		return $this;
+		return $this->auth->authenticate();
 	}
 
 	/**
@@ -142,5 +105,42 @@ class OpenID
 		$jdata = $this->auth->query($url);
 
 		return json_decode($jdata->body, true);
+	}
+
+	/**
+	 * Get an option from the Data instance.
+	 *
+	 * @param   string  $key  The name of the option to get.
+	 *
+	 * @return  mixed  The option value.
+	 */
+	public function getOption($key)
+	{
+		return $this->options[$key] ?? null;
+	}
+
+	/**
+	 * Check authentication
+	 *
+	 * @return  boolean  True if authenticated.
+	 */
+	public function isAuthenticated()
+	{
+		return $this->auth->isAuthenticated();
+	}
+
+	/**
+	 * Set an option for the Data instance.
+	 *
+	 * @param   string  $key    The name of the option to set.
+	 * @param   mixed   $value  The option value to set.
+	 *
+	 * @return  self  This object for method chaining.
+	 */
+	public function setOption($key, $value)
+	{
+		$this->options[$key] = $value;
+
+		return $this;
 	}
 }

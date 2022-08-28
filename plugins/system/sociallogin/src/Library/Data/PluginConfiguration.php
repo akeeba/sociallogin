@@ -1,8 +1,8 @@
 <?php
 /**
- *  @package   AkeebaSocialLogin
- *  @copyright Copyright (c)2016-2022 Nicholas K. Dionysopoulos / Akeeba Ltd
- *  @license   GNU General Public License version 3, or later
+ * @package   AkeebaSocialLogin
+ * @copyright Copyright (c)2016-2022 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @license   GNU General Public License version 3, or later
  */
 
 namespace Joomla\Plugin\System\SocialLogin\Library\Data;
@@ -13,30 +13,22 @@ defined('_JEXEC') || die();
 /**
  * Configuration parameters of a social media integration plugin, used during login.
  *
- * @property   bool  $canLoginUnlinked     Should I log in users who have not yet linked their social network account to
+ * @property   bool $canLoginUnlinked     Should I log in users who have not yet linked their social network account to
  *                                         their site account?
- * @property   bool  $canCreateNewUsers    Can I use this integration to create new user accounts?
- * @property   bool  $canCreateAlways      Allow the plugin to override Joomla's new user account registration flag?
- * @property   bool  $canBypassValidation  Am I allowed to bypass user verification if the social network reports the
+ * @property   bool $canCreateNewUsers    Can I use this integration to create new user accounts?
+ * @property   bool $canCreateAlways      Allow the plugin to override Joomla's new user account registration flag?
+ * @property   bool $canBypassValidation  Am I allowed to bypass user verification if the social network reports the
  *                                         user verified on their end?
  */
 final class PluginConfiguration
 {
 	/**
-	 * Should I log in users who have not yet linked their social network account to their site account? THIS MAY BE
-	 * DANGEROUS (impersonation risk), therefore it is disabled by default.
+	 * When creating new users, am I allowed to bypass email verification if the social network reports the user as
+	 * verified on their end?
 	 *
 	 * @var   bool
 	 */
-	private $canLoginUnlinked = false;
-
-	/**
-	 * Can I use this integration to create new user accounts? This will happen when someone tries to login through
-	 * the social network but their social network account is not linked to a user account yet.
-	 *
-	 * @var   bool
-	 */
-	private $canCreateNewUsers = false;
+	private $canBypassValidation = true;
 
 	/**
 	 * Allow the plugin to override Joomla's new user account registration flag. This is useful to prevent new user
@@ -48,12 +40,20 @@ final class PluginConfiguration
 	private $canCreateAlways = false;
 
 	/**
-	 * When creating new users, am I allowed to bypass email verification if the social network reports the user as
-	 * verified on their end?
+	 * Can I use this integration to create new user accounts? This will happen when someone tries to login through
+	 * the social network but their social network account is not linked to a user account yet.
 	 *
 	 * @var   bool
 	 */
-	private $canBypassValidation = true;
+	private $canCreateNewUsers = false;
+
+	/**
+	 * Should I log in users who have not yet linked their social network account to their site account? THIS MAY BE
+	 * DANGEROUS (impersonation risk), therefore it is disabled by default.
+	 *
+	 * @var   bool
+	 */
+	private $canLoginUnlinked = false;
 
 	/**
 	 * Magic getter. Returns the stored, sanitized property values.

@@ -1,8 +1,8 @@
 <?php
 /**
- *  @package   AkeebaSocialLogin
- *  @copyright Copyright (c)2016-2022 Nicholas K. Dionysopoulos / Akeeba Ltd
- *  @license   GNU General Public License version 3, or later
+ * @package   AkeebaSocialLogin
+ * @copyright Copyright (c)2016-2022 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @license   GNU General Public License version 3, or later
  */
 
 namespace Joomla\Plugin\System\SocialLogin\Library\Plugin;
@@ -16,6 +16,108 @@ use Joomla\CMS\User\User;
 
 trait SocialLoginButtonsTrait
 {
+	/**
+	 * Helper method to render a JLayout.
+	 *
+	 * @param   string  $layoutFile   Dot separated path to the layout file, relative to base path
+	 *                                (plugins/system/sociallogin/layout)
+	 * @param   object  $displayData  Object which properties are used inside the layout file to build displayed output
+	 * @param   string  $includePath  Additional path holding layout files
+	 * @param   mixed   $options      Optional custom options to load. Registry or array format. Set 'debug'=>true to
+	 *                                output debug information.
+	 *
+	 * @return  string
+	 */
+	protected static function renderLayout($layoutFile, $displayData = null, $includePath = '', $options = null)
+	{
+		$basePath = JPATH_PLUGINS . '/system/sociallogin/layout';
+		$layout   = new FileLayout($layoutFile, null, $options);
+
+		if (!empty($includePath))
+		{
+			$layout->addIncludePath($includePath);
+		}
+
+		$result = $layout->render($displayData);
+
+		if (empty($result))
+		{
+			$layout = new FileLayout($layoutFile, $basePath, $options);
+
+			if (!empty($includePath))
+			{
+				$layout->addIncludePath($includePath);
+			}
+
+			$result = $layout->render($displayData);
+		}
+
+		return $result;
+	}
+
+	public function customCss(array $buttonDefinitions)
+	{
+		static $alreadyRun = false;
+
+		if ($alreadyRun)
+		{
+			return;
+		}
+
+		$alreadyRun = true;
+		$customCSS  = [];
+
+		foreach ($buttonDefinitions as $def)
+		{
+			if (!($def['customCSS'] ?? false))
+			{
+				continue;
+			}
+
+			$customCSS[$def['slug'] ?: '__invalid'] = [
+				$def['bgColor'] ?: '#000000',
+				$def['fgColor'] ?: '#FFFFFF',
+			];
+		}
+
+		if (isset($customCSS['__invalid']))
+		{
+			unset($customCSS['__invalid']);
+		}
+
+		if (empty($customCSS))
+		{
+			return;
+		}
+
+		$css = '';
+
+		foreach ($customCSS as $slug => $colors)
+		{
+			[$bg, $fg] = $colors;
+			$css .= <<< CSS
+.akeeba-sociallogin-unlink-button-{$slug}, .akeeba-sociallogin-link-button-{$slug} { color: var(--sociallogin-{$slug}-fg, $fg) !important; background-color: var(--sociallogin-{$slug}-bg, $bg) !important; }
+
+CSS;
+		}
+
+		try
+		{
+			$document = $this->app->getDocument();
+		}
+		catch (Exception $e)
+		{
+			return;
+		}
+
+		if (!($document instanceof HtmlDocument))
+		{
+			return;
+		}
+
+		$document->getWebAssetManager()->addInlineStyle($css);
+	}
+
 	/**
 	 * Gets the Social Login buttons for linking and unlinking accounts (typically used in the My Account page).
 	 *
@@ -109,108 +211,6 @@ trait SocialLoginButtonsTrait
 		return array_filter($buttonDefinitions, function ($definition) {
 			return is_array($definition) && !empty($definition);
 		});
-	}
-
-	public function customCss(array $buttonDefinitions)
-	{
-		static $alreadyRun = false;
-
-		if ($alreadyRun)
-		{
-			return;
-		}
-
-		$alreadyRun = true;
-		$customCSS  = [];
-
-		foreach ($buttonDefinitions as $def)
-		{
-			if (!($def['customCSS'] ?? false))
-			{
-				continue;
-			}
-
-			$customCSS[$def['slug'] ?: '__invalid'] = [
-				$def['bgColor'] ?: '#000000',
-				$def['fgColor'] ?: '#FFFFFF',
-			];
-		}
-
-		if (isset($customCSS['__invalid']))
-		{
-			unset($customCSS['__invalid']);
-		}
-
-		if (empty($customCSS))
-		{
-			return;
-		}
-
-		$css = '';
-
-		foreach ($customCSS as $slug => $colors)
-		{
-			[$bg, $fg] = $colors;
-			$css .= <<< CSS
-.akeeba-sociallogin-unlink-button-{$slug}, .akeeba-sociallogin-link-button-{$slug} { color: var(--sociallogin-{$slug}-fg, $fg) !important; background-color: var(--sociallogin-{$slug}-bg, $bg) !important; }
-
-CSS;
-		}
-
-		try
-		{
-			$document = $this->app->getDocument();
-		}
-		catch (Exception $e)
-		{
-			return;
-		}
-
-		if (!($document instanceof HtmlDocument))
-		{
-			return;
-		}
-
-		$document->getWebAssetManager()->addInlineStyle($css);
-	}
-
-	/**
-	 * Helper method to render a JLayout.
-	 *
-	 * @param   string  $layoutFile   Dot separated path to the layout file, relative to base path
-	 *                                (plugins/system/sociallogin/layout)
-	 * @param   object  $displayData  Object which properties are used inside the layout file to build displayed output
-	 * @param   string  $includePath  Additional path holding layout files
-	 * @param   mixed   $options      Optional custom options to load. Registry or array format. Set 'debug'=>true to
-	 *                                output debug information.
-	 *
-	 * @return  string
-	 */
-	protected static function renderLayout($layoutFile, $displayData = null, $includePath = '', $options = null)
-	{
-		$basePath = JPATH_PLUGINS . '/system/sociallogin/layout';
-		$layout   = new FileLayout($layoutFile, null, $options);
-
-		if (!empty($includePath))
-		{
-			$layout->addIncludePath($includePath);
-		}
-
-		$result = $layout->render($displayData);
-
-		if (empty($result))
-		{
-			$layout = new FileLayout($layoutFile, $basePath, $options);
-
-			if (!empty($includePath))
-			{
-				$layout->addIncludePath($includePath);
-			}
-
-			$result = $layout->render($displayData);
-		}
-
-		return $result;
 	}
 
 }

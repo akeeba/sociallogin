@@ -1,8 +1,8 @@
 <?php
 /**
- *  @package   AkeebaSocialLogin
- *  @copyright Copyright (c)2016-2022 Nicholas K. Dionysopoulos / Akeeba Ltd
- *  @license   GNU General Public License version 3, or later
+ * @package   AkeebaSocialLogin
+ * @copyright Copyright (c)2016-2022 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @license   GNU General Public License version 3, or later
  */
 
 namespace Joomla\Plugin\System\SocialLogin\Field;
@@ -18,6 +18,7 @@ use Joomla\Plugin\System\SocialLogin\Library\Helper\Integrations;
 /**
  * @noinspection PhpUnused
  */
+
 class SocialloginField extends FormField
 {
 	/**

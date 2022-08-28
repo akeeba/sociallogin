@@ -1,8 +1,8 @@
 <?php
 /**
- *  @package   AkeebaSocialLogin
- *  @copyright Copyright (c)2016-2022 Nicholas K. Dionysopoulos / Akeeba Ltd
- *  @license   GNU General Public License version 3, or later
+ * @package   AkeebaSocialLogin
+ * @copyright Copyright (c)2016-2022 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @license   GNU General Public License version 3, or later
  */
 
 namespace Joomla\Plugin\Sociallogin\Apple\Util;
@@ -21,8 +21,8 @@ class RandomWords
 	/**
 	 * A list of non-offensive, English adjectives
 	 *
-	 * @var   string[]
 	 * @since 3.2.0
+	 * @var   string[]
 	 */
 	private static $adjectives = [
 		"additional",
@@ -325,8 +325,8 @@ class RandomWords
 	/**
 	 * A list of non-offensive, English nouns
 	 *
-	 * @var   string[]
 	 * @since 3.2.0
+	 * @var   string[]
 	 */
 	private static $nouns = [
 		"ability",

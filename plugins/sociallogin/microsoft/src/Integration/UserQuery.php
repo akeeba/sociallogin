@@ -1,8 +1,8 @@
 <?php
 /**
- *  @package   AkeebaSocialLogin
- *  @copyright Copyright (c)2016-2022 Nicholas K. Dionysopoulos / Akeeba Ltd
- *  @license   GNU General Public License version 3, or later
+ * @package   AkeebaSocialLogin
+ * @copyright Copyright (c)2016-2022 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @license   GNU General Public License version 3, or later
  */
 
 namespace Joomla\Plugin\Sociallogin\Microsoft\Integration;
@@ -17,6 +17,8 @@ use Joomla\CMS\Http\Http;
  */
 class UserQuery
 {
+	private static $endpoint = 'https://apis.live.net/v5.0/';
+
 	/**
 	 * The HTTP client object to use in sending HTTP requests.
 	 *
@@ -31,13 +33,11 @@ class UserQuery
 	 */
 	protected $token;
 
-	private static $endpoint = 'https://apis.live.net/v5.0/';
-
 	/**
 	 * Constructor.
 	 *
-	 * @param   Http   $client The HTTP client object.
-	 * @param   string $token  The OAuth token.
+	 * @param   Http    $client  The HTTP client object.
+	 * @param   string  $token   The OAuth token.
 	 */
 	public function __construct($client = null, $token = null)
 	{
@@ -58,7 +58,7 @@ class UserQuery
 	public function getUserInformation()
 	{
 		$path  = '/me?access_token=' . urlencode($this->token);
-		$reply = $this->client->get(self::$endpoint . $path, array());
+		$reply = $this->client->get(self::$endpoint . $path, []);
 
 		if ($reply->code > 299)
 		{

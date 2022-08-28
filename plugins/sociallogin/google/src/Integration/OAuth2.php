@@ -1,8 +1,8 @@
 <?php
 /**
- *  @package   AkeebaSocialLogin
- *  @copyright Copyright (c)2016-2022 Nicholas K. Dionysopoulos / Akeeba Ltd
- *  @license   GNU General Public License version 3, or later
+ * @package   AkeebaSocialLogin
+ * @copyright Copyright (c)2016-2022 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @license   GNU General Public License version 3, or later
  */
 
 namespace Joomla\Plugin\Sociallogin\Google\Integration;
@@ -19,16 +19,16 @@ use Joomla\Plugin\System\SocialLogin\Library\OAuth\OAuth2Client;
 class OAuth2
 {
 	/**
+	 * @var    OAuth2Client  OAuth client for the Google authentication object.
+	 */
+	protected $client;
+
+	/**
 	 * Options for the Google authentication object.
 	 *
 	 * @var    array|\ArrayAccess
 	 */
 	protected $options;
-
-	/**
-	 * @var    OAuth2Client  OAuth client for the Google authentication object.
-	 */
-	protected $client;
 
 	/**
 	 * Constructor.
@@ -56,6 +56,19 @@ class OAuth2
 		$this->googlize();
 
 		return $this->client->authenticate();
+	}
+
+	/**
+	 * Get an option from the Auth object.
+	 *
+	 * @param   string  $key  The name of the option to get.
+	 *
+	 * @return  mixed  The option value.
+	 *
+	 */
+	public function getOption($key)
+	{
+		return $this->options[$key] ?? null;
 	}
 
 	/**
@@ -87,19 +100,6 @@ class OAuth2
 		$this->googlize();
 
 		return $this->client->query($url, $data, $headers, $method);
-	}
-
-	/**
-	 * Get an option from the Auth object.
-	 *
-	 * @param   string  $key  The name of the option to get.
-	 *
-	 * @return  mixed  The option value.
-	 *
-	 */
-	public function getOption($key)
-	{
-		return $this->options[$key] ?? null;
 	}
 
 	/**

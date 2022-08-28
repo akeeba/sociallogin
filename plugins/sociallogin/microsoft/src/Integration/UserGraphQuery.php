@@ -1,8 +1,8 @@
 <?php
 /**
- *  @package   AkeebaSocialLogin
- *  @copyright Copyright (c)2016-2022 Nicholas K. Dionysopoulos / Akeeba Ltd
- *  @license   GNU General Public License version 3, or later
+ * @package   AkeebaSocialLogin
+ * @copyright Copyright (c)2016-2022 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @license   GNU General Public License version 3, or later
  */
 
 namespace Joomla\Plugin\Sociallogin\Microsoft\Integration;
@@ -17,6 +17,8 @@ use Joomla\CMS\Http\Http;
  */
 class UserGraphQuery
 {
+	private static $endpoint = 'https://graph.microsoft.com/v1.0/';
+
 	/**
 	 * The HTTP client object to use in sending HTTP requests.
 	 *
@@ -30,8 +32,6 @@ class UserGraphQuery
 	 * @var    string
 	 */
 	protected $token;
-
-	private static $endpoint = 'https://graph.microsoft.com/v1.0/';
 
 	/**
 	 * Constructor.

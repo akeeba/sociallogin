@@ -1,8 +1,8 @@
 <?php
 /**
- *  @package   AkeebaSocialLogin
- *  @copyright Copyright (c)2016-2022 Nicholas K. Dionysopoulos / Akeeba Ltd
- *  @license   GNU General Public License version 3, or later
+ * @package   AkeebaSocialLogin
+ * @copyright Copyright (c)2016-2022 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @license   GNU General Public License version 3, or later
  */
 
 namespace Joomla\Plugin\System\SocialLogin\Library\OAuth;
@@ -29,11 +29,11 @@ use RuntimeException;
 class OAuth2Client
 {
 	/**
-	 * Options for the Client object.
+	 * The application object to send HTTP headers for redirects.
 	 *
-	 * @var    array|ArrayAccess
+	 * @var    CMSApplication
 	 */
-	protected $options;
+	protected $application;
 
 	/**
 	 * The HTTP client object to use in sending HTTP requests.
@@ -50,11 +50,11 @@ class OAuth2Client
 	protected $input;
 
 	/**
-	 * The application object to send HTTP headers for redirects.
+	 * Options for the Client object.
 	 *
-	 * @var    CMSApplication
+	 * @var    array|ArrayAccess
 	 */
-	protected $application;
+	protected $options;
 
 	/**
 	 * Constructor.
@@ -166,29 +166,6 @@ class OAuth2Client
 	}
 
 	/**
-	 * Verify if the client has been authenticated
-	 *
-	 * @return  boolean  Is authenticated
-	 *
-	 */
-	public function isAuthenticated()
-	{
-		$token = $this->getToken();
-
-		if (!$token || !array_key_exists('access_token', $token))
-		{
-			return false;
-		}
-
-		if (array_key_exists('expires_in', $token) && $token['created'] + $token['expires_in'] < time() + 20)
-		{
-			return false;
-		}
-
-		return true;
-	}
-
-	/**
 	 * Create the URL for authentication.
 	 *
 	 * @return  string  The URL for authentication
@@ -233,6 +210,54 @@ class OAuth2Client
 		}
 
 		return $url;
+	}
+
+	/**
+	 * Get an option from the OAuth2 Client instance.
+	 *
+	 * @param   string  $key      The name of the option to get
+	 * @param   mixed   $default  Optional default value, returned if the requested option does not exist.
+	 *
+	 * @return  mixed  The option value
+	 *
+	 */
+	public function getOption($key, $default = null)
+	{
+		return $this->options[$key] ?? $default;
+	}
+
+	/**
+	 * Get the access token from the Client instance.
+	 *
+	 * @return  array  The access token
+	 *
+	 */
+	public function getToken()
+	{
+		return $this->getOption('accesstoken');
+	}
+
+	/**
+	 * Verify if the client has been authenticated
+	 *
+	 * @return  boolean  Is authenticated
+	 *
+	 */
+	public function isAuthenticated()
+	{
+		$token = $this->getToken();
+
+		if (!$token || !array_key_exists('access_token', $token))
+		{
+			return false;
+		}
+
+		if (array_key_exists('expires_in', $token) && $token['created'] + $token['expires_in'] < time() + 20)
+		{
+			return false;
+		}
+
+		return true;
 	}
 
 	/**
@@ -311,68 +336,6 @@ class OAuth2Client
 	}
 
 	/**
-	 * Get an option from the OAuth2 Client instance.
-	 *
-	 * @param   string  $key      The name of the option to get
-	 * @param   mixed   $default  Optional default value, returned if the requested option does not exist.
-	 *
-	 * @return  mixed  The option value
-	 *
-	 */
-	public function getOption($key, $default = null)
-	{
-		return $this->options[$key] ?? $default;
-	}
-
-	/**
-	 * Set an option for the OAuth2 Client instance.
-	 *
-	 * @param   string  $key    The name of the option to set
-	 * @param   mixed   $value  The option value to set
-	 *
-	 * @return  self  This object for method chaining
-	 *
-	 */
-	public function setOption($key, $value)
-	{
-		$this->options[$key] = $value;
-
-		return $this;
-	}
-
-	/**
-	 * Get the access token from the Client instance.
-	 *
-	 * @return  array  The access token
-	 *
-	 */
-	public function getToken()
-	{
-		return $this->getOption('accesstoken');
-	}
-
-	/**
-	 * Set an option for the Client instance.
-	 *
-	 * @param   array  $value  The access token
-	 *
-	 * @return  self  This object for method chaining
-	 *
-	 */
-	public function setToken($value)
-	{
-		if (is_array($value) && !array_key_exists('expires_in', $value) && array_key_exists('expires', $value))
-		{
-			$value['expires_in'] = $value['expires'];
-			unset($value['expires']);
-		}
-
-		$this->setOption('accesstoken', $value);
-
-		return $this;
-	}
-
-	/**
 	 * Refresh the access token instance.
 	 *
 	 * @param   string  $token  The refresh token
@@ -428,5 +391,42 @@ class OAuth2Client
 		$this->setToken($token);
 
 		return $token;
+	}
+
+	/**
+	 * Set an option for the OAuth2 Client instance.
+	 *
+	 * @param   string  $key    The name of the option to set
+	 * @param   mixed   $value  The option value to set
+	 *
+	 * @return  self  This object for method chaining
+	 *
+	 */
+	public function setOption($key, $value)
+	{
+		$this->options[$key] = $value;
+
+		return $this;
+	}
+
+	/**
+	 * Set an option for the Client instance.
+	 *
+	 * @param   array  $value  The access token
+	 *
+	 * @return  self  This object for method chaining
+	 *
+	 */
+	public function setToken($value)
+	{
+		if (is_array($value) && !array_key_exists('expires_in', $value) && array_key_exists('expires', $value))
+		{
+			$value['expires_in'] = $value['expires'];
+			unset($value['expires']);
+		}
+
+		$this->setOption('accesstoken', $value);
+
+		return $this;
 	}
 }

@@ -1,8 +1,8 @@
 <?php
 /**
- *  @package   AkeebaSocialLogin
- *  @copyright Copyright (c)2016-2022 Nicholas K. Dionysopoulos / Akeeba Ltd
- *  @license   GNU General Public License version 3, or later
+ * @package   AkeebaSocialLogin
+ * @copyright Copyright (c)2016-2022 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @license   GNU General Public License version 3, or later
  */
 
 namespace Joomla\Plugin\Sociallogin\Github\Integration;
@@ -17,6 +17,8 @@ use Joomla\CMS\Http\Http;
  */
 class UserQuery
 {
+	private static $endpoint = 'https://api.github.com/graphql';
+
 	/**
 	 * The HTTP client object to use in sending HTTP requests.
 	 *
@@ -31,18 +33,56 @@ class UserQuery
 	 */
 	protected $token;
 
-	private static $endpoint = 'https://api.github.com/graphql';
-
 	/**
 	 * Constructor.
 	 *
-	 * @param   Http   $client The HTTP client object.
-	 * @param   string $token  The OAuth token.
+	 * @param   Http    $client  The HTTP client object.
+	 * @param   string  $token   The OAuth token.
 	 */
 	public function __construct($client = null, $token = null)
 	{
 		$this->client = $client;
 		$this->token  = $token;
+	}
+
+	/**
+	 * Get the URL for the user's GitHub avatar
+	 *
+	 * @param   int  $size  The requested avatar size. Recommended values: 16, 32, 48, 64, 128 and 256.
+	 *
+	 * @return  string
+	 */
+	public function getUserAvatarUrl($size)
+	{
+		$size = (int) $size;
+
+		$query = <<< JSON
+{
+	"query" : "query { viewer { avatarUrl(size: $size) } }"
+}
+
+JSON;
+
+		$headers = [
+			'Authorization' => 'bearer ' . $this->token,
+		];
+
+		$reply = $this->client->post(self::$endpoint, $query, $headers);
+
+		if ($reply->code > 299)
+		{
+			throw new \RuntimeException("HTTP {$reply->code}: {$reply->body}");
+		}
+
+		$response = json_decode($reply->body);
+
+		// Validate the response.
+		if (property_exists($response, 'errors'))
+		{
+			throw new \RuntimeException($response->errors[0]->message);
+		}
+
+		return $response->data->viewer->avatarUrl;
 	}
 
 	/**
@@ -64,11 +104,11 @@ class UserQuery
 
 JSON;
 
-		$headers  = array(
-			'Authorization' => 'bearer ' . $this->token
-		);
+		$headers = [
+			'Authorization' => 'bearer ' . $this->token,
+		];
 
-		$reply    = $this->client->post(self::$endpoint, $query, $headers);
+		$reply = $this->client->post(self::$endpoint, $query, $headers);
 
 		if ($reply->code > 299)
 		{
@@ -84,46 +124,6 @@ JSON;
 		}
 
 		return $response->data->viewer;
-	}
-
-	/**
-	 * Get the URL for the user's GitHub avatar
-	 *
-	 * @param   int  $size  The requested avatar size. Recommended values: 16, 32, 48, 64, 128 and 256.
-	 *
-	 * @return  string
-	 */
-	public function getUserAvatarUrl($size)
-	{
-		$size = (int)$size;
-
-		$query = <<< JSON
-{
-	"query" : "query { viewer { avatarUrl(size: $size) } }"
-}
-
-JSON;
-
-		$headers  = array(
-			'Authorization' => 'bearer ' . $this->token
-		);
-
-		$reply    = $this->client->post(self::$endpoint, $query, $headers);
-
-		if ($reply->code > 299)
-		{
-			throw new \RuntimeException("HTTP {$reply->code}: {$reply->body}");
-		}
-
-		$response = json_decode($reply->body);
-
-		// Validate the response.
-		if (property_exists($response, 'errors'))
-		{
-			throw new \RuntimeException($response->errors[0]->message);
-		}
-
-		return $response->data->viewer->avatarUrl;
 	}
 
 }
