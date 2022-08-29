@@ -213,6 +213,47 @@ trait LoginTrait
 				);
 
 				$userId = $this->createUser($email, $userData->name, $bypassVerification, $userData->timezone);
+
+				/**
+				 * OK, here's the problem. The createUser() method proxies Joomla's user creation model. In its
+				 * infinite wisdom, it does NOT always return the user ID. It returns the strings 'useractivate' and
+				 * 'adminactivate' when activation is required. But I absolutely, definitely need the user ID to save
+				 * the SocialLogin token.
+				 *
+				 * So, I have to do it the STUPID way: search the database for the user with the email address I just
+				 * asked Joomla to use. Unless, of course, I got boolean FALSE in which case something else is broken
+				 * and I have to let the code run to its failure handler point.
+				 */
+				if ($userId !== false)
+				{
+					$actualUserId = is_integer($userId) ? $userId : $this->getUserIdByEmail($email);
+
+					if (!empty($actualUserId))
+					{
+						Log::add(
+							sprintf(
+								'Linking the social network profile with the newly created Joomla user profile (user ID %d)',
+								$actualUserId
+							),
+							Log::INFO,
+							'sociallogin.' . $slug
+						);
+
+						$this->insertUserProfileData($actualUserId, 'sociallogin.' . $slug, $userProfileData);
+					}
+					else
+					{
+						Log::add(
+							sprintf(
+								'I cannot find the user Joomla ostensibly has just created (email address %s). Crashing is imminent!',
+								$email
+							),
+							Log::ERROR,
+							'sociallogin.' . $slug
+						);
+
+					}
+				}
 			}
 			catch (UnexpectedValueException $e)
 			{

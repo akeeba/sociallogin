@@ -1,6 +1,7 @@
 <?php die(); ?>
 Akeeba SocialLogin 4.1.0
 ================================================================================
+# [MEDIUM] Creating a user without bypassing the user validation does not link the user account with the social login which was used to create the account.
 # [LOW] The “Bypass user validation” option was not applied
 
 Akeeba SocialLogin 4.0.3
