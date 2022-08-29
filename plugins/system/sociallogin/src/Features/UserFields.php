@@ -223,7 +223,9 @@ trait UserFields
 			$id = $data->id ?? null;
 		}
 
-		$user = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($id);
+        $user = ($id === null)
+            ? $this->app->getIdentity()
+            : Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($id);
 
 		// Make sure the loaded user is the correct one
 		if ($user->id != $id)
