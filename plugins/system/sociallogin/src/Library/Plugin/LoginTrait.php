@@ -777,14 +777,6 @@ trait LoginTrait
 			$cParams->set('useractivation', 0);
 		}
 
-		$comUsersPath = JPATH_SITE . '/components/com_users';
-
-		Form::addFormPath($comUsersPath . '/forms');
-		Form::addFormPath($comUsersPath . '/models/forms');
-		Form::addFieldPath($comUsersPath . '/models/fields');
-		Form::addFormPath($comUsersPath . '/model/form');
-		Form::addFieldPath($comUsersPath . '/model/field');
-
 		$this->app->getLanguage()->load('com_users');
 
 		/** @var \Joomla\Component\Users\Site\Model\RegistrationModel $registrationModel */
