@@ -1,8 +1,8 @@
 <?php
 /**
- *  @package   AkeebaSocialLogin
- *  @copyright Copyright (c)2016-2022 Nicholas K. Dionysopoulos / Akeeba Ltd
- *  @license   GNU General Public License version 3, or later
+ * @package   AkeebaSocialLogin
+ * @copyright Copyright (c)2016-2022 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @license   GNU General Public License version 3, or later
  */
 
 namespace Joomla\Plugin\System\SocialLogin\Extension;
@@ -12,20 +12,26 @@ defined('_JEXEC') || die;
 
 use Exception;
 use JLoader;
+use Joomla\CMS\Application\AdministratorApplication;
+use Joomla\CMS\Application\CMSApplication;
+use Joomla\CMS\Application\SiteApplication;
+use Joomla\CMS\Language\LanguageHelper;
+use Joomla\CMS\Plugin\CMSPlugin;
+use Joomla\CMS\Uri\Uri;
+use Joomla\Database\DatabaseDriver;
+use Joomla\Database\DatabaseInterface;
+use Joomla\Event\Event;
+use Joomla\Event\SubscriberInterface;
 use Joomla\Plugin\System\SocialLogin\Features\Ajax;
 use Joomla\Plugin\System\SocialLogin\Features\ButtonInjection;
 use Joomla\Plugin\System\SocialLogin\Features\DynamicUsergroups;
 use Joomla\Plugin\System\SocialLogin\Features\UserFields;
-use Joomla\Plugin\System\SocialLogin\Library\Helper\Joomla;
-use Joomla\CMS\Language\LanguageHelper;
-use Joomla\CMS\Plugin\CMSPlugin;
-use Joomla\CMS\Uri\Uri;
+use Joomla\Plugin\System\SocialLogin\Library\Plugin\AddLoggerTrait;
+use Joomla\Plugin\System\SocialLogin\Library\Plugin\RunPluginsTrait;
+use Joomla\Plugin\System\SocialLogin\Library\Plugin\SocialLoginButtonsTrait;
 
-class SocialLogin extends CMSPlugin
+class SocialLogin extends CMSPlugin implements SubscriberInterface
 {
-	/** @var \Joomla\CMS\Application\CMSApplication */
-	public $app;
-
 	// Load the features, implemented as traits (for easier code management)
 	use Ajax, DynamicUsergroups
 	{
@@ -34,36 +40,45 @@ class SocialLogin extends CMSPlugin
 	}
 	use ButtonInjection;
 	use UserFields;
+	use AddLoggerTrait;
+	use SocialLoginButtonsTrait;
+	use RunPluginsTrait;
+
+	/** @var CMSApplication|SiteApplication|AdministratorApplication */
+	public $app;
+
+	/** @var DatabaseDriver|DatabaseInterface */
+	public $db;
 
 	/**
 	 * User group ID to add the user to if they have linked social network accounts to their profile
 	 *
-	 * @var   int
 	 * @since 3.0.1
+	 * @var   int
 	 */
-	protected $linkedUserGroup = 0;
+	protected int $linkedUserGroup = 0;
 
 	/**
 	 * User group ID to add the user to if they have NOT linked social network accounts to their profile
 	 *
-	 * @var   int
 	 * @since 3.0.1
+	 * @var   int
 	 */
-	protected $unlinkedUserGroup = 0;
+	protected int $unlinkedUserGroup = 0;
 
 	/**
 	 * Should I add link/unlink buttons in the Edit User Profile page of com_users?
 	 *
 	 * @var   bool
 	 */
-	private $addLinkUnlinkButtons = true;
+	private bool $addLinkUnlinkButtons = true;
 
 	/**
 	 * Are the substitutions enabled?
 	 *
 	 * @var   bool
 	 */
-	private $enabled = true;
+	private bool $enabled = true;
 
 	public function __construct(&$subject, $config = [])
 	{
@@ -79,7 +94,7 @@ class SocialLogin extends CMSPlugin
 			JLoader::registerNamespace('CoderCat\\JWKToPEM', __DIR__ . '/../../vendor/codercat/jwk-to-pem/src');
 		}
 
-		Joomla::addLogger('system');
+		$this->addLogger('system');
 
 		// Am I enabled?
 		$this->enabled = $this->isEnabled();
@@ -93,16 +108,29 @@ class SocialLogin extends CMSPlugin
 		$this->unlinkedUserGroup    = (int) $this->params->get('noLinkedAccountUserGroup', 0);
 	}
 
+	public static function getSubscribedEvents(): array
+	{
+		return [
+			'onAfterInitialise'    => 'onAfterInitialise',
+			'onAjaxSociallogin'    => 'onAjaxSociallogin',
+			'onUserLoginButtons'   => 'onUserLoginButtons',
+			'onContentPrepareData' => 'onContentPrepareData',
+			'onContentPrepareForm' => 'onContentPrepareForm',
+			'onUserAfterSave'      => 'onUserAfterSave',
+			'onUserAfterDelete'    => 'onUserAfterDelete',
+		];
+	}
+
 	/**
 	 * Assemble the onAfterInitialise event from code belonging to many features' traits.
 	 *
 	 * @throws Exception
 	 */
-	public function onAfterInitialise()
+	public function onAfterInitialise(Event $e)
 	{
 		$this->magicRoute();
-		$this->onAfterInitialise_DynamicUserGroups();
-		$this->onAfterIntialise_Ajax();
+		$this->onAfterInitialise_DynamicUserGroups($e);
+		$this->onAfterIntialise_Ajax($e);
 	}
 
 	protected function magicRoute()
@@ -175,14 +203,9 @@ class SocialLogin extends CMSPlugin
 	 *
 	 * @return  bool
 	 */
-	private function isEnabled()
+	private function isEnabled(): bool
 	{
-		// It only make sense to let people log in when they are not already logged in ;)
-		if (!Joomla::getUser()->guest)
-		{
-			return false;
-		}
-
-		return true;
+		// It only makes sense to let people log in when they are not already logged in ;)
+		return (bool) $this->app->getIdentity()->guest;
 	}
 }

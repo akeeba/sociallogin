@@ -1,8 +1,8 @@
 <?php
 /**
- *  @package   AkeebaSocialLogin
- *  @copyright Copyright (c)2016-2022 Nicholas K. Dionysopoulos / Akeeba Ltd
- *  @license   GNU General Public License version 3, or later
+ * @package   AkeebaSocialLogin
+ * @copyright Copyright (c)2016-2022 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @license   GNU General Public License version 3, or later
  */
 
 namespace Joomla\Plugin\System\SocialLogin\Features;
@@ -11,16 +11,16 @@ namespace Joomla\Plugin\System\SocialLogin\Features;
 defined('_JEXEC') || die;
 
 use Exception;
-use Joomla\CMS\Factory;
+use Joomla\CMS\Log\Log;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Uri\Uri;
-use Joomla\Plugin\System\SocialLogin\Library\Helper\Joomla;
+use Joomla\Event\Event;
 
 /**
  * Feature: AJAX request handling
  *
- * @package Akeeba\SocialLogin\Features
  * @since   3.0.1
+ * @package Akeeba\SocialLogin\Features
  */
 trait Ajax
 {
@@ -32,25 +32,26 @@ trait Ajax
 	 * Yes, you guessed it right. I AM GOING TO ABUSE onAfterInitialize. Pay attention, kids, that's how grown-ups make
 	 * Joomla submit to their will.
 	 *
+	 * @param   Event  $e
+	 *
 	 * @return  void
 	 *
-	 * @throws  Exception
 	 */
-	public function onAfterInitialise()
+	public function onAfterInitialise(Event $e): void
 	{
 		// Make sure this is the backend of the site...
-		if (!Factory::getApplication()->isClient('administrator'))
+		if (!$this->app->isClient('administrator'))
 		{
 			return;
 		}
 
 		// ...and we are not already logged in...
-		if (!Joomla::getUser()->guest)
+		if (!$this->app->getIdentity()->guest)
 		{
 			return;
 		}
 
-		$input = Factory::getApplication()->input;
+		$input = $this->app->input;
 
 		// ...and this is a request to com_ajax...
 		if ($input->getCmd('option', '') != 'com_ajax')
@@ -65,7 +66,7 @@ trait Ajax
 		}
 
 		// Reset the session flag; the AJAX operation may change whether the Joomla user is linked to a social media account
-		Factory::getApplication()->getSession()->set('sociallogin.islinked', null);
+		$this->app->getSession()->set('sociallogin.islinked', null);
 
 		// Load the plugin and execute the AJAX method
 		$plugin = $input->getCmd('plugin', '');
@@ -73,7 +74,7 @@ trait Ajax
 		PluginHelper::importPlugin('sociallogin', $plugin);
 		$methodName = 'onAjax' . ucfirst($plugin);
 
-		Factory::getApplication()->triggerEvent($methodName);
+		$this->app->triggerEvent($methodName);
 	}
 
 	/**
@@ -81,29 +82,44 @@ trait Ajax
 	 *
 	 * Note: this method is called from Joomla's com_ajax
 	 *
+	 * @param   Event  $event
+	 *
 	 * @return  void
 	 *
-	 * @throws  Exception
+	 * @noinspection PhpUnused
+	 * @noinspection PhpUnusedParameterInspection
 	 */
-	public function onAjaxSociallogin()
+	public function onAjaxSociallogin(Event $event): void
 	{
-		$ajax  = new \Joomla\Plugin\System\SocialLogin\Library\Helper\Ajax();
-		$app   = Factory::getApplication();
+		$ajax  = new \Joomla\Plugin\System\SocialLogin\Library\Helper\Ajax($this, $this->app, $this->db);
+		$app   = $this->app;
 		$input = $app->input;
 
 		// Get the return URL from the session
-		$returnURL = Factory::getApplication()->getSession()->get('plg_system_sociallogin.returnUrl', Uri::base());
-		Factory::getApplication()->getSession()->set('plg_system_sociallogin.returnUrl', null);
-		$result = null;
+		$returnURL = $this->app->getSession()->get('plg_system_sociallogin.returnUrl', Uri::base());
+		$this->app->getSession()->set('plg_system_sociallogin.returnUrl', null);
 
 		try
 		{
-			Joomla::log('system', "Received AJAX callback.");
-			$result = $ajax->handle($app);
+			Log::add(
+				'Received AJAX callback.',
+				Log::DEBUG,
+				'sociallogin.system'
+			);
+
+			$result = $ajax->handle();
 		}
 		catch (Exception $e)
 		{
-			Joomla::log('system', "Callback failure, redirecting to $returnURL.");
+			Log::add(
+				sprintf(
+					'Callback failure, redirecting to %s.',
+					$returnURL
+				),
+				Log::DEBUG,
+				'sociallogin.system'
+			);
+
 			$app->enqueueMessage($e->getMessage(), 'error');
 			$app->redirect($returnURL);
 
@@ -116,19 +132,34 @@ trait Ajax
 			{
 				default:
 				case 'json':
-					Joomla::log('system', "Callback complete, returning JSON.");
+					Log::add(
+						'Callback complete, returning JSON.',
+						Log::DEBUG,
+						'sociallogin.system'
+					);
+
 					echo json_encode($result);
 
 					break;
 
 				case 'jsonhash':
-					Joomla::log('system', "Callback complete, returning JSON inside ### markers.");
+					Log::add(
+						'Callback complete, returning JSON inside ### markers.',
+						Log::DEBUG,
+						'sociallogin.system'
+					);
+
 					echo '###' . json_encode($result) . '###';
 
 					break;
 
 				case 'raw':
-					Joomla::log('system', "Callback complete, returning raw response.");
+					Log::add(
+						'Callback complete, returning raw response.',
+						Log::DEBUG,
+						'sociallogin.system'
+					);
+
 					echo $result;
 
 					break;
@@ -146,22 +177,43 @@ trait Ajax
 
 					if (isset($result['url']))
 					{
-						Joomla::log('system', "Callback complete, performing redirection to {$result['url']}{$modifiers}.");
+						Log::add(
+							sprintf(
+								'Callback complete, performing redirection to %s%s.',
+								$result['url'], $modifiers
+							),
+							Log::DEBUG,
+							'sociallogin.system'
+						);
+
 						$app->redirect($result['url']);
 					}
 
+					Log::add(
+						sprintf(
+							'Callback complete, performing redirection to %s%s.',
+							$result, $modifiers
+						),
+						Log::DEBUG,
+						'sociallogin.system'
+					);
 
-					Joomla::log('system', "Callback complete, performing redirection to {$result}{$modifiers}.");
 					$app->redirect($result);
 
 					return;
-					break;
 			}
 
 			$app->close(200);
 		}
 
-		Joomla::log('system', "Null response from AJAX callback, redirecting to $returnURL");
+		Log::add(
+			sprintf(
+				'Null response from AJAX callback, redirecting to %s',
+				$returnURL
+			),
+			Log::DEBUG,
+			'sociallogin.system'
+		);
 
 		$app->redirect($returnURL);
 	}

@@ -18,10 +18,11 @@
     <license>GNU GPL v3 or later</license>
 
     <description>PLG_SOCIALLOGIN_MICROSOFT_DESCRIPTION</description>
+    <namespace path="src">Joomla\Plugin\Sociallogin\Microsoft</namespace>
 
     <files>
-        <filename plugin="microsoft">microsoft.php</filename>
-        <folder>Microsoft</folder>
+        <folder>services</folder>
+        <folder plugin="microsoft">src</folder>
     </files>
 
     <media folder="media" destination="plg_sociallogin_microsoft">

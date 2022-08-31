@@ -1,8 +1,8 @@
 <?php
 /**
- *  @package   AkeebaSocialLogin
- *  @copyright Copyright (c)2016-2022 Nicholas K. Dionysopoulos / Akeeba Ltd
- *  @license   GNU General Public License version 3, or later
+ * @package   AkeebaSocialLogin
+ * @copyright Copyright (c)2016-2022 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @license   GNU General Public License version 3, or later
  */
 
 namespace Joomla\Plugin\System\SocialLogin\Library\Helper;
@@ -11,11 +11,14 @@ namespace Joomla\Plugin\System\SocialLogin\Library\Helper;
 defined('_JEXEC') || die();
 
 use Exception;
-use Joomla\Application\AbstractApplication;
+use Joomla\CMS\Application\CMSApplication;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
+use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\User\User;
+use Joomla\CMS\User\UserFactoryInterface;
+use Joomla\Database\DatabaseInterface;
 use RuntimeException;
 
 
@@ -24,25 +27,31 @@ use RuntimeException;
  */
 final class Ajax
 {
+	private ?CMSApplication $app = null;
+
+	private ?DatabaseInterface $db = null;
+
+	private ?CMSPlugin $plugin = null;
+
+	public function __construct(CMSPlugin $plugin, CMSApplication $app, DatabaseInterface $db)
+	{
+		$this->plugin = $plugin;
+		$this->app    = $app;
+		$this->db     = $db;
+	}
+
 	/**
 	 * Handle an AJAX request
-	 *
-	 * @param   AbstractApplication  $app  The application
 	 *
 	 * @return  mixed
 	 *
 	 * @throws  RuntimeException  on error
 	 */
-	public function handle($app)
+	public function handle()
 	{
-		if (!Joomla::isCmsApplication($app))
-		{
-			return null;
-		}
-
-		$input          = $app->input;
+		$input          = $this->app->input;
 		$akaction       = $input->getCmd('akaction');
-		$token          = Factory::getApplication()->getSession()->getToken();
+		$token          = $this->app->getSession()->getToken();
 		$noTokenActions = ['dontremind'];
 
 		if (!in_array($akaction, $noTokenActions) && ($input->getInt($token, 0) != 1))
@@ -64,72 +73,18 @@ final class Ajax
 			throw new RuntimeException(Text::_('PLG_SYSTEM_SOCIALLOGIN_ERR_AJAX_INVALIDACTION'));
 		}
 
-		return call_user_func([$this, $method_name], $app);
-	}
-
-	/**
-	 * Unlink a user account from its social media presence
-	 *
-	 * @param   AbstractApplication  $app  The application
-	 *
-	 * @throws  Exception
-	 */
-	protected function ajaxUnlink($app)
-	{
-		if (!Joomla::isCmsApplication($app))
-		{
-			return;
-		}
-
-		$input = $app->input;
-		$slug  = $input->getCmd('slug');
-
-		// No slug? No good.
-		if (empty($slug))
-		{
-			throw new RuntimeException(Text::_('PLG_SYSTEM_SOCIALLOGIN_ERR_AJAX_INVALIDSLUG'));
-		}
-
-		// Get the user ID and make sure it's ours or we are Super Users
-		$userId = Factory::getApplication()->getSession()->get('plg_system_sociallogin.userID', null);
-		Factory::getApplication()->getSession()->set('plg_system_sociallogin.userID', null);
-
-		/** @var   User $myUser Currently logged in user */
-		$myUser = Factory::getApplication()->getSession()->get('user');
-
-		// Make sure we are unlinking our own user or we are Super Users
-		if (empty($userId) || (!$myUser->authorise('core.manage') && ($myUser->id != $userId)))
-		{
-			throw new RuntimeException(Text::_('PLG_SYSTEM_SOCIALLOGIN_ERR_AJAX_INVALIDUSER'));
-		}
-
-		// Reset the session flag; the AJAX operation will change whether the Joomla user is linked to a social media account
-		Factory::getApplication()->getSession()->set('sociallogin.islinked', null);
-
-		// Get the user to unlink
-		$user = Joomla::getUser($userId);
-
-		// Call the plugin events to unlink the user
-		PluginHelper::importPlugin('sociallogin');
-		Joomla::runPlugins('onSocialLoginUnlink', [$slug, $user], $app);
+		return call_user_func([$this, $method_name]);
 	}
 
 	/**
 	 * Initiate a user authentication against a remote server. Your plugin is supposed to perform a redirection to the
 	 * remote server or throw a RuntimeException in case of an error.
 	 *
-	 * @param   AbstractApplication  $app  The application
-	 *
 	 * @throws  Exception
 	 */
-	protected function ajaxAuthenticate($app)
+	protected function ajaxAuthenticate()
 	{
-		if (!Joomla::isCmsApplication($app))
-		{
-			return;
-		}
-
-		$input = $app->input;
+		$input = $this->app->input;
 		$slug  = $input->getCmd('slug');
 
 		// No slug? No good.
@@ -140,25 +95,18 @@ final class Ajax
 
 		// Call the plugin events to unlink the user
 		PluginHelper::importPlugin('sociallogin');
-		Joomla::runPlugins('onSocialLoginAuthenticate', [$slug], $app);
+		$this->plugin->runPlugins('onSocialLoginAuthenticate', [$slug]);
 	}
 
 	/**
 	 * Set the "don't remind me again" flag
 	 *
 	 * Call by accessing index.php?option=com_ajax&group=system&plugin=sociallogin&akaction=dontremind&format=raw
-	 *
-	 * @param   AbstractApplication  $app  The application
 	 */
-	protected function ajaxDontremind($app)
+	protected function ajaxDontremind()
 	{
-		if (!Joomla::isCmsApplication($app))
-		{
-			return;
-		}
-
-		$myUser = Factory::getUser();
-		$db     = Factory::getDbo();
+		$myUser = $this->app->getIdentity();
+		$db     = $this->db;
 
 		if ($myUser->guest)
 		{
@@ -169,9 +117,9 @@ final class Ajax
 		{
 			// Delete an existing profile value
 			$query = $db->getQuery(true)
-				->delete($db->qn('#__user_profiles'))
-				->where($db->qn('user_id') . ' = ' . $db->q($myUser->id))
-				->where($db->qn('profile_key') . ' = ' . $db->q('sociallogin.dontremind'));
+			            ->delete($db->qn('#__user_profiles'))
+			            ->where($db->qn('user_id') . ' = ' . $db->q($myUser->id))
+			            ->where($db->qn('profile_key') . ' = ' . $db->q('sociallogin.dontremind'));
 			$db->setQuery($query)->execute();
 
 			// Set the new profile value
@@ -189,7 +137,47 @@ final class Ajax
 		}
 
 		// Reset the session flag; we need to re-evaluate the flag in the next page load.
-		Factory::getApplication()->getSession()->set('sociallogin.islinked', null);
+		$this->app->getSession()->set('sociallogin.islinked', null);
 
+	}
+
+	/**
+	 * Unlink a user account from its social media presence
+	 *
+	 * @throws  Exception
+	 */
+	protected function ajaxUnlink()
+	{
+		$input = $this->app->input;
+		$slug  = $input->getCmd('slug');
+
+		// No slug? No good.
+		if (empty($slug))
+		{
+			throw new RuntimeException(Text::_('PLG_SYSTEM_SOCIALLOGIN_ERR_AJAX_INVALIDSLUG'));
+		}
+
+		// Get the user ID and make sure it's ours or we are Super Users
+		$userId = $this->app->getSession()->get('plg_system_sociallogin.userID', null);
+		$this->app->getSession()->set('plg_system_sociallogin.userID', null);
+
+		/** @var   User $myUser Currently logged in user */
+		$myUser = $this->app->getSession()->get('user');
+
+		// Make sure we are unlinking our own user or we are Super Users
+		if (empty($userId) || (!$myUser->authorise('core.manage') && ($myUser->id != $userId)))
+		{
+			throw new RuntimeException(Text::_('PLG_SYSTEM_SOCIALLOGIN_ERR_AJAX_INVALIDUSER'));
+		}
+
+		// Reset the session flag; the AJAX operation will change whether the Joomla user is linked to a social media account
+		$this->app->getSession()->set('sociallogin.islinked', null);
+
+		// Get the user to unlink
+		$user = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($userId);
+
+		// Call the plugin events to unlink the user
+		PluginHelper::importPlugin('sociallogin');
+		$this->plugin->runPlugins('onSocialLoginUnlink', [$slug, $user]);
 	}
 }

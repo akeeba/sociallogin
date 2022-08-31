@@ -1,8 +1,8 @@
 <?php
 /**
- *  @package   AkeebaSocialLogin
- *  @copyright Copyright (c)2016-2022 Nicholas K. Dionysopoulos / Akeeba Ltd
- *  @license   GNU General Public License version 3, or later
+ * @package   AkeebaSocialLogin
+ * @copyright Copyright (c)2016-2022 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @license   GNU General Public License version 3, or later
  */
 
 namespace Joomla\Plugin\System\SocialLogin\Features;
@@ -12,62 +12,68 @@ defined('_JEXEC') || die;
 
 use Exception;
 use Joomla\CMS\HTML\HTMLHelper;
+use Joomla\CMS\Log\Log;
 use Joomla\CMS\Router\Route;
 use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\User\UserHelper;
-use Joomla\Plugin\System\SocialLogin\Library\Helper\Integrations;
-use Joomla\Plugin\System\SocialLogin\Library\Helper\Joomla;
+use Joomla\Event\Event;
 use Joomla\Registry\Registry;
 
 /**
  * Feature: Button injection in login modules and login pages
  *
- * @package Akeeba\SocialLogin\Features
  * @since   3.0.1
+ * @package Akeeba\SocialLogin\Features
  */
 trait ButtonInjection
 {
 	/**
 	 * Have I already included the Joomla 4 button handler JavaScript?
 	 *
-	 * @var   bool
 	 * @since 3.1.0
+	 * @var   bool
 	 */
-	private static $includedJ4ButtonHandlerJS = false;
+	private static bool $includedJ4ButtonHandlerJS = false;
 
 	/**
 	 * Creates additional login buttons
 	 *
-	 * @param   string  $form  The HTML ID of the form we are enclosed in
+	 * @param   Event  $event
 	 *
-	 * @return  array
+	 * @return  void
 	 *
-	 * @throws  Exception
+	 * @throws Exception
+	 * @since        3.1.0
+	 * @see          AuthenticationHelper::getLoginButtons()
 	 *
-	 * @see     AuthenticationHelper::getLoginButtons()
-	 *
-	 * @since   3.1.0
+	 * @noinspection PhpUnused
 	 */
-	public function onUserLoginButtons(string $form): array
+	public function onUserLoginButtons(Event $event): void
 	{
 		if (!$this->enabled)
 		{
-			return [];
+			return;
 		}
 
 		// Append the social login buttons content
-		Joomla::log('system', "Injecting buttons using the Joomla 4 way.");
+		Log::add(
+			'Injecting buttons using the Joomla 4 way.',
+			Log::DEBUG,
+			'sociallogin.system'
+		);
 
 		$this->includeJ4ButtonHandler();
 
-		$returnUrl = $this->getReturnURLFromBackTrace();
-		$buttonDefinitions = Integrations::getSocialLoginButtonDefinitions(null, $returnUrl);
+		$returnUrl         = $this->getReturnURLFromBackTrace();
+		$buttonDefinitions = $this->getSocialLoginButtonDefinitions(null, $returnUrl);
 
-		Integrations::customCss($buttonDefinitions);
+		$this->customCss($buttonDefinitions);
 
-		$ret                          = array_map(function (array $def) {
-			$randomId = sprintf("plg_system_sociallogin-%s-%s-%s",
-				$def['slug'], UserHelper::genRandomPassword(12), UserHelper::genRandomPassword(8));
+		$ret = array_map(function (array $def) {
+			$randomId = sprintf(
+				"plg_system_sociallogin-%s-%s-%s",
+				$def['slug'], UserHelper::genRandomPassword(12), UserHelper::genRandomPassword(8)
+			);
 
 			$imageKey     = 'image';
 			$imageContent = $def['img'];
@@ -76,7 +82,7 @@ trait ButtonInjection
 			{
 				$imageKey     = 'svg';
 				$image        = HTMLHelper::_('image', $def['rawimage'], '', '', true, true);
-				$image        = $image ? JPATH_ROOT . substr($image, \strlen(Uri::root(true))) : '';
+				$image        = $image ? JPATH_ROOT . substr($image, strlen(Uri::root(true))) : '';
 				$imageContent = file_get_contents($image);
 			}
 
@@ -89,7 +95,16 @@ trait ButtonInjection
 			];
 		}, $buttonDefinitions);
 
-		return $ret;
+		$result = $event->getArgument('result') ?: [];
+
+		if (!is_array($result))
+		{
+			$result = [$result];
+		}
+
+		$result[] = $ret;
+
+		$event->setArgument('result', $result);
 	}
 
 	/**
@@ -128,11 +143,9 @@ trait ButtonInjection
 					$params = new Registry($module->params ?? '{}');
 				}
 
-				switch ($module->module ?? '')
+				if (($module->module ?? '') == 'mod_login')
 				{
-					case 'mod_login':
-						return $this->normalizeRedirectionURL($params->get('login') ?: null);
-						break;
+					return $this->normalizeRedirectionURL($params->get('login') ?: null);
 				}
 			}
 
@@ -140,6 +153,25 @@ trait ButtonInjection
 		}
 
 		return null;
+	}
+
+	private function includeJ4ButtonHandler()
+	{
+		if (self::$includedJ4ButtonHandlerJS)
+		{
+			return;
+		}
+
+		// Load the JavaScript
+		HTMLHelper::_('script', 'plg_system_sociallogin/dist/j4buttons.js', [
+			'relative' => true,
+			'version'  => md5_file(JPATH_SITE . '/media/plg_system_sociallogin/js/dist/j4buttons.js'),
+		], [
+			'defer' => 'defer',
+		]);
+
+		// Set the "don't load again" flag
+		self::$includedJ4ButtonHandlerJS = true;
 	}
 
 	private function normalizeRedirectionURL($url): ?string
@@ -173,24 +205,5 @@ trait ButtonInjection
 
 		// I have no idea what this is!
 		return null;
-	}
-
-	private function includeJ4ButtonHandler()
-	{
-		if (self::$includedJ4ButtonHandlerJS)
-		{
-			return;
-		}
-
-		// Load the JavaScript
-		HTMLHelper::_('script', 'plg_system_sociallogin/dist/j4buttons.js', [
-			'relative' => true,
-			'version'  => md5_file(JPATH_SITE . '/media/plg_system_sociallogin/js/dist/j4buttons.js'),
-		], [
-			'defer' => 'defer',
-		]);
-
-		// Set the "don't load again" flag
-		self::$includedJ4ButtonHandlerJS = true;
 	}
 }

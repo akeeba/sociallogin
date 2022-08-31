@@ -1,8 +1,8 @@
 <?php
 /**
- *  @package   AkeebaSocialLogin
- *  @copyright Copyright (c)2016-2022 Nicholas K. Dionysopoulos / Akeeba Ltd
- *  @license   GNU General Public License version 3, or later
+ * @package   AkeebaSocialLogin
+ * @copyright Copyright (c)2016-2022 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @license   GNU General Public License version 3, or later
  */
 
 namespace Joomla\Plugin\System\SocialLogin\Library\Data;
@@ -13,14 +13,21 @@ defined('_JEXEC') || die();
 /**
  * Information about the user account returned by the social media API
  *
- * @property   string  $id        A unique identifier of the social media user.
- * @property   string  $name      Full (real) name of the social media user.
- * @property   string  $email     The email address of the social media user.
- * @property   bool    $verified  Does the social media report the user as verified?
- * @property   string  $timezone  Timezone of the user, as reported by the social media site.
+ * @property   string $id        A unique identifier of the social media user.
+ * @property   string $name      Full (real) name of the social media user.
+ * @property   string $email     The email address of the social media user.
+ * @property   bool   $verified  Does the social media report the user as verified?
+ * @property   string $timezone  Timezone of the user, as reported by the social media site.
  */
 final class UserData
 {
+	/**
+	 * The email address of the social media user.
+	 *
+	 * @var   string
+	 */
+	private $email = '';
+
 	/**
 	 * A unique identifier of the social media user.
 	 *
@@ -36,11 +43,11 @@ final class UserData
 	private $name = '';
 
 	/**
-	 * The email address of the social media user.
+	 * Timezone of the user, as reported by the social media site.
 	 *
 	 * @var   string
 	 */
-	private $email = '';
+	private $timezone = 'UTC';
 
 	/**
 	 * Does the social media report the user as verified?
@@ -48,14 +55,6 @@ final class UserData
 	 * @var   bool
 	 */
 	private $verified = false;
-
-	/**
-	 * Timezone of the user, as reported by the social media site.
-	 *
-	 * @var   string
-	 */
-	private $timezone = 'UTC';
-
 
 	/**
 	 * Magic getter. Returns the stored, sanitized property values.
@@ -74,7 +73,6 @@ final class UserData
 			case 'timezone':
 			case 'verified':
 				return $this->{$name};
-				break;
 
 			default:
 				return null;
@@ -135,7 +133,7 @@ final class UserData
 		// If there's a "GMT+" or "GMT-" prefix remove it
 		$potentialPrefix = strtoupper(substr($timezone, 4));
 
-		if (in_array($potentialPrefix, array('GMT+', 'GMT-')))
+		if (in_array($potentialPrefix, ['GMT+', 'GMT-']))
 		{
 			$timezone = substr($timezone, 3);
 		}
@@ -154,7 +152,7 @@ final class UserData
 		 */
 		if (is_numeric(substr($timezone, 0, 3)))
 		{
-			$seconds = (int)(3600 * (float) $timezone);
+			$seconds  = (int) (3600 * (float) $timezone);
 			$timezone = timezone_name_from_abbr('', $seconds, 0);
 
 			if (empty($timezone))

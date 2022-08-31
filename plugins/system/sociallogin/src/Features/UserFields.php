@@ -1,8 +1,8 @@
 <?php
 /**
- *  @package   AkeebaSocialLogin
- *  @copyright Copyright (c)2016-2022 Nicholas K. Dionysopoulos / Akeeba Ltd
- *  @license   GNU General Public License version 3, or later
+ * @package   AkeebaSocialLogin
+ * @copyright Copyright (c)2016-2022 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @license   GNU General Public License version 3, or later
  */
 
 namespace Joomla\Plugin\System\SocialLogin\Features;
@@ -13,53 +13,109 @@ defined('_JEXEC') || die;
 use Exception;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Form\Form as JForm;
+use Joomla\CMS\Log\Log;
 use Joomla\CMS\Table\Menu;
 use Joomla\CMS\Table\Table;
 use Joomla\CMS\Uri\Uri;
-use Joomla\Plugin\System\SocialLogin\Library\Helper\Joomla;
+use Joomla\CMS\User\User;
+use Joomla\CMS\User\UserFactoryInterface;
+use Joomla\Event\Event;
 use Joomla\Registry\Registry as JRegistry;
 use Joomla\Utilities\ArrayHelper;
 
 trait UserFields
 {
 	/**
-	 * Add the SocialLogin custom user profile field data to the core Joomla user profile data. This is required to
-	 * populate the "sociallogin.dontremind" field with its current value.
+	 * Is the current user allowed to edit the social login configuration of $user? To do so I must either be editing my
+	 * own account OR I have to be a Super User.
 	 *
-	 * @param	string	$context  The context for the data (form name)
-	 * @param	object  $data	  The user profile data
+	 * @param   User  $user  The user you want to know if we're allowed to edit
 	 *
-	 * @return	bool
+	 * @return  bool
+	 * @since   4.1.0
 	 */
-	public function onContentPrepareData($context, $data)
+	public function canEditUser($user = null)
 	{
-		// Check we are manipulating a valid form.
-		if (!in_array($context, ['com_admin.profile', 'com_users.user', 'com_users.profile', 'com_users.registration']))
+		// I can edit myself
+		if (empty($user))
 		{
 			return true;
 		}
 
-		if (!is_object($data))
+		// Guests can't have social logins associated
+		if ($user->guest)
+		{
+			return false;
+		}
+
+		// Get the currently logged in used
+		$myUser = $this->app->getIdentity();
+
+		// Same user? I can edit myself
+		if ($myUser->id == $user->id)
 		{
 			return true;
+		}
+
+		// To edit a different user I must be a Super User myself. If I'm not, I can't edit another user!
+		if (!$myUser->authorise('core.admin'))
+		{
+			return false;
+		}
+
+		// I am a Super User editing another user. That's allowed.
+		return true;
+	}
+
+	/**
+	 * Add the SocialLogin custom user profile field data to the core Joomla user profile data. This is required to
+	 * populate the "sociallogin.dontremind" field with its current value.
+	 *
+	 * @param   Event  $event
+	 *
+	 * @return    void
+	 */
+	public function onContentPrepareData(Event $event): void
+	{
+		/**
+		 * @param   string  $context  The context for the data (form name)
+		 * @param   object  $data     The user profile data
+		 */
+		[$context, $data] = $event->getArguments();
+		$result   = $event->getArgument('result') ?: [];
+		$result   = is_array($result) ? $result : [$result];
+		$result[] = true;
+
+		$event->setArgument('result', $result);
+
+		// Check we are manipulating a valid form.
+		if (!in_array($context, ['com_admin.profile', 'com_users.user', 'com_users.profile', 'com_users.registration']))
+		{
+			return;
+		}
+
+		if (!is_object($data))
+		{
+			return;
+
 		}
 
 		$userId = $data->id ?? 0;
 
 		if (isset($data->profile) || ($userId <= 0))
 		{
-			return true;
+			return;
 		}
 
 		// Load the profile data from the database.
-		$db = Factory::getDbo();
+		$db = $this->db;
 
 		$query = $db->getQuery(true)
-			->select([$db->qn('profile_key'), $db->qn('profile_value')])
-			->from($db->qn('#__user_profiles'))
-			->where($db->qn('user_id') . ' = ' . $db->q($userId))
-			->where($db->qn('profile_key') . ' LIKE ' . $db->q('sociallogin.%', false))
-			->order($db->qn('ordering'));
+		            ->select([$db->qn('profile_key'), $db->qn('profile_value')])
+		            ->from($db->qn('#__user_profiles'))
+		            ->where($db->qn('user_id') . ' = ' . $db->q($userId))
+		            ->where($db->qn('profile_key') . ' LIKE ' . $db->q('sociallogin.%', false))
+		            ->order($db->qn('ordering'));
 
 		try
 		{
@@ -67,7 +123,7 @@ trait UserFields
 		}
 		catch (Exception $e)
 		{
-			return true;
+			return;
 		}
 
 		// Merge the profile data.
@@ -79,46 +135,56 @@ trait UserFields
 			$data->sociallogin[$k] = $v[1];
 		}
 
-		return true;
+		$result[] = true;
+		$event->setArgument('result', $result);
 	}
 
 	/**
 	 * Adds additional fields to the user editing form
 	 *
-	 * @param   JForm  $form  The form to be altered.
-	 * @param   mixed  $data  The associated data for the form.
+	 * @param   Event  $event
 	 *
-	 * @return  boolean
+	 * @return  void
 	 *
-	 * @throws  Exception
 	 */
-	public function onContentPrepareForm($form, $data)
+	public function onContentPrepareForm(Event $event): void
 	{
+		/**
+		 * @param   JForm  $form  The form to be altered.
+		 * @param   mixed  $data  The associated data for the form.
+		 */
+		[$form, $data] = $event->getArguments();
+		$result   = $event->getArgument('result') ?: [];
+		$result   = is_array($result) ? $result : [$result];
+		$result[] = true;
+
+		$event->setArgument('result', $result);
+
 		if (!$this->addLinkUnlinkButtons)
 		{
-			return true;
+			return;
 		}
 
 		// Check we are manipulating a valid form.
 		if (!($form instanceof JForm))
 		{
-			return true;
+			return;
 		}
 
 		$name = $form->getName();
 
-		if (!in_array($name, array('com_admin.profile', 'com_users.user', 'com_users.profile', 'com_users.registration')))
+		if (!in_array($name, ['com_admin.profile', 'com_users.user', 'com_users.profile', 'com_users.registration']))
 		{
-			return true;
+			return;
 		}
 
-		$layout = Factory::getApplication()->input->getCmd('layout', 'default');
+		$layout = $this->app->input->getCmd('layout', 'default');
 
 		/**
 		 * Joomla is kinda brain-dead. When we have a menu item to the Edit Profile page it does not push the layout
 		 * into the Input (as opposed with option and view) so I have to go in and dig it out myself. Yikes!
 		 */
-		$itemId = Factory::getApplication()->input->getInt('Itemid');
+		$itemId = $this->app->input->getInt('Itemid');
 
 		if ($itemId)
 		{
@@ -127,6 +193,7 @@ trait UserFields
 				/** @var Menu $menuItem */
 				$menuItem = Table::getInstance('Menu');
 				$menuItem->load($itemId);
+				/** @noinspection PhpUndefinedFieldInspection */
 				$uri    = new Uri($menuItem->link);
 				$layout = $uri->getVar('layout', $layout);
 			}
@@ -135,9 +202,9 @@ trait UserFields
 			}
 		}
 
-		if (!Factory::getApplication()->isClient('administrator') && ($layout != 'edit'))
+		if (!$this->app->isClient('administrator') && ($layout != 'edit'))
 		{
-			return true;
+			return;
 		}
 
 		// Get the user ID
@@ -147,31 +214,38 @@ trait UserFields
 		{
 			$id = $data['id'] ?? null;
 		}
-		elseif (is_object($data) && is_null($data) && ($data instanceof JRegistry))
+		elseif ($data instanceof JRegistry)
 		{
 			$id = $data->get('id');
 		}
-		elseif (is_object($data) && !is_null($data))
+		elseif (is_object($data))
 		{
 			$id = $data->id ?? null;
 		}
 
-		$user = Joomla::getUser($id);
+        $user = ($id === null)
+            ? $this->app->getIdentity()
+            : Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($id);
 
 		// Make sure the loaded user is the correct one
 		if ($user->id != $id)
 		{
-			return true;
+			return;
 		}
 
 		// Make sure I am either editing myself OR I am a Super User
-		if (!Joomla::canEditUser($user))
+		if (!$this->canEditUser($user))
 		{
-			return true;
+			return;
 		}
 
 		// Add the fields to the form. The custom Sociallogin field uses the Integrations to render the buttons.
-		Joomla::log('system', 'Injecting Social Login fields in user profile edit page');
+		Log::add(
+			'Injecting Social Login fields in user profile edit page',
+			Log::DEBUG,
+			'sociallogin.system'
+		);
+
 		$this->loadLanguage();
 		JForm::addFormPath(__DIR__ . '/../../forms');
 		$form->loadFile('sociallogin', false);
@@ -181,47 +255,115 @@ trait UserFields
 		{
 			$form->removeField('dontremind', 'sociallogin');
 		}
+	}
 
-		return true;
+	/**
+	 * Remove all user profile information for the given user ID
+	 *
+	 * Method is called after user data is deleted from the database
+	 *
+	 * @param   Event  $event
+	 *
+	 * @return  void
+	 *
+	 */
+	public function onUserAfterDelete(Event $event): void
+	{
+		/**
+		 * @var   array  $user    Holds the user data
+		 * @var   bool   $success True if user was successfully stored in the database
+		 * @var   string $msg     Message
+		 */
+		[$user, $success, $msg] = $event->getArguments();
+		$result = $event->getArgument('result') ?: [];
+		$result = is_array($result) ? $result : [$result];
+
+		if (!$success)
+		{
+			$result[] = false;
+
+			$event->setArgument('result', $result);
+
+			return;
+		}
+
+		$userId = ArrayHelper::getValue($user, 'id', 0, 'int');
+
+		if ($userId)
+		{
+			Log::add(
+				sprintf(
+					'Removing Social Login information for deleted user #%s',
+					$userId
+				),
+				Log::DEBUG,
+				'sociallogin.system'
+			);
+			$db = $this->db;
+
+			/** @noinspection SqlResolve */
+			$query = $db->getQuery(true)
+			            ->delete($db->qn('#__user_profiles'))
+			            ->where($db->qn('user_id') . ' = ' . $db->q($userId))
+			            ->where($db->qn('profile_key') . ' LIKE ' . $db->q('sociallogin.%', false));
+
+			$db->setQuery($query)->execute();
+		}
+
+		$result[] = true;
+
+		$event->setArgument('result', $result);
 	}
 
 	/**
 	 * Save the custom SocialLogin user profile fields. It's called after Joomla saves a user to the database.
 	 *
-	 * @param   array   $data    The user profile data which was saved.
-	 * @param   bool    $isNew   Is this a new user? (ignored)
-	 * @param   bool    $result  Was the user saved successfully?
-	 * @param   mixed   $error   (ignored)
+	 * @param   Event  $event
 	 *
-	 * @return bool
+	 * @return  void
 	 */
-	public function onUserAfterSave($data, $isNew, $result, $error)
+	public function onUserAfterSave(Event $event)
 	{
+		/**
+		 * @var   array $data   The user profile data which was saved.
+		 * @var   bool  $isNew  Is this a new user? (ignored)
+		 * @var   bool  $result Was the user saved successfully?
+		 * @var   mixed $error  (ignored)
+		 */
+		[$data, $isNew, $result, $error] = $event->getArguments();
+		$result   = $event->getArgument('result') ?: [];
+		$result   = is_array($result) ? $result : [$result];
+		$result[] = true;
+
+		$event->setArgument('result', $result);
+
 		$userId = ArrayHelper::getValue($data, 'id', 0, 'int');
 
 		if (!$userId || !$result || !isset($data['sociallogin']) || !is_array($data['sociallogin']) || !count($data['sociallogin']))
 		{
-			return true;
+			return;
 		}
 
 
-		$db         = Factory::getDbo();
+		$db         = $this->db;
 		$fieldNames = array_map(function ($key) use ($db) {
 			return $db->q('sociallogin.' . $key);
 		}, array_keys($data['sociallogin']));
 
 		$query = $db->getQuery(true)
-			->delete($db->qn('#__user_profiles'))
-			->where($db->qn('user_id') . ' = ' . $db->q($userId))
-			->where($db->qn('profile_key') . ' IN (' . implode(',', $fieldNames) . ')');
+		            ->delete($db->qn('#__user_profiles'))
+		            ->where($db->qn('user_id') . ' = ' . $db->q($userId))
+		            ->where($db->qn('profile_key') . ' IN (' . implode(',', $fieldNames) . ')');
 
 		$db->setQuery($query)->execute();
 
 		$order = 1;
 
 		$query = $db->getQuery(true)
-			->insert($db->qn('#__user_profiles'))
-			->columns([$db->qn('user_id'), $db->qn('profile_key'), $db->qn('profile_value'), $db->qn('ordering')]);
+		            ->insert($db->qn('#__user_profiles'))
+		            ->columns([
+			            $db->qn('user_id'), $db->qn('profile_key'), $db->qn('profile_value'), $db->qn('ordering'),
+		            ]);
 
 		foreach ($data['sociallogin'] as $k => $v)
 		{
@@ -231,46 +373,7 @@ trait UserFields
 		$db->setQuery($query)->execute();
 
 		// Reset the session flag; the user save operation may have changed the dontremind flag.
-		Factory::getApplication()->getSession()->set('sociallogin.islinked', null);
-
-		return true;
+		$this->app->getSession()->set('sociallogin.islinked', null);
 	}
 
-	/**
-	 * Remove all user profile information for the given user ID
-	 *
-	 * Method is called after user data is deleted from the database
-	 *
-	 * @param   array   $user     Holds the user data
-	 * @param   bool    $success  True if user was successfully stored in the database
-	 * @param   string  $msg      Message
-	 *
-	 * @return  bool
-	 *
-	 * @throws  Exception
-	 */
-	public function onUserAfterDelete($user, $success, $msg)
-	{
-		if (!$success)
-		{
-			return false;
-		}
-
-		$userId = ArrayHelper::getValue($user, 'id', 0, 'int');
-
-		if ($userId)
-		{
-			Joomla::log('system', "Removing Social Login information for deleted user #{$userId}");
-			$db = Joomla::getDbo();
-
-			$query = $db->getQuery(true)
-				->delete($db->qn('#__user_profiles'))
-				->where($db->qn('user_id').' = '.$db->q($userId))
-				->where($db->qn('profile_key').' LIKE '.$db->q('sociallogin.%', false));
-
-			$db->setQuery($query)->execute();
-		}
-
-		return true;
-	}
 }

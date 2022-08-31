@@ -18,10 +18,11 @@
     <license>GNU GPL v3 or later</license>
 
     <description>PLG_SOCIALLOGIN_APPLE_DESCRIPTION</description>
+    <namespace path="src">Joomla\Plugin\Sociallogin\Apple</namespace>
 
     <files>
-        <filename plugin="apple">apple.php</filename>
-        <filename>random_words.php</filename>
+        <folder>services</folder>
+        <folder plugin="apple">src</folder>
     </files>
 
     <media folder="media" destination="plg_sociallogin_apple">
