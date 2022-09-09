@@ -16,6 +16,7 @@ use Joomla\CMS\Log\Log;
 use Joomla\CMS\Router\Route;
 use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\User\UserHelper;
+use Joomla\Component\Users\Site\View\Login\HtmlView as LoginHtmlView;
 use Joomla\Event\Event;
 use Joomla\Registry\Registry;
 
@@ -121,6 +122,8 @@ trait ButtonInjection
 			return null;
 		}
 
+		$Itemid = $this->app->input->get('Itemid', 0);
+
 		foreach (debug_backtrace(0) as $item)
 		{
 			$function = $item['function'] ?? '';
@@ -149,7 +152,18 @@ trait ButtonInjection
 				}
 			}
 
-			// TODO com_users...
+			// Extract from com_users login page
+			if ($function === 'display' && $class === LoginHtmlView::class && !empty($Itemid))
+			{
+				$params = $this->app->getMenu()->getActive()->getParams();
+
+				if ($params->get('loginredirectchoice', 1) == 1)
+				{
+					return Route::_('index.php?Itemid=' . $params->get('login_redirect_menuitem', ''));
+				}
+
+				return $params->get('login_redirect_url', '');
+			}
 		}
 
 		return null;
