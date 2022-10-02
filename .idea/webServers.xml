@@ -3,23 +3,9 @@
   <component name="WebServers">
     <option name="servers">
       <webServer id="315bea5b-abb6-49c1-bf07-1e8acd6ad6f6" name="My Old Site" url="https://myoldsite.com">
-        <fileTransfer rootFolder="/home/myoldsit/public_html" accessType="SFTP" host="mcs001-011.directrouter.com" port="22" sshConfigId="6cc68c13-d21e-4ce2-b745-ce72bdfd6edd" sshConfig="MyOldSite" authAgent="true">
+        <fileTransfer rootFolder="/home/myoldsit/public_html" accessType="SFTP" host="mcs001-011.directrouter.com" port="22" sshConfigId="6cc68c13-d21e-4ce2-b745-ce72bdfd6edd" sshConfig="MyOldSite" keyPair="true">
           <advancedOptions>
-            <advancedOptions dataProtectionLevel="Private" passiveMode="true" shareSSLContext="true" />
-          </advancedOptions>
-        </fileTransfer>
-      </webServer>
-      <webServer id="fb3721be-e471-4029-9af2-96d4d40383ed" name="AkeebaDemo" url="https://www.akeebademo.com">
-        <fileTransfer rootFolder="/home/lmtbayxe/public_html" accessType="SFTP" host="uk601.directrouter.com" port="22" sshConfigId="d4d171ab-9a9f-4de8-8e9d-de7e7c44f1c7" sshConfig="AkeebaDemo" authAgent="true">
-          <advancedOptions>
-            <advancedOptions dataProtectionLevel="Private" passiveMode="true" shareSSLContext="true" />
-          </advancedOptions>
-        </fileTransfer>
-      </webServer>
-      <webServer id="447e1404-3521-42f7-ac6e-2fe5661a61ab" name="Blog" url="https://www.dionysopoulos.me">
-        <fileTransfer rootFolder="/home/xsjwksuw/public_html" accessType="SFTP" host="dionysopoulos.me" port="22" sshConfigId="044c8645-6c25-4fdb-be18-a98885dd89a3" sshConfig="Blog" authAgent="true">
-          <advancedOptions>
-            <advancedOptions dataProtectionLevel="Private" passiveMode="true" shareSSLContext="true" />
+            <advancedOptions dataProtectionLevel="Private" keepAliveTimeout="0" passiveMode="true" shareSSLContext="true" />
           </advancedOptions>
         </fileTransfer>
       </webServer>

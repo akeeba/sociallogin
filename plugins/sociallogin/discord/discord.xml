@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--~
+  ~  @package   AkeebaSocialLogin
+  ~  @copyright Copyright (c)2016-2022 Nicholas K. Dionysopoulos / Akeeba Ltd
+  ~  @license   GNU General Public License version 3, or later
+  -->
+
+<extension version="3.8.0" type="plugin" group="sociallogin" method="upgrade">
+    <name>PLG_SOCIALLOGIN_DISCORD</name>
+    <version>4.1.0</version>
+    <creationDate>2022-09-27</creationDate>
+
+    <author>Akeeba Ltd</author>
+    <authorEmail>no-reply@akeeba.com</authorEmail>
+    <authorUrl>https://www.akeeba.com</authorUrl>
+
+    <copyright>Copyright (c)2016-2021 Akeeba Ltd</copyright>
+    <license>GNU GPL v3 or later</license>
+
+    <description>PLG_SOCIALLOGIN_DISCORD_DESCRIPTION</description>
+    <namespace path="src">Joomla\Plugin\Sociallogin\Discord</namespace>
+
+    <files>
+        <folder>services</folder>
+        <folder plugin="discord">src</folder>
+    </files>
+
+    <media folder="media" destination="plg_sociallogin_discord">
+        <folder>images</folder>
+    </media>
+
+    <languages folder="language">
+        <language tag="en-GB">en-GB/plg_sociallogin_discord.ini</language>
+        <language tag="en-GB">en-GB/plg_sociallogin_discord.sys.ini</language>
+    </languages>
+
+    <config addfieldpath="plugins/system/sociallogin/fields">
+        <fields name="params">
+            <fieldset name="basic">
+                <field
+                        name="appid"
+                        type="text"
+                        label="PLG_SOCIALLOGIN_DISCORD_FIELD_APPID_LABEL"
+                        description="PLG_SOCIALLOGIN_DISCORD_FIELD_APPID_DESC"
+                        default=""
+                />
+
+                <field
+                        name="appsecret"
+                        type="password"
+                        label="PLG_SOCIALLOGIN_DISCORD_FIELD_APPSECRET_LABEL"
+                        description="PLG_SOCIALLOGIN_DISCORD_FIELD_APPSECRET_DESC"
+                        default=""
+                />
+
+                <field
+                        name="loginunlinked"
+                        type="radio"
+                        layout="joomla.form.field.radio.switcher"
+                        label="PLG_SOCIALLOGIN_DISCORD_FIELD_LOGINUNLINKED_LABEL"
+                        description="PLG_SOCIALLOGIN_DISCORD_FIELD_LOGINUNLINKED_DESC"
+                        default="0"
+                >
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field>
+
+                <field
+                        name="createnew"
+                        type="radio"
+                        layout="joomla.form.field.radio.switcher"
+                        label="PLG_SOCIALLOGIN_DISCORD_FIELD_CREATENEW_LABEL"
+                        description="PLG_SOCIALLOGIN_DISCORD_FIELD_CREATENEW_DESC"
+                        default="0"
+                >
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field>
+
+                <field
+                        name="forcenew"
+                        type="radio"
+                        layout="joomla.form.field.radio.switcher"
+                        label="PLG_SOCIALLOGIN_DISCORD_FIELD_FORCENEW_LABEL"
+                        description="PLG_SOCIALLOGIN_DISCORD_FIELD_FORCENEW_DESC"
+                        default="0"
+                        showon="createnew:1"
+                >
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field>
+
+                <field
+                        name="bypassvalidation"
+                        type="radio"
+                        layout="joomla.form.field.radio.switcher"
+                        label="PLG_SOCIALLOGIN_DISCORD_FIELD_BYPASSVALIDATION_LABEL"
+                        description="PLG_SOCIALLOGIN_DISCORD_FIELD_BYPASSVALIDATION_DESC"
+                        default="1"
+                        showon="createnew:1"
+                >
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field>
+
+                <field
+                        name="customcss"
+                        type="radio"
+                        layout="joomla.form.field.radio.switcher"
+                        label="PLG_SOCIALLOGIN_DISCORD_FIELD_CUSTOMCSS_LABEL"
+                        description="PLG_SOCIALLOGIN_DISCORD_FIELD_CUSTOMCSS_DESC"
+                        default="1"
+                >
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field>
+
+                <field
+                        name="fgcolor"
+                        type="color"
+                        default="#ffffff"
+                        label="PLG_SOCIALLOGIN_DISCORD_FIELD_FGCOLOR_LABEL"
+                        description="PLG_SOCIALLOGIN_DISCORD_FIELD_FGCOLOR_DESC"
+                        showon="customcss:1"
+                />
+
+                <field
+                        name="bgcolor"
+                        type="color"
+                        default="#5865F2"
+                        label="PLG_SOCIALLOGIN_DISCORD_FIELD_BGCOLOR_LABEL"
+                        description="PLG_SOCIALLOGIN_DISCORD_FIELD_BGCOLOR_DESC"
+                        showon="customcss:1"
+                />
+
+            </fieldset>
+        </fields>
+    </config>
+
+</extension>

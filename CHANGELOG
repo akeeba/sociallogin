@@ -1,4 +1,8 @@
 <?php die(); ?>
+Akeeba SocialLogin 4.2.0
+================================================================================
++ Discord integration
+
 Akeeba SocialLogin 4.1.0
 ================================================================================
 + Automatically get the redirection URL for com_users login pages

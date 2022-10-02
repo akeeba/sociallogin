@@ -1,32 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="PublishConfigData" serverName="Test4 Rocks">
+  <component name="PublishConfigData" serverName="My Old Site">
     <serverData>
-      <paths name="AkeebaDemo">
-        <serverdata>
-          <mappings>
-            <mapping deploy="/" local="$PROJECT_DIR$" web="/" />
-          </mappings>
-        </serverdata>
-      </paths>
-      <paths name="Blog">
-        <serverdata>
-          <mappings>
-            <mapping deploy="/" local="$PROJECT_DIR$" web="/" />
-          </mappings>
-        </serverdata>
-      </paths>
       <paths name="My Old Site">
         <serverdata>
           <mappings>
             <mapping deploy="/" local="$PROJECT_DIR$" web="/" />
-          </mappings>
-        </serverdata>
-      </paths>
-      <paths name="Test4 Rocks">
-        <serverdata>
-          <mappings>
-            <mapping deploy="/plugins" local="$PROJECT_DIR$/plugins" web="/plugins" />
           </mappings>
         </serverdata>
       </paths>

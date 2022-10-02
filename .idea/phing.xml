@@ -2,7 +2,13 @@
 <project version="4">
   <component name="PhingConfiguration">
     <buildFilePaths>
-      <buildFile path="file://$PROJECT_DIR$/build/build.xml" />
+      <buildFile options="" path="file://$PROJECT_DIR$/build/build.xml">
+        <option name="properties">
+          <list>
+            <property name="site" value="$USER_HOME$/Sites/boot4" />
+          </list>
+        </option>
+      </buildFile>
     </buildFilePaths>
     <phingPath>$USER_HOME$/.composer/vendor/bin/phing</phingPath>
   </component>

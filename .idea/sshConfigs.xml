@@ -5,6 +5,9 @@
       <sshConfig connectionConfig="{&quot;serverAliveInterval&quot;:300}" host="uk601.directrouter.com" id="044c8645-6c25-4fdb-be18-a98885dd89a3" keyPath="$USER_HOME$/.ssh/id_rsa" port="22" customName="Blog" nameFormat="CUSTOM" username="xsjwksuw">
         <option name="customName" value="Blog" />
       </sshConfig>
+      <sshConfig host="mcs001-011.directrouter.com" id="6cc68c13-d21e-4ce2-b745-ce72bdfd6edd" keyPath="$USER_HOME$/.ssh/id_rsa" port="22" customName="MyOldSite" nameFormat="CUSTOM" username="myoldsit" useOpenSSHConfig="true">
+        <option name="customName" value="MyOldSite" />
+      </sshConfig>
     </configs>
   </component>
 </project>
