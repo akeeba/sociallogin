@@ -15,6 +15,7 @@
 		<include name="plg_*.zip" />
 		<include name="lib_*.zip" />
 		<include name="pkg_*.xml" />
+		<include name="language/**"/>
 		<include name="*.txt" />
 		<include name="script.sociallogin.php" />
 	</fileset>
