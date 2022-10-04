@@ -2,6 +2,7 @@
 Akeeba SocialLogin 4.2.0
 ================================================================================
 + Discord integration
+# [HIGH] Error “Form::loadForm could not load file” creating new users
 
 Akeeba SocialLogin 4.1.0
 ================================================================================

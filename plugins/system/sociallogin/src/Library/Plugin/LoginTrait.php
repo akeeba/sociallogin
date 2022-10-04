@@ -783,7 +783,7 @@ trait LoginTrait
 	}
 
 	/**
-	 * Method to register a new user account. Based on UsersModelRegistration::register().
+	 * Method to register a new user account.
 	 *
 	 * @param   array                $data                The user data to save.
 	 * @param   array                $userParams          User parameters to save with the user account
@@ -819,6 +819,8 @@ trait LoginTrait
 		}
 
 		$this->app->getLanguage()->load('com_users');
+
+		Form::addFormPath(JPATH_SITE . '/components/com_users/forms');
 
 		/** @var \Joomla\Component\Users\Site\Model\RegistrationModel $registrationModel */
 		$registrationModel = $this->app->bootComponent('com_users')->getMVCFactory()
