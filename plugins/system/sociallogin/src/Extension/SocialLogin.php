@@ -205,6 +205,12 @@ class SocialLogin extends CMSPlugin implements SubscriberInterface
 	 */
 	private function isEnabled(): bool
 	{
+		// Only allow this plugin in the site and admin applications
+		if (!$this->app->isClient('site') && !$this->app->isClient('administrator'))
+		{
+			return false;
+		}
+
 		// It only makes sense to let people log in when they are not already logged in ;)
 		return (bool) $this->app->getIdentity()->guest;
 	}
