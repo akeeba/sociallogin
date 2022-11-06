@@ -5,7 +5,7 @@
   ~  @license   GNU General Public License version 3, or later
   -->
 
-<extension version="3.9.0" type="package" method="upgrade">
+<extension type="package" method="upgrade">
     <name>pkg_sociallogin</name>
     <version>##VERSION##</version>
     <creationDate>##DATE##</creationDate>
