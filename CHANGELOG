@@ -1,6 +1,7 @@
 <?php die(); ?>
-Akeeba SocialLogin 4.2.1
+Akeeba SocialLogin 4.3.0
 ================================================================================
++ Joomla 4.2, PHP 7.4+ only
 # [LOW] PHP Warning in Console (CLI) application
 
 Akeeba SocialLogin 4.2.0

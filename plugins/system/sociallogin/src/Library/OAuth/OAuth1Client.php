@@ -133,8 +133,8 @@ abstract class OAuth1Client
 		}
 
 		// Get token form session.
-		$this->token = ['key'    => $this->app->getSession()->get('oauth_token.key', null),
-		                'secret' => $this->app->getSession()->get('oauth_token.secret', null),
+		$this->token = ['key'    => $this->application->getSession()->get('oauth_token.key', null),
+		                'secret' => $this->application->getSession()->get('oauth_token.secret', null),
 		];
 
 		// Verify the returned request token.
@@ -541,8 +541,8 @@ abstract class OAuth1Client
 		$this->token = ['key' => $params['oauth_token'], 'secret' => $params['oauth_token_secret']];
 
 		// Save the request token in session
-		$this->app->getSession()->set('oauth_token.key', $this->token['key']);
-		$this->app->getSession()->set('oauth_token.secret', $this->token['secret']);
+		$this->application->getSession()->set('oauth_token.key', $this->token['key']);
+		$this->application->getSession()->set('oauth_token.secret', $this->token['secret']);
 	}
 
 	/**

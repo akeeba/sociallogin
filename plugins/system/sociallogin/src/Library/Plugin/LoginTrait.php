@@ -66,7 +66,7 @@ trait LoginTrait
 		// Look for a local user account with the social network user ID _unless_ we are already logged in.
 		$profileKeys = array_keys($userProfileData);
 		$primaryKey  = $profileKeys[0];
-		$currentUser = $this->app->getIdentity();
+		$currentUser = $this->getApplication()->getIdentity();
 		$userId      = $currentUser->id;
 
 		if ($currentUser->guest)
@@ -367,7 +367,7 @@ trait LoginTrait
 			return;
 		}
 
-		$db = $this->db;
+		$db = $this->getDatabase();
 
 		/**
 		 * The first item in $data is the unique key. No other user accounts can share it. For example, for the Facebook
@@ -470,7 +470,7 @@ trait LoginTrait
 		// Make sure there's a user to check for
 		if (empty($user) || !is_object($user) || !($user instanceof User))
 		{
-			$user = $this->app->getIdentity();
+			$user = $this->getApplication()->getIdentity();
 		}
 
 		// Make sure there's a valid user
@@ -479,7 +479,7 @@ trait LoginTrait
 			return false;
 		}
 
-		$db    = $this->db;
+		$db    = $this->getDatabase();
 		$query = $db->getQuery(true)
 		            ->select('COUNT(*)')
 		            ->from($db->qn('#__user_profiles'))
@@ -526,7 +526,7 @@ trait LoginTrait
 			'sociallogin.' . $logContext
 		);
 
-		$this->runPlugins('onUserLoginFailure', [(array) $response], $this->app);
+		$this->runPlugins('onUserLoginFailure', [(array) $response]);
 
 		// If status is success, any error will have been raised by the user plugin
 		$expectedStatus = Authentication::STATUS_SUCCESS;
@@ -565,7 +565,7 @@ trait LoginTrait
 	 */
 	protected function getUserIdByProfileData(string $profileKey, string $profileValue): int
 	{
-		$db    = $this->db;
+		$db    = $this->getDatabase();
 		$query = $db->getQuery(true)
 		            ->select([
 			            $db->qn('user_id'),
@@ -676,7 +676,7 @@ trait LoginTrait
 	private function getUserIdByEmail($email)
 	{
 		// Initialise some variables
-		$db    = $this->db;
+		$db    = $this->getDatabase();
 		$query = $db->getQuery(true)
 		            ->select($db->qn('id'))
 		            ->from($db->qn('#__users'))
@@ -700,7 +700,7 @@ trait LoginTrait
 		class_exists(Authentication::class, true);
 
 		// Fake a successful login message
-		$isAdmin = $this->app->isClient('administrator');
+		$isAdmin = $this->getApplication()->isClient('administrator');
 		$user    = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($userId);
 
 		// Does the user account have a pending activation?
@@ -747,33 +747,33 @@ trait LoginTrait
 			'action'   => 'core.login.site',
 		];
 
-		if ($this->app->isClient('administrator'))
+		if ($this->getApplication()->isClient('administrator'))
 		{
 			$options['action'] = 'core.login.admin';
 		}
 
 		// Run the user plugins. They CAN block login by returning boolean false and setting $response->error_message.
 		PluginHelper::importPlugin('user');
-		$results = $this->runPlugins('onUserLogin', [(array) $response, $options], $this->app);
+		$results = $this->runPlugins('onUserLogin', [(array) $response, $options]);
 
 		// If there is no boolean FALSE result from any plugin the login is successful.
 		if (!in_array(false, $results, true))
 		{
 			// Set the user in the session, letting Joomla! know that we are logged in.
-			$this->app->getSession()->set('user', $user);
+			$this->getApplication()->getSession()->set('user', $user);
 
 			// Trigger the onUserAfterLogin event
 			$options['user']         = $user;
 			$options['responseType'] = $response->type;
 
 			// The user is successfully logged in. Run the after login events
-			$this->runPlugins('onUserAfterLogin', [$options], $this->app);
+			$this->runPlugins('onUserAfterLogin', [$options]);
 
 			return;
 		}
 
 		// If we are here the plugins marked a login failure. Trigger the onUserLoginFailure Event.
-		$this->runPlugins('onUserLoginFailure', [(array) $response], $this->app);
+		$this->runPlugins('onUserLoginFailure', [(array) $response]);
 
 		// Log the failure
 		Log::add($response->error_message, Log::WARNING, 'jerror');
@@ -818,13 +818,14 @@ trait LoginTrait
 			$cParams->set('useractivation', 0);
 		}
 
-		$this->app->getLanguage()->load('com_users');
+		$this->getApplication()->getLanguage()->load('com_users');
 
 		Form::addFormPath(JPATH_SITE . '/components/com_users/forms');
 
 		/** @var \Joomla\Component\Users\Site\Model\RegistrationModel $registrationModel */
-		$registrationModel = $this->app->bootComponent('com_users')->getMVCFactory()
-		                               ->createModel('Registration', 'Site', ['ignore_request' => true]);
+		$registrationModel = $this->getApplication()
+		                          ->bootComponent('com_users')->getMVCFactory()
+		                          ->createModel('Registration', 'Site', ['ignore_request' => true]);
 
 		$return = $registrationModel->register($data);
 

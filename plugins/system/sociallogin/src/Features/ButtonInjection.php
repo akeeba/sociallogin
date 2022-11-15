@@ -122,7 +122,7 @@ trait ButtonInjection
 			return null;
 		}
 
-		$Itemid = $this->app->input->get('Itemid', 0);
+		$Itemid = $this->getApplication()->input->get('Itemid', 0);
 
 		foreach (debug_backtrace(0) as $item)
 		{
@@ -155,7 +155,7 @@ trait ButtonInjection
 			// Extract from com_users login page
 			if ($function === 'display' && $class === LoginHtmlView::class && !empty($Itemid))
 			{
-				$params = $this->app->getMenu()->getActive()->getParams();
+				$params = $this->getApplication()->getMenu()->getActive()->getParams();
 
 				if ($params->get('loginredirectchoice', 1) == 1)
 				{

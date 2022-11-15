@@ -30,25 +30,6 @@ if (!class_exists(AbstractPlugin::class, true))
  */
 class Plugin extends AbstractPlugin
 {
-	/**
-	 * Constructor. Loads the language files as well.
-	 *
-	 * @param   DispatcherInterface  &$subject  The object to observe
-	 * @param   array                 $config   An optional associative array of configuration settings.
-	 *                                          Recognized key values include 'name', 'group', 'params', 'language'
-	 *                                          (this list is not meant to be comprehensive).
-	 */
-	public function __construct($subject, array $config = [])
-	{
-		$this->fgColor = '#FFFFFF';
-		$this->bgColor = '#1877F2';
-
-		parent::__construct($subject, $config);
-
-		// Per-plugin customization
-		$this->buttonImage = 'plg_sociallogin_facebook/facebook_logo.svg';
-	}
-
 	/** @inheritDoc */
 	public static function getSubscribedEvents(): array
 	{
@@ -58,6 +39,18 @@ class Plugin extends AbstractPlugin
 				'onAjaxFacebook' => 'onSocialLoginAjax',
 			]
 		);
+	}
+
+	/** @inheritDoc */
+	public function init(): void
+	{
+		$this->fgColor = '#FFFFFF';
+		$this->bgColor = '#1877F2';
+
+		parent::init();
+
+		// Per-plugin customization
+		$this->buttonImage = 'plg_sociallogin_facebook/facebook_logo.svg';
 	}
 
 	/**
@@ -77,7 +70,7 @@ class Plugin extends AbstractPlugin
 				'redirecturi'  => Uri::base() . 'index.php?option=com_ajax&group=sociallogin&plugin=' . $this->integrationName . '&format=raw',
 			];
 			$httpClient      = HttpFactory::getHttp();
-			$this->connector = new FacebookOAuth($options, $httpClient, $this->app->input, $this->app);
+			$this->connector = new FacebookOAuth($options, $httpClient, $this->getApplication()->input, $this->getApplication());
 			$this->connector->setScope('public_profile,email');
 		}
 

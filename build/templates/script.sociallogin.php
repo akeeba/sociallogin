@@ -1,26 +1,18 @@
 <?php
 /**
- *  @package   AkeebaSocialLogin
- *  @copyright Copyright (c)2016-2022 Nicholas K. Dionysopoulos / Akeeba Ltd
- *  @license   GNU General Public License version 3, or later
+ * @package   AkeebaSocialLogin
+ * @copyright Copyright (c)2016-2022 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @license   GNU General Public License version 3, or later
  */
 
 // Prevent direct access
 use Joomla\CMS\Factory;
+use Joomla\CMS\Installer\InstallerScript;
 
 defined('_JEXEC') or die;
 
-class Pkg_SocialloginInstallerScript
+class Pkg_SocialloginInstallerScript extends InstallerScript
 {
-	protected $packageName = 'pkg_sociallogin';
-
-	/**
-	 * The minimum PHP version required to install this extension
-	 *
-	 * @var   string
-	 */
-	protected $minimumPHPVersion = '7.4.0';
-
 	/**
 	 * A list of extensions (modules, plugins) to enable after installation. Each item has four values, in this order:
 	 * type (plugin, module, ...), name (of the extension), client (0=site, 1=admin), group (for plugins).
@@ -34,7 +26,13 @@ class Pkg_SocialloginInstallerScript
 		['plugin', 'facebook', 1, 'sociallogin'],
 	];
 
+	protected $minimumJoomla = '4.2.0';
+
+	protected $minimumPhp = '7.4.0';
+
 	protected $obsoletePlugins = [];
+
+	protected $packageName = 'pkg_sociallogin';
 
 	/**
 	 * =================================================================================================================
@@ -43,34 +41,16 @@ class Pkg_SocialloginInstallerScript
 	 */
 
 	/**
-	 * Joomla! pre-flight event. This runs before Joomla! installs or updates the package. This is our last chance to
-	 * tell Joomla! if it should abort the installation.
+	 * Tuns on installation (but not on upgrade). This happens in install and discover_install installation routes.
 	 *
-	 * In here we'll try to install FOF. We have to do that before installing the component since it's using an
-	 * installation script extending FOF's InstallScript class. We can't use a <file> tag in the manifest to install FOF
-	 * since the FOF installation is expected to fail if a newer version of FOF is already installed on the site.
-	 *
-	 * @param   string                     $type    Installation type (install, update, discover_install)
 	 * @param   \JInstallerAdapterPackage  $parent  Parent object
 	 *
-	 * @return  boolean  True to let the installation proceed, false to halt the installation
+	 * @return  bool
 	 */
-	public function preflight($type, $parent)
+	public function install($parent)
 	{
-		// Do not run on uninstall.
-		if ($type === 'uninstall')
-		{
-			return true;
-		}
-
-		// Check the minimum PHP version
-		if (!version_compare(PHP_VERSION, $this->minimumPHPVersion, 'ge'))
-		{
-			$msg = "<p>You need PHP $this->minimumPHPVersion or later to install this package</p>";
-			JLog::add($msg, JLog::WARNING, 'jerror');
-
-			return false;
-		}
+		// Enable the extensions we need to install
+		$this->enableExtensions();
 
 		return true;
 	}
@@ -80,8 +60,8 @@ class Pkg_SocialloginInstallerScript
 	 * or updating your component. This is the last chance you've got to perform any additional installations, clean-up,
 	 * database updates and similar housekeeping functions.
 	 *
-	 * @param   string                       $type   install, update or discover_update
-	 * @param   \JInstallerAdapterComponent  $parent Parent object
+	 * @param   string                       $type    install, update or discover_update
+	 * @param   \JInstallerAdapterComponent  $parent  Parent object
 	 */
 	public function postflight($type, $parent)
 	{
@@ -111,9 +91,9 @@ class Pkg_SocialloginInstallerScript
 		 *
 		 * See bug report https://github.com/joomla/joomla-cms/issues/16147
 		 */
-		$conf = \JFactory::getConfig();
-		$clearGroups = array('_system', 'com_modules', 'mod_menu', 'com_plugins', 'com_modules');
-		$cacheClients = array(0, 1);
+		$conf         = \JFactory::getConfig();
+		$clearGroups  = ['_system', 'com_modules', 'mod_menu', 'com_plugins', 'com_modules'];
+		$cacheClients = [0, 1];
 
 		foreach ($clearGroups as $group)
 		{
@@ -121,10 +101,10 @@ class Pkg_SocialloginInstallerScript
 			{
 				try
 				{
-					$options = array(
+					$options = [
 						'defaultgroup' => $group,
-						'cachebase' => ($client_id) ? JPATH_ADMINISTRATOR . '/cache' : $conf->get('cache_path', JPATH_SITE . '/cache')
-					);
+						'cachebase'    => ($client_id) ? JPATH_ADMINISTRATOR . '/cache' : $conf->get('cache_path', JPATH_SITE . '/cache'),
+					];
 
 					/** @var JCache $cache */
 					$cache = \JCache::getInstance('callback', $options);
@@ -151,21 +131,6 @@ class Pkg_SocialloginInstallerScript
 	}
 
 	/**
-	 * Tuns on installation (but not on upgrade). This happens in install and discover_install installation routes.
-	 *
-	 * @param   \JInstallerAdapterPackage  $parent  Parent object
-	 *
-	 * @return  bool
-	 */
-	public function install($parent)
-	{
-		// Enable the extensions we need to install
-		$this->enableExtensions();
-
-		return true;
-	}
-
-	/**
 	 * Runs on uninstallation
 	 *
 	 * @param   \JInstallerAdapterPackage  $parent  Parent object
@@ -176,18 +141,6 @@ class Pkg_SocialloginInstallerScript
 	{
 		// Reserved for future use
 		return true;
-	}
-
-
-	/**
-	 * Enable modules and plugins after installing them
-	 */
-	private function enableExtensions()
-	{
-		foreach ($this->extensionsToEnable as $ext)
-		{
-			$this->enableExtension($ext[0], $ext[1], $ext[2], $ext[3]);
-		}
 	}
 
 	/**
@@ -249,44 +202,76 @@ class Pkg_SocialloginInstallerScript
 		}
 	}
 
-	private function uninstallObsoletePlugins()
+	/**
+	 * Enable modules and plugins after installing them
+	 */
+	private function enableExtensions()
 	{
-		$db = Factory::getDbo();
-
-		JModelLegacy::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_installer/models', 'InstallerModel');
-		/** @var InstallerModelManage $model */
-		$model = JModelLegacy::getInstance('Manage', 'InstallerModel');
-
-		foreach ($this->obsoletePlugins as $pluginDef)
+		foreach ($this->extensionsToEnable as $ext)
 		{
-			list($folder, $element) = $pluginDef;
-
-			// Does the plugin exist? If not, there's nothing to do here.
-			$query = $db->getQuery(true)
-				->select('*')
-				->from('#__extensions')
-				->where($db->qn('type') . ' = ' . $db->q('plugin'))
-				->where($db->qn('folder') . ' = ' . $db->q($folder))
-				->where($db->qn('element') . ' = ' . $db->q($element));
-			try
-			{
-				$result = $db->setQuery($query)->loadAssoc();
-
-				if (empty($result))
-				{
-					continue;
-				}
-
-				$eid = $result['extension_id'];
-			}
-			catch (Exception $e)
-			{
-				continue;
-			}
-
-			// Uninstall the plugin
-			$model->remove([$eid]);
+			$this->enableExtension($ext[0], $ext[1], $ext[2], $ext[3]);
 		}
+	}
+
+	/**
+	 * Gets the ID of an extension
+	 *
+	 * @param   string  $element  Package extension element, e.g. pkg_foo
+	 *
+	 * @return  int  Extension ID or 0 on failure
+	 */
+	private function findPackageExtensionID($element)
+	{
+		/** @var \Joomla\Database\DatabaseDriver $db */
+		$db    = Factory::getContainer()->get('DatabaseDriver');
+		$query = $db->getQuery(true)
+		            ->select($db->qn('extension_id'))
+		            ->from($db->qn('#__extensions'))
+		            ->where($db->qn('element') . ' = ' . $db->q($element))
+		            ->where($db->qn('type') . ' = ' . $db->q('package'));
+
+		try
+		{
+			$id = $db->setQuery($query, 0, 1)->loadResult();
+		}
+		catch (Exception $e)
+		{
+			return 0;
+		}
+
+		return empty($id) ? 0 : (int) $id;
+	}
+
+	/**
+	 * Returns the update site IDs for the specified Joomla Extension ID.
+	 *
+	 * @param   int  $eid  Extension ID for which to retrieve update sites
+	 *
+	 * @return  array  The IDs of the update sites
+	 */
+	private function getUpdateSitesFor($eid = null)
+	{
+		/** @var \Joomla\Database\DatabaseDriver $db */
+		$db    = Factory::getContainer()->get('DatabaseDriver');
+		$query = $db->getQuery(true)
+		            ->select($db->qn('s.update_site_id'))
+		            ->from($db->qn('#__update_sites', 's'))
+		            ->innerJoin(
+			            $db->qn('#__update_sites_extensions', 'e') . 'ON(' . $db->qn('e.update_site_id') .
+			            ' = ' . $db->qn('s.update_site_id') . ')'
+		            )
+		            ->where($db->qn('e.extension_id') . ' = ' . $db->q($eid));
+
+		try
+		{
+			$ret = $db->setQuery($query)->loadColumn();
+		}
+		catch (Exception $e)
+		{
+			return [];
+		}
+
+		return empty($ret) ? [] : $ret;
 	}
 
 	/**
@@ -329,7 +314,8 @@ class Pkg_SocialloginInstallerScript
 		// Remove the latest update site, the one we just installed
 		array_pop($deleteIDs);
 
-		$db = \Joomla\CMS\Factory::getDbo();
+		/** @var \Joomla\Database\DatabaseDriver $db */
+		$db = Factory::getContainer()->get('DatabaseDriver');
 
 		if (empty($deleteIDs) || !count($deleteIDs))
 		{
@@ -340,8 +326,8 @@ class Pkg_SocialloginInstallerScript
 		$deleteIDs = array_map([$db, 'q'], $deleteIDs);
 
 		$query = $db->getQuery(true)
-			->delete($db->qn('#__update_sites'))
-			->where($db->qn('update_site_id') . ' IN(' . implode(',', $deleteIDs) . ')');
+		            ->delete($db->qn('#__update_sites'))
+		            ->where($db->qn('update_site_id') . ' IN(' . implode(',', $deleteIDs) . ')');
 
 		try
 		{
@@ -353,8 +339,8 @@ class Pkg_SocialloginInstallerScript
 		}
 
 		$query = $db->getQuery(true)
-			->delete($db->qn('#__update_sites_extensions'))
-			->where($db->qn('update_site_id') . ' IN(' . implode(',', $deleteIDs) . ')');
+		            ->delete($db->qn('#__update_sites_extensions'))
+		            ->where($db->qn('update_site_id') . ' IN(' . implode(',', $deleteIDs) . ')');
 
 		try
 		{
@@ -366,61 +352,47 @@ class Pkg_SocialloginInstallerScript
 		}
 	}
 
-	/**
-	 * Gets the ID of an extension
-	 *
-	 * @param   string  $element  Package extension element, e.g. pkg_foo
-	 *
-	 * @return  int  Extension ID or 0 on failure
-	 */
-	private function findPackageExtensionID($element)
+	private function uninstallObsoletePlugins()
 	{
-		$db    = \Joomla\CMS\Factory::getDbo();
-		$query = $db->getQuery(true)
-			->select($db->qn('extension_id'))
-			->from($db->qn('#__extensions'))
-			->where($db->qn('element') . ' = ' . $db->q($element))
-			->where($db->qn('type') . ' = ' . $db->q('package'));
+		/** @var \Joomla\Database\DatabaseDriver $db */
+		$db = Factory::getContainer()->get('DatabaseDriver');
 
-		try
+		/** @var \Joomla\CMS\MVC\Factory\MVCFactory $mvcFactory */
+		$mvcFactory = Factory::getApplication()
+		                     ->bootComponent('com_installer')
+		                     ->getMVCFactory();
+		/** @var \Joomla\Component\Installer\Administrator\Model\InstallerModel $model */
+		$model = $mvcFactory->createModel('Installer', 'administrator');
+
+		foreach ($this->obsoletePlugins as $pluginDef)
 		{
-			$id = $db->setQuery($query, 0, 1)->loadResult();
-		}
-		catch (Exception $e)
-		{
-			return 0;
-		}
+			[$folder, $element] = $pluginDef;
 
-		return empty($id) ? 0 : (int) $id;
-	}
+			// Does the plugin exist? If not, there's nothing to do here.
+			$query = $db->getQuery(true)
+			            ->select('*')
+			            ->from('#__extensions')
+			            ->where($db->qn('type') . ' = ' . $db->q('plugin'))
+			            ->where($db->qn('folder') . ' = ' . $db->q($folder))
+			            ->where($db->qn('element') . ' = ' . $db->q($element));
+			try
+			{
+				$result = $db->setQuery($query)->loadAssoc();
 
-	/**
-	 * Returns the update site IDs for the specified Joomla Extension ID.
-	 *
-	 * @param   int  $eid  Extension ID for which to retrieve update sites
-	 *
-	 * @return  array  The IDs of the update sites
-	 */
-	private function getUpdateSitesFor($eid = null)
-	{
-		$db    = \Joomla\CMS\Factory::getDbo();
-		$query = $db->getQuery(true)
-			->select($db->qn('s.update_site_id'))
-			->from($db->qn('#__update_sites', 's'))
-			->innerJoin($db->qn('#__update_sites_extensions', 'e') . 'ON(' . $db->qn('e.update_site_id') .
-				' = ' . $db->qn('s.update_site_id') . ')'
-			)
-			->where($db->qn('e.extension_id') . ' = ' . $db->q($eid));
+				if (empty($result))
+				{
+					continue;
+				}
 
-		try
-		{
-			$ret = $db->setQuery($query)->loadColumn();
+				$eid = $result['extension_id'];
+			}
+			catch (Exception $e)
+			{
+				continue;
+			}
+
+			// Uninstall the plugin
+			$model->remove([$eid]);
 		}
-		catch (Exception $e)
-		{
-			return [];
-		}
-
-		return empty($ret) ? [] : $ret;
 	}
 }

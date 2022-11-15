@@ -32,7 +32,14 @@ return new class implements ServiceProviderInterface {
 				$subject = $container->get(DispatcherInterface::class);
 				$config  = (array) PluginHelper::getPlugin('system', 'sociallogin');
 
-				return new SocialLogin($subject, $config);
+				$plugin = new SocialLogin($subject, $config);
+
+				$plugin->setApplication(\Joomla\CMS\Factory::getApplication());
+				$plugin->setDatabase($container->get('DatabaseDriver'));
+
+				$plugin->init();
+
+				return $plugin;
 			}
 		);
 	}

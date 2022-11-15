@@ -31,7 +31,14 @@ return new class implements ServiceProviderInterface {
 				$subject = $container->get(DispatcherInterface::class);
 				$config  = (array) PluginHelper::getPlugin('sociallogin', 'microsoft');
 
-				return new Joomla\Plugin\Sociallogin\Microsoft\Extension\Plugin($subject, $config);
+				$plugin = new Joomla\Plugin\Sociallogin\Microsoft\Extension\Plugin($subject, $config);
+
+				$plugin->setApplication(\Joomla\CMS\Factory::getApplication());
+				$plugin->setDatabase($container->get('DatabaseDriver'));
+
+				$plugin->init();
+
+				return $plugin;
 			}
 		);
 	}

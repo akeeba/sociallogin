@@ -49,7 +49,7 @@ trait UserFields
 		}
 
 		// Get the currently logged in used
-		$myUser = $this->app->getIdentity();
+		$myUser = $this->getApplication()->getIdentity();
 
 		// Same user? I can edit myself
 		if ($myUser->id == $user->id)
@@ -108,7 +108,7 @@ trait UserFields
 		}
 
 		// Load the profile data from the database.
-		$db = $this->db;
+		$db = $this->getDatabase();
 
 		$query = $db->getQuery(true)
 		            ->select([$db->qn('profile_key'), $db->qn('profile_value')])
@@ -178,13 +178,14 @@ trait UserFields
 			return;
 		}
 
-		$layout = $this->app->input->getCmd('layout', 'default');
+		$input  = $this->getApplication()->input;
+		$layout = $input->getCmd('layout', 'default');
 
 		/**
 		 * Joomla is kinda brain-dead. When we have a menu item to the Edit Profile page it does not push the layout
 		 * into the Input (as opposed with option and view) so I have to go in and dig it out myself. Yikes!
 		 */
-		$itemId = $this->app->input->getInt('Itemid');
+		$itemId = $input->getInt('Itemid');
 
 		if ($itemId)
 		{
@@ -202,7 +203,7 @@ trait UserFields
 			}
 		}
 
-		if (!$this->app->isClient('administrator') && ($layout != 'edit'))
+		if (!$this->getApplication()->isClient('administrator') && ($layout != 'edit'))
 		{
 			return;
 		}
@@ -224,7 +225,7 @@ trait UserFields
 		}
 
         $user = ($id === null)
-            ? $this->app->getIdentity()
+            ? $this->getApplication()->getIdentity()
             : Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($id);
 
 		// Make sure the loaded user is the correct one
@@ -299,7 +300,7 @@ trait UserFields
 				Log::DEBUG,
 				'sociallogin.system'
 			);
-			$db = $this->db;
+			$db = $this->getDatabase();
 
 			/** @noinspection SqlResolve */
 			$query = $db->getQuery(true)
@@ -345,7 +346,7 @@ trait UserFields
 		}
 
 
-		$db         = $this->db;
+		$db         = $this->getDatabase();
 		$fieldNames = array_map(function ($key) use ($db) {
 			return $db->q('sociallogin.' . $key);
 		}, array_keys($data['sociallogin']));
@@ -373,7 +374,7 @@ trait UserFields
 		$db->setQuery($query)->execute();
 
 		// Reset the session flag; the user save operation may have changed the dontremind flag.
-		$this->app->getSession()->set('sociallogin.islinked', null);
+		$this->getApplication()->getSession()->set('sociallogin.islinked', null);
 	}
 
 }

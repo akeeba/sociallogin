@@ -65,27 +65,6 @@ class Plugin extends AbstractPlugin
 	 */
 	private string $lastName;
 
-	/**
-	 * Constructor. Loads the language files as well.
-	 *
-	 * @param   DispatcherInterface  &$subject  The object to observe
-	 * @param   array                 $config   An optional associative array of configuration settings.
-	 *                                          Recognized key values include 'name', 'group', 'params', 'language'
-	 *                                          (this list is not meant to be comprehensive).
-	 *
-	 * @since   3.2.0
-	 */
-	public function __construct($subject, array $config = [])
-	{
-		$this->fgColor = '#FFFFFF';
-		$this->bgColor = '#000000';
-
-		parent::__construct($subject, $config);
-
-		// Per-plugin customization
-		$this->buttonImage = 'plg_sociallogin_apple/apple-white.svg';
-	}
-
 	/** @inheritDoc */
 	public static function getSubscribedEvents(): array
 	{
@@ -95,6 +74,18 @@ class Plugin extends AbstractPlugin
 				'onAjaxApple' => 'onSocialLoginAjax',
 			]
 		);
+	}
+
+	/** @inheritDoc */
+	public function init(): void
+	{
+		$this->fgColor = '#FFFFFF';
+		$this->bgColor = '#000000';
+
+		parent::init();
+
+		// Per-plugin customization
+		$this->buttonImage = 'plg_sociallogin_apple/apple-white.svg';
 	}
 
 	/**
@@ -119,12 +110,12 @@ class Plugin extends AbstractPlugin
 				'redirecturi'   => Uri::base() . 'index.php?option=com_ajax&group=sociallogin&plugin=' . $this->integrationName . '&format=raw',
 				'scope'         => 'name email',
 				'requestparams' => [
-					'nonce'         => $this->app->getSession()->getToken(),
+					'nonce'         => $this->getApplication()->getSession()->getToken(),
 					'response_mode' => 'form_post',
 				],
 			];
 			$httpClient      = HttpFactory::getHttp();
-			$this->connector = new OAuth2Client($options, $httpClient, $this->app->input, $this->app);
+			$this->connector = new OAuth2Client($options, $httpClient, $this->getApplication()->input, $this->getApplication());
 
 		}
 
@@ -208,7 +199,7 @@ class Plugin extends AbstractPlugin
 		$nonceSupported = $claims->get('nonce_supported', false);
 		$nonce          = $claims->get('nonce', '');
 
-		if ($nonceSupported && !Crypt::timingSafeCompare($this->app->getSession()->getToken(), $nonce))
+		if ($nonceSupported && !Crypt::timingSafeCompare($this->getApplication()->getSession()->getToken(), $nonce))
 		{
 			throw new RuntimeException('Invalid request.');
 		}
@@ -236,7 +227,7 @@ class Plugin extends AbstractPlugin
 	 */
 	protected function getToken()
 	{
-		$input = $this->app->input;
+		$input = $this->getApplication()->input;
 
 		$userJson = $input->post->get('user', '{}', 'raw');
 		$userData = @json_decode($userJson, true);

@@ -38,30 +38,6 @@ class Plugin extends AbstractPlugin
 	 */
 	protected bool $isAzure = false;
 
-	/**
-	 * Constructor. Loads the language files as well.
-	 *
-	 * @param   DispatcherInterface  &$subject  The object to observe
-	 * @param   array                 $config   An optional associative array of configuration settings.
-	 *                                          Recognized key values include 'name', 'group', 'params', 'language'
-	 *                                          (this list is not meant to be comprehensive).
-	 */
-	public function __construct($subject, array $config = [])
-	{
-		$this->fgColor = '#FFFFFF';
-		$this->bgColor = '#2F2F2F';
-
-		parent::__construct($subject, $config);
-
-		// Per-plugin customization
-		$this->buttonImage = 'plg_sociallogin_microsoft/microsoft_mark.svg';
-
-		// Customization for Microsoft Azure AD vs Live SDK applications
-		$this->isAzure   = $this->params->get('apptype', 'live') === 'azure';
-		$this->appId     = $this->params->get($this->isAzure ? 'azappid' : 'appid', '');
-		$this->appSecret = $this->params->get($this->isAzure ? 'azappsecret' : 'appsecret', '');
-	}
-
 	/** @inheritDoc */
 	public static function getSubscribedEvents(): array
 	{
@@ -71,6 +47,23 @@ class Plugin extends AbstractPlugin
 				'onAjaxMicrosoft' => 'onSocialLoginAjax',
 			]
 		);
+	}
+
+	/** @inheritDoc */
+	public function init(): void
+	{
+		$this->fgColor = '#FFFFFF';
+		$this->bgColor = '#2F2F2F';
+
+		parent::init();
+
+		// Per-plugin customization
+		$this->buttonImage = 'plg_sociallogin_microsoft/microsoft_mark.svg';
+
+		// Customization for Microsoft Azure AD vs Live SDK applications
+		$this->isAzure   = $this->params->get('apptype', 'live') === 'azure';
+		$this->appId     = $this->params->get($this->isAzure ? 'azappid' : 'appid', '');
+		$this->appSecret = $this->params->get($this->isAzure ? 'azappsecret' : 'appsecret', '');
 	}
 
 	/**
@@ -111,7 +104,7 @@ class Plugin extends AbstractPlugin
 			}
 
 			$httpClient      = HttpFactory::getHttp();
-			$this->connector = new MicrosoftOAuth($options, $httpClient, $this->app->input, $this->app);
+			$this->connector = new MicrosoftOAuth($options, $httpClient, $this->getApplication()->input, $this->getApplication());
 		}
 
 		return $this->connector;

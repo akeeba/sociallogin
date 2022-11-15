@@ -18,6 +18,8 @@ use Joomla\CMS\Application\SiteApplication;
 use Joomla\CMS\Language\LanguageHelper;
 use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\CMS\Uri\Uri;
+use Joomla\Database\DatabaseAwareInterface;
+use Joomla\Database\DatabaseAwareTrait;
 use Joomla\Database\DatabaseDriver;
 use Joomla\Database\DatabaseInterface;
 use Joomla\Event\Event;
@@ -30,7 +32,7 @@ use Joomla\Plugin\System\SocialLogin\Library\Plugin\AddLoggerTrait;
 use Joomla\Plugin\System\SocialLogin\Library\Plugin\RunPluginsTrait;
 use Joomla\Plugin\System\SocialLogin\Library\Plugin\SocialLoginButtonsTrait;
 
-class SocialLogin extends CMSPlugin implements SubscriberInterface
+class SocialLogin extends CMSPlugin implements SubscriberInterface, DatabaseAwareInterface
 {
 	// Load the features, implemented as traits (for easier code management)
 	use Ajax, DynamicUsergroups
@@ -43,12 +45,7 @@ class SocialLogin extends CMSPlugin implements SubscriberInterface
 	use AddLoggerTrait;
 	use SocialLoginButtonsTrait;
 	use RunPluginsTrait;
-
-	/** @var CMSApplication|SiteApplication|AdministratorApplication */
-	public $app;
-
-	/** @var DatabaseDriver|DatabaseInterface */
-	public $db;
+	use DatabaseAwareTrait;
 
 	/**
 	 * User group ID to add the user to if they have linked social network accounts to their profile
@@ -80,34 +77,6 @@ class SocialLogin extends CMSPlugin implements SubscriberInterface
 	 */
 	private bool $enabled = true;
 
-	public function __construct(&$subject, $config = [])
-	{
-		parent::__construct($subject, $config);
-
-		// Register the Composer autoloader
-		if (version_compare(JVERSION, '4.2', 'lt'))
-		{
-			require_once __DIR__ . '/../../vendor/autoload.php';
-		}
-		else
-		{
-			JLoader::registerNamespace('CoderCat\\JWKToPEM', __DIR__ . '/../../vendor/codercat/jwk-to-pem/src');
-		}
-
-		$this->addLogger('system');
-
-		// Am I enabled?
-		$this->enabled = $this->isEnabled();
-
-		// Load the language files
-		$this->loadLanguage();
-
-		// Load the other plugin parameters
-		$this->addLinkUnlinkButtons = $this->params->get('linkunlinkbuttons', 1);
-		$this->linkedUserGroup      = (int) $this->params->get('linkedAccountUserGroup', 0);
-		$this->unlinkedUserGroup    = (int) $this->params->get('noLinkedAccountUserGroup', 0);
-	}
-
 	public static function getSubscribedEvents(): array
 	{
 		return [
@@ -131,6 +100,39 @@ class SocialLogin extends CMSPlugin implements SubscriberInterface
 		$this->magicRoute();
 		$this->onAfterInitialise_DynamicUserGroups($e);
 		$this->onAfterIntialise_Ajax($e);
+	}
+
+	/**
+	 * Initialise the plugin.
+	 *
+	 * @return void
+	 *
+	 * @since  4.3.0
+	 */
+	public function init(): void
+	{
+		// Register the Composer autoloader
+		if (version_compare(JVERSION, '4.2', 'lt'))
+		{
+			require_once __DIR__ . '/../../vendor/autoload.php';
+		}
+		else
+		{
+			JLoader::registerNamespace('CoderCat\\JWKToPEM', __DIR__ . '/../../vendor/codercat/jwk-to-pem/src');
+		}
+
+		$this->addLogger('system');
+
+		// Am I enabled?
+		$this->enabled = $this->isEnabled();
+
+		// Load the language files
+		$this->loadLanguage();
+
+		// Load the other plugin parameters
+		$this->addLinkUnlinkButtons = $this->params->get('linkunlinkbuttons', 1);
+		$this->linkedUserGroup      = (int) $this->params->get('linkedAccountUserGroup', 0);
+		$this->unlinkedUserGroup    = (int) $this->params->get('noLinkedAccountUserGroup', 0);
 	}
 
 	protected function magicRoute()
@@ -158,9 +160,9 @@ class SocialLogin extends CMSPlugin implements SubscriberInterface
 		}
 
 		// Remove the language part on multilingual sites
-		if ($this->app->isClient('site') && $this->app->getLanguageFilter())
+		if ($this->getApplication()->isClient('site') && $this->getApplication()->getLanguageFilter())
 		{
-			$languageTag    = $this->app->getLanguage()->getTag() ?? 'invalid_language';
+			$languageTag    = $this->getApplication()->getLanguage()->getTag() ?? 'invalid_language';
 			$allLanguages   = LanguageHelper::getLanguages('lang_code');
 			$langDefinition = $allLanguages[$languageTag] ?? (object) ['sef' => ''];
 			$langPrefix     = $langDefinition->sef ?? '';
@@ -186,10 +188,12 @@ class SocialLogin extends CMSPlugin implements SubscriberInterface
 
 		[$plugin,] = explode('.', $plugin);
 
-		$this->app->input->set('option', 'com_ajax');
-		$this->app->input->set('group', 'sociallogin');
-		$this->app->input->set('plugin', $plugin);
-		$this->app->input->set('format', 'raw');
+		$input = $this->getApplication()->input;
+
+		$input->set('option', 'com_ajax');
+		$input->set('group', 'sociallogin');
+		$input->set('plugin', $plugin);
+		$input->set('format', 'raw');
 
 		$currentUri->setPath(rtrim($rootPath, '/') . '/index.php');
 		$currentUri->setVar('option', 'com_ajax');
@@ -206,12 +210,12 @@ class SocialLogin extends CMSPlugin implements SubscriberInterface
 	private function isEnabled(): bool
 	{
 		// Only allow this plugin in the site and admin applications
-		if (!$this->app->isClient('site') && !$this->app->isClient('administrator'))
+		if (!$this->getApplication()->isClient('site') && !$this->getApplication()->isClient('administrator'))
 		{
 			return false;
 		}
 
 		// It only makes sense to let people log in when they are not already logged in ;)
-		return (bool) $this->app->getIdentity()->guest;
+		return (bool) $this->getApplication()->getIdentity()->guest;
 	}
 }

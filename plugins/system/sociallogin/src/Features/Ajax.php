@@ -39,19 +39,21 @@ trait Ajax
 	 */
 	public function onAfterInitialise(Event $e): void
 	{
+		$app = $this->getApplication();
+
 		// Make sure this is the backend of the site...
-		if (!$this->app->isClient('administrator'))
+		if (!$app->isClient('administrator'))
 		{
 			return;
 		}
 
 		// ...and we are not already logged in...
-		if (!$this->app->getIdentity()->guest)
+		if (!$app->getIdentity()->guest)
 		{
 			return;
 		}
 
-		$input = $this->app->input;
+		$input = $app->input;
 
 		// ...and this is a request to com_ajax...
 		if ($input->getCmd('option', '') != 'com_ajax')
@@ -66,7 +68,7 @@ trait Ajax
 		}
 
 		// Reset the session flag; the AJAX operation may change whether the Joomla user is linked to a social media account
-		$this->app->getSession()->set('sociallogin.islinked', null);
+		$app->getSession()->set('sociallogin.islinked', null);
 
 		// Load the plugin and execute the AJAX method
 		$plugin = $input->getCmd('plugin', '');
@@ -74,7 +76,7 @@ trait Ajax
 		PluginHelper::importPlugin('sociallogin', $plugin);
 		$methodName = 'onAjax' . ucfirst($plugin);
 
-		$this->app->triggerEvent($methodName);
+		$app->triggerEvent($methodName);
 	}
 
 	/**
@@ -91,13 +93,13 @@ trait Ajax
 	 */
 	public function onAjaxSociallogin(Event $event): void
 	{
-		$ajax  = new \Joomla\Plugin\System\SocialLogin\Library\Helper\Ajax($this, $this->app, $this->db);
-		$app   = $this->app;
-		$input = $app->input;
+		$ajax                     = new \Joomla\Plugin\System\SocialLogin\Library\Helper\Ajax($this, $this->getApplication(), $this->getDatabase());
+		$app                      = $this->getApplication();
+		$input                    = $app->input;
 
 		// Get the return URL from the session
-		$returnURL = $this->app->getSession()->get('plg_system_sociallogin.returnUrl', Uri::base());
-		$this->app->getSession()->set('plg_system_sociallogin.returnUrl', null);
+		$returnURL = $app->getSession()->get('plg_system_sociallogin.returnUrl', Uri::base());
+		$app->getSession()->set('plg_system_sociallogin.returnUrl', null);
 
 		try
 		{

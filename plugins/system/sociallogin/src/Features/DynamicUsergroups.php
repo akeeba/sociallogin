@@ -32,7 +32,7 @@ trait DynamicUsergroups
 	 */
 	public function onAfterInitialise(Event $e): void
 	{
-		$user = $this->app->getIdentity();
+		$user = $this->getApplication()->getIdentity();
 
 		// Nothing to do for guest users
 		if ($user->guest)
@@ -47,14 +47,14 @@ trait DynamicUsergroups
 		}
 
 		// Get the session flag
-		$isLinked = $this->app->getSession()->get('sociallogin.islinked', null);
+		$isLinked = $this->getApplication()->getSession()->get('sociallogin.islinked', null);
 
 		// Session flag not set. Populate and store in session.
 		if (is_null($isLinked))
 		{
 			$isLinked = $this->getSocialLoginLinkedStatus($user);
 
-			$this->app->getSession()->set('sociallogin.islinked', $isLinked);
+			$this->getApplication()->getSession()->set('sociallogin.islinked', $isLinked);
 		}
 
 		// Perform an action based on the sociallogin.islinked session flag.
@@ -210,7 +210,7 @@ trait DynamicUsergroups
 	 */
 	private function getSocialLoginLinkedStatus(User $user)
 	{
-		$db    = $this->db;
+		$db    = $this->getDatabase();
 		$query = $db->getQuery(true)
 		            ->select([
 			            $db->qn('profile_key'),

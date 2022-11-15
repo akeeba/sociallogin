@@ -21,6 +21,8 @@ use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\User\User;
 use Joomla\CMS\User\UserFactoryInterface;
+use Joomla\Database\DatabaseAwareInterface;
+use Joomla\Database\DatabaseAwareTrait;
 use Joomla\Database\DatabaseDriver;
 use Joomla\Database\DatabaseInterface;
 use Joomla\Event\DispatcherInterface;
@@ -36,26 +38,12 @@ use RuntimeException;
 /**
  * Abstract Social Login plugin class
  */
-abstract class AbstractPlugin extends CMSPlugin implements SubscriberInterface
+abstract class AbstractPlugin extends CMSPlugin implements SubscriberInterface, DatabaseAwareInterface
 {
 	use LoginTrait;
 	use AddLoggerTrait;
 	use RunPluginsTrait;
-
-	/**
-	 * The CMS application object
-	 *
-	 * @var  CMSApplication
-	 */
-	public $app;
-
-	/**
-	 * The Joomla database driver object.
-	 *
-	 * @since 4.1.0
-	 * @var   DatabaseInterface|DatabaseDriver
-	 */
-	public $db;
+	use DatabaseAwareTrait;
 
 	/**
 	 * OAuth application's ID
@@ -158,25 +146,8 @@ abstract class AbstractPlugin extends CMSPlugin implements SubscriberInterface
 	{
 		parent::__construct($subject, $config);
 
-		// Load the language files
-		$this->loadLanguage();
-
 		// Set the integration name from the plugin name (without the plg_sociallogin_ part, of course)
 		$this->integrationName = $config['sociallogin.integrationName'] ?? $this->_name;
-
-		// Register a debug log file writer
-		$this->addLogger($this->integrationName);
-
-		// Load the plugin options into properties
-		$this->canLoginUnlinked    = $this->params->get('loginunlinked', 0) != 0;
-		$this->canCreateNewUsers   = $this->params->get('createnew', 0) != 0;
-		$this->canCreateAlways     = $this->params->get('forcenew', 1) != 0;
-		$this->canBypassValidation = $this->params->get('bypassvalidation', 1) != 0;
-		$this->useCustomCSS        = $this->params->get('customcss', 1) != 0;
-		$this->appId               = $this->params->get('appid', '');
-		$this->appSecret           = $this->params->get('appsecret', '');
-		$this->bgColor             = $this->params->get('bgcolor', $this->bgColor);
-		$this->fgColor             = $this->params->get('fgcolor', $this->fgColor);
 	}
 
 	/**
@@ -195,6 +166,32 @@ abstract class AbstractPlugin extends CMSPlugin implements SubscriberInterface
 	}
 
 	/**
+	 * Initialise the plugin
+	 *
+	 * @return void
+	 * @since  4.3.0
+	 */
+	public function init(): void
+	{
+		// Load the language files
+		$this->loadLanguage();
+
+		// Register a debug log file writer
+		$this->addLogger($this->integrationName);
+
+		// Load the plugin options into properties
+		$this->canLoginUnlinked    = $this->params->get('loginunlinked', 0) != 0;
+		$this->canCreateNewUsers   = $this->params->get('createnew', 0) != 0;
+		$this->canCreateAlways     = $this->params->get('forcenew', 1) != 0;
+		$this->canBypassValidation = $this->params->get('bypassvalidation', 1) != 0;
+		$this->useCustomCSS        = $this->params->get('customcss', 1) != 0;
+		$this->appId               = $this->params->get('appid', '');
+		$this->appSecret           = $this->params->get('appsecret', '');
+		$this->bgColor             = $this->params->get('bgcolor', $this->bgColor);
+		$this->fgColor             = $this->params->get('fgcolor', $this->fgColor);
+	}
+
+	/**
 	 * Handles the social network login callback, gets social network user information and performs the Social Login
 	 * flow (including logging in non-linked users or creating a new user from the social media profile)
 	 *
@@ -209,16 +206,17 @@ abstract class AbstractPlugin extends CMSPlugin implements SubscriberInterface
 			'sociallogin.' . $this->integrationName
 		);
 
-		$returnURL  = $this->app->getSession()->get('plg_system_sociallogin.returnUrl', Uri::base());
-		$loginUrl   = $this->app->getSession()->get('plg_sociallogin_' . $this->integrationName . '.loginUrl', $returnURL);
-		$failureUrl = $this->app->getSession()->get('plg_sociallogin_' . $this->integrationName . '.failureUrl', $loginUrl);
+		$session    = $this->getApplication()->getSession();
+		$returnURL  = $session->get('plg_system_sociallogin.returnUrl', Uri::base());
+		$loginUrl   = $session->get('plg_sociallogin_' . $this->integrationName . '.loginUrl', $returnURL);
+		$failureUrl = $session->get('plg_sociallogin_' . $this->integrationName . '.failureUrl', $loginUrl);
 
 		// Remove the return URLs from the session
-		$this->app->getSession()->set('plg_sociallogin_' . $this->integrationName . '.loginUrl', null);
-		$this->app->getSession()->set('plg_sociallogin_' . $this->integrationName . '.failureUrl', null);
+		$session->set('plg_sociallogin_' . $this->integrationName . '.loginUrl', null);
+		$session->set('plg_sociallogin_' . $this->integrationName . '.failureUrl', null);
 
 		// Try to exchange the code with a token
-		$app = $this->app;
+		$app = $this->getApplication();
 
 		/**
 		 * Handle the login callback from the social network. There are three possibilities:
@@ -256,7 +254,7 @@ abstract class AbstractPlugin extends CMSPlugin implements SubscriberInterface
 
 					if (defined('JDEBUG') && JDEBUG)
 					{
-						$error = $this->app->input->getString('error_description', '');
+						$error = $this->getApplication()->input->getString('error_description', '');
 
 						if (!empty($error))
 						{
@@ -427,7 +425,7 @@ abstract class AbstractPlugin extends CMSPlugin implements SubscriberInterface
 
 		if (empty($user))
 		{
-			$user = $this->app->getIdentity();
+			$user = $this->getApplication()->getIdentity();
 		}
 
 		// Get the return URL
@@ -436,12 +434,13 @@ abstract class AbstractPlugin extends CMSPlugin implements SubscriberInterface
 		]);
 
 		// Save the return URL and user ID into the session
-		$this->app->getSession()->set('plg_system_sociallogin.returnUrl', $returnURL);
-		$this->app->getSession()->set('plg_system_sociallogin.userID', $user->id);
+		$session = $this->getApplication()->getSession();
+		$session->set('plg_system_sociallogin.returnUrl', $returnURL);
+		$session->set('plg_system_sociallogin.userID', $user->id);
 
 		if ($this->isLinked($user))
 		{
-			$token     = $this->app->getSession()->getToken();
+			$token     = $session->getToken();
 			$unlinkURL = Uri::base() . 'index.php?option=com_ajax&group=system&plugin=sociallogin&format=raw&akaction=unlink&encoding=redirect&slug=' . $this->integrationName . '&' . $token . '=1';
 
 			// Render an unlink button
@@ -475,8 +474,8 @@ abstract class AbstractPlugin extends CMSPlugin implements SubscriberInterface
 		$loginURL = Uri::getInstance()->toString([
 			'scheme', 'user', 'pass', 'host', 'port', 'path', 'query', 'fragment',
 		]);
-		$this->app->getSession()->set('plg_sociallogin_' . $this->integrationName . '.loginUrl', $loginURL);
-		$this->app->getSession()->set('plg_sociallogin_' . $this->integrationName . '.failureUrl', $loginURL);
+		$session->set('plg_sociallogin_' . $this->integrationName . '.loginUrl', $loginURL);
+		$session->set('plg_sociallogin_' . $this->integrationName . '.failureUrl', $loginURL);
 
 		$result[] = [
 			// The name of the plugin rendering this button. Used for customized JLayouts.
@@ -541,8 +540,9 @@ abstract class AbstractPlugin extends CMSPlugin implements SubscriberInterface
 		}
 
 		// Save the return URLs into the session
-		$this->app->getSession()->set('plg_sociallogin_' . $this->integrationName . '.loginUrl', $loginURL);
-		$this->app->getSession()->set('plg_sociallogin_' . $this->integrationName . '.failureUrl', $failureURL);
+		$session = $this->getApplication()->getSession();
+		$session->set('plg_sociallogin_' . $this->integrationName . '.loginUrl', $loginURL);
+		$session->set('plg_sociallogin_' . $this->integrationName . '.failureUrl', $failureURL);
 
 		$result[] = [
 			// The name of the plugin rendering this button. Used for customized JLayouts.
@@ -595,7 +595,7 @@ abstract class AbstractPlugin extends CMSPlugin implements SubscriberInterface
 		// Make sure we have a user
 		if (is_null($user))
 		{
-			$user = $this->app->getIdentity();
+			$user = $this->getApplication()->getIdentity();
 		}
 
 		$this->removeUserProfileData($user->id, 'sociallogin.' . $this->integrationName);
@@ -729,7 +729,7 @@ abstract class AbstractPlugin extends CMSPlugin implements SubscriberInterface
 			return;
 		}
 
-		$db = $this->db;
+		$db = $this->getDatabase();
 
 		$query = $db->getQuery(true)
 		            ->delete($db->qn('#__user_profiles'))

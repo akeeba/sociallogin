@@ -103,7 +103,7 @@ CSS;
 
 		try
 		{
-			$document = $this->app->getDocument();
+			$document = $this->getApplication()->getDocument();
 		}
 		catch (Exception $e)
 		{
@@ -137,7 +137,7 @@ CSS;
 	{
 		if (!is_object($app))
 		{
-			$app = $this->app;
+			$app = $this->getApplication();
 		}
 
 		PluginHelper::importPlugin('sociallogin');
@@ -193,7 +193,7 @@ CSS;
 	{
 		if (!is_object($app))
 		{
-			$app = $this->app;
+			$app = $this->getApplication();
 		}
 
 		PluginHelper::importPlugin('sociallogin');
