@@ -48,7 +48,9 @@ class Pkg_SocialloginInstallerScript
 		['plugin', 'facebook', 1, 'sociallogin'],
 	];
 
-	protected $obsoletePlugins = [];
+	protected $obsoletePlugins = [
+		['sociallogin', 'twitter']
+	];
 
 	/**
 	 * =================================================================================================================
