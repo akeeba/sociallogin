@@ -30,7 +30,10 @@ class Pkg_SocialloginInstallerScript extends InstallerScript
 
 	protected $minimumPhp = '7.4.0';
 
-	protected $obsoletePlugins = [];
+	protected $obsoletePlugins = [
+		// Remove Twitter integration, 4.4.0
+		['sociallogin', 'twitter']
+	];
 
 	protected $packageName = 'pkg_sociallogin';
 
@@ -91,7 +94,7 @@ class Pkg_SocialloginInstallerScript extends InstallerScript
 		 *
 		 * See bug report https://github.com/joomla/joomla-cms/issues/16147
 		 */
-		$conf         = \JFactory::getConfig();
+		$app          = Factory::getApplication();
 		$clearGroups  = ['_system', 'com_modules', 'mod_menu', 'com_plugins', 'com_modules'];
 		$cacheClients = [0, 1];
 
@@ -103,7 +106,7 @@ class Pkg_SocialloginInstallerScript extends InstallerScript
 				{
 					$options = [
 						'defaultgroup' => $group,
-						'cachebase'    => ($client_id) ? JPATH_ADMINISTRATOR . '/cache' : $conf->get('cache_path', JPATH_SITE . '/cache'),
+						'cachebase'    => ($client_id) ? JPATH_ADMINISTRATOR . '/cache' : $app->get('cache_path', JPATH_SITE . '/cache'),
 					];
 
 					/** @var JCache $cache */
@@ -118,7 +121,7 @@ class Pkg_SocialloginInstallerScript extends InstallerScript
 				// Trigger the onContentCleanCache event.
 				try
 				{
-					JFactory::getApplication()->triggerEvent('onContentCleanCache', $options);
+					$app->triggerEvent('onContentCleanCache', $options);
 				}
 				catch (Exception $e)
 				{
@@ -155,12 +158,12 @@ class Pkg_SocialloginInstallerScript extends InstallerScript
 	{
 		try
 		{
-			$db    = JFactory::getDbo();
+			$db    = Factory::getContainer()->get('DatabaseDriver');
 			$query = $db->getQuery(true)
-			            ->update('#__extensions')
-			            ->set($db->qn('enabled') . ' = ' . $db->q(1))
-			            ->where('type = ' . $db->quote($type))
-			            ->where('element = ' . $db->quote($name));
+				->update('#__extensions')
+				->set($db->qn('enabled') . ' = ' . $db->q(1))
+				->where('type = ' . $db->quote($type))
+				->where('element = ' . $db->quote($name));
 		}
 		catch (\Exception $e)
 		{
@@ -225,10 +228,10 @@ class Pkg_SocialloginInstallerScript extends InstallerScript
 		/** @var \Joomla\Database\DatabaseDriver $db */
 		$db    = Factory::getContainer()->get('DatabaseDriver');
 		$query = $db->getQuery(true)
-		            ->select($db->qn('extension_id'))
-		            ->from($db->qn('#__extensions'))
-		            ->where($db->qn('element') . ' = ' . $db->q($element))
-		            ->where($db->qn('type') . ' = ' . $db->q('package'));
+			->select($db->qn('extension_id'))
+			->from($db->qn('#__extensions'))
+			->where($db->qn('element') . ' = ' . $db->q($element))
+			->where($db->qn('type') . ' = ' . $db->q('package'));
 
 		try
 		{
@@ -254,13 +257,13 @@ class Pkg_SocialloginInstallerScript extends InstallerScript
 		/** @var \Joomla\Database\DatabaseDriver $db */
 		$db    = Factory::getContainer()->get('DatabaseDriver');
 		$query = $db->getQuery(true)
-		            ->select($db->qn('s.update_site_id'))
-		            ->from($db->qn('#__update_sites', 's'))
-		            ->innerJoin(
-			            $db->qn('#__update_sites_extensions', 'e') . 'ON(' . $db->qn('e.update_site_id') .
-			            ' = ' . $db->qn('s.update_site_id') . ')'
-		            )
-		            ->where($db->qn('e.extension_id') . ' = ' . $db->q($eid));
+			->select($db->qn('s.update_site_id'))
+			->from($db->qn('#__update_sites', 's'))
+			->innerJoin(
+				$db->qn('#__update_sites_extensions', 'e') . 'ON(' . $db->qn('e.update_site_id') .
+				' = ' . $db->qn('s.update_site_id') . ')'
+			)
+			->where($db->qn('e.extension_id') . ' = ' . $db->q($eid));
 
 		try
 		{
@@ -326,8 +329,8 @@ class Pkg_SocialloginInstallerScript extends InstallerScript
 		$deleteIDs = array_map([$db, 'q'], $deleteIDs);
 
 		$query = $db->getQuery(true)
-		            ->delete($db->qn('#__update_sites'))
-		            ->where($db->qn('update_site_id') . ' IN(' . implode(',', $deleteIDs) . ')');
+			->delete($db->qn('#__update_sites'))
+			->where($db->qn('update_site_id') . ' IN(' . implode(',', $deleteIDs) . ')');
 
 		try
 		{
@@ -339,8 +342,8 @@ class Pkg_SocialloginInstallerScript extends InstallerScript
 		}
 
 		$query = $db->getQuery(true)
-		            ->delete($db->qn('#__update_sites_extensions'))
-		            ->where($db->qn('update_site_id') . ' IN(' . implode(',', $deleteIDs) . ')');
+			->delete($db->qn('#__update_sites_extensions'))
+			->where($db->qn('update_site_id') . ' IN(' . implode(',', $deleteIDs) . ')');
 
 		try
 		{
@@ -359,8 +362,8 @@ class Pkg_SocialloginInstallerScript extends InstallerScript
 
 		/** @var \Joomla\CMS\MVC\Factory\MVCFactory $mvcFactory */
 		$mvcFactory = Factory::getApplication()
-		                     ->bootComponent('com_installer')
-		                     ->getMVCFactory();
+			->bootComponent('com_installer')
+			->getMVCFactory();
 		/** @var \Joomla\Component\Installer\Administrator\Model\InstallerModel $model */
 		$model = $mvcFactory->createModel('Installer', 'administrator');
 
@@ -370,11 +373,11 @@ class Pkg_SocialloginInstallerScript extends InstallerScript
 
 			// Does the plugin exist? If not, there's nothing to do here.
 			$query = $db->getQuery(true)
-			            ->select('*')
-			            ->from('#__extensions')
-			            ->where($db->qn('type') . ' = ' . $db->q('plugin'))
-			            ->where($db->qn('folder') . ' = ' . $db->q($folder))
-			            ->where($db->qn('element') . ' = ' . $db->q($element));
+				->select('*')
+				->from('#__extensions')
+				->where($db->qn('type') . ' = ' . $db->q('plugin'))
+				->where($db->qn('folder') . ' = ' . $db->q($folder))
+				->where($db->qn('element') . ' = ' . $db->q($element));
 			try
 			{
 				$result = $db->setQuery($query)->loadAssoc();

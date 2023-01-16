@@ -30,7 +30,6 @@
         <file type="plugin" group="sociallogin" id="google">plg_sociallogin_google.zip</file>
         <file type="plugin" group="sociallogin" id="linkedin">plg_sociallogin_linkedin.zip</file>
         <file type="plugin" group="sociallogin" id="microsoft">plg_sociallogin_microsoft.zip</file>
-        <file type="plugin" group="sociallogin" id="twitter">plg_sociallogin_twitter.zip</file>
     </files>
 
     <languages folder="language">
