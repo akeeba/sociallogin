@@ -7,8 +7,8 @@
 
 <extension version="3.8.0" type="plugin" group="sociallogin" method="upgrade">
     <name>PLG_SOCIALLOGIN_APPLE</name>
-    <version>3.3.0</version>
-    <creationDate>2023-01-17</creationDate>
+    <version>3.3.1</version>
+    <creationDate>2023-01-19</creationDate>
 
     <author>Akeeba Ltd</author>
     <authorEmail>no-reply@akeeba.com</authorEmail>
