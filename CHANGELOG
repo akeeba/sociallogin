@@ -1,4 +1,8 @@
 <?php die(); ?>
+Akeeba SocialLogin 4.4.1
+================================================================================
+# [LOW] Joomla has changed the way we should use to uninstall obsolete extensions
+
 Akeeba SocialLogin 4.4.0
 ================================================================================
 - Removed Twitter integration (gh-93)

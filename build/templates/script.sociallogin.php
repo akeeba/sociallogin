@@ -364,8 +364,8 @@ class Pkg_SocialloginInstallerScript extends InstallerScript
 		$mvcFactory = Factory::getApplication()
 			->bootComponent('com_installer')
 			->getMVCFactory();
-		/** @var \Joomla\Component\Installer\Administrator\Model\InstallerModel $model */
-		$model = $mvcFactory->createModel('Installer', 'administrator');
+		/** @var \Joomla\Component\Installer\Administrator\Model\ManageModel $model */
+		$model = $mvcFactory->createModel('Manage', 'administrator');
 
 		foreach ($this->obsoletePlugins as $pluginDef)
 		{
