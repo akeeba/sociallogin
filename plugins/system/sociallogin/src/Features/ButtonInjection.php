@@ -66,7 +66,7 @@ trait ButtonInjection
 		$this->includeJ4ButtonHandler();
 
 		$returnUrl         = $this->getReturnURLFromBackTrace();
-		$buttonDefinitions = $this->getSocialLoginButtonDefinitions(null, $returnUrl);
+		$buttonDefinitions = $this->getSocialLoginButtonDefinitions($returnUrl);
 
 		$this->customCss($buttonDefinitions);
 
@@ -214,7 +214,7 @@ trait ButtonInjection
 		// Menu item ID?
 		if (is_numeric($url))
 		{
-			return Route::_(sprintf("index.php?Itemid=%d", (int) $url), false, false, true);
+			return Route::_(sprintf("index.php?Itemid=%d", (int) $url), false, false, false);
 		}
 
 		// I have no idea what this is!

@@ -1,4 +1,8 @@
 <?php die(); ?>
+Akeeba SocialLogin 4.4.2
+================================================================================
+# [MEDIUM] Redirection after login did not work correctly
+
 Akeeba SocialLogin 4.4.1
 ================================================================================
 # [LOW] Joomla has changed the way we should use to uninstall obsolete extensions
