@@ -1,4 +1,8 @@
 <?php die(); ?>
+Akeeba SocialLogin 4.4.3
+================================================================================
+~ Block uninstallation of child extensions
+
 Akeeba SocialLogin 4.4.2
 ================================================================================
 # [MEDIUM] Redirection after login did not work correctly

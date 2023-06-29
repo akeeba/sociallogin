@@ -19,6 +19,7 @@
     <copyright>Copyright (c)2016-2023 Akeeba Ltd</copyright>
     <license>GNU GPL v3 or later</license>
     <description>PKG_SOCIALLOGIN_XML_DESCRIPTION</description>
+    <blockChildUninstall>true</blockChildUninstall>
 
     <files>
         <file type="plugin" group="system" id="sociallogin">plg_system_sociallogin.zip</file>
