@@ -8,6 +8,7 @@
 // Prevent direct access
 use Joomla\CMS\Factory;
 use Joomla\CMS\Installer\InstallerScript;
+use Joomla\Database\DatabaseInterface;
 
 defined('_JEXEC') or die;
 
@@ -158,7 +159,7 @@ class Pkg_SocialloginInstallerScript extends InstallerScript
 	{
 		try
 		{
-			$db    = Factory::getContainer()->get('DatabaseDriver');
+			$db    = Factory::getContainer()->get(DatabaseInterface::class);
 			$query = $db->getQuery(true)
 				->update('#__extensions')
 				->set($db->qn('enabled') . ' = ' . $db->q(1))
@@ -226,7 +227,7 @@ class Pkg_SocialloginInstallerScript extends InstallerScript
 	private function findPackageExtensionID($element)
 	{
 		/** @var \Joomla\Database\DatabaseDriver $db */
-		$db    = Factory::getContainer()->get('DatabaseDriver');
+		$db    = Factory::getContainer()->get(DatabaseInterface::class);
 		$query = $db->getQuery(true)
 			->select($db->qn('extension_id'))
 			->from($db->qn('#__extensions'))
@@ -255,7 +256,7 @@ class Pkg_SocialloginInstallerScript extends InstallerScript
 	private function getUpdateSitesFor($eid = null)
 	{
 		/** @var \Joomla\Database\DatabaseDriver $db */
-		$db    = Factory::getContainer()->get('DatabaseDriver');
+		$db    = Factory::getContainer()->get(DatabaseInterface::class);
 		$query = $db->getQuery(true)
 			->select($db->qn('s.update_site_id'))
 			->from($db->qn('#__update_sites', 's'))
@@ -318,7 +319,7 @@ class Pkg_SocialloginInstallerScript extends InstallerScript
 		array_pop($deleteIDs);
 
 		/** @var \Joomla\Database\DatabaseDriver $db */
-		$db = Factory::getContainer()->get('DatabaseDriver');
+		$db = Factory::getContainer()->get(DatabaseInterface::class);
 
 		if (empty($deleteIDs) || !count($deleteIDs))
 		{
@@ -358,7 +359,7 @@ class Pkg_SocialloginInstallerScript extends InstallerScript
 	private function uninstallObsoletePlugins()
 	{
 		/** @var \Joomla\Database\DatabaseDriver $db */
-		$db = Factory::getContainer()->get('DatabaseDriver');
+		$db = Factory::getContainer()->get(DatabaseInterface::class);
 
 		/** @var \Joomla\CMS\MVC\Factory\MVCFactory $mvcFactory */
 		$mvcFactory = Factory::getApplication()

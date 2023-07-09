@@ -1,6 +1,7 @@
 <?php die(); ?>
 Akeeba SocialLogin 4.4.3
 ================================================================================
+~ Joomla 5 preparation: Use DatabaseInterface instead of DatabaseDriver
 ~ Block uninstallation of child extensions
 
 Akeeba SocialLogin 4.4.2
