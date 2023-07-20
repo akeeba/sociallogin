@@ -3,6 +3,7 @@ Akeeba SocialLogin 4.4.3
 ================================================================================
 ~ Joomla 5 preparation: Use DatabaseInterface instead of DatabaseDriver
 ~ Block uninstallation of child extensions
+~ Force Joomla to create its namespace map afresh at the end of installation, in case it failed to do that automatically
 
 Akeeba SocialLogin 4.4.2
 ================================================================================
