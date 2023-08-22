@@ -35,6 +35,7 @@
 
 # Built packages
 /release
+/pkg_*.xml
 
 # Node.js modules (used to install Babel)
 /node_modules
