@@ -81,7 +81,7 @@ trait UserFields
 		 * @param   string  $context  The context for the data (form name)
 		 * @param   object  $data     The user profile data
 		 */
-		[$context, $data] = $event->getArguments();
+		[$context, $data] = array_values($event->getArguments());
 		$result   = $event->getArgument('result') ?: [];
 		$result   = is_array($result) ? $result : [$result];
 		$result[] = true;
@@ -153,7 +153,7 @@ trait UserFields
 		 * @param   JForm  $form  The form to be altered.
 		 * @param   mixed  $data  The associated data for the form.
 		 */
-		[$form, $data] = $event->getArguments();
+		[$form, $data] = array_values($event->getArguments());
 		$result   = $event->getArgument('result') ?: [];
 		$result   = is_array($result) ? $result : [$result];
 		$result[] = true;
@@ -275,7 +275,7 @@ trait UserFields
 		 * @var   bool   $success True if user was successfully stored in the database
 		 * @var   string $msg     Message
 		 */
-		[$user, $success, $msg] = $event->getArguments();
+		[$user, $success, $msg] = array_values($event->getArguments());
 		$result = $event->getArgument('result') ?: [];
 		$result = is_array($result) ? $result : [$result];
 
@@ -331,7 +331,7 @@ trait UserFields
 		 * @var   bool  $result Was the user saved successfully?
 		 * @var   mixed $error  (ignored)
 		 */
-		[$data, $isNew, $result, $error] = $event->getArguments();
+		[$data, $isNew, $result, $error] = array_values($event->getArguments());
 		$result   = $event->getArgument('result') ?: [];
 		$result   = is_array($result) ? $result : [$result];
 		$result[] = true;

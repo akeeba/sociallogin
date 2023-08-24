@@ -413,7 +413,7 @@ abstract class AbstractPlugin extends CMSPlugin implements SubscriberInterface, 
 		/**
 		 * @var   User $user The user to be linked / unlinked
 		 */
-		[$user] = $event->getArguments();
+		[$user] = array_values($event->getArguments());
 		$result = $event->getArgument('result') ?: [];
 		$result = is_array($result) ? $result : [$result];
 
@@ -515,7 +515,7 @@ abstract class AbstractPlugin extends CMSPlugin implements SubscriberInterface, 
 		 * @var   string $loginURL   The URL to be redirected to upon successful login / account link
 		 * @var   string $failureURL The URL to be redirected to on error
 		 */
-		[$loginURL, $failureURL] = $event->getArguments();
+		[$loginURL, $failureURL] = array_values($event->getArguments());
 		$result = $event->getArgument('result') ?: [];
 		$result = is_array($result) ? $result : [$result];
 
@@ -578,7 +578,7 @@ abstract class AbstractPlugin extends CMSPlugin implements SubscriberInterface, 
 		 * @var   string    $slug The integration to unlink from
 		 * @var   User|null $user The user to unlink, null to use the current user
 		 */
-		[$slug, $user] = $event->getArguments();
+		[$slug, $user] = array_values($event->getArguments());
 
 		// Make sure we are properly set up
 		if (!$this->isProperlySetUp())
