@@ -4,9 +4,33 @@
 	<strong>Bug fixes and minor improvements</strong>. Please take a look at the CHANGELOG below.
 </p>
 
-<h3>Joomla! and PHP versions supported</h3>
+<h3>Namespace changes</h3>
+
 <p>
-	Please consult <a href="https://www.akeeba.com/compatibility.html">our Compatibility page</a>. It explains
-	our version support policy and lists which versions of our software are compatible with which versions of
-	Joomla and PHP.
+	We have changed the PHP namespaces of our plugins to match the (actually not documented anywhere) intention of Joomla's core maintainers about third party extensions. For example, Admin Tools' system plugin has changed its namespace from <code>Joomla\Plugin\System\AdminTools</code> to <code>Akeeba\Plugin\System\AdminTools</code>.
+</p>
+<p>
+	This has two implications:
+</p>
+<ol>
+	<li>
+		Joomla! caches the namespaces of core and third party extensions in the <code>autoload_psr4.php</code> file in its cache directory. By default, this file is located in <code>administrator/cache/autoload_psr4.php</code>. Joomla! is <em>supposed</em> to delete and create afresh this file whenever it is updating extensions or itself. However, under some circumstances (e.g. the file or its containing directory cannot be written to by PHP), this may not be possible. You may have to delete that file yourself.
+	</li>
+	<li>
+		Servers with PHP OPcache —or a similar code cache— enabled may have settings which prevent PHP from “seeing” the changes in the updated files of our extension, or Joomla!'s <code>autoload_psr4.php</code> file. Joomla! tries to reset code caches on extension and core updates. However, the server configuration may prevent this from taking effect. If this happens, you will need to ask your host to reset the OPcache.
+	</li>
+</ol>
+<p>
+	Despite us and Joomla! itself taking all reasonable precautions to prevent such a change from causing a problem, some server configurations are outside ours and Joomla!'s control, making it impossible to successfully mitigate problems. If your site stops responding with an error indicating that a class cannot be found follow the advice above, namely:
+</p>
+<ul>
+	<li>
+		Delete the <code>administrator/cache/autoload_psr4.php</code> file.
+	</li>
+	<li>
+		Ask your host to reset the OPcache, or similar code cache, on your site's server.
+	</li>
+</ul>
+<p>
+	Kindly note that this is a <strong>one-time</strong> change. The namespace of our extensions will not change in the future, unless of course Joomla! itself necessitates a change (nothing like that is, however, planned for any Joomla version released until 2027 at the earliest).
 </p>
