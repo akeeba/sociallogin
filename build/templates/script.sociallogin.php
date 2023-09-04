@@ -81,13 +81,34 @@ class Pkg_SocialloginInstallerScript extends InstallerScript
 			try
 			{
 				$nsMap = new JNamespacePsr4Map();
+
+				@clearstatcache(JPATH_CACHE . '/autoload_psr4.php');
+
+				if (function_exists('opcache_invalidate'))
+				{
+					@opcache_invalidate(JPATH_CACHE . '/autoload_psr4.php');
+				}
+
+				@clearstatcache(JPATH_CACHE . '/autoload_psr4.php');
 				$nsMap->create();
+
+				if (function_exists('opcache_invalidate'))
+				{
+					@opcache_invalidate(JPATH_CACHE . '/autoload_psr4.php');
+				}
+
 				$nsMap->load();
 			}
 			catch (\Throwable $e)
 			{
 				// In case of failure, just try to delete the old autoload_psr4.php file
+				if (function_exists('opcache_invalidate'))
+				{
+					@opcache_invalidate(JPATH_CACHE . '/autoload_psr4.php');
+				}
+
 				@unlink(JPATH_CACHE . '/autoload_psr4.php');
+				@clearstatcache(JPATH_CACHE . '/autoload_psr4.php');
 			}
 		}
 
