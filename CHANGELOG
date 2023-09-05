@@ -1,4 +1,8 @@
 <?php die(); ?>
+Akeeba SocialLogin 4.5.1
+================================================================================
+# [LOW] Possible PHP error when updating this along other extensions using the same post-installation script
+
 Akeeba SocialLogin 4.5.0
 ================================================================================
 ~ Joomla 5 preparation: Use DatabaseInterface instead of DatabaseDriver
