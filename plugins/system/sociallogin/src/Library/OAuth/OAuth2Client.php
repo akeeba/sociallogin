@@ -429,4 +429,9 @@ class OAuth2Client
 
 		return $this;
 	}
+
+	public function getApplication()
+	{
+		return $this->application;
+	}
 }

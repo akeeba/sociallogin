@@ -21,6 +21,7 @@ $array_merge = array_merge(array(
 	'img'        => '',
 	'svg'        => '',
 	'rawimage'   => '',
+	'icon'       => '',
 ), $displayData);
 
 /**
@@ -49,7 +50,7 @@ $array_merge = array_merge(array(
 // Extract the data. Do not remove until the unset() line.
 extract($array_merge);
 
-if (substr($rawimage, -4) === '.svg')
+if (empty($icon) && substr($rawimage, -4) === '.svg')
 {
 	$image = HTMLHelper::_('image', $rawimage, '', '', true, true);
 	$image = $image ? JPATH_ROOT . substr($image, \strlen(Uri::root(true))) : '';
@@ -58,8 +59,12 @@ if (substr($rawimage, -4) === '.svg')
 
 // Start writing your template override code below this line
 ?>
-<a class="btn btn-default akeeba-sociallogin-linkunlink-button akeeba-sociallogin-<?php echo $type?>-button akeeba-sociallogin-<?php echo $type?>-button-<?php echo $slug?> hasTooltip w-100"
-   href="<?php echo $link?>" title="<?php echo $tooltip ?>">
-    <?php echo $img ?>
-    <?php echo $label ?>
+<a class="btn btn-default akeeba-sociallogin-linkunlink-button akeeba-sociallogin-<?= $type?>-button akeeba-sociallogin-<?= $type?>-button-<?= $slug?> hasTooltip w-100"
+   href="<?= $link?>" title="<?= $tooltip ?>">
+	<?php if (!empty($icon)): ?>
+	<span class="<?= $icon ?>" aria-hidden="true"></span>
+	<?php else: ?>
+	<?= $img ?>
+	<?php endif; ?>
+	<?= $label ?>
 </a>

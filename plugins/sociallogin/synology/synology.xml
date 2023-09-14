@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--~
+  ~  @package   AkeebaSocialLogin
+  ~  @copyright Copyright (c)2016-2023 Nicholas K. Dionysopoulos / Akeeba Ltd
+  ~  @license   GNU General Public License version 3, or later
+  -->
+
+<extension type="plugin" group="sociallogin" method="upgrade">
+    <name>PLG_SOCIALLOGIN_SYNOLOGY</name>
+    <version>4.5.1</version>
+    <creationDate>2023-09-06</creationDate>
+
+    <author>Akeeba Ltd</author>
+    <authorEmail>no-reply@akeeba.com</authorEmail>
+    <authorUrl>https://www.akeeba.com</authorUrl>
+
+    <copyright>Copyright (c)2016-2023 Akeeba Ltd</copyright>
+    <license>GNU GPL v3 or later</license>
+
+    <description>PLG_SOCIALLOGIN_SYNOLOGY_DESCRIPTION</description>
+    <namespace path="src">Joomla\Plugin\Sociallogin\SynologyOIDC</namespace>
+
+    <files>
+        <folder>services</folder>
+        <folder plugin="synology">src</folder>
+    </files>
+
+    <media folder="media" destination="plg_sociallogin_synology">
+        <folder>images</folder>
+    </media>
+
+    <languages folder="language">
+        <language tag="en-GB">en-GB/plg_sociallogin_synology.ini</language>
+        <language tag="en-GB">en-GB/plg_sociallogin_synology.sys.ini</language>
+    </languages>
+
+    <config addfieldpath="plugins/system/sociallogin/fields">
+        <fields name="params">
+            <fieldset name="basic">
+                <field
+                        name="wellknown"
+                        type="url"
+                        label="PLG_SOCIALLOGIN_SYNOLOGY_FIELD_WELLKNOWN_LABEL"
+                        description="PLG_SOCIALLOGIN_SYNOLOGY_FIELD_WELLKNOWN_DESC"
+                        default=""
+                />
+
+                <field
+                        name="appid"
+                        type="text"
+                        label="PLG_SOCIALLOGIN_SYNOLOGY_FIELD_APPID_LABEL"
+                        description="PLG_SOCIALLOGIN_SYNOLOGY_FIELD_APPID_DESC"
+                        default=""
+                />
+
+                <field
+                        name="appsecret"
+                        type="password"
+                        label="PLG_SOCIALLOGIN_SYNOLOGY_FIELD_APPSECRET_LABEL"
+                        description="PLG_SOCIALLOGIN_SYNOLOGY_FIELD_APPSECRET_DESC"
+                        default=""
+                />
+
+                <field
+                        name="loginunlinked"
+                        type="radio"
+                        layout="joomla.form.field.radio.switcher"
+                        label="PLG_SOCIALLOGIN_SYNOLOGY_FIELD_LOGINUNLINKED_LABEL"
+                        description="PLG_SOCIALLOGIN_SYNOLOGY_FIELD_LOGINUNLINKED_DESC"
+                        default="0"
+                >
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field>
+
+                <field
+                        name="createnew"
+                        type="radio"
+                        layout="joomla.form.field.radio.switcher"
+                        label="PLG_SOCIALLOGIN_SYNOLOGY_FIELD_CREATENEW_LABEL"
+                        description="PLG_SOCIALLOGIN_SYNOLOGY_FIELD_CREATENEW_DESC"
+                        default="0"
+                >
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field>
+
+                <field
+                        name="forcenew"
+                        type="radio"
+                        layout="joomla.form.field.radio.switcher"
+                        label="PLG_SOCIALLOGIN_SYNOLOGY_FIELD_FORCENEW_LABEL"
+                        description="PLG_SOCIALLOGIN_SYNOLOGY_FIELD_FORCENEW_DESC"
+                        default="0"
+                        showon="createnew:1"
+                >
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field>
+
+                <field
+                        name="bypassvalidation"
+                        type="radio"
+                        layout="joomla.form.field.radio.switcher"
+                        label="PLG_SOCIALLOGIN_SYNOLOGY_FIELD_BYPASSVALIDATION_LABEL"
+                        description="PLG_SOCIALLOGIN_SYNOLOGY_FIELD_BYPASSVALIDATION_DESC"
+                        default="1"
+                        showon="createnew:1"
+                >
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field>
+
+                <field
+                        name="customcss"
+                        type="radio"
+                        layout="joomla.form.field.radio.switcher"
+                        label="PLG_SOCIALLOGIN_SYNOLOGY_FIELD_CUSTOMCSS_LABEL"
+                        description="PLG_SOCIALLOGIN_SYNOLOGY_FIELD_CUSTOMCSS_DESC"
+                        default="1"
+                >
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field>
+
+                <field
+                        name="fgcolor"
+                        type="color"
+                        default="#ffffff"
+                        label="PLG_SOCIALLOGIN_SYNOLOGY_FIELD_FGCOLOR_LABEL"
+                        description="PLG_SOCIALLOGIN_SYNOLOGY_FIELD_FGCOLOR_DESC"
+                        showon="customcss:1"
+                />
+
+                <field
+                        name="bgcolor"
+                        type="color"
+                        default="#000000"
+                        label="PLG_SOCIALLOGIN_SYNOLOGY_FIELD_BGCOLOR_LABEL"
+                        description="PLG_SOCIALLOGIN_SYNOLOGY_FIELD_BGCOLOR_DESC"
+                        showon="customcss:1"
+                />
+
+            </fieldset>
+        </fields>
+    </config>
+
+</extension>

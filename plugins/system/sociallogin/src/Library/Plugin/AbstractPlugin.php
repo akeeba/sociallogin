@@ -135,6 +135,14 @@ abstract class AbstractPlugin extends CMSPlugin implements SubscriberInterface, 
 	protected bool $useCustomCSS = true;
 
 	/**
+	 * CSS class for an icon. When non-empty, it is used instead of the `image` property.
+	 *
+	 * @var   string
+	 * @since 4.6.0
+	 */
+	protected string $icon = '';
+
+	/**
 	 * Constructor. Loads the language files as well.
 	 *
 	 * @param   DispatcherInterface  &$subject  The object to observe
@@ -459,6 +467,8 @@ abstract class AbstractPlugin extends CMSPlugin implements SubscriberInterface, 
 				'img'       => HTMLHelper::image($this->buttonImage, '', [], true),
 				// Raw button image URL
 				'rawimage'  => $this->buttonImage,
+				// Icon class
+				'icon'      => $this->icon,
 				// Background and foreground color
 				'bgColor'   => $this->bgColor,
 				'fgColor'   => $this->fgColor,
@@ -492,6 +502,8 @@ abstract class AbstractPlugin extends CMSPlugin implements SubscriberInterface, 
 			'img'       => HTMLHelper::image($this->buttonImage, '', [], true),
 			// Raw button image URL
 			'rawimage'  => $this->buttonImage,
+			// Icon class
+			'icon'      => $this->icon,
 			// Background and foreground color
 			'bgColor'   => $this->bgColor,
 			'fgColor'   => $this->fgColor,
@@ -557,6 +569,8 @@ abstract class AbstractPlugin extends CMSPlugin implements SubscriberInterface, 
 			'img'       => HTMLHelper::image($this->buttonImage, '', [], true),
 			// Raw button image URL
 			'rawimage'  => $this->buttonImage,
+			// Icon class
+			'icon'      => $this->icon,
 			// Background and foreground color
 			'bgColor'   => $this->bgColor,
 			'fgColor'   => $this->fgColor,

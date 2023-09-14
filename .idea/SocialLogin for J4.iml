@@ -12,6 +12,7 @@
       <excludeFolder url="file://$MODULE_DIR$/plugins/system/sociallogin/vendor/phpseclib/phpseclib"/>
       <excludeFolder url="file://$MODULE_DIR$/release"/>
       <excludeFolder url="file://$MODULE_DIR$/plugins/system/sociallogin/vendor/lcobucci/clock"/>
+      <sourceFolder url="file://$MODULE_DIR$/plugins/sociallogin/twitter/src" packagePrefix="Joomla\Plugin\Sociallogin\Twitter\" isTestSource="false"/>
       <sourceFolder url="file://$MODULE_DIR$/plugins/sociallogin/apple/src" packagePrefix="Joomla\Plugin\Sociallogin\Apple\" isTestSource="false"/>
       <sourceFolder url="file://$MODULE_DIR$/plugins/sociallogin/discord/src" packagePrefix="Joomla\Plugin\Sociallogin\Discord\" isTestSource="false"/>
       <sourceFolder url="file://$MODULE_DIR$/plugins/sociallogin/facebook/src" packagePrefix="Joomla\Plugin\Sociallogin\Facebook\" isTestSource="false"/>
@@ -19,7 +20,7 @@
       <sourceFolder url="file://$MODULE_DIR$/plugins/sociallogin/google/src" packagePrefix="Joomla\Plugin\Sociallogin\Google\" isTestSource="false"/>
       <sourceFolder url="file://$MODULE_DIR$/plugins/sociallogin/linkedin/src" packagePrefix="Joomla\Plugin\Sociallogin\Linkedin\" isTestSource="false"/>
       <sourceFolder url="file://$MODULE_DIR$/plugins/sociallogin/microsoft/src" packagePrefix="Joomla\Plugin\Sociallogin\Microsoft\" isTestSource="false"/>
-      <sourceFolder url="file://$MODULE_DIR$/plugins/sociallogin/twitter/src" packagePrefix="Joomla\Plugin\Sociallogin\Twitter\" isTestSource="false"/>
+      <sourceFolder url="file://$MODULE_DIR$/plugins/sociallogin/synology/src" packagePrefix="Joomla\Plugin\Sociallogin\SynologyOIDC\" isTestSource="false"/>
       <sourceFolder url="file://$MODULE_DIR$/plugins/system/sociallogin/src" packagePrefix="Joomla\Plugin\System\SocialLogin\" isTestSource="false"/>
     </content>
     <orderEntry type="inheritedJdk"/>

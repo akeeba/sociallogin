@@ -87,8 +87,20 @@ trait ButtonInjection
 				$imageContent = file_get_contents($image);
 			}
 
+			if (empty($def['rawimage']))
+			{
+				$imageKey = '___INVALID___';
+			}
+
+			$label = $def['label'];
+
+			if (!empty($def['icon']))
+			{
+				$label = sprintf("<span class='%s' aria-hidden='true'></span>%s", $def['icon'], $label);
+			}
+
 			return [
-				'label'          => $def['label'],
+				'label'          => $label,
 				$imageKey        => $imageContent,
 				'class'          => sprintf('akeeba-sociallogin-link-button-j4 akeeba-sociallogin-link-button-j4-%s akeeba-sociallogin-link-button-%1$s', $def['slug']),
 				'id'             => $randomId,
