@@ -17,7 +17,7 @@
 		}
 	},
 	"require": {
-		"php": ">=7.4 <=8.2",
+		"php": ">=7.4 <8.4",
 		"ext-json": "*",
 		"lcobucci/jwt": "^4.0",
 		"codercat/jwk-to-pem": "<= 1.0.0",
