@@ -7,8 +7,8 @@
 
 <extension type="plugin" group="sociallogin" method="upgrade">
     <name>PLG_SOCIALLOGIN_SYNOLOGY</name>
-    <version>4.5.1</version>
-    <creationDate>2023-09-06</creationDate>
+    <version>4.6.0</version>
+    <creationDate>2023-09-24</creationDate>
 
     <author>Akeeba Ltd</author>
     <authorEmail>no-reply@akeeba.com</authorEmail>
