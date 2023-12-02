@@ -345,6 +345,24 @@ trait LoginTrait
 
 			throw new LoginError($e->getMessage());
 		}
+		catch (\Throwable $e)
+		{
+			Log::add(sprintf('Failed to log the user into the site (%s)', get_class($e)), Log::CRITICAL, 'sociallogin.' . $slug);
+			Log::add(sprintf(
+				'%d: %s (%s:%u)',
+				$e->getCode(),
+				$e->getMessage(),
+				$e->getFile(),
+				$e->getLine()
+			), Log::ERROR, 'sociallogin.' . $slug);
+
+			foreach (explode("\n", $e->getTraceAsString()) as $traceLine)
+			{
+				Log::add($traceLine, Log::DEBUG, 'sociallogin.' . $slug);
+			}
+
+			throw $e;
+		}
 	}
 
 	/**
@@ -767,7 +785,8 @@ trait LoginTrait
 			$options['responseType'] = $response->type;
 
 			// The user is successfully logged in. Run the after login events
-			$this->runPlugins('onUserAfterLogin', [$options]);
+			$fakeSubject = [];
+			$this->runPlugins('onUserAfterLogin', [$options, $fakeSubject]);
 
 			return;
 		}

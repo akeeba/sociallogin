@@ -142,7 +142,7 @@ CSS;
 
 		PluginHelper::importPlugin('sociallogin');
 
-		$buttonDefinitions = $this->runPlugins('onSocialLoginGetLinkButton', [$user], $app);
+		$buttonDefinitions = $this->runPlugins('onSocialLoginGetLinkButton', [$user]);
 		$buttonsHTML       = [];
 
 		$this->customCss($buttonDefinitions);

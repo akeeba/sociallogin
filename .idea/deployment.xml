@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="PublishConfigData" serverName="My Old Site">
+  <component name="PublishConfigData" serverName="My Old Site" confirmBeforeUploading="false">
+    <option name="confirmBeforeUploading" value="false" />
     <serverData>
       <paths name="My Old Site">
         <serverdata>
           <mappings>
-            <mapping deploy="/" local="$PROJECT_DIR$" web="/" />
+            <mapping deploy="/plugins/system/sociallogin" local="$PROJECT_DIR$/plugins/system/sociallogin" web="/plugins/system/sociallogin" />
+            <mapping deploy="/plugins/sociallogin" local="$PROJECT_DIR$/plugins/sociallogin" web="/plugins/sociallogin" />
           </mappings>
         </serverdata>
       </paths>
