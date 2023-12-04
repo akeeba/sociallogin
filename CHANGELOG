@@ -1,6 +1,7 @@
 <?php die(); ?>
 Akeeba SocialLogin 4.7.0
 ================================================================================
++ Login with Amazon
 + Login with Spotify
 # [HIGH] Fatal error on Joomla! 5 [gh-110]
 
