@@ -32,6 +32,7 @@
         <file type="plugin" group="sociallogin" id="google">plg_sociallogin_google.zip</file>
         <file type="plugin" group="sociallogin" id="linkedin">plg_sociallogin_linkedin.zip</file>
         <file type="plugin" group="sociallogin" id="microsoft">plg_sociallogin_microsoft.zip</file>
+        <file type="plugin" group="sociallogin" id="paypal">plg_sociallogin_paypal.zip</file>
         <file type="plugin" group="sociallogin" id="spotify">plg_sociallogin_spotify.zip</file>
         <file type="plugin" group="sociallogin" id="synology">plg_sociallogin_synology.zip</file>
     </files>

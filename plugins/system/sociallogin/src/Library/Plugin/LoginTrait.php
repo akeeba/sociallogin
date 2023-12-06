@@ -544,7 +544,7 @@ trait LoginTrait
 			'sociallogin.' . $logContext
 		);
 
-		$this->runPlugins('onUserLoginFailure', [(array) $response]);
+		$this->runPlugins('onUserLoginFailure', [(array) $response, []]);
 
 		// If status is success, any error will have been raised by the user plugin
 		$expectedStatus = Authentication::STATUS_SUCCESS;
@@ -792,7 +792,7 @@ trait LoginTrait
 		}
 
 		// If we are here the plugins marked a login failure. Trigger the onUserLoginFailure Event.
-		$this->runPlugins('onUserLoginFailure', [(array) $response]);
+		$this->runPlugins('onUserLoginFailure', [(array) $response, []]);
 
 		// Log the failure
 		Log::add($response->error_message, Log::WARNING, 'jerror');
