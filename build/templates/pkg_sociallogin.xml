@@ -36,6 +36,7 @@
         <file type="plugin" group="sociallogin" id="spotify">plg_sociallogin_spotify.zip</file>
         <file type="plugin" group="sociallogin" id="synology">plg_sociallogin_synology.zip</file>
         <file type="plugin" group="sociallogin" id="twitch">plg_sociallogin_twitch.zip</file>
+        <file type="plugin" group="sociallogin" id="yahoo">plg_sociallogin_yahoo.zip</file>
     </files>
 
     <languages folder="language">
