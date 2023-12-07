@@ -16,8 +16,8 @@ use Joomla\Event\Event;
 /**
  * Feature: dynamically assign user groups based on whether the user had linked social media accounts
  *
- * @since   3.0.1
  * @package Akeeba\SocialLogin\Features
+ * @since   3.0.1
  */
 trait DynamicUsergroups
 {
@@ -118,7 +118,15 @@ trait DynamicUsergroups
 
 		$groupsByUser = $reflectedAccess->getProperty('groupsByUser');
 		$groupsByUser->setAccessible(true);
-		$rawGroupsByUser = $groupsByUser->getValue();
+
+		if (version_compare(PHP_VERSION, '8.3.0', 'ge'))
+		{
+			$rawGroupsByUser = $reflectedAccess->getStaticPropertyValue('groupsByUser');
+		}
+		else
+		{
+			$rawGroupsByUser = $groupsByUser->getValue();
+		}
 
 		/**
 		 * Next up, we need to manipulate the keys of the cache which contain user to user group assignments.
@@ -148,7 +156,15 @@ trait DynamicUsergroups
 		}
 
 		// We can commit our changes back to the cache property and make it publicly inaccessible again.
-		$groupsByUser->setValue(null, $rawGroupsByUser);
+		if (version_compare(PHP_VERSION, '8.3.0', 'ge'))
+		{
+			$reflectedAccess->setStaticPropertyValue('groupsByUser', $groupsByUser);
+		}
+		else
+		{
+			$groupsByUser->setValue(null, $rawGroupsByUser);
+		}
+
 		$groupsByUser->setAccessible(false);
 
 		/**
@@ -161,7 +177,15 @@ trait DynamicUsergroups
 		 */
 		$refProperty = $reflectedAccess->getProperty('identities');
 		$refProperty->setAccessible(true);
-		$identities = $refProperty->getValue();
+
+		if (version_compare(PHP_VERSION, '8.3.0', 'ge'))
+		{
+			$identities = $reflectedAccess->getStaticPropertyValue('identities');
+		}
+		else
+		{
+			$identities = $refProperty->getValue();
+		}
 
 		$keys = [$user->id, 0];
 
@@ -175,7 +199,15 @@ trait DynamicUsergroups
 			unset($identities[$key]);
 		}
 
-		$refProperty->setValue(null, $identities);
+		if (version_compare(PHP_VERSION, '8.3.0', 'ge'))
+		{
+			$reflectedAccess->setStaticPropertyValue('identities', $identities);
+		}
+		else
+		{
+			$refProperty->setValue(null, $identities);
+		}
+
 		$refProperty->setAccessible(false);
 
 		$reflectedUser = new \ReflectionObject($user);
@@ -212,13 +244,15 @@ trait DynamicUsergroups
 	{
 		$db    = $this->getDatabase();
 		$query = $db->getQuery(true)
-		            ->select([
-			            $db->qn('profile_key'),
-			            $db->qn('profile_value'),
-		            ])
-		            ->from($db->qn('#__user_profiles'))
-		            ->where($db->qn('profile_key') . ' LIKE ' . $db->q('sociallogin.%'))
-		            ->where($db->qn('user_id') . ' = ' . $db->q($user->id));
+			->select(
+				[
+					$db->qn('profile_key'),
+					$db->qn('profile_value'),
+				]
+			)
+			->from($db->qn('#__user_profiles'))
+			->where($db->qn('profile_key') . ' LIKE ' . $db->q('sociallogin.%'))
+			->where($db->qn('user_id') . ' = ' . $db->q($user->id));
 
 		$profileValues = $db->setQuery($query)->loadAssocList('profile_key');
 
