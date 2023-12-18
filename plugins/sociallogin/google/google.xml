@@ -7,8 +7,8 @@
 
 <extension type="plugin" group="sociallogin" method="upgrade">
     <name>PLG_SOCIALLOGIN_GOOGLE</name>
-    <version>4.6.0</version>
-    <creationDate>2023-09-24</creationDate>
+    <version>4.7.0</version>
+    <creationDate>2023-12-18</creationDate>
 
     <author>Akeeba Ltd</author>
     <authorEmail>no-reply@akeeba.com</authorEmail>
