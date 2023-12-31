@@ -41,7 +41,7 @@
       <option name="workingDir" value="$ProjectFileDir$/plugins/system/sociallogin/media/js" />
       <envs />
     </TaskOptions>
-    <TaskOptions isEnabled="true">
+    <TaskOptions isEnabled="false">
       <option name="arguments" value="--compilation_level SIMPLE_OPTIMIZATIONS --js $FileName$" />
       <option name="checkSyntaxErrors" value="true" />
       <option name="description" />

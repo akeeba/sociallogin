@@ -6,7 +6,7 @@
     <author>Akeeba Ltd</author>
     <authorEmail>no-reply@akeeba.com</authorEmail>
     <authorUrl>https://www.akeeba.com</authorUrl>
-    <copyright>Copyright (c)2016-2023 Akeeba Ltd</copyright>
+    <copyright>Copyright (c)2016-2024 Nicholas K. Dionysopoulos / Akeeba Ltd</copyright>
     <license>GNU GPL v3 or later</license>
     <description>PLG_SOCIALLOGIN_TWITCH_DESCRIPTION</description>
     <namespace path="src">Akeeba\Plugin\Sociallogin\Twitch</namespace>
