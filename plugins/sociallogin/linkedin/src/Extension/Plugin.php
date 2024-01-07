@@ -73,7 +73,7 @@ class Plugin extends AbstractPlugin
 			];
 			$httpClient      = HttpFactory::getHttp();
 			$this->connector = new LinkedInOAuth($options, $httpClient, $this->getApplication()->input, $this->getApplication());
-			$this->connector->setScope('r_liteprofile r_emailaddress');
+			$this->connector->setScope('profile email openid');
 		}
 
 		return $this->connector;
@@ -100,9 +100,8 @@ class Plugin extends AbstractPlugin
 		$client       = HttpFactory::getHttp($options);
 		$liUserQuery  = new UserQuery($client, $tokenArray['access_token']);
 		$liUserFields = $liUserQuery->getUserInformation();
-		$emailFields  = $liUserQuery->getEmailAddress();
 
-		return array_merge($liUserFields, $emailFields);
+		return $liUserFields;
 	}
 
 	/**
@@ -115,33 +114,11 @@ class Plugin extends AbstractPlugin
 	 */
 	protected function mapSocialProfileToUserData(array $socialProfile): UserData
 	{
-		$nameParts = [];
-
-		foreach (['localizedFirstName', 'localizedLastName'] as $fieldName)
-		{
-			if (!isset($socialProfile[$fieldName]))
-			{
-				continue;
-			}
-
-			$nameParts[] = $socialProfile[$fieldName];
-		}
-
 		$userData           = new UserData();
-		$userData->name     = implode(' ', $nameParts);
-		$userData->name     = $userData->name ?: 'John Doe';
-		$userData->id       = $socialProfile['id'];
-		$userData->verified = false;
-		$userData->email    = 'invalid@example.com';
-
-		if (isset($socialProfile['elements']) &&
-			isset($socialProfile['elements'][0]) &&
-			isset($socialProfile['elements'][0]['handle~']) &&
-			isset($socialProfile['elements'][0]['handle~']['emailAddress']))
-		{
-			$userData->email    = $socialProfile['elements'][0]['handle~']['emailAddress'];
-			$userData->verified = true;
-		}
+		$userData->name     = trim($socialProfile['given_name'] . ' ' . $socialProfile['family_name']) ?: 'John Doe';
+		$userData->id       = $socialProfile['sub'];
+		$userData->verified = $socialProfile['email_verified'];
+		$userData->email    = $socialProfile['email'];
 
 		return $userData;
 	}

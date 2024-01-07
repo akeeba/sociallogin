@@ -13,7 +13,6 @@
     <include_path>
       <path value="$PROJECT_DIR$/../../master/joomla4" />
       <path value="$PROJECT_DIR$/../../dionysopoulos/joomlatypehints/generated_hints" />
-      <path value="$USER_HOME$/Sites/boot4--" />
       <path value="$PROJECT_DIR$/plugins/system/sociallogin/vendor/composer" />
       <path value="$PROJECT_DIR$/plugins/system/sociallogin/vendor/lcobucci/jwt" />
       <path value="$PROJECT_DIR$/plugins/system/sociallogin/vendor/phpseclib/phpseclib" />

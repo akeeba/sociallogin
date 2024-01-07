@@ -1,4 +1,8 @@
 <?php die(); ?>
+Akeeba SocialLogin 4.7.1
+================================================================================
+~ Updated Login with LinkedIn to work with the changes made to its API
+
 Akeeba SocialLogin 4.7.0
 ================================================================================
 + Login with Amazon

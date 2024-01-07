@@ -46,33 +46,6 @@ class UserQuery
 	}
 
 	/**
-	 * Get the email information about the currently logged in user.
-	 *
-	 * @return  array
-	 *
-	 * @see https://docs.microsoft.com/en-us/linkedin/consumer/integrations/self-serve/sign-in-with-linkedin
-	 */
-	public function getEmailAddress()
-	{
-		$path = '/emailAddress?q=members&projection=(elements*(handle~))';
-
-		$headers = [
-			'Authorization' => 'Bearer ' . $this->token,
-		];
-
-		$reply = $this->client->get(self::$endpoint . $path, $headers);
-
-		if ($reply->code > 299)
-		{
-			throw new \RuntimeException("HTTP {$reply->code}: {$reply->body}");
-		}
-
-		$response = json_decode($reply->body, true);
-
-		return $response;
-	}
-
-	/**
 	 * Get information about for the user's LinkedIn avatar
 	 *
 	 * @return  array
@@ -81,7 +54,7 @@ class UserQuery
 	 */
 	public function getUserAvatarUrl()
 	{
-		$path = '/me?projection=(id,firstName,lastName,profilePicture(displayImage~:playableStreams))';
+		$path = '/userinfo';
 
 		$headers = [
 			'Authorization' => 'Bearer ' . $this->token,
@@ -96,7 +69,7 @@ class UserQuery
 
 		$response = json_decode($reply->body, true);
 
-		return $response->pictureUrl;
+		return $response->picture;
 	}
 
 	/**
@@ -108,7 +81,7 @@ class UserQuery
 	 */
 	public function getUserInformation()
 	{
-		$path = '/me';
+		$path = '/userinfo';
 
 		$headers = [
 			'Authorization' => 'Bearer ' . $this->token,

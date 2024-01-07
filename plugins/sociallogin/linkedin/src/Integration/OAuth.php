@@ -40,20 +40,9 @@ class OAuth extends OAuth2Client
 		$this->options = $options;
 
 		// Setup the authentication and token urls if not already set.
-		if (!isset($this->options['authurl']))
-		{
-			$this->options['authurl'] = 'https://www.linkedin.com/oauth/v2/authorization';
-		}
-
-		if (!isset($this->options['tokenurl']))
-		{
-			$this->options['tokenurl'] = 'https://www.linkedin.com/oauth/v2/accessToken';
-		}
-
-		if (!isset($this->options['scope']))
-		{
-			$this->options['scope'] = 'r_liteprofile r_emailaddress';
-		}
+		$this->options['authurl']  ??= 'https://www.linkedin.com/oauth/v2/authorization';
+		$this->options['tokenurl'] ??= 'https://www.linkedin.com/oauth/v2/accessToken';
+		$this->options['scope']    ??= 'profile email openid';
 
 		// Call the \Joomla\OAuth2\Client constructor to setup the object.
 		parent::__construct($this->options, $client, $input, $application);
