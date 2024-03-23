@@ -32,7 +32,7 @@ return new class implements ServiceProviderInterface {
 				$subject = $container->get(DispatcherInterface::class);
 				$config  = (array) PluginHelper::getPlugin('sociallogin', 'microsoft');
 
-				$plugin = new Joomla\Plugin\Sociallogin\Microsoft\Extension\Plugin($subject, $config);
+				$plugin = new Akeeba\Plugin\Sociallogin\Microsoft\Extension\Plugin($subject, $config);
 
 				$plugin->setApplication(\Joomla\CMS\Factory::getApplication());
 				$plugin->setDatabase($container->get(DatabaseInterface::class));

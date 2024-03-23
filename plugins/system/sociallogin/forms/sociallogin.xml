@@ -6,7 +6,7 @@
   -->
 
 <form>
-	<fields name="sociallogin" addfieldprefix="Joomla\Plugin\System\SocialLogin\Field">
+	<fields name="sociallogin" addfieldprefix="Akeeba\Plugin\System\SocialLogin\Field">
 		<fieldset name="sociallogin"
 			label="PLG_SYSTEM_SOCIALLOGIN_HEADER"
 		>

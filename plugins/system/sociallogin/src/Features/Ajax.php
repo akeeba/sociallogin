@@ -5,7 +5,7 @@
  * @license   GNU General Public License version 3, or later
  */
 
-namespace Joomla\Plugin\System\SocialLogin\Features;
+namespace Akeeba\Plugin\System\SocialLogin\Features;
 
 // Prevent direct access
 defined('_JEXEC') || die;
@@ -93,7 +93,7 @@ trait Ajax
 	 */
 	public function onAjaxSociallogin(Event $event): void
 	{
-		$ajax                     = new \Joomla\Plugin\System\SocialLogin\Library\Helper\Ajax($this, $this->getApplication(), $this->getDatabase());
+		$ajax                     = new \Akeeba\Plugin\System\SocialLogin\Library\Helper\Ajax($this, $this->getApplication(), $this->getDatabase());
 		$app                      = $this->getApplication();
 		$input                    = $app->input;
 

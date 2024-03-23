@@ -5,7 +5,7 @@
  * @license   GNU General Public License version 3, or later
  */
 
-namespace Joomla\Plugin\Sociallogin\Google\Integration;
+namespace Akeeba\Plugin\Sociallogin\Google\Integration;
 
 // Protect from unauthorized access
 defined('_JEXEC') || die();

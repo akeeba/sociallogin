@@ -5,7 +5,7 @@
  * @license   GNU General Public License version 3, or later
  */
 
-namespace Joomla\Plugin\Sociallogin\Github\Integration;
+namespace Akeeba\Plugin\Sociallogin\Github\Integration;
 
 // Protect from unauthorized access
 defined('_JEXEC') || die();
@@ -13,7 +13,7 @@ defined('_JEXEC') || die();
 use Joomla\CMS\Application\CMSApplication;
 use Joomla\CMS\Http\Http;
 use Joomla\Input\Input;
-use Joomla\Plugin\System\SocialLogin\Library\OAuth\OAuth2Client;
+use Akeeba\Plugin\System\SocialLogin\Library\OAuth\OAuth2Client;
 
 /**
  * Facebook OAuth client.

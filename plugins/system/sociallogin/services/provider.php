@@ -13,7 +13,7 @@ use Joomla\Database\DatabaseInterface;
 use Joomla\DI\Container;
 use Joomla\DI\ServiceProviderInterface;
 use Joomla\Event\DispatcherInterface;
-use Joomla\Plugin\System\SocialLogin\Extension\SocialLogin;
+use Akeeba\Plugin\System\SocialLogin\Extension\SocialLogin;
 
 return new class implements ServiceProviderInterface {
 	/**

@@ -6,7 +6,7 @@
  */
 
 // Protect from unauthorized access
-namespace Joomla\Plugin\Sociallogin\Google\Extension;
+namespace Akeeba\Plugin\Sociallogin\Google\Extension;
 
 defined('_JEXEC') || die();
 
@@ -14,11 +14,11 @@ use Exception;
 use Joomla\CMS\Http\HttpFactory;
 use Joomla\CMS\Uri\Uri;
 use Joomla\Event\DispatcherInterface;
-use Joomla\Plugin\Sociallogin\Google\Integration\OAuth2;
-use Joomla\Plugin\Sociallogin\Google\Integration\OpenID;
-use Joomla\Plugin\System\SocialLogin\Library\Data\UserData;
-use Joomla\Plugin\System\SocialLogin\Library\OAuth\OAuth2Client;
-use Joomla\Plugin\System\SocialLogin\Library\Plugin\AbstractPlugin;
+use Akeeba\Plugin\Sociallogin\Google\Integration\OAuth2;
+use Akeeba\Plugin\Sociallogin\Google\Integration\OpenID;
+use Akeeba\Plugin\System\SocialLogin\Library\Data\UserData;
+use Akeeba\Plugin\System\SocialLogin\Library\OAuth\OAuth2Client;
+use Akeeba\Plugin\System\SocialLogin\Library\Plugin\AbstractPlugin;
 use Joomla\Registry\Registry;
 
 if (!class_exists(AbstractPlugin::class, true))

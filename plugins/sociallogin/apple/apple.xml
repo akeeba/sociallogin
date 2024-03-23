@@ -18,7 +18,7 @@
     <license>GNU GPL v3 or later</license>
 
     <description>PLG_SOCIALLOGIN_APPLE_DESCRIPTION</description>
-    <namespace path="src">Joomla\Plugin\Sociallogin\Apple</namespace>
+    <namespace path="src">Akeeba\Plugin\Sociallogin\Apple</namespace>
 
     <files>
         <folder>services</folder>

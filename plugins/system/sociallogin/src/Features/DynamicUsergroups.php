@@ -5,7 +5,7 @@
  * @license   GNU General Public License version 3, or later
  */
 
-namespace Joomla\Plugin\System\SocialLogin\Features;
+namespace Akeeba\Plugin\System\SocialLogin\Features;
 
 // Protect from unauthorized access
 defined('_JEXEC') || die();

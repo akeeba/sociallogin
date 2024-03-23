@@ -13,8 +13,8 @@ use Akeeba\Plugin\Sociallogin\Amazon\Integration\OAuth as AmazonOAuth;
 use Akeeba\Plugin\Sociallogin\Amazon\Integration\UserQuery;
 use Joomla\CMS\Http\HttpFactory;
 use Joomla\CMS\Uri\Uri;
-use Joomla\Plugin\System\SocialLogin\Library\Data\UserData;
-use Joomla\Plugin\System\SocialLogin\Library\Plugin\AbstractPlugin;
+use Akeeba\Plugin\System\SocialLogin\Library\Data\UserData;
+use Akeeba\Plugin\System\SocialLogin\Library\Plugin\AbstractPlugin;
 use Joomla\Registry\Registry;
 
 if (!class_exists(AbstractPlugin::class, true))

@@ -5,7 +5,7 @@
  * @license   GNU General Public License version 3, or later
  */
 
-namespace Joomla\Plugin\Sociallogin\SynologyOIDC\Integration;
+namespace Akeeba\Plugin\Sociallogin\SynologyOIDC\Integration;
 
 use Joomla\CMS\Http\Http;
 

@@ -9,7 +9,7 @@ namespace Akeeba\Plugin\Sociallogin\Paypal\Integration;
 
 defined('_JEXEC') || die();
 
-use Joomla\Plugin\System\SocialLogin\Library\OAuth\OAuth2Client;
+use Akeeba\Plugin\System\SocialLogin\Library\OAuth\OAuth2Client;
 use RuntimeException;
 
 class OAuth extends OAuth2Client

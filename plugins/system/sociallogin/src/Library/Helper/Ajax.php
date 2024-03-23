@@ -5,7 +5,7 @@
  * @license   GNU General Public License version 3, or later
  */
 
-namespace Joomla\Plugin\System\SocialLogin\Library\Helper;
+namespace Akeeba\Plugin\System\SocialLogin\Library\Helper;
 
 // Protect from unauthorized access
 defined('_JEXEC') || die();

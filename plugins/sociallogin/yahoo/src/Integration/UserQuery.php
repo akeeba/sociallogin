@@ -5,7 +5,7 @@
  * @license   GNU General Public License version 3, or later
  */
 
-namespace Joomla\Plugin\Sociallogin\Yahoo\Integration;
+namespace Akeeba\Plugin\Sociallogin\Yahoo\Integration;
 
 defined('_JEXEC') || die();
 

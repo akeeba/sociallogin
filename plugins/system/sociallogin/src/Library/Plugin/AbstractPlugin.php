@@ -5,7 +5,7 @@
  * @license   GNU General Public License version 3, or later
  */
 
-namespace Joomla\Plugin\System\SocialLogin\Library\Plugin;
+namespace Akeeba\Plugin\System\SocialLogin\Library\Plugin;
 
 // Protect from unauthorized access
 defined('_JEXEC') || die();
@@ -28,10 +28,10 @@ use Joomla\Database\DatabaseInterface;
 use Joomla\Event\DispatcherInterface;
 use Joomla\Event\Event;
 use Joomla\Event\SubscriberInterface;
-use Joomla\Plugin\System\SocialLogin\Library\Data\PluginConfiguration;
-use Joomla\Plugin\System\SocialLogin\Library\Data\UserData;
-use Joomla\Plugin\System\SocialLogin\Library\Exception\Login\GenericMessage;
-use Joomla\Plugin\System\SocialLogin\Library\Exception\Login\LoginError;
+use Akeeba\Plugin\System\SocialLogin\Library\Data\PluginConfiguration;
+use Akeeba\Plugin\System\SocialLogin\Library\Data\UserData;
+use Akeeba\Plugin\System\SocialLogin\Library\Exception\Login\GenericMessage;
+use Akeeba\Plugin\System\SocialLogin\Library\Exception\Login\LoginError;
 use Joomla\Utilities\ArrayHelper;
 use RuntimeException;
 

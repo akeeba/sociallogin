@@ -5,7 +5,7 @@
  * @license   GNU General Public License version 3, or later
  */
 
-namespace Joomla\Plugin\Sociallogin\Apple\Extension;
+namespace Akeeba\Plugin\Sociallogin\Apple\Extension;
 
 // Protect from unauthorized access
 defined('_JEXEC') || die();
@@ -17,10 +17,10 @@ use Joomla\CMS\Http\HttpFactory;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Uri\Uri;
 use Joomla\Event\DispatcherInterface;
-use Joomla\Plugin\Sociallogin\Apple\Util\RandomWords;
-use Joomla\Plugin\System\SocialLogin\Library\Data\UserData;
-use Joomla\Plugin\System\SocialLogin\Library\OAuth\OAuth2Client;
-use Joomla\Plugin\System\SocialLogin\Library\Plugin\AbstractPlugin;
+use Akeeba\Plugin\Sociallogin\Apple\Util\RandomWords;
+use Akeeba\Plugin\System\SocialLogin\Library\Data\UserData;
+use Akeeba\Plugin\System\SocialLogin\Library\OAuth\OAuth2Client;
+use Akeeba\Plugin\System\SocialLogin\Library\Plugin\AbstractPlugin;
 use Lcobucci\JWT\Configuration as JWTConfig;
 use Lcobucci\JWT\Signer\Ecdsa\Sha256 as SignerES256;
 use Lcobucci\JWT\Signer\Key\InMemory;

@@ -6,7 +6,7 @@
  */
 
 // Protect from unauthorized access
-namespace Joomla\Plugin\Sociallogin\Discord\Extension;
+namespace Akeeba\Plugin\Sociallogin\Discord\Extension;
 
 defined('_JEXEC') || die();
 
@@ -14,10 +14,10 @@ use Exception;
 use Joomla\CMS\Http\HttpFactory;
 use Joomla\CMS\Uri\Uri;
 use Joomla\Event\DispatcherInterface;
-use Joomla\Plugin\Sociallogin\Discord\Integration\OAuth as DiscordOAuth;
-use Joomla\Plugin\Sociallogin\Discord\Integration\UserQuery;
-use Joomla\Plugin\System\SocialLogin\Library\Data\UserData;
-use Joomla\Plugin\System\SocialLogin\Library\Plugin\AbstractPlugin;
+use Akeeba\Plugin\Sociallogin\Discord\Integration\OAuth as DiscordOAuth;
+use Akeeba\Plugin\Sociallogin\Discord\Integration\UserQuery;
+use Akeeba\Plugin\System\SocialLogin\Library\Data\UserData;
+use Akeeba\Plugin\System\SocialLogin\Library\Plugin\AbstractPlugin;
 use Joomla\Registry\Registry;
 
 if (!class_exists(AbstractPlugin::class, true))

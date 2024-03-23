@@ -5,7 +5,7 @@
  * @license   GNU General Public License version 3, or later
  */
 
-namespace Joomla\Plugin\Sociallogin\Apple\Util;
+namespace Akeeba\Plugin\Sociallogin\Apple\Util;
 
 defined('_JEXEC') || die;
 

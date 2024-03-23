@@ -5,7 +5,7 @@
  * @license   GNU General Public License version 3, or later
  */
 
-namespace Joomla\Plugin\System\SocialLogin\Library\Plugin;
+namespace Akeeba\Plugin\System\SocialLogin\Library\Plugin;
 
 use Exception;
 use Joomla\Application\AbstractApplication;

@@ -5,7 +5,7 @@
  * @license   GNU General Public License version 3, or later
  */
 
-namespace Joomla\Plugin\System\SocialLogin\Field;
+namespace Akeeba\Plugin\System\SocialLogin\Field;
 
 defined('_JEXEC') || die;
 
@@ -13,7 +13,7 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Form\FormField;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\User\UserFactoryInterface;
-use Joomla\Plugin\System\SocialLogin\Library\Helper\Integrations;
+use Akeeba\Plugin\System\SocialLogin\Library\Helper\Integrations;
 
 /**
  * @noinspection PhpUnused

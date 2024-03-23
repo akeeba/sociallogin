@@ -2,28 +2,12 @@
 <module type="WEB_MODULE" version="4">
   <component name="NewModuleRootManager">
     <content url="file://$MODULE_DIR$">
-      <excludeFolder url="file://$MODULE_DIR$/.github"/>
-      <excludeFolder url="file://$MODULE_DIR$/.idea"/>
-      <excludeFolder url="file://$MODULE_DIR$/modules"/>
-      <excludeFolder url="file://$MODULE_DIR$/plugins/system/sociallogin/vendor/codercat/jwk-to-pem"/>
-      <excludeFolder url="file://$MODULE_DIR$/plugins/system/sociallogin/vendor/composer"/>
-      <excludeFolder url="file://$MODULE_DIR$/plugins/system/sociallogin/vendor/lcobucci/jwt"/>
-      <excludeFolder url="file://$MODULE_DIR$/plugins/system/sociallogin/vendor/phpseclib/bcmath_compat"/>
-      <excludeFolder url="file://$MODULE_DIR$/plugins/system/sociallogin/vendor/phpseclib/phpseclib"/>
-      <excludeFolder url="file://$MODULE_DIR$/release"/>
-      <excludeFolder url="file://$MODULE_DIR$/plugins/system/sociallogin/vendor/lcobucci/clock"/>
-      <sourceFolder url="file://$MODULE_DIR$/plugins/sociallogin/twitter/src" packagePrefix="Joomla\Plugin\Sociallogin\Twitter\" isTestSource="false"/>
-      <sourceFolder url="file://$MODULE_DIR$/plugins/sociallogin/apple/src" packagePrefix="Joomla\Plugin\Sociallogin\Apple\" isTestSource="false"/>
-      <sourceFolder url="file://$MODULE_DIR$/plugins/sociallogin/discord/src" packagePrefix="Joomla\Plugin\Sociallogin\Discord\" isTestSource="false"/>
-      <sourceFolder url="file://$MODULE_DIR$/plugins/sociallogin/facebook/src" packagePrefix="Joomla\Plugin\Sociallogin\Facebook\" isTestSource="false"/>
-      <sourceFolder url="file://$MODULE_DIR$/plugins/sociallogin/github/src" packagePrefix="Joomla\Plugin\Sociallogin\Github\" isTestSource="false"/>
-      <sourceFolder url="file://$MODULE_DIR$/plugins/sociallogin/google/src" packagePrefix="Joomla\Plugin\Sociallogin\Google\" isTestSource="false"/>
-      <sourceFolder url="file://$MODULE_DIR$/plugins/sociallogin/linkedin/src" packagePrefix="Joomla\Plugin\Sociallogin\Linkedin\" isTestSource="false"/>
-      <sourceFolder url="file://$MODULE_DIR$/plugins/sociallogin/microsoft/src" packagePrefix="Joomla\Plugin\Sociallogin\Microsoft\" isTestSource="false"/>
-      <sourceFolder url="file://$MODULE_DIR$/plugins/sociallogin/synology/src" packagePrefix="Joomla\Plugin\Sociallogin\SynologyOIDC\" isTestSource="false"/>
-      <sourceFolder url="file://$MODULE_DIR$/plugins/system/sociallogin/src" packagePrefix="Joomla\Plugin\System\SocialLogin\" isTestSource="false"/>
+      <excludeFolder url="file://$MODULE_DIR$/.github" />
+      <excludeFolder url="file://$MODULE_DIR$/.idea" />
+      <excludeFolder url="file://$MODULE_DIR$/modules" />
+      <excludeFolder url="file://$MODULE_DIR$/release" />
     </content>
-    <orderEntry type="inheritedJdk"/>
-    <orderEntry type="sourceFolder" forTests="false"/>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
   </component>
 </module>

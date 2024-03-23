@@ -18,7 +18,7 @@
     <license>GNU GPL v3 or later</license>
 
     <description>PLG_SOCIALLOGIN_GITHUB_DESCRIPTION</description>
-    <namespace path="src">Joomla\Plugin\Sociallogin\Github</namespace>
+    <namespace path="src">Akeeba\Plugin\Sociallogin\Github</namespace>
 
     <files>
         <folder>services</folder>

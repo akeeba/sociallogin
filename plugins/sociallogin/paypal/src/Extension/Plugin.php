@@ -15,8 +15,8 @@ use Joomla\CMS\Uri\Uri;
 use Joomla\Event\DispatcherInterface;
 use Akeeba\Plugin\Sociallogin\Paypal\Integration\OAuth as PaypalOAuth;
 use Akeeba\Plugin\Sociallogin\Paypal\Integration\UserQuery;
-use Joomla\Plugin\System\SocialLogin\Library\Data\UserData;
-use Joomla\Plugin\System\SocialLogin\Library\Plugin\AbstractPlugin;
+use Akeeba\Plugin\System\SocialLogin\Library\Data\UserData;
+use Akeeba\Plugin\System\SocialLogin\Library\Plugin\AbstractPlugin;
 use Joomla\Registry\Registry;
 
 if (!class_exists(AbstractPlugin::class, true))

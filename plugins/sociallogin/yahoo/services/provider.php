@@ -23,7 +23,7 @@ return new class implements ServiceProviderInterface {
 			PluginInterface::class, function (Container $container) {
 			$subject = $container->get(DispatcherInterface::class);
 			$config  = (array) PluginHelper::getPlugin('sociallogin', 'yahoo');
-			$plugin  = new Joomla\Plugin\Sociallogin\Yahoo\Extension\Plugin($subject, $config);
+			$plugin  = new Akeeba\Plugin\Sociallogin\Yahoo\Extension\Plugin($subject, $config);
 			$plugin->setApplication(Factory::getApplication());
 			$plugin->setDatabase($container->get(DatabaseInterface::class));
 			$plugin->init();

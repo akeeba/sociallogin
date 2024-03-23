@@ -5,7 +5,7 @@
  * @license   GNU General Public License version 3, or later
  */
 
-namespace Joomla\Plugin\Sociallogin\Linkedin\Integration;
+namespace Akeeba\Plugin\Sociallogin\Linkedin\Integration;
 
 // Protect from unauthorized access
 defined('_JEXEC') || die();

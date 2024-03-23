@@ -1,4 +1,8 @@
 <?php die(); ?>
+Akeeba SocialLogin 4.8.0
+================================================================================
+~ Changed the namespace of the plugins from Joomla\Plugin to Akeeba\Plugin
+
 Akeeba SocialLogin 4.7.1
 ================================================================================
 ~ Updated Login with LinkedIn to work with the changes made to its API

@@ -5,7 +5,7 @@
  * @license   GNU General Public License version 3, or later
  */
 
-namespace Joomla\Plugin\Sociallogin\SynologyOIDC\Extension;
+namespace Akeeba\Plugin\Sociallogin\SynologyOIDC\Extension;
 
 defined('_JEXEC') || die();
 
@@ -14,11 +14,11 @@ use Joomla\CMS\Application\CMSApplication;
 use Joomla\CMS\Cache\CacheControllerFactoryAwareTrait;
 use Joomla\CMS\Http\HttpFactory;
 use Joomla\CMS\Uri\Uri;
-use Joomla\Plugin\Sociallogin\SynologyOIDC\Integration\OAuth as SynologyOAuth;
-use Joomla\Plugin\Sociallogin\SynologyOIDC\Integration\UserQuery;
-use Joomla\Plugin\System\SocialLogin\Library\Data\UserData;
-use Joomla\Plugin\System\SocialLogin\Library\OAuth\OpenIDConnectTrait;
-use Joomla\Plugin\System\SocialLogin\Library\Plugin\AbstractPlugin;
+use Akeeba\Plugin\Sociallogin\SynologyOIDC\Integration\OAuth as SynologyOAuth;
+use Akeeba\Plugin\Sociallogin\SynologyOIDC\Integration\UserQuery;
+use Akeeba\Plugin\System\SocialLogin\Library\Data\UserData;
+use Akeeba\Plugin\System\SocialLogin\Library\OAuth\OpenIDConnectTrait;
+use Akeeba\Plugin\System\SocialLogin\Library\Plugin\AbstractPlugin;
 use Joomla\Registry\Registry;
 
 if (!class_exists(AbstractPlugin::class, true))

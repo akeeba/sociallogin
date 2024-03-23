@@ -9,7 +9,7 @@
     <copyright>Copyright (c)2016-2024 Nicholas K. Dionysopoulos / Akeeba Ltd</copyright>
     <license>GNU GPL v3 or later</license>
     <description>PLG_SOCIALLOGIN_YAHOO_DESCRIPTION</description>
-    <namespace path="src">Joomla\Plugin\Sociallogin\Yahoo</namespace>
+    <namespace path="src">Akeeba\Plugin\Sociallogin\Yahoo</namespace>
     <files>
         <folder>services</folder>
         <folder plugin="yahoo">src</folder>

@@ -5,7 +5,7 @@
  * @license   GNU General Public License version 3, or later
  */
 
-namespace Joomla\Plugin\Sociallogin\Yahoo\Extension;
+namespace Akeeba\Plugin\Sociallogin\Yahoo\Extension;
 
 defined('_JEXEC') || die();
 
@@ -13,10 +13,10 @@ use Exception;
 use Joomla\CMS\Http\HttpFactory;
 use Joomla\CMS\Uri\Uri;
 use Joomla\Event\DispatcherInterface;
-use Joomla\Plugin\Sociallogin\Yahoo\Integration\OAuth as YahooOAuth;
-use Joomla\Plugin\Sociallogin\Yahoo\Integration\UserQuery;
-use Joomla\Plugin\System\SocialLogin\Library\Data\UserData;
-use Joomla\Plugin\System\SocialLogin\Library\Plugin\AbstractPlugin;
+use Akeeba\Plugin\Sociallogin\Yahoo\Integration\OAuth as YahooOAuth;
+use Akeeba\Plugin\Sociallogin\Yahoo\Integration\UserQuery;
+use Akeeba\Plugin\System\SocialLogin\Library\Data\UserData;
+use Akeeba\Plugin\System\SocialLogin\Library\Plugin\AbstractPlugin;
 use Joomla\Registry\Registry;
 
 if (!class_exists(AbstractPlugin::class, true))

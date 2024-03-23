@@ -18,7 +18,7 @@
     <license>GNU GPL v3 or later</license>
 
     <description>PLG_SOCIALLOGIN_MICROSOFT_DESCRIPTION</description>
-    <namespace path="src">Joomla\Plugin\Sociallogin\Microsoft</namespace>
+    <namespace path="src">Akeeba\Plugin\Sociallogin\Microsoft</namespace>
 
     <files>
         <folder>services</folder>

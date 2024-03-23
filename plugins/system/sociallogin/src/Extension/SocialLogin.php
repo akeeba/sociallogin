@@ -5,7 +5,7 @@
  * @license   GNU General Public License version 3, or later
  */
 
-namespace Joomla\Plugin\System\SocialLogin\Extension;
+namespace Akeeba\Plugin\System\SocialLogin\Extension;
 
 // Prevent direct access
 defined('_JEXEC') || die;
@@ -24,13 +24,13 @@ use Joomla\Database\DatabaseDriver;
 use Joomla\Database\DatabaseInterface;
 use Joomla\Event\Event;
 use Joomla\Event\SubscriberInterface;
-use Joomla\Plugin\System\SocialLogin\Features\Ajax;
-use Joomla\Plugin\System\SocialLogin\Features\ButtonInjection;
-use Joomla\Plugin\System\SocialLogin\Features\DynamicUsergroups;
-use Joomla\Plugin\System\SocialLogin\Features\UserFields;
-use Joomla\Plugin\System\SocialLogin\Library\Plugin\AddLoggerTrait;
-use Joomla\Plugin\System\SocialLogin\Library\Plugin\RunPluginsTrait;
-use Joomla\Plugin\System\SocialLogin\Library\Plugin\SocialLoginButtonsTrait;
+use Akeeba\Plugin\System\SocialLogin\Features\Ajax;
+use Akeeba\Plugin\System\SocialLogin\Features\ButtonInjection;
+use Akeeba\Plugin\System\SocialLogin\Features\DynamicUsergroups;
+use Akeeba\Plugin\System\SocialLogin\Features\UserFields;
+use Akeeba\Plugin\System\SocialLogin\Library\Plugin\AddLoggerTrait;
+use Akeeba\Plugin\System\SocialLogin\Library\Plugin\RunPluginsTrait;
+use Akeeba\Plugin\System\SocialLogin\Library\Plugin\SocialLoginButtonsTrait;
 
 class SocialLogin extends CMSPlugin implements SubscriberInterface, DatabaseAwareInterface
 {

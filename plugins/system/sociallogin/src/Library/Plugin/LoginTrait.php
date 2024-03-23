@@ -5,7 +5,7 @@
  * @license   GNU General Public License version 3, or later
  */
 
-namespace Joomla\Plugin\System\SocialLogin\Library\Plugin;
+namespace Akeeba\Plugin\System\SocialLogin\Library\Plugin;
 
 use Exception;
 use Joomla\Application\AbstractApplication;
@@ -20,10 +20,10 @@ use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\User\User;
 use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\CMS\User\UserHelper;
-use Joomla\Plugin\System\SocialLogin\Library\Data\PluginConfiguration;
-use Joomla\Plugin\System\SocialLogin\Library\Data\UserData;
-use Joomla\Plugin\System\SocialLogin\Library\Exception\Login\GenericMessage;
-use Joomla\Plugin\System\SocialLogin\Library\Exception\Login\LoginError;
+use Akeeba\Plugin\System\SocialLogin\Library\Data\PluginConfiguration;
+use Akeeba\Plugin\System\SocialLogin\Library\Data\UserData;
+use Akeeba\Plugin\System\SocialLogin\Library\Exception\Login\GenericMessage;
+use Akeeba\Plugin\System\SocialLogin\Library\Exception\Login\LoginError;
 use RuntimeException;
 use UnexpectedValueException;
 

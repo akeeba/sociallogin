@@ -5,15 +5,15 @@
  * @license   GNU General Public License version 3, or later
  */
 
-namespace Joomla\Plugin\Sociallogin\SynologyOIDC\Integration;
+namespace Akeeba\Plugin\Sociallogin\SynologyOIDC\Integration;
 
 use Joomla\CMS\Application\CMSApplication;
 use Joomla\CMS\Cache\CacheControllerFactoryAwareTrait;
 use Joomla\CMS\Cache\CacheControllerFactoryInterface;
 use Joomla\CMS\Http\Http;
 use Joomla\Input\Input;
-use Joomla\Plugin\System\SocialLogin\Library\OAuth\OAuth2Client;
-use Joomla\Plugin\System\SocialLogin\Library\OAuth\OpenIDConnectTrait;
+use Akeeba\Plugin\System\SocialLogin\Library\OAuth\OAuth2Client;
+use Akeeba\Plugin\System\SocialLogin\Library\OAuth\OpenIDConnectTrait;
 
 class OAuth extends OAuth2Client
 {

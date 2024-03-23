@@ -9,7 +9,7 @@ namespace Akeeba\Plugin\Sociallogin\Spotify\Integration;
 
 defined('_JEXEC') || die();
 
-use Joomla\Plugin\System\SocialLogin\Library\OAuth\OAuth2Client;
+use Akeeba\Plugin\System\SocialLogin\Library\OAuth\OAuth2Client;
 
 class OAuth extends OAuth2Client
 {
