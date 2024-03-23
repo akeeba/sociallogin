@@ -11,7 +11,6 @@
 		}
 	],
 	"config": {
-		"vendor-dir": "plugins/system/sociallogin/vendor",
 		"platform": {
 			"php": "7.4.0"
 		}
@@ -19,11 +18,32 @@
 	"require": {
 		"php": ">=7.4 <8.4",
 		"ext-json": "*",
+		"ext-simplexml": "*",
+		"coenjacobs/mozart": "^0.7.1",
 		"lcobucci/jwt": "^4.0",
 		"codercat/jwk-to-pem": "<= 1.0.0",
-		"phpseclib/bcmath_compat": "^1.0.0",
-		"ext-simplexml": "*"
+		"phpseclib/bcmath_compat": "^1.0.0"
 	},
-	"suggest": {
+	"extra": {
+		"mozart": {
+			"dep_namespace": "Akeeba\\Plugin\\System\\SocialLogin\\Dependencies\\",
+			"dep_directory": "/plugins/system/sociallogin/src/Dependencies/",
+			"classmap_directory": "/plugins/system/sociallogin/src/classmap/",
+			"classmap_prefix": "AK_SOCIALLOGIN_",
+			"delete_vendor_directories": false,
+			"excluded_packages": [
+				"coenjacobs/mozart"
+			]
+		}
+	},
+	"scripts": {
+		"post-install-cmd": [
+			"\"vendor/bin/mozart\" compose",
+			"composer dump-autoload"
+		],
+		"post-update-cmd": [
+			"\"vendor/bin/mozart\" compose",
+			"composer dump-autoload"
+		]
 	}
 }

@@ -26,7 +26,6 @@
 		<folder>layout</folder>
 		<folder>services</folder>
 		<folder plugin="sociallogin">src</folder>
-		<folder>vendor</folder>
 	</files>
 
 	<media folder="media" destination="plg_system_sociallogin">

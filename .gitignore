@@ -29,7 +29,8 @@
 
 ## Composer
 
-/plugins/system/sociallogin/vendor
+/vendor
+/plugins/system/sociallogin/src/Dependencies
 
 ## Akeeba Stuff
 

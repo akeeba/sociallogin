@@ -2,6 +2,7 @@
 Akeeba SocialLogin 4.8.0
 ================================================================================
 ~ Changed the namespace of the plugins from Joomla\Plugin to Akeeba\Plugin
+~ Use private dependencies for JWT encoding/decoding (used in the Login with Apple integration)
 
 Akeeba SocialLogin 4.7.1
 ================================================================================

@@ -10,21 +10,27 @@ namespace Akeeba\Plugin\Sociallogin\Apple\Extension;
 // Protect from unauthorized access
 defined('_JEXEC') || die();
 
+use Akeeba\Plugin\Sociallogin\Apple\Util\RandomWords;
+use Akeeba\Plugin\System\SocialLogin\Dependencies\CoderCat\JWKToPEM\JWKConverter;
+use Akeeba\Plugin\System\SocialLogin\Dependencies\Lcobucci\Clock\SystemClock;
+use Akeeba\Plugin\System\SocialLogin\Dependencies\Lcobucci\JWT\Configuration as JWTConfig;
+use Akeeba\Plugin\System\SocialLogin\Dependencies\Lcobucci\JWT\Signer;
+use Akeeba\Plugin\System\SocialLogin\Dependencies\Lcobucci\JWT\Signer\Ecdsa\Sha256 as SignerES256;
+use Akeeba\Plugin\System\SocialLogin\Dependencies\Lcobucci\JWT\Signer\Key\InMemory;
+use Akeeba\Plugin\System\SocialLogin\Dependencies\Lcobucci\JWT\Token;
+use Akeeba\Plugin\System\SocialLogin\Dependencies\Lcobucci\JWT\Validation\Constraint\IssuedBy;
+use Akeeba\Plugin\System\SocialLogin\Dependencies\Lcobucci\JWT\Validation\Constraint\LooseValidAt;
+use Akeeba\Plugin\System\SocialLogin\Dependencies\Lcobucci\JWT\Validation\Constraint\PermittedFor;
+use Akeeba\Plugin\System\SocialLogin\Dependencies\Lcobucci\JWT\Validation\Constraint\SignedWith;
+use Akeeba\Plugin\System\SocialLogin\Library\Data\UserData;
+use Akeeba\Plugin\System\SocialLogin\Library\OAuth\OAuth2Client;
+use Akeeba\Plugin\System\SocialLogin\Library\Plugin\AbstractPlugin;
 use DateTimeImmutable;
 use Exception;
 use Joomla\CMS\Crypt\Crypt;
 use Joomla\CMS\Http\HttpFactory;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Uri\Uri;
-use Joomla\Event\DispatcherInterface;
-use Akeeba\Plugin\Sociallogin\Apple\Util\RandomWords;
-use Akeeba\Plugin\System\SocialLogin\Library\Data\UserData;
-use Akeeba\Plugin\System\SocialLogin\Library\OAuth\OAuth2Client;
-use Akeeba\Plugin\System\SocialLogin\Library\Plugin\AbstractPlugin;
-use Lcobucci\JWT\Configuration as JWTConfig;
-use Lcobucci\JWT\Signer\Ecdsa\Sha256 as SignerES256;
-use Lcobucci\JWT\Signer\Key\InMemory;
-use Lcobucci\JWT\Token;
 use RuntimeException;
 
 if (!class_exists(AbstractPlugin::class, true))
@@ -186,9 +192,9 @@ class Plugin extends AbstractPlugin
 		/** @noinspection PhpParamsInspection */
 		if (!$config->validator()->validate(
 			$token,
-			new \Lcobucci\JWT\Validation\Constraint\LooseValidAt(Lcobucci\Clock\SystemClock::fromUTC(), new DateInterval('PT30S')),
-			new \Lcobucci\JWT\Validation\Constraint\IssuedBy('https://appleid.apple.com'),
-			new \Lcobucci\JWT\Validation\Constraint\PermittedFor($this->appId)
+			new LooseValidAt(SystemClock::fromUTC(), new DateInterval('PT30S')),
+			new IssuedBy('https://appleid.apple.com'),
+			new PermittedFor($this->appId)
 		))
 		{
 			throw new RuntimeException('The login response received lacks the necessary fields set by Apple.');
@@ -349,8 +355,8 @@ class Plugin extends AbstractPlugin
 	 *
 	 * @return bool
 	 *
-	 * @throws \CoderCat\JWKToPEM\Exception\Base64DecodeException
-	 * @throws \CoderCat\JWKToPEM\Exception\JWKConverterException
+	 * @throws \Akeeba\Plugin\System\SocialLogin\Dependencies\CoderCat\JWKToPEM\Exception\Base64DecodeException
+	 * @throws \Akeeba\Plugin\System\SocialLogin\Dependencies\CoderCat\JWKToPEM\Exception\JWKConverterException
 	 * @since   3.2.0
 	 */
 	private function validateJWTSignature(Token $token, array $jwkArray): bool
@@ -366,39 +372,39 @@ class Plugin extends AbstractPlugin
 		{
 			case 'RS256':
 			default:
-				$signer = new \Lcobucci\JWT\Signer\Rsa\Sha256();
+				$signer = new Signer\Rsa\Sha256();
 				break;
 
 			case 'RS384':
-				$signer = new \Lcobucci\JWT\Signer\Rsa\Sha384();
+				$signer = new Signer\Rsa\Sha384();
 				break;
 
 			case 'RS512':
-				$signer = new \Lcobucci\JWT\Signer\Rsa\Sha512();
+				$signer = new Signer\Rsa\Sha512();
 				break;
 
 			case 'ES256':
-				$signer = \Lcobucci\JWT\Signer\Ecdsa\Sha256::create();
+				$signer = Signer\Ecdsa\Sha256::create();
 				break;
 
 			case 'ES384':
-				$signer = \Lcobucci\JWT\Signer\Ecdsa\Sha384::create();
+				$signer = Signer\Ecdsa\Sha384::create();
 				break;
 
 			case 'ES512':
-				$signer = \Lcobucci\JWT\Signer\Ecdsa\Sha512::create();
+				$signer = Signer\Ecdsa\Sha512::create();
 				break;
 
 			case 'HS256':
-				$signer = new \Lcobucci\JWT\Signer\Hmac\Sha256();
+				$signer = new Signer\Hmac\Sha256();
 				break;
 
 			case 'HS384':
-				$signer = new \Lcobucci\JWT\Signer\Hmac\Sha384();
+				$signer = new Signer\Hmac\Sha384();
 				break;
 
 			case 'HS512':
-				$signer = new \Lcobucci\JWT\Signer\Hmac\Sha512();
+				$signer = new Signer\Hmac\Sha512();
 				break;
 		}
 
@@ -409,7 +415,7 @@ class Plugin extends AbstractPlugin
 			: JWTConfig::forSymmetricSigner(new SignerES256(null), InMemory::plainText($keyMaterial));
 
 		$keyID        = $token->headers()->get('kid');
-		$jwkConverter = new \CoderCat\JWKToPEM\JWKConverter();
+		$jwkConverter = new JWKConverter();
 
 		foreach ($jwkArray as $jwk)
 		{
@@ -422,7 +428,7 @@ class Plugin extends AbstractPlugin
 			// Convert the JSON Web Key to PEM-encoded PKCS#8 format and validate the JWT's signature.
 			$pemFile = $jwkConverter->toPEM($jwk);
 
-			if ($config->validator()->validate($token, new \Lcobucci\JWT\Validation\Constraint\SignedWith($signer, InMemory::plainText($pemFile))))
+			if ($config->validator()->validate($token, new SignedWith($signer, InMemory::plainText($pemFile))))
 			{
 				return true;
 			}

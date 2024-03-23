@@ -111,16 +111,6 @@ class SocialLogin extends CMSPlugin implements SubscriberInterface, DatabaseAwar
 	 */
 	public function init(): void
 	{
-		// Register the Composer autoloader
-		if (version_compare(JVERSION, '4.2', 'lt'))
-		{
-			require_once __DIR__ . '/../../vendor/autoload.php';
-		}
-		else
-		{
-			JLoader::registerNamespace('CoderCat\\JWKToPEM', __DIR__ . '/../../vendor/codercat/jwk-to-pem/src');
-		}
-
 		$this->addLogger('system');
 
 		// Am I enabled?
