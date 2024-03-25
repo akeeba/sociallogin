@@ -11,6 +11,8 @@ namespace Akeeba\Plugin\Sociallogin\Apple\Extension;
 defined('_JEXEC') || die();
 
 use Akeeba\Plugin\Sociallogin\Apple\Util\RandomWords;
+use Akeeba\Plugin\System\SocialLogin\Dependencies\CoderCat\JWKToPEM\Exception\Base64DecodeException;
+use Akeeba\Plugin\System\SocialLogin\Dependencies\CoderCat\JWKToPEM\Exception\JWKConverterException;
 use Akeeba\Plugin\System\SocialLogin\Dependencies\CoderCat\JWKToPEM\JWKConverter;
 use Akeeba\Plugin\System\SocialLogin\Dependencies\Lcobucci\Clock\SystemClock;
 use Akeeba\Plugin\System\SocialLogin\Dependencies\Lcobucci\JWT\Configuration as JWTConfig;
@@ -25,6 +27,7 @@ use Akeeba\Plugin\System\SocialLogin\Dependencies\Lcobucci\JWT\Validation\Constr
 use Akeeba\Plugin\System\SocialLogin\Library\Data\UserData;
 use Akeeba\Plugin\System\SocialLogin\Library\OAuth\OAuth2Client;
 use Akeeba\Plugin\System\SocialLogin\Library\Plugin\AbstractPlugin;
+use DateInterval;
 use DateTimeImmutable;
 use Exception;
 use Joomla\CMS\Crypt\Crypt;
@@ -33,7 +36,7 @@ use Joomla\CMS\Log\Log;
 use Joomla\CMS\Uri\Uri;
 use RuntimeException;
 
-if (!class_exists(AbstractPlugin::class, true))
+if (!class_exists(AbstractPlugin::class))
 {
 	return;
 }
@@ -50,24 +53,24 @@ class Plugin extends AbstractPlugin
 	/**
 	 * The email address of the user logging in with Apple
 	 *
-	 * @since 3.2.0
 	 * @var   string
+	 * @since 3.2.0
 	 */
 	private string $email;
 
 	/**
 	 * The first name of the user logging in with Apple
 	 *
-	 * @since 3.2.0
 	 * @var   string
+	 * @since 3.2.0
 	 */
 	private string $firstName;
 
 	/**
 	 * The last name of the user logging in with Apple
 	 *
-	 * @since 3.2.0
 	 * @var   string
+	 * @since 3.2.0
 	 */
 	private string $lastName;
 
@@ -113,7 +116,8 @@ class Plugin extends AbstractPlugin
 				'tokenurl'      => 'https://appleid.apple.com/auth/token',
 				'clientid'      => $this->appId,
 				'clientsecret'  => $this->appSecret,
-				'redirecturi'   => Uri::base() . 'index.php?option=com_ajax&group=sociallogin&plugin=' . $this->integrationName . '&format=raw',
+				'redirecturi'   => Uri::base() . 'index.php?option=com_ajax&group=sociallogin&plugin='
+				                   . $this->integrationName . '&format=raw',
 				'scope'         => 'name email',
 				'requestparams' => [
 					'nonce'         => $this->getApplication()->getSession()->getToken(),
@@ -121,7 +125,9 @@ class Plugin extends AbstractPlugin
 				],
 			];
 			$httpClient      = HttpFactory::getHttp();
-			$this->connector = new OAuth2Client($options, $httpClient, $this->getApplication()->input, $this->getApplication());
+			$this->connector = new OAuth2Client(
+				$options, $httpClient, $this->getApplication()->input, $this->getApplication()
+			);
 
 		}
 
@@ -159,11 +165,10 @@ class Plugin extends AbstractPlugin
 
 		// Parse the JWT token
 		$keyMaterial = $this->params->get('keyMaterial', '');
-		/** @noinspection PhpParamsInspection */
-		$config = version_compare(JVERSION, '4.2.0', 'lt')
-			? JWTConfig::forSymmetricSigner(SignerES256::create(), InMemory::plainText($keyMaterial))
+		$config      = version_compare(JVERSION, '4.2.0', 'lt')
+			? JWTConfig::forSymmetricSigner(new SignerES256, InMemory::plainText($keyMaterial))
 			: JWTConfig::forSymmetricSigner(new SignerES256(null), InMemory::plainText($keyMaterial));
-		$token  = $config->parser()->parse($jwt);
+		$token       = $config->parser()->parse($jwt);
 
 		// Verify the token's signature – if we can connect to Apple's servers to retrieve the valid keys.
 		$keyJson   = @file_get_contents('https://appleid.apple.com/auth/keys');
@@ -187,9 +192,6 @@ class Plugin extends AbstractPlugin
 		}
 
 		// Validate the issuer, audience and time of the token
-		/** @noinspection PhpUndefinedClassInspection */
-		/** @noinspection PhpUndefinedNamespaceInspection */
-		/** @noinspection PhpParamsInspection */
 		if (!$config->validator()->validate(
 			$token,
 			new LooseValidAt(SystemClock::fromUTC(), new DateInterval('PT30S')),
@@ -213,7 +215,8 @@ class Plugin extends AbstractPlugin
 		// Pass through information from the JWT. Note that the name is NEVER passed through the JWT (Apple doesn't have it)
 		$ret['id']       = $claims->get('sub', '');
 		$ret['email']    = $claims->get('email', '');
-		$ret['verified'] = ($claims->get('real_user_status', 0) == 2) || ($claims->get('email_verified', 'false') === 'true');
+		$ret['verified'] = ($claims->get('real_user_status', 0) == 2)
+		                   || ($claims->get('email_verified', 'false') === 'true');
 
 		return $ret;
 	}
@@ -224,7 +227,7 @@ class Plugin extends AbstractPlugin
 	 * At this point we have a code and possibly the user's name and email address. So we need to save this optional
 	 * information which will be used when getSocialNetworkProfileInformation is called later on.
 	 *
-	 * @return  array|bool  False if we could not retrieve it. Otherwise [$token, $connector]
+	 * @return  array|bool  False if we could not retrieve it. Otherwise, [$token, $connector]
 	 *
 	 * @throws  Exception
 	 * @since   3.2.0
@@ -315,9 +318,8 @@ class Plugin extends AbstractPlugin
 			return '';
 		}
 
-		/** @noinspection PhpParamsInspection */
 		$config = version_compare(JVERSION, '4.2.0', 'lt')
-			? JWTConfig::forSymmetricSigner(SignerES256::create(), InMemory::plainText($keyMaterial))
+			? JWTConfig::forSymmetricSigner(new SignerES256, InMemory::plainText($keyMaterial))
 			: JWTConfig::forSymmetricSigner(new SignerES256(null), InMemory::plainText($keyMaterial));
 
 		$time       = time();
@@ -327,19 +329,19 @@ class Plugin extends AbstractPlugin
 		try
 		{
 			$token = $config->builder()
-			                ->issuedBy($teamID)
-			                ->withHeader('kid', $keyID)
-			                ->permittedFor('https://appleid.apple.com')
-			                ->issuedAt($issuedAt)
-			                ->expiresAt($expiration)
-			                ->relatedTo($this->appId)
-			                ->getToken($config->signer(), $config->signingKey());
+				->issuedBy($teamID)
+				->withHeader('kid', $keyID)
+				->permittedFor('https://appleid.apple.com')
+				->issuedAt($issuedAt)
+				->expiresAt($expiration)
+				->relatedTo($this->appId)
+				->getToken($config->signer(), $config->signingKey());
 
 			return $token->toString();
 		}
 		catch (Exception $e)
 		{
-			// Guards against bad configuration leading into internal error in the JWT library
+			// Guards against bad configuration leading into internal error in the JWT library.
 			return '';
 		}
 	}
@@ -355,8 +357,8 @@ class Plugin extends AbstractPlugin
 	 *
 	 * @return bool
 	 *
-	 * @throws \Akeeba\Plugin\System\SocialLogin\Dependencies\CoderCat\JWKToPEM\Exception\Base64DecodeException
-	 * @throws \Akeeba\Plugin\System\SocialLogin\Dependencies\CoderCat\JWKToPEM\Exception\JWKConverterException
+	 * @throws Base64DecodeException
+	 * @throws JWKConverterException
 	 * @since   3.2.0
 	 */
 	private function validateJWTSignature(Token $token, array $jwkArray): bool
@@ -367,7 +369,7 @@ class Plugin extends AbstractPlugin
 			return true;
 		}
 
-		// Get the correct signer based on the algorithm set in the JWT
+		// Get the correct signer based on the algorithm set in the JWT.
 		switch ($token->headers()->get('alg'))
 		{
 			case 'RS256':
@@ -384,15 +386,15 @@ class Plugin extends AbstractPlugin
 				break;
 
 			case 'ES256':
-				$signer = Signer\Ecdsa\Sha256::create();
+				$signer = new Signer\Ecdsa\Sha256;
 				break;
 
 			case 'ES384':
-				$signer = Signer\Ecdsa\Sha384::create();
+				$signer = new Signer\Ecdsa\Sha384;
 				break;
 
 			case 'ES512':
-				$signer = Signer\Ecdsa\Sha512::create();
+				$signer = new Signer\Ecdsa\Sha512;
 				break;
 
 			case 'HS256':
@@ -409,9 +411,8 @@ class Plugin extends AbstractPlugin
 		}
 
 		$keyMaterial = $this->params->get('keyMaterial', '');
-		/** @noinspection PhpParamsInspection */
-		$config = version_compare(JVERSION, '4.2.0', 'lt')
-			? JWTConfig::forSymmetricSigner(SignerES256::create(), InMemory::plainText($keyMaterial))
+		$config      = version_compare(JVERSION, '4.2.0', 'lt')
+			? JWTConfig::forSymmetricSigner(new SignerES256, InMemory::plainText($keyMaterial))
 			: JWTConfig::forSymmetricSigner(new SignerES256(null), InMemory::plainText($keyMaterial));
 
 		$keyID        = $token->headers()->get('kid');

@@ -7,6 +7,8 @@
 
 namespace Akeeba\Plugin\Sociallogin\Apple\Util;
 
+use Random\RandomException;
+
 defined('_JEXEC') || die;
 
 /**
@@ -24,7 +26,7 @@ class RandomWords
 	 * @since 3.2.0
 	 * @var   string[]
 	 */
-	private static $adjectives = [
+	private static array $adjectives = [
 		"additional",
 		"administrative",
 		"adorable",
@@ -328,7 +330,7 @@ class RandomWords
 	 * @since 3.2.0
 	 * @var   string[]
 	 */
-	private static $nouns = [
+	private static array $nouns = [
 		"ability",
 		"accident",
 		"activity",
