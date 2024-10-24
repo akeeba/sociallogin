@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--~
+  ~  @package   AkeebaSocialLogin
+  ~  @copyright Copyright (c)2016-2024 Nicholas K. Dionysopoulos / Akeeba Ltd
+  ~  @license   GNU General Public License version 3, or later
+  -->
+
+<extension type="plugin" group="sociallogin" method="upgrade">
+    <name>PLG_SOCIALLOGIN_AUTH0</name>
+    <version>4.8.2</version>
+    <creationDate>2024-07-24</creationDate>
+
+    <author>Akeeba Ltd</author>
+    <authorEmail>no-reply@akeeba.com</authorEmail>
+    <authorUrl>https://www.akeeba.com</authorUrl>
+
+    <copyright>Copyright (c)2016-2024 Nicholas K. Dionysopoulos / Akeeba Ltd</copyright>
+    <license>GNU GPL v3 or later</license>
+
+    <description>PLG_SOCIALLOGIN_AUTH0_DESCRIPTION</description>
+    <namespace path="src">Akeeba\Plugin\Sociallogin\Auth0</namespace>
+
+    <files>
+        <folder>services</folder>
+        <folder plugin="auth0">src</folder>
+    </files>
+
+    <media folder="media" destination="plg_sociallogin_auth0">
+        <folder>images</folder>
+    </media>
+
+    <languages folder="language">
+        <language tag="en-GB">en-GB/plg_sociallogin_auth0.ini</language>
+        <language tag="en-GB">en-GB/plg_sociallogin_auth0.sys.ini</language>
+    </languages>
+
+    <config addfieldpath="plugins/system/sociallogin/fields">
+        <fields name="params">
+            <fieldset name="basic">
+                <field
+                        name="domain"
+                        type="url"
+                        label="PLG_SOCIALLOGIN_AUTH0_FIELD_DOMAINN_LABEL"
+                        description="PLG_SOCIALLOGIN_AUTH0_FIELD_DOMAINN_DESC"
+                        default=""
+                />
+
+                <field
+                        name="appid"
+                        type="text"
+                        label="PLG_SOCIALLOGIN_AUTH0_FIELD_APPID_LABEL"
+                        description="PLG_SOCIALLOGIN_AUTH0_FIELD_APPID_DESC"
+                        default=""
+                />
+
+                <field
+                        name="appsecret"
+                        type="password"
+                        label="PLG_SOCIALLOGIN_AUTH0_FIELD_APPSECRET_LABEL"
+                        description="PLG_SOCIALLOGIN_AUTH0_FIELD_APPSECRET_DESC"
+                        default=""
+                />
+
+                <field
+                        name="loginunlinked"
+                        type="radio"
+                        layout="joomla.form.field.radio.switcher"
+                        label="PLG_SOCIALLOGIN_AUTH0_FIELD_LOGINUNLINKED_LABEL"
+                        description="PLG_SOCIALLOGIN_AUTH0_FIELD_LOGINUNLINKED_DESC"
+                        default="0"
+                >
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field>
+
+                <field
+                        name="createnew"
+                        type="radio"
+                        layout="joomla.form.field.radio.switcher"
+                        label="PLG_SOCIALLOGIN_AUTH0_FIELD_CREATENEW_LABEL"
+                        description="PLG_SOCIALLOGIN_AUTH0_FIELD_CREATENEW_DESC"
+                        default="0"
+                >
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field>
+
+                <field
+                        name="forcenew"
+                        type="radio"
+                        layout="joomla.form.field.radio.switcher"
+                        label="PLG_SOCIALLOGIN_AUTH0_FIELD_FORCENEW_LABEL"
+                        description="PLG_SOCIALLOGIN_AUTH0_FIELD_FORCENEW_DESC"
+                        default="0"
+                        showon="createnew:1"
+                >
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field>
+
+                <field
+                        name="bypassvalidation"
+                        type="radio"
+                        layout="joomla.form.field.radio.switcher"
+                        label="PLG_SOCIALLOGIN_AUTH0_FIELD_BYPASSVALIDATION_LABEL"
+                        description="PLG_SOCIALLOGIN_AUTH0_FIELD_BYPASSVALIDATION_DESC"
+                        default="1"
+                        showon="createnew:1"
+                >
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field>
+
+                <field
+                        name="customcss"
+                        type="radio"
+                        layout="joomla.form.field.radio.switcher"
+                        label="PLG_SOCIALLOGIN_AUTH0_FIELD_CUSTOMCSS_LABEL"
+                        description="PLG_SOCIALLOGIN_AUTH0_FIELD_CUSTOMCSS_DESC"
+                        default="1"
+                >
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field>
+
+                <field
+                        name="fgcolor"
+                        type="color"
+                        default="#ffffff"
+                        label="PLG_SOCIALLOGIN_AUTH0_FIELD_FGCOLOR_LABEL"
+                        description="PLG_SOCIALLOGIN_AUTH0_FIELD_FGCOLOR_DESC"
+                        showon="customcss:1"
+                />
+
+                <field
+                        name="bgcolor"
+                        type="color"
+                        default="#000000"
+                        label="PLG_SOCIALLOGIN_AUTH0_FIELD_BGCOLOR_LABEL"
+                        description="PLG_SOCIALLOGIN_AUTH0_FIELD_BGCOLOR_DESC"
+                        showon="customcss:1"
+                />
+
+                <field
+                        name="enabledapplications"
+                        type="radio"
+                        layout="joomla.form.field.radio.buttons"
+                        class="btn-group"
+                        default="site,administrator"
+                        label="PLG_SOCIALLOGIN_AUTH0_FIELD_ENABLEDAPPLICATIONS_LABEL"
+                        description="PLG_SOCIALLOGIN_AUTH0_FIELD_ENABLEDAPPLICATIONS_DESC"
+                >
+                    <option value="site" class="btn btn-outline-secondary">PLG_SOCIALLOGIN_AUTH0_FIELD_ENABLEDAPPLICATIONS_SITE</option>
+                    <option class="btn btn-outline-danger">PLG_SOCIALLOGIN_AUTH0_FIELD_ENABLEDAPPLICATIONS_ADMIN</option>
+                    <option value="site,administrator" class="btn btn-outline-primary">PLG_SOCIALLOGIN_AUTH0_FIELD_ENABLEDAPPLICATIONS_BOTH</option>
+                </field>
+
+            </fieldset>
+        </fields>
+    </config>
+
+</extension>

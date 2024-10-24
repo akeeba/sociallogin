@@ -13,6 +13,7 @@
       <sourceFolder url="file://$MODULE_DIR$/plugins/sociallogin/synology/src" packagePrefix="Joomla\Plugin\Sociallogin\SynologyOIDC\" isTestSource="false"/>
       <sourceFolder url="file://$MODULE_DIR$/plugins/system/sociallogin/src" packagePrefix="Joomla\Plugin\System\SocialLogin\" isTestSource="false"/>
       <sourceFolder url="file://$MODULE_DIR$/plugins/sociallogin/amazon/src" packagePrefix="Akeeba\Plugin\Sociallogin\Amazon\" isTestSource="false"/>
+      <sourceFolder url="file://$MODULE_DIR$/plugins/sociallogin/auth0/src" packagePrefix="Akeeba\Plugin\Sociallogin\Auth0\" isTestSource="false"/>
       <sourceFolder url="file://$MODULE_DIR$/plugins/sociallogin/apple/src" packagePrefix="Akeeba\Plugin\Sociallogin\Apple\" isTestSource="false"/>
       <sourceFolder url="file://$MODULE_DIR$/plugins/sociallogin/discord/src" packagePrefix="Akeeba\Plugin\Sociallogin\Discord\" isTestSource="false"/>
       <sourceFolder url="file://$MODULE_DIR$/plugins/sociallogin/facebook/src" packagePrefix="Akeeba\Plugin\Sociallogin\Facebook\" isTestSource="false"/>
