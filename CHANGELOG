@@ -1,4 +1,8 @@
 <?php die(); ?>
+Akeeba SocialLogin 4.8.3
+================================================================================
+~ More graceful error message if you cancel the login [gh-124]
+
 Akeeba SocialLogin 4.8.2
 ================================================================================
 + Choose whether to show in frontend, backend, or both

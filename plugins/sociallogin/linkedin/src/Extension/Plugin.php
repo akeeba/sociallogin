@@ -84,24 +84,33 @@ class Plugin extends AbstractPlugin
 	 *
 	 * @param   object  $connector  The internal connector object.
 	 *
-	 * @return  array
+	 * @return  array|null
 	 *
 	 * @throws  Exception
 	 *
 	 * @see  https://docs.microsoft.com/en-us/linkedin/consumer/integrations/self-serve/sign-in-with-linkedin
 	 */
-	protected function getSocialNetworkProfileInformation(object $connector): array
+	protected function getSocialNetworkProfileInformation(object $connector): ?array
 	{
-		$tokenArray = $connector->getToken();
 
-		$options      = new Registry([
-			'userAgent' => 'Akeeba-Social-Login',
-		]);
-		$client       = HttpFactory::getHttp($options);
-		$liUserQuery  = new UserQuery($client, $tokenArray['access_token']);
-		$liUserFields = $liUserQuery->getUserInformation();
+		try
+		{
+			$tokenArray   = $connector->getToken();
+			$options      = new Registry(
+				[
+					'userAgent' => 'Akeeba-Social-Login',
+				]
+			);
+			$client       = HttpFactory::getHttp($options);
+			$liUserQuery  = new UserQuery($client, $tokenArray['access_token']);
+			$liUserFields = $liUserQuery->getUserInformation();
 
-		return $liUserFields;
+			return $liUserFields;
+		}
+		catch (\Throwable $e)
+		{
+			return null;
+		}
 	}
 
 	/**

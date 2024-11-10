@@ -703,9 +703,9 @@ abstract class AbstractPlugin extends CMSPlugin implements SubscriberInterface, 
 	 *
 	 * @param   object  $connector  The internal connector object.
 	 *
-	 * @return  array
+	 * @return  array|null
 	 */
-	protected abstract function getSocialNetworkProfileInformation(object $connector): array;
+	protected abstract function getSocialNetworkProfileInformation(object $connector): ?array;
 
 	/**
 	 * Get the OAuth / OAuth2 token from the social network. Used in the onAjax* handler.

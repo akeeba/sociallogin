@@ -145,14 +145,14 @@ class Plugin extends AbstractPlugin
 	 *
 	 * @param   object  $connector  The internal connector object.
 	 *
-	 * @return  array
+	 * @return  array|null
 	 *
 	 * @throws  Exception
 	 * @since   3.2.0
 	 *
 	 * @see     https://developer.apple.com/documentation/sign_in_with_apple/generate_and_validate_tokens
 	 */
-	protected function getSocialNetworkProfileInformation(object $connector): array
+	protected function getSocialNetworkProfileInformation(object $connector): ?array
 	{
 		$token = $connector->getToken();
 		$jwt   = $token['id_token'] ?? null;
@@ -166,7 +166,7 @@ class Plugin extends AbstractPlugin
 
 		if (empty($jwt))
 		{
-			return $ret;
+			return null;
 		}
 
 		// Parse the JWT token

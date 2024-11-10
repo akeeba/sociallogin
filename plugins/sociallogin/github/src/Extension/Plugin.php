@@ -82,22 +82,31 @@ class Plugin extends AbstractPlugin
 	 *
 	 * @param   object  $connector  The internal connector object.
 	 *
-	 * @return  array
+	 * @return  array|null
 	 *
 	 * @throws  Exception
 	 */
-	protected function getSocialNetworkProfileInformation(object $connector): array
+	protected function getSocialNetworkProfileInformation(object $connector): ?array
 	{
-		$tokenArray = $connector->getToken();
 
-		$options      = new Registry([
-			'userAgent' => 'Akeeba-Social-Login',
-		]);
-		$client       = HttpFactory::getHttp($options);
-		$ghUserQuery  = new UserQuery($client, $tokenArray['access_token']);
-		$ghUserFields = $ghUserQuery->getUserInformation();
+		try
+		{
+			$tokenArray   = $connector->getToken();
+			$options      = new Registry(
+				[
+					'userAgent' => 'Akeeba-Social-Login',
+				]
+			);
+			$client       = HttpFactory::getHttp($options);
+			$ghUserQuery  = new UserQuery($client, $tokenArray['access_token']);
+			$ghUserFields = $ghUserQuery->getUserInformation();
 
-		return (array) $ghUserFields;
+			return (array) $ghUserFields;
+		}
+		catch (\Throwable $e)
+		{
+			return null;
+		}
 	}
 
 	/**

@@ -82,20 +82,26 @@ class Plugin extends AbstractPlugin
 	 *
 	 * @param   object  $connector  The internal connector object.
 	 *
-	 * @return  array
+	 * @return  array|null
 	 *
 	 * @throws  Exception
 	 */
-	protected function getSocialNetworkProfileInformation(object $connector): array
+	protected function getSocialNetworkProfileInformation(object $connector): ?array
 	{
-		$options = new Registry();
 
-		$options->set('api.url', 'https://graph.facebook.com/v2.7/');
+		try
+		{
+			$options = new Registry();
+			$options->set('api.url', 'https://graph.facebook.com/v2.7/');
+			$fbUserApi    = new FacebookUser($options, null, $connector);
+			$fbUserFields = $fbUserApi->getUser('me?fields=id,name,email');
 
-		$fbUserApi    = new FacebookUser($options, null, $connector);
-		$fbUserFields = $fbUserApi->getUser('me?fields=id,name,email');
-
-		return (array) $fbUserFields;
+			return (array) $fbUserFields;
+		}
+		catch (\Throwable $e)
+		{
+			return null;
+		}
 	}
 
 	/**

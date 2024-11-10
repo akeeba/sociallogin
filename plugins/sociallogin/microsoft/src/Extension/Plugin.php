@@ -115,24 +115,31 @@ class Plugin extends AbstractPlugin
 	 *
 	 * @param   object  $connector  The internal connector object.
 	 *
-	 * @return  array
+	 * @return  array|null
 	 *
 	 * @throws  Exception
 	 */
-	protected function getSocialNetworkProfileInformation(object $connector): array
+	protected function getSocialNetworkProfileInformation(object $connector): ?array
 	{
-		$tokenArray = $connector->getToken();
+		try
+		{
+			$tokenArray   = $connector->getToken();
+			$options      = new Registry(
+				[
+					'userAgent' => 'Akeeba-Social-Login',
+				]
+			);
+			$client       = HttpFactory::getHttp($options);
+			$className    = $this->isAzure ? UserGraphQuery::class : UserQuery::class;
+			$msUserQuery  = new $className($client, $tokenArray['access_token']);
+			$msUserFields = $msUserQuery->getUserInformation();
 
-		$options = new Registry([
-			'userAgent' => 'Akeeba-Social-Login',
-		]);
-		$client  = HttpFactory::getHttp($options);
-
-		$className    = $this->isAzure ? UserGraphQuery::class : UserQuery::class;
-		$msUserQuery  = new $className($client, $tokenArray['access_token']);
-		$msUserFields = $msUserQuery->getUserInformation();
-
-		return json_decode(json_encode($msUserFields), true);
+			return json_decode(json_encode($msUserFields), true);
+		}
+		catch (\Throwable $e)
+		{
+			return null;
+		}
 	}
 
 	/**

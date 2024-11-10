@@ -93,34 +93,40 @@ class Plugin extends AbstractPlugin
 	/**
 	 * @inheritDoc
 	 */
-	protected function getSocialNetworkProfileInformation(object $connector): array
+	protected function getSocialNetworkProfileInformation(object $connector): ?array
 	{
-		$tokenArray = $connector->getToken();
-
 		try
 		{
+			$tokenArray = $connector->getToken();
 			$endpoints = $this->getOIDCEndpoints($this->wellknown);
 		}
-		catch (Exception $e)
+		catch (\Throwable $e)
 		{
 			$endpoints = null;
 		}
 
 		if (empty($endpoints))
 		{
-			return [];
+			return null;
 		}
 
-		$options      = new Registry(
-			[
-				'userAgent' => 'Akeeba-Social-Login',
-			]
-		);
-		$client       = HttpFactory::getHttp($options);
-		$ghUserQuery  = new UserQuery($client, $tokenArray['access_token'], $endpoints->userinfourl);
-		$ghUserFields = $ghUserQuery->getUserInformation();
+		try
+		{
+			$options      = new Registry(
+				[
+					'userAgent' => 'Akeeba-Social-Login',
+				]
+			);
+			$client       = HttpFactory::getHttp($options);
+			$ghUserQuery  = new UserQuery($client, $tokenArray['access_token'], $endpoints->userinfourl);
+			$ghUserFields = $ghUserQuery->getUserInformation();
 
-		return (array) $ghUserFields;
+			return (array) $ghUserFields;
+		}
+		catch (\Throwable $e)
+		{
+			return null;
+		}
 	}
 
 	/**

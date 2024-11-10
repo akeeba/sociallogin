@@ -120,13 +120,25 @@ class Plugin extends AbstractPlugin
 	 *
 	 * @throws  Exception
 	 */
-	protected function getSocialNetworkProfileInformation(object $connector): array
+	protected function getSocialNetworkProfileInformation(object $connector): ?array
 	{
-		/** @var OAuth2 $connector */
-		$options       = new Registry();
-		$googleUserApi = new OpenID($options, $connector);
+		try
+		{
+			/** @var OAuth2 $connector */
+			$options       = new Registry();
+			$googleUserApi = new OpenID($options, $connector);
+			$return        = $googleUserApi->getOpenIDProfile();
+			if (!is_array($return))
+			{
+				return null;
+			}
 
-		return $googleUserApi->getOpenIDProfile();
+			return $return;
+		}
+		catch (\Throwable $e)
+		{
+			return null;
+		}
 	}
 
 	/**
