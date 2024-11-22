@@ -34,9 +34,30 @@
         <language tag="en-GB">en-GB/plg_sociallogin_discord.sys.ini</language>
     </languages>
 
-    <config addfieldpath="plugins/system/sociallogin/fields">
+    <config addfieldprefix="Akeeba\Plugin\System\SocialLogin\Field">
         <fields name="params">
             <fieldset name="basic">
+                <field
+                        name="callbackurireminder"
+                        type="callbackuri"
+                        label="PLG_SYSTEM_SOCIALLOGIN_FIELD_CALLBACKURI"
+                        description="PLG_SYSTEM_SOCIALLOGIN_FIELD_CALLBACKURI_DESC"
+                        plugincode="discord"
+                />
+
+                <field
+                        name="documentation"
+                        type="documentation"
+                        label="PLG_SYSTEM_SOCIALLOGIN_FIELD_DOCUMENTATION"
+                        slug="Discord"
+                />
+
+                <field
+                        name="spacer001"
+                        type="spacer"
+                        hr="true"
+                />
+
                 <field
                         name="appid"
                         type="text"

@@ -1,6 +1,7 @@
 <?php die(); ?>
-Akeeba SocialLogin 4.8.3
+Akeeba SocialLogin 4.9.0
 ================================================================================
++ Plugin configuration shows the Callback URI and the help page link
 ~ More graceful error message if you cancel the login [gh-124]
 
 Akeeba SocialLogin 4.8.2
