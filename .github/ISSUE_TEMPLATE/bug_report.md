@@ -7,7 +7,7 @@ assignees: ''
 
 ---
 
-Please read the README.md in the repository's root and the support resources before submitting an issue.
+Please read the README.md in the repository's root and the support resources before submitting an issue. Support requests disguised as bug reports may be closed without a reply. Thank you for your understanding.
 
 ### Steps to reproduce the issue
 

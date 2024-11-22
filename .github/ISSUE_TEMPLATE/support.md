@@ -1,4 +1,11 @@
-## The software is free; support is not
+---
+name: Support
+about: Get help using the product
+title: ''
+labels: ''
+assignees: ''
+
+---
 
 The software is free, but support requires a [paid subscription](https://www.akeeba.com/subscribe/sociallogin.html). This allows us to fund continued development and maintenance of the project, while keeping it accessible to everyone regardless of their financial state. Subscribers need to [file a support ticket](https://www.akeeba.com/support/akeeba-sociallogin.html) to receive support.
 

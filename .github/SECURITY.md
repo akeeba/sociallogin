@@ -2,9 +2,9 @@
 
 ## Supported Versions
 
-Only the latest `master` and `development` branches are supported with security updates. The `master` branch represents the last published version, whereas the `development` branch represents the upcoming version.
+Only the latest `development` branch is supported with security updates. The `development` branch represents the upcoming version.
 
-We only support the latest published, stable Joomla version in the 3.x and 4.x branch. We do not support alphas, betas or release candidates (testing releases). If a security issue only occurs with a testing release we will consider it but we cannot promise a rapid respolution.
+We only support the latest published, stable Joomla version. We do not support alphas, betas or release candidates (testing releases). If a security issue only occurs with a testing release we will consider it, but we cannot promise a rapid resolution.
 
 ## Reporting a Vulnerability
 
@@ -35,7 +35,7 @@ As soon as we acknowledge an issue we typically ask for 30 days to come up with 
 a fixed version. We kindly request that no announcement about the security issue is made in public
 during that period of time. You will be credited with the discovery of the vulnerability in our release
 notes and our release announcements (if any). You may not receive a notification about the release of
-the new version but we encourage you to monitor our automated release update feed.
+the new version, but we encourage you to monitor our automated release update feed.
 
 Once this time period elapses and / or we have released a fixed version you are free to make a public
 announcement about your vulnerability as long as you do not give away specifics or proof-of-concept

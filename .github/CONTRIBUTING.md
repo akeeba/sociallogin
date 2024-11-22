@@ -37,18 +37,6 @@ wiki content. If it's your first time contributing documentation we may request
 that you go through the PR process before we can trust you with write access to
 the documentation content.
 
-## Contributing support
-
-If you have the time and inclination you are welcome to submit replies to existing
-GitHub issues submitted by other users, even if those issues are for generic 
-support requests which the maintainers will not reply to. Please do state that you
-are a volunteer community member in your replies to avoid any confusion on the 
-part of the original poster.
-
-If in the course of support you discover a coding issue please at-mention one of
-the maintainers for further review of the issue and do state whether you intend to
-make a Pull Request with a code fix yourself.
-
 ## Contributing bug reports
 
 You are welcome to contribute bug reports, as long as you abide by the standards
@@ -57,5 +45,5 @@ and requirements in our instructions for getting support.
 ## Contributing ideas
 
 You are welcome to contribute feature request and ideas for future development,
-, as long as you abide by the standards and requirements in our instructions for 
+as long as you abide by the standards and requirements in our instructions for 
 getting support.
