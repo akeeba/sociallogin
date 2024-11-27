@@ -1,0 +1,26 @@
+{
+	"presets": [
+		[
+			"@babel/preset-env",
+			{
+				"useBuiltIns": "entry",
+				"corejs": {
+					"version": "3.9",
+					"proposals": true
+				}
+			}
+		],
+		[
+			"minify",
+			{
+				"builtIns": false,
+				"removeConsole": false
+			}
+		]
+	],
+	"comments": false,
+	"ignore": [
+		"plugins/system/sociallogin/media/js/*.min.js",
+		"*.min.js"
+	]
+}

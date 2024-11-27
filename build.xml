@@ -20,6 +20,10 @@
 		<include name="script.sociallogin.php" />
 	</fileset>
 
+	<target name="git" description="Makes only packages, not the documentation"
+			depends="new-release,setup-properties,compile-javascript,component-packages">
+	</target>
+
 	<!--
 	Internal builder task to process all plugins inside a plugins/whatever folder of your repository, e.g. plugins/system
 	-->
@@ -52,5 +56,25 @@
 				<exclude name="vendor/phpseclib/bcmath_compat/composer.json" />
 			</fileset>
 		</foreach>
+	</target>
+
+	<target name="compile-javascript" description="Transpile and minify JavaScript files">
+		<exec executable="${dirs.root}/../buildfiles/node_modules/.bin/babel"
+			  dir="${dirs.root}" checkreturn="true">
+			<env key="NODE_PATH" value="${dirs.root}/../buildfiles/node_modules" />
+
+			<arg value="plugins/system/sociallogin/media/js" />
+
+			<arg value="--config-file" />
+			<arg value="${dirs.root}/.babelrc.json" />
+
+			<arg value="--out-dir" />
+			<arg value="plugins/system/sociallogin/media/js" />
+
+			<arg value="--out-file-extension" />
+			<arg value=".min.js" />
+
+			<arg value="--source-maps" />
+		</exec>
 	</target>
 </project>

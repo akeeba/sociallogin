@@ -11,6 +11,8 @@ namespace Akeeba\Plugin\System\SocialLogin\Features;
 defined('_JEXEC') || die;
 
 use Exception;
+use Joomla\CMS\Document\HtmlDocument;
+use Joomla\CMS\Factory;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Router\Route;
@@ -188,16 +190,25 @@ trait ButtonInjection
 			return;
 		}
 
-		// Load the JavaScript
-		HTMLHelper::_('script', 'plg_system_sociallogin/dist/j4buttons.js', [
-			'relative' => true,
-			'version'  => md5_file(JPATH_SITE . '/media/plg_system_sociallogin/js/dist/j4buttons.js'),
-		], [
-			'defer' => 'defer',
-		]);
+        // Set the "don't load again" flag
+        self::$includedJ4ButtonHandlerJS = true;
 
-		// Set the "don't load again" flag
-		self::$includedJ4ButtonHandlerJS = true;
+        /** @var HtmlDocument $doc */
+        $doc = Factory::getApplication()->getDocument();
+
+        if (!$doc instanceof HtmlDocument)
+        {
+            return;
+        }
+
+        $wam = $doc->getWebAssetManager();
+
+        if ($wam->getRegistry()->exists('script', 'plg_system_sociallogin.j4buttons'))
+        {
+            return;
+        }
+
+        $wam->registerAndUseScript('plg_system_sociallogin.j4buttons', 'plg_system_sociallogin/j4buttons.js', [], ['defer' => true], ['core']);
 	}
 
 	private function normalizeRedirectionURL($url): ?string
