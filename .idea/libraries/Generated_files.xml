@@ -5,12 +5,14 @@
         <item url="file://$PROJECT_DIR$/plugins/system/sociallogin/media/js/j4buttons.min.js" />
         <item url="file://$PROJECT_DIR$/plugins/system/sociallogin/media/js/j4buttons.min.min.js" />
         <item url="file://$PROJECT_DIR$/plugins/system/sociallogin/media/js/token.min.js" />
+        <item url="file://$PROJECT_DIR$/plugins/system/sociallogin/media/js/token.min.min.js" />
       </sourceFilesUrls>
     </properties>
     <CLASSES>
       <root url="file://$PROJECT_DIR$/plugins/system/sociallogin/media/js/j4buttons.min.js" />
       <root url="file://$PROJECT_DIR$/plugins/system/sociallogin/media/js/j4buttons.min.min.js" />
       <root url="file://$PROJECT_DIR$/plugins/system/sociallogin/media/js/token.min.js" />
+      <root url="file://$PROJECT_DIR$/plugins/system/sociallogin/media/js/token.min.min.js" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />
