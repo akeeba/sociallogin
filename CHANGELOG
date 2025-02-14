@@ -1,4 +1,8 @@
 <?php die(); ?>
+Akeeba SocialLogin 4.9.1
+================================================================================
+# [HIGH] The shown callback URI was wrong [gh-126]
+
 Akeeba SocialLogin 4.9.0
 ================================================================================
 + Plugin configuration shows the Callback URI and the help page link

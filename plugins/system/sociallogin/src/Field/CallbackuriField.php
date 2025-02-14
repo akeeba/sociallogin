@@ -25,9 +25,9 @@ class CallbackuriField extends FormField
 		$path       = $this->element['path'] ?? null;
 		$baseUri    = rtrim(Uri::base(), '/');
 
-		if (substr($baseUri, 14) === '/administrator')
+		if (substr($baseUri, -14) === '/administrator')
 		{
-			$baseUri = substr($baseUri, 0, 14);
+			$baseUri = substr($baseUri, 0, -14);
 		}
 
 		if (!empty($path))
