@@ -189,7 +189,7 @@ CSS;
 	 * @return array  Simple array of dictionary arrays. See method description for the format.
 	 * @throws Exception
 	 */
-	public function getSocialLoginButtonDefinitions(?string $loginURL = null, ?string $failureURL = null, AbstractApplication $app = null): array
+	public function getSocialLoginButtonDefinitions(?string $loginURL = null, ?string $failureURL = null, ?AbstractApplication $app = null): array
 	{
 		if (!is_object($app))
 		{
