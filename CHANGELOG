@@ -1,4 +1,8 @@
 <?php die(); ?>
+Akeeba SocialLogin 4.9.2
+================================================================================
+- Removed PayPal integration (defunct).
+
 Akeeba SocialLogin 4.9.1
 ================================================================================
 # [HIGH] The shown callback URI was wrong [gh-126]
