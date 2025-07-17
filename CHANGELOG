@@ -1,4 +1,8 @@
 <?php die(); ?>
+Akeeba SocialLogin 4.9.3
+================================================================================
+! Packaging error prevented installation
+
 Akeeba SocialLogin 4.9.2
 ================================================================================
 - Removed PayPal integration (defunct).
