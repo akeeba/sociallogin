@@ -7,7 +7,7 @@
 
 namespace Akeeba\Plugin\Sociallogin\SynologyOIDC\Integration;
 
-use Joomla\CMS\Http\Http;
+use Joomla\Http\Http;
 
 class UserQuery
 {

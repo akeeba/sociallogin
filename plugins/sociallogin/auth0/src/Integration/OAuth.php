@@ -7,10 +7,10 @@
 
 namespace Akeeba\Plugin\Sociallogin\Auth0\Integration;
 
-use Joomla\CMS\Application\CMSApplication;
-use Joomla\CMS\Http\Http;
-use Joomla\Input\Input;
 use Akeeba\Plugin\System\SocialLogin\Library\OAuth\OAuth2Client;
+use Joomla\CMS\Application\CMSApplication;
+use Joomla\Http\Http;
+use Joomla\Input\Input;
 
 class OAuth extends OAuth2Client
 {

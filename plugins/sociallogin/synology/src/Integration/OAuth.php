@@ -7,13 +7,12 @@
 
 namespace Akeeba\Plugin\Sociallogin\SynologyOIDC\Integration;
 
-use Joomla\CMS\Application\CMSApplication;
-use Joomla\CMS\Cache\CacheControllerFactoryAwareTrait;
-use Joomla\CMS\Cache\CacheControllerFactoryInterface;
-use Joomla\CMS\Http\Http;
-use Joomla\Input\Input;
 use Akeeba\Plugin\System\SocialLogin\Library\OAuth\OAuth2Client;
 use Akeeba\Plugin\System\SocialLogin\Library\OAuth\OpenIDConnectTrait;
+use Joomla\CMS\Application\CMSApplication;
+use Joomla\CMS\Cache\CacheControllerFactoryAwareTrait;
+use Joomla\Http\Http;
+use Joomla\Input\Input;
 
 class OAuth extends OAuth2Client
 {

@@ -10,9 +10,7 @@ namespace Akeeba\Plugin\Sociallogin\Discord\Integration;
 // Protect from unauthorized access
 defined('_JEXEC') || die();
 
-use Joomla\CMS\Http\Http;
-use Joomla\CMS\Log\Log;
-use Joomla\CMS\Uri\Uri;
+use Joomla\Http\Http;
 
 /**
  * Implements a query to the currently logged-in user through Discord's v10 API.

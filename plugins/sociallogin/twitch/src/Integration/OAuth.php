@@ -9,9 +9,6 @@ namespace Akeeba\Plugin\Sociallogin\Twitch\Integration;
 
 defined('_JEXEC') || die();
 
-use Joomla\CMS\Application\CMSApplication;
-use Joomla\CMS\Http\Http;
-use Joomla\Input\Input;
 use Akeeba\Plugin\System\SocialLogin\Library\OAuth\OAuth2Client;
 
 class OAuth extends OAuth2Client

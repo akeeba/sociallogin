@@ -10,14 +10,13 @@ namespace Akeeba\Plugin\Sociallogin\Facebook\Extension;
 
 defined('_JEXEC') || die();
 
-use Exception;
-use Joomla\CMS\Http\HttpFactory;
-use Joomla\CMS\Uri\Uri;
-use Joomla\Event\DispatcherInterface;
 use Akeeba\Plugin\Sociallogin\Facebook\Integration\OAuth as FacebookOAuth;
 use Akeeba\Plugin\Sociallogin\Facebook\Integration\User as FacebookUser;
 use Akeeba\Plugin\System\SocialLogin\Library\Data\UserData;
 use Akeeba\Plugin\System\SocialLogin\Library\Plugin\AbstractPlugin;
+use Exception;
+use Joomla\CMS\Uri\Uri;
+use Joomla\Http\HttpFactory;
 use Joomla\Registry\Registry;
 
 if (!class_exists(AbstractPlugin::class, true))
@@ -69,7 +68,7 @@ class Plugin extends AbstractPlugin
 				'clientsecret' => $this->appSecret,
 				'redirecturi'  => Uri::base() . 'index.php?option=com_ajax&group=sociallogin&plugin=' . $this->integrationName . '&format=raw',
 			];
-			$httpClient      = HttpFactory::getHttp();
+			$httpClient      = (new HttpFactory())->getHttp();
 			$this->connector = new FacebookOAuth($options, $httpClient, $this->getApplication()->input, $this->getApplication());
 			$this->connector->setScope('public_profile,email');
 		}

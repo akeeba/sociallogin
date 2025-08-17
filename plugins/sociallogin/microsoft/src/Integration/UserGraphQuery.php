@@ -10,7 +10,7 @@ namespace Akeeba\Plugin\Sociallogin\Microsoft\Integration;
 // Protect from unauthorized access
 defined('_JEXEC') || die();
 
-use Joomla\CMS\Http\Http;
+use Joomla\Http\Http;
 
 /**
  * Implements a query to the currently logged in user through Microsoft Graph API

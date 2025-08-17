@@ -10,7 +10,7 @@ namespace Akeeba\Plugin\Sociallogin\Github\Integration;
 // Protect from unauthorized access
 defined('_JEXEC') || die();
 
-use Joomla\CMS\Http\Http;
+use Joomla\Http\Http;
 
 /**
  * Implements a query to the currently logged in user through GitHub's v4 API (which is implemented atop GraphQL).

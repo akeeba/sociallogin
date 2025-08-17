@@ -7,7 +7,7 @@
 
 namespace Akeeba\Plugin\Sociallogin\Auth0\Integration;
 
-use Joomla\CMS\Http\Http;
+use Joomla\Http\Http;
 
 class UserQuery
 {

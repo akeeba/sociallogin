@@ -9,15 +9,15 @@ namespace Akeeba\Plugin\Sociallogin\Auth0\Extension;
 
 defined('_JEXEC') || die();
 
-use Exception;
-use Joomla\CMS\Application\CMSApplication;
-use Joomla\CMS\Cache\CacheControllerFactoryAwareTrait;
-use Joomla\CMS\Http\HttpFactory;
-use Joomla\CMS\Uri\Uri;
 use Akeeba\Plugin\Sociallogin\Auth0\Integration\OAuth as Auth0OAuth;
 use Akeeba\Plugin\Sociallogin\Auth0\Integration\UserQuery;
 use Akeeba\Plugin\System\SocialLogin\Library\Data\UserData;
 use Akeeba\Plugin\System\SocialLogin\Library\Plugin\AbstractPlugin;
+use Exception;
+use Joomla\CMS\Application\CMSApplication;
+use Joomla\CMS\Cache\CacheControllerFactoryAwareTrait;
+use Joomla\CMS\Uri\Uri;
+use Joomla\Http\HttpFactory;
 use Joomla\Registry\Registry;
 
 if (!class_exists(AbstractPlugin::class, true))
@@ -90,7 +90,7 @@ class Plugin extends AbstractPlugin
 			),
 			'scope'        => 'email openid',
 		];
-		$httpClient      = HttpFactory::getHttp();
+		$httpClient      = (new HttpFactory())->getHttp();
 		$this->connector = new Auth0OAuth($options, $httpClient, $application->input, $application);
 
 		return $this->connector;
@@ -102,7 +102,7 @@ class Plugin extends AbstractPlugin
 		{
 			$tokenArray   = $connector->getToken();
 			$options      = new Registry(['userAgent' => 'Akeeba-Social-Login']);
-			$client       = HttpFactory::getHttp($options);
+			$client       = (new HttpFactory())->getHttp($options);
 			$ghUserQuery  = new UserQuery(
 				$client, $tokenArray['access_token'], sprintf("https://%s/userinfo", $this->domain)
 			);

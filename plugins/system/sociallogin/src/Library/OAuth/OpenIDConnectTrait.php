@@ -9,7 +9,7 @@ namespace Akeeba\Plugin\System\SocialLogin\Library\OAuth;
 
 use Joomla\CMS\Application\CMSApplication;
 use Joomla\CMS\Cache\Controller\CallbackController;
-use Joomla\CMS\Http\HttpFactory;
+use Joomla\Http\HttpFactory;
 
 trait OpenIDConnectTrait
 {
@@ -92,7 +92,7 @@ trait OpenIDConnectTrait
 	 */
 	private function getOIDCEndpointsFromURL(string $wellKnownURL): ?object
 	{
-		$http     = HttpFactory::getHttp();
+		$http     = (new HttpFactory())->getHttp();
 		$response = $http->get($wellKnownURL);
 
 		if ($response->getStatusCode() !== 200)

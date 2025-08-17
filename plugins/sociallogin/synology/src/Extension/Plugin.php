@@ -9,16 +9,16 @@ namespace Akeeba\Plugin\Sociallogin\SynologyOIDC\Extension;
 
 defined('_JEXEC') || die();
 
-use Exception;
-use Joomla\CMS\Application\CMSApplication;
-use Joomla\CMS\Cache\CacheControllerFactoryAwareTrait;
-use Joomla\CMS\Http\HttpFactory;
-use Joomla\CMS\Uri\Uri;
 use Akeeba\Plugin\Sociallogin\SynologyOIDC\Integration\OAuth as SynologyOAuth;
 use Akeeba\Plugin\Sociallogin\SynologyOIDC\Integration\UserQuery;
 use Akeeba\Plugin\System\SocialLogin\Library\Data\UserData;
 use Akeeba\Plugin\System\SocialLogin\Library\OAuth\OpenIDConnectTrait;
 use Akeeba\Plugin\System\SocialLogin\Library\Plugin\AbstractPlugin;
+use Exception;
+use Joomla\CMS\Application\CMSApplication;
+use Joomla\CMS\Cache\CacheControllerFactoryAwareTrait;
+use Joomla\CMS\Uri\Uri;
+use Joomla\Http\HttpFactory;
 use Joomla\Registry\Registry;
 
 if (!class_exists(AbstractPlugin::class, true))
@@ -84,7 +84,7 @@ class Plugin extends AbstractPlugin
 			'wellknown'    => $this->wellknown,
 			'scope'        => 'email openid',
 		];
-		$httpClient      = HttpFactory::getHttp();
+		$httpClient      = (new HttpFactory())->getHttp();
 		$this->connector = new SynologyOAuth($options, $httpClient, $application->input, $application);
 
 		return $this->connector;
@@ -117,7 +117,7 @@ class Plugin extends AbstractPlugin
 					'userAgent' => 'Akeeba-Social-Login',
 				]
 			);
-			$client       = HttpFactory::getHttp($options);
+			$client       = (new HttpFactory())->getHttp($options);
 			$ghUserQuery  = new UserQuery($client, $tokenArray['access_token'], $endpoints->userinfourl);
 			$ghUserFields = $ghUserQuery->getUserInformation();
 

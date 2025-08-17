@@ -10,8 +10,8 @@ namespace Akeeba\Plugin\Sociallogin\Facebook\Integration;
 // Protect from unauthorized access
 defined('_JEXEC') || die();
 
-use Joomla\CMS\Http\Http;
 use Joomla\CMS\Uri\Uri;
+use Joomla\Http\Http;
 
 /**
  * Facebook API object class. Adapted from the Joomla Framework.

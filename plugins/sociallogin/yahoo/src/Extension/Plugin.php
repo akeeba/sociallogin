@@ -9,14 +9,12 @@ namespace Akeeba\Plugin\Sociallogin\Yahoo\Extension;
 
 defined('_JEXEC') || die();
 
-use Exception;
-use Joomla\CMS\Http\HttpFactory;
-use Joomla\CMS\Uri\Uri;
-use Joomla\Event\DispatcherInterface;
 use Akeeba\Plugin\Sociallogin\Yahoo\Integration\OAuth as YahooOAuth;
 use Akeeba\Plugin\Sociallogin\Yahoo\Integration\UserQuery;
 use Akeeba\Plugin\System\SocialLogin\Library\Data\UserData;
 use Akeeba\Plugin\System\SocialLogin\Library\Plugin\AbstractPlugin;
+use Joomla\CMS\Uri\Uri;
+use Joomla\Http\HttpFactory;
 use Joomla\Registry\Registry;
 
 if (!class_exists(AbstractPlugin::class, true))
@@ -51,7 +49,7 @@ class Plugin extends AbstractPlugin
 				                   . $this->integrationName . '&format=raw',
 				'requestparams' => ['state' => $this->getApplication()->getSession()->getToken()],
 			];
-			$httpClient      = HttpFactory::getHttp();
+			$httpClient      = (new HttpFactory())->getHttp();
 			$this->connector = new YahooOAuth(
 				$options, $httpClient, $this->getApplication()->input, $this->getApplication()
 			);
@@ -67,7 +65,7 @@ class Plugin extends AbstractPlugin
 		{
 			$tokenArray  = $connector->getToken();
 			$options     = new Registry(['userAgent' => 'Akeeba-Social-Login']);
-			$client      = HttpFactory::getHttp($options);
+			$client      = (new HttpFactory())->getHttp($options);
 			$dUserQuery  = new UserQuery($client, $tokenArray['access_token']);
 			$dUserFields = $dUserQuery->getUserInformation();
 

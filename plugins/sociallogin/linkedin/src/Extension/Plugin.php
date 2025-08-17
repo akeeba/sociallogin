@@ -10,14 +10,13 @@ namespace Akeeba\Plugin\Sociallogin\Linkedin\Extension;
 
 defined('_JEXEC') || die();
 
-use Exception;
-use Joomla\CMS\Http\HttpFactory;
-use Joomla\CMS\Uri\Uri;
-use Joomla\Event\DispatcherInterface;
 use Akeeba\Plugin\Sociallogin\Linkedin\Integration\OAuth as LinkedInOAuth;
 use Akeeba\Plugin\Sociallogin\Linkedin\Integration\UserQuery;
 use Akeeba\Plugin\System\SocialLogin\Library\Data\UserData;
 use Akeeba\Plugin\System\SocialLogin\Library\Plugin\AbstractPlugin;
+use Exception;
+use Joomla\CMS\Uri\Uri;
+use Joomla\Http\HttpFactory;
 use Joomla\Registry\Registry;
 
 if (!class_exists(AbstractPlugin::class, true))
@@ -71,7 +70,7 @@ class Plugin extends AbstractPlugin
 				'clientsecret' => $this->appSecret,
 				'redirecturi'  => Uri::base() . 'index.php?option=com_ajax&group=sociallogin&plugin=' . $this->integrationName . '&format=raw',
 			];
-			$httpClient      = HttpFactory::getHttp();
+			$httpClient      = (new HttpFactory())->getHttp();
 			$this->connector = new LinkedInOAuth($options, $httpClient, $this->getApplication()->input, $this->getApplication());
 			$this->connector->setScope('profile email openid');
 		}
@@ -101,7 +100,7 @@ class Plugin extends AbstractPlugin
 					'userAgent' => 'Akeeba-Social-Login',
 				]
 			);
-			$client       = HttpFactory::getHttp($options);
+			$client       = (new HttpFactory())->getHttp($options);
 			$liUserQuery  = new UserQuery($client, $tokenArray['access_token']);
 			$liUserFields = $liUserQuery->getUserInformation();
 

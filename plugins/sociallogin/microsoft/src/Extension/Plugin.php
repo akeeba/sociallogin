@@ -10,15 +10,14 @@ namespace Akeeba\Plugin\Sociallogin\Microsoft\Extension;
 
 defined('_JEXEC') || die();
 
-use Exception;
-use Joomla\CMS\Http\HttpFactory;
-use Joomla\CMS\Uri\Uri;
-use Joomla\Event\DispatcherInterface;
 use Akeeba\Plugin\Sociallogin\Microsoft\Integration\OAuth as MicrosoftOAuth;
 use Akeeba\Plugin\Sociallogin\Microsoft\Integration\UserGraphQuery;
 use Akeeba\Plugin\Sociallogin\Microsoft\Integration\UserQuery;
 use Akeeba\Plugin\System\SocialLogin\Library\Data\UserData;
 use Akeeba\Plugin\System\SocialLogin\Library\Plugin\AbstractPlugin;
+use Exception;
+use Joomla\CMS\Uri\Uri;
+use Joomla\Http\HttpFactory;
 use Joomla\Registry\Registry;
 
 if (!class_exists(AbstractPlugin::class, true))
@@ -103,7 +102,7 @@ class Plugin extends AbstractPlugin
 				];
 			}
 
-			$httpClient      = HttpFactory::getHttp();
+			$httpClient      = (new HttpFactory())->getHttp();
 			$this->connector = new MicrosoftOAuth($options, $httpClient, $this->getApplication()->input, $this->getApplication());
 		}
 
@@ -129,7 +128,7 @@ class Plugin extends AbstractPlugin
 					'userAgent' => 'Akeeba-Social-Login',
 				]
 			);
-			$client       = HttpFactory::getHttp($options);
+			$client       = (new HttpFactory())->getHttp($options);
 			$className    = $this->isAzure ? UserGraphQuery::class : UserQuery::class;
 			$msUserQuery  = new $className($client, $tokenArray['access_token']);
 			$msUserFields = $msUserQuery->getUserInformation();

@@ -31,9 +31,9 @@ use DateInterval;
 use DateTimeImmutable;
 use Exception;
 use Joomla\CMS\Crypt\Crypt;
-use Joomla\CMS\Http\HttpFactory;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Uri\Uri;
+use Joomla\Http\HttpFactory;
 use Joomla\Session\SessionInterface;
 use RuntimeException;
 
@@ -130,7 +130,7 @@ class Plugin extends AbstractPlugin
 					'response_mode' => 'form_post',
 				],
 			];
-			$httpClient      = HttpFactory::getHttp();
+			$httpClient      = (new HttpFactory())->getHttp();
 			$this->connector = new OAuth2Client(
 				$options, $httpClient, $this->getApplication()->input, $this->getApplication()
 			);

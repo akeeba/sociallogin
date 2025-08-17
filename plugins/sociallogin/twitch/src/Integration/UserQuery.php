@@ -9,9 +9,6 @@ namespace Akeeba\Plugin\Sociallogin\Twitch\Integration;
 
 defined('_JEXEC') || die();
 
-use Joomla\CMS\Http\Http;
-use Joomla\CMS\Log\Log;
-use Joomla\CMS\Uri\Uri;
 use RuntimeException;
 
 class UserQuery

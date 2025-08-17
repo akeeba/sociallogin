@@ -10,15 +10,14 @@ namespace Akeeba\Plugin\Sociallogin\Google\Extension;
 
 defined('_JEXEC') || die();
 
-use Exception;
-use Joomla\CMS\Http\HttpFactory;
-use Joomla\CMS\Uri\Uri;
-use Joomla\Event\DispatcherInterface;
 use Akeeba\Plugin\Sociallogin\Google\Integration\OAuth2;
 use Akeeba\Plugin\Sociallogin\Google\Integration\OpenID;
 use Akeeba\Plugin\System\SocialLogin\Library\Data\UserData;
 use Akeeba\Plugin\System\SocialLogin\Library\OAuth\OAuth2Client;
 use Akeeba\Plugin\System\SocialLogin\Library\Plugin\AbstractPlugin;
+use Exception;
+use Joomla\CMS\Uri\Uri;
+use Joomla\Http\HttpFactory;
 use Joomla\Registry\Registry;
 
 if (!class_exists(AbstractPlugin::class, true))
@@ -91,7 +90,7 @@ class Plugin extends AbstractPlugin
 				],
 			];
 
-			$httpClient         = HttpFactory::getHttp();
+			$httpClient         = (new HttpFactory())->getHttp();
 			$this->oAuth2Client = new OAuth2Client($options, $httpClient, $this->getApplication()->input, $this->getApplication());
 			$this->connector    = new OAuth2($options, $this->oAuth2Client);
 		}
