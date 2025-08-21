@@ -178,7 +178,7 @@ trait UserFields
 			return;
 		}
 
-		$input  = $this->getApplication()->input;
+		$input  = $this->getapplication()->getInput();
 		$layout = $input->getCmd('layout', 'default');
 
 		/**

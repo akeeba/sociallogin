@@ -178,7 +178,7 @@ class SocialLogin extends CMSPlugin implements SubscriberInterface, DatabaseAwar
 
 		[$plugin,] = explode('.', $plugin);
 
-		$input = $this->getApplication()->input;
+		$input = $this->getapplication()->getInput();
 
 		$input->set('option', 'com_ajax');
 		$input->set('group', 'sociallogin');

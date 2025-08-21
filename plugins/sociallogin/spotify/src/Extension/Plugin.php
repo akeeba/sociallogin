@@ -51,7 +51,7 @@ class Plugin extends AbstractPlugin
 			];
 			$httpClient      = (new HttpFactory())->getHttp();
 			$this->connector = new SpotifyOAuth(
-				$options, $httpClient, $this->getApplication()->input, $this->getApplication()
+				$options, $httpClient, $this->getapplication()->getInput(), $this->getApplication()
 			);
 			$this->connector->setScope('user-read-email');
 		}

@@ -91,7 +91,7 @@ class Plugin extends AbstractPlugin
 			];
 
 			$httpClient         = (new HttpFactory())->getHttp();
-			$this->oAuth2Client = new OAuth2Client($options, $httpClient, $this->getApplication()->input, $this->getApplication());
+			$this->oAuth2Client = new OAuth2Client($options, $httpClient, $this->getapplication()->getInput(), $this->getApplication());
 			$this->connector    = new OAuth2($options, $this->oAuth2Client);
 		}
 

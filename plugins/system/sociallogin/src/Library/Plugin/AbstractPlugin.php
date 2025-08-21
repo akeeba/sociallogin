@@ -280,7 +280,7 @@ abstract class AbstractPlugin extends CMSPlugin implements SubscriberInterface, 
 
 					if (defined('JDEBUG') && JDEBUG)
 					{
-						$error = $this->getApplication()->input->getString('error_description', '');
+						$error = $this->getapplication()->getInput()->getString('error_description', '');
 
 						if (!empty($error))
 						{

@@ -71,7 +71,7 @@ class Plugin extends AbstractPlugin
 				'redirecturi'  => Uri::base() . 'index.php?option=com_ajax&group=sociallogin&plugin=' . $this->integrationName . '&format=raw',
 			];
 			$httpClient      = (new HttpFactory())->getHttp();
-			$this->connector = new LinkedInOAuth($options, $httpClient, $this->getApplication()->input, $this->getApplication());
+			$this->connector = new LinkedInOAuth($options, $httpClient, $this->getapplication()->getInput(), $this->getApplication());
 			$this->connector->setScope('profile email openid');
 		}
 

@@ -132,7 +132,7 @@ class Plugin extends AbstractPlugin
 			];
 			$httpClient      = (new HttpFactory())->getHttp();
 			$this->connector = new OAuth2Client(
-				$options, $httpClient, $this->getApplication()->input, $this->getApplication()
+				$options, $httpClient, $this->getapplication()->getInput(), $this->getApplication()
 			);
 
 		}
@@ -251,7 +251,7 @@ class Plugin extends AbstractPlugin
 	 */
 	protected function getToken()
 	{
-		$input = $this->getApplication()->input;
+		$input = $this->getapplication()->getInput();
 
 		$userJson = $input->post->get('user', '{}', 'raw');
 		$userData = @json_decode($userJson, true);

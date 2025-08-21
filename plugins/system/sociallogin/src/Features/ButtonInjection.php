@@ -136,7 +136,7 @@ trait ButtonInjection
 			return null;
 		}
 
-		$Itemid = $this->getApplication()->input->get('Itemid', 0);
+		$Itemid = $this->getapplication()->getInput()->get('Itemid', 0);
 
 		foreach (debug_backtrace(0) as $item)
 		{
