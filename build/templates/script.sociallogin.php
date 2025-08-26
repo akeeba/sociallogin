@@ -6,6 +6,7 @@
  */
 
 // Prevent direct access
+use Joomla\CMS\Cache\Cache;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Installer\InstallerScript;
 use Joomla\Database\DatabaseInterface;
@@ -49,7 +50,7 @@ class Pkg_SocialloginInstallerScript extends InstallerScript
 	/**
 	 * Tuns on installation (but not on upgrade). This happens in install and discover_install installation routes.
 	 *
-	 * @param   \JInstallerAdapterPackage  $parent  Parent object
+	 * @param   \Joomla\CMS\Installer\Adapter\PackageAdapter  $parent  Parent object
 	 *
 	 * @return  bool
 	 */
@@ -151,8 +152,8 @@ class Pkg_SocialloginInstallerScript extends InstallerScript
 						'cachebase'    => ($client_id) ? JPATH_ADMINISTRATOR . '/cache' : $app->get('cache_path', JPATH_SITE . '/cache'),
 					];
 
-					/** @var JCache $cache */
-					$cache = \JCache::getInstance('callback', $options);
+					/** @var Cache $cache */
+					$cache = Cache::getInstance('callback', $options);
 					$cache->clean();
 				}
 				catch (Exception $exception)

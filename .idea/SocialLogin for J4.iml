@@ -2,48 +2,47 @@
 <module type="WEB_MODULE" version="4">
   <component name="NewModuleRootManager">
     <content url="file://$MODULE_DIR$">
-      <excludeFolder url="file://$MODULE_DIR$/.github"/>
-      <excludeFolder url="file://$MODULE_DIR$/.idea"/>
-      <excludeFolder url="file://$MODULE_DIR$/modules"/>
-      <excludeFolder url="file://$MODULE_DIR$/release"/>
-      <excludeFolder url="file://$MODULE_DIR$/vendor/codercat/jwk-to-pem"/>
-      <excludeFolder url="file://$MODULE_DIR$/vendor/coenjacobs/mozart"/>
-      <excludeFolder url="file://$MODULE_DIR$/vendor/composer"/>
-      <excludeFolder url="file://$MODULE_DIR$/vendor/lcobucci/clock"/>
-      <excludeFolder url="file://$MODULE_DIR$/vendor/lcobucci/jwt"/>
-      <excludeFolder url="file://$MODULE_DIR$/vendor/league/flysystem"/>
-      <excludeFolder url="file://$MODULE_DIR$/vendor/league/mime-type-detection"/>
-      <excludeFolder url="file://$MODULE_DIR$/vendor/phpseclib/bcmath_compat"/>
-      <excludeFolder url="file://$MODULE_DIR$/vendor/phpseclib/phpseclib"/>
-      <excludeFolder url="file://$MODULE_DIR$/vendor/psr/container"/>
-      <excludeFolder url="file://$MODULE_DIR$/vendor/symfony/console"/>
-      <excludeFolder url="file://$MODULE_DIR$/vendor/symfony/deprecation-contracts"/>
-      <excludeFolder url="file://$MODULE_DIR$/vendor/symfony/finder"/>
-      <excludeFolder url="file://$MODULE_DIR$/vendor/symfony/polyfill-ctype"/>
-      <excludeFolder url="file://$MODULE_DIR$/vendor/symfony/polyfill-intl-grapheme"/>
-      <excludeFolder url="file://$MODULE_DIR$/vendor/symfony/polyfill-intl-normalizer"/>
-      <excludeFolder url="file://$MODULE_DIR$/vendor/symfony/polyfill-mbstring"/>
-      <excludeFolder url="file://$MODULE_DIR$/vendor/symfony/polyfill-php73"/>
-      <excludeFolder url="file://$MODULE_DIR$/vendor/symfony/polyfill-php80"/>
-      <excludeFolder url="file://$MODULE_DIR$/vendor/symfony/service-contracts"/>
-      <excludeFolder url="file://$MODULE_DIR$/vendor/symfony/string"/>
-      <sourceFolder url="file://$MODULE_DIR$/plugins/sociallogin/amazon/src" packagePrefix="Akeeba\Plugin\Sociallogin\Amazon\" isTestSource="false"/>
-      <sourceFolder url="file://$MODULE_DIR$/plugins/sociallogin/apple/src" packagePrefix="Akeeba\Plugin\Sociallogin\Apple\" isTestSource="false"/>
-      <sourceFolder url="file://$MODULE_DIR$/plugins/sociallogin/auth0/src" packagePrefix="Akeeba\Plugin\Sociallogin\Auth0\" isTestSource="false"/>
-      <sourceFolder url="file://$MODULE_DIR$/plugins/sociallogin/discord/src" packagePrefix="Akeeba\Plugin\Sociallogin\Discord\" isTestSource="false"/>
-      <sourceFolder url="file://$MODULE_DIR$/plugins/sociallogin/facebook/src" packagePrefix="Akeeba\Plugin\Sociallogin\Facebook\" isTestSource="false"/>
-      <sourceFolder url="file://$MODULE_DIR$/plugins/sociallogin/github/src" packagePrefix="Akeeba\Plugin\Sociallogin\Github\" isTestSource="false"/>
-      <sourceFolder url="file://$MODULE_DIR$/plugins/sociallogin/google/src" packagePrefix="Akeeba\Plugin\Sociallogin\Google\" isTestSource="false"/>
-      <sourceFolder url="file://$MODULE_DIR$/plugins/sociallogin/linkedin/src" packagePrefix="Akeeba\Plugin\Sociallogin\Linkedin\" isTestSource="false"/>
-      <sourceFolder url="file://$MODULE_DIR$/plugins/sociallogin/microsoft/src" packagePrefix="Akeeba\Plugin\Sociallogin\Microsoft\" isTestSource="false"/>
-      <sourceFolder url="file://$MODULE_DIR$/plugins/sociallogin/paypal/src" packagePrefix="Akeeba\Plugin\Sociallogin\Paypal\" isTestSource="false"/>
-      <sourceFolder url="file://$MODULE_DIR$/plugins/sociallogin/spotify/src" packagePrefix="Akeeba\Plugin\Sociallogin\Spotify\" isTestSource="false"/>
-      <sourceFolder url="file://$MODULE_DIR$/plugins/sociallogin/synology/src" packagePrefix="Akeeba\Plugin\Sociallogin\SynologyOIDC\" isTestSource="false"/>
-      <sourceFolder url="file://$MODULE_DIR$/plugins/sociallogin/twitch/src" packagePrefix="Akeeba\Plugin\Sociallogin\Twitch\" isTestSource="false"/>
-      <sourceFolder url="file://$MODULE_DIR$/plugins/sociallogin/yahoo/src" packagePrefix="Akeeba\Plugin\Sociallogin\Yahoo\" isTestSource="false"/>
-      <sourceFolder url="file://$MODULE_DIR$/plugins/system/sociallogin/src" packagePrefix="Akeeba\Plugin\System\SocialLogin\" isTestSource="false"/>
+      <sourceFolder url="file://$MODULE_DIR$/plugins/sociallogin/amazon/src" isTestSource="false" packagePrefix="Akeeba\Plugin\Sociallogin\Amazon\" />
+      <sourceFolder url="file://$MODULE_DIR$/plugins/sociallogin/apple/src" isTestSource="false" packagePrefix="Akeeba\Plugin\Sociallogin\Apple\" />
+      <sourceFolder url="file://$MODULE_DIR$/plugins/sociallogin/auth0/src" isTestSource="false" packagePrefix="Akeeba\Plugin\Sociallogin\Auth0\" />
+      <sourceFolder url="file://$MODULE_DIR$/plugins/sociallogin/discord/src" isTestSource="false" packagePrefix="Akeeba\Plugin\Sociallogin\Discord\" />
+      <sourceFolder url="file://$MODULE_DIR$/plugins/sociallogin/facebook/src" isTestSource="false" packagePrefix="Akeeba\Plugin\Sociallogin\Facebook\" />
+      <sourceFolder url="file://$MODULE_DIR$/plugins/sociallogin/github/src" isTestSource="false" packagePrefix="Akeeba\Plugin\Sociallogin\Github\" />
+      <sourceFolder url="file://$MODULE_DIR$/plugins/sociallogin/google/src" isTestSource="false" packagePrefix="Akeeba\Plugin\Sociallogin\Google\" />
+      <sourceFolder url="file://$MODULE_DIR$/plugins/sociallogin/linkedin/src" isTestSource="false" packagePrefix="Akeeba\Plugin\Sociallogin\Linkedin\" />
+      <sourceFolder url="file://$MODULE_DIR$/plugins/sociallogin/microsoft/src" isTestSource="false" packagePrefix="Akeeba\Plugin\Sociallogin\Microsoft\" />
+      <sourceFolder url="file://$MODULE_DIR$/plugins/sociallogin/spotify/src" isTestSource="false" packagePrefix="Akeeba\Plugin\Sociallogin\Spotify\" />
+      <sourceFolder url="file://$MODULE_DIR$/plugins/sociallogin/synology/src" isTestSource="false" packagePrefix="Akeeba\Plugin\Sociallogin\SynologyOIDC\" />
+      <sourceFolder url="file://$MODULE_DIR$/plugins/sociallogin/twitch/src" isTestSource="false" packagePrefix="Akeeba\Plugin\Sociallogin\Twitch\" />
+      <sourceFolder url="file://$MODULE_DIR$/plugins/sociallogin/yahoo/src" isTestSource="false" packagePrefix="Akeeba\Plugin\Sociallogin\Yahoo\" />
+      <sourceFolder url="file://$MODULE_DIR$/plugins/system/sociallogin/src" isTestSource="false" packagePrefix="Akeeba\Plugin\System\SocialLogin\" />
+      <excludeFolder url="file://$MODULE_DIR$/.github" />
+      <excludeFolder url="file://$MODULE_DIR$/.idea" />
+      <excludeFolder url="file://$MODULE_DIR$/modules" />
+      <excludeFolder url="file://$MODULE_DIR$/release" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/codercat/jwk-to-pem" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/coenjacobs/mozart" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/composer" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/lcobucci/clock" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/lcobucci/jwt" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/league/flysystem" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/league/mime-type-detection" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/phpseclib/bcmath_compat" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/phpseclib/phpseclib" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/psr/container" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/symfony/console" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/symfony/deprecation-contracts" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/symfony/finder" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/symfony/polyfill-ctype" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/symfony/polyfill-intl-grapheme" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/symfony/polyfill-intl-normalizer" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/symfony/polyfill-mbstring" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/symfony/polyfill-php73" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/symfony/polyfill-php80" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/symfony/service-contracts" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/symfony/string" />
     </content>
-    <orderEntry type="inheritedJdk"/>
-    <orderEntry type="sourceFolder" forTests="false"/>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
   </component>
 </module>
