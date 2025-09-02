@@ -164,15 +164,7 @@ class Pkg_SocialloginInstallerScript extends InstallerScript
 				// Trigger the onContentCleanCache event.
 				try
 				{
-					if (version_compare(JVERSION, '5.3.0', 'lt'))
-					{
-						$app->triggerEvent('onContentCleanCache', $options);
-					}
-					else
-					{
-						$event = new \Joomla\CMS\Event\Model\AfterCleanCacheEvent('onContentCleanCache', $options);
-						$app->getDispatcher()->dispatch($event->getName(), $event);
-					}
+					$app->triggerEvent('onContentCleanCache', $options);
 				}
 				catch (Exception $e)
 				{
