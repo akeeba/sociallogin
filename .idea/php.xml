@@ -1,5 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="LaravelPint">
+    <laravel_pint_settings>
+      <laravel_pint_by_interpreter asDefaultInterpreter="true" interpreter_id="b66bca49-74e1-45a7-8a68-fe3d25a51252">
+        <option name="timeout" value="30000" />
+      </laravel_pint_by_interpreter>
+    </laravel_pint_settings>
+  </component>
+  <component name="MessDetector">
+    <phpmd_settings>
+      <phpmd_by_interpreter asDefaultInterpreter="true" interpreter_id="b66bca49-74e1-45a7-8a68-fe3d25a51252" timeout="30000" />
+    </phpmd_settings>
+  </component>
   <component name="MessDetectorOptionsConfiguration">
     <option name="transferred" value="true" />
   </component>
@@ -9,6 +21,11 @@
   <component name="PHPCodeSnifferOptionsConfiguration">
     <option name="transferred" value="true" />
   </component>
+  <component name="PhpCSFixer">
+    <phpcsfixer_settings>
+      <phpcs_fixer_by_interpreter asDefaultInterpreter="true" interpreter_id="b66bca49-74e1-45a7-8a68-fe3d25a51252" timeout="30000" />
+    </phpcsfixer_settings>
+  </component>
   <component name="PhpCodeSniffer">
     <phpcs_settings>
       <phpcs_by_interpreter asDefaultInterpreter="true" interpreter_id="98235076-2459-405a-ba28-6e4ea475e893" timeout="30000" />
@@ -16,36 +33,36 @@
   </component>
   <component name="PhpIncludePathManager">
     <include_path>
-      <path value="$PROJECT_DIR$/../../master/joomla4" />
       <path value="$PROJECT_DIR$/../../dionysopoulos/joomlatypehints/generated_hints" />
-      <path value="$USER_HOME$/Sites/boot4--" />
-      <path value="$PROJECT_DIR$/vendor/lcobucci/jwt" />
-      <path value="$PROJECT_DIR$/vendor/lcobucci/clock" />
+      <path value="$PROJECT_DIR$/plugins/system/sociallogin/vendor/codercat/jwk-to-pem" />
+      <path value="$PROJECT_DIR$/plugins/system/sociallogin/vendor/composer" />
+      <path value="$PROJECT_DIR$/plugins/system/sociallogin/vendor/lcobucci/clock" />
+      <path value="$PROJECT_DIR$/plugins/system/sociallogin/vendor/lcobucci/jwt" />
+      <path value="$PROJECT_DIR$/plugins/system/sociallogin/vendor/phpseclib/bcmath_compat" />
+      <path value="$PROJECT_DIR$/plugins/system/sociallogin/vendor/phpseclib/phpseclib" />
       <path value="$PROJECT_DIR$/vendor/codercat/jwk-to-pem" />
+      <path value="$PROJECT_DIR$/vendor/coenjacobs/mozart" />
+      <path value="$PROJECT_DIR$/vendor/composer" />
+      <path value="$PROJECT_DIR$/vendor/lcobucci/clock" />
+      <path value="$PROJECT_DIR$/vendor/lcobucci/jwt" />
+      <path value="$PROJECT_DIR$/vendor/league/flysystem" />
+      <path value="$PROJECT_DIR$/vendor/league/mime-type-detection" />
       <path value="$PROJECT_DIR$/vendor/phpseclib/bcmath_compat" />
       <path value="$PROJECT_DIR$/vendor/phpseclib/phpseclib" />
-      <path value="$PROJECT_DIR$/vendor/composer" />
+      <path value="$PROJECT_DIR$/vendor/psr/container" />
       <path value="$PROJECT_DIR$/vendor/symfony/console" />
       <path value="$PROJECT_DIR$/vendor/symfony/deprecation-contracts" />
       <path value="$PROJECT_DIR$/vendor/symfony/finder" />
       <path value="$PROJECT_DIR$/vendor/symfony/polyfill-ctype" />
-      <path value="$PROJECT_DIR$/vendor/league/flysystem" />
       <path value="$PROJECT_DIR$/vendor/symfony/polyfill-intl-grapheme" />
-      <path value="$PROJECT_DIR$/vendor/league/mime-type-detection" />
       <path value="$PROJECT_DIR$/vendor/symfony/polyfill-intl-normalizer" />
       <path value="$PROJECT_DIR$/vendor/symfony/polyfill-mbstring" />
       <path value="$PROJECT_DIR$/vendor/symfony/polyfill-php73" />
-      <path value="$PROJECT_DIR$/vendor/psr/container" />
       <path value="$PROJECT_DIR$/vendor/symfony/polyfill-php80" />
       <path value="$PROJECT_DIR$/vendor/symfony/service-contracts" />
       <path value="$PROJECT_DIR$/vendor/symfony/string" />
-      <path value="$PROJECT_DIR$/vendor/coenjacobs/mozart" />
-      <path value="$PROJECT_DIR$/plugins/system/sociallogin/vendor/composer" />
-      <path value="$PROJECT_DIR$/plugins/system/sociallogin/vendor/lcobucci/jwt" />
-      <path value="$PROJECT_DIR$/plugins/system/sociallogin/vendor/phpseclib/phpseclib" />
-      <path value="$PROJECT_DIR$/plugins/system/sociallogin/vendor/codercat/jwk-to-pem" />
-      <path value="$PROJECT_DIR$/plugins/system/sociallogin/vendor/phpseclib/bcmath_compat" />
-      <path value="$PROJECT_DIR$/plugins/system/sociallogin/vendor/lcobucci/clock" />
+      <path value="$PROJECT_DIR$/../../master/joomla5" />
+      <path value="$USER_HOME$/Sites/boot4--" />
     </include_path>
   </component>
   <component name="PhpProjectSharedConfiguration" php_language_level="7.4" />
