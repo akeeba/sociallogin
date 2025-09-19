@@ -88,6 +88,29 @@
                 />
 
                 <field
+                        name="azure_tenant_type"
+                        type="list"
+                        label="PLG_SOCIALLOGIN_MICROSOFT_FIELD_AZURE_TENANT_TYPE_LABEL"
+                        description="PLG_SOCIALLOGIN_MICROSOFT_FIELD_AZURE_TENANT_TYPE_DESC"
+                        default="0"
+                        showon="apptype:azure"
+                >
+                    <option value="common">PLG_SOCIALLOGIN_MICROSOFT_FIELD_AZURE_TENANT_TYPE_OPT_COMMON</option>
+                    <option value="organizations">PLG_SOCIALLOGIN_MICROSOFT_FIELD_AZURE_TENANT_TYPE_OPT_ORGANIZATIONS</option>
+                    <option value="consumers">PLG_SOCIALLOGIN_MICROSOFT_FIELD_AZURE_TENANT_TYPE_OPT_CONSUMERS</option>
+                    <option value="tenantid">PLG_SOCIALLOGIN_MICROSOFT_FIELD_AZURE_TENANT_TYPE_OPT_TENANTID</option>
+                </field>
+
+                <field
+                        name="azure_tenant"
+                        type="text"
+                        label="PLG_SOCIALLOGIN_MICROSOFT_FIELD_AZURE_TENANT_LABEL"
+                        description="PLG_SOCIALLOGIN_MICROSOFT_FIELD_AZURE_TENANT_DESC"
+                        default=""
+                        showon="apptype:azure[AND]azure_tenant_type:tenantid"
+                />
+
+                <field
                         name="appid"
                         type="text"
                         label="PLG_SOCIALLOGIN_MICROSOFT_FIELD_APPID_LABEL"

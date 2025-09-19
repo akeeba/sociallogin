@@ -88,12 +88,27 @@ class Plugin extends AbstractPlugin
 
 			if ($appType === 'azure')
 			{
+				// Get the tenant, see https://learn.microsoft.com/en-us/graph/auth-v2-user?tabs=http
+				$tenant = $this->params->get('azure_tenant_type', 'common');
+				$tenant = in_array($tenant, ['common', 'organizations', 'consumers', 'tenantid']) ? $tenant : '';
+
+				// The special case `tenantid` means the user provides a Tenant ID
+				if ($tenant === 'tenantid')
+				{
+					$tenant = trim($this->params->get('azure_tenant', '') ?: '');
+				}
+
+				// If the tenant is not set, default to `common`
+				$tenant = $tenant ?: 'common';
+
+				$baseUri = sprintf('https://login.microsoftonline.com/%s/oauth2/v2.0/', $tenant);
+
 				$options = [
 					'clientid'      => $this->appId,
 					'clientsecret'  => $this->appSecret,
 					'redirecturi'   => Uri::base() . 'index.php/aksociallogin_finishLogin/microsoft.raw',
-					'authurl'       => 'https://login.microsoftonline.com/common/oauth2/v2.0/authorize',
-					'tokenurl'      => 'https://login.microsoftonline.com/common/oauth2/v2.0/token',
+					'authurl'       => $baseUri . 'authorize',
+					'tokenurl'      => $baseUri . 'token',
 					'scope'         => 'user.read',
 					'grant_scope'   => 'user.read',
 					'requestparams' => [

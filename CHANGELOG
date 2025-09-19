@@ -1,6 +1,7 @@
 <?php die(); ?>
 Akeeba SocialLogin 4.9.4
 ================================================================================
++ Login with Microsoft: Support for Azure Tenant ID
 ~ Preliminary support for Joomla 6
 
 Akeeba SocialLogin 4.9.3
