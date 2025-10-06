@@ -1,4 +1,8 @@
 <?php die(); ?>
+Akeeba SocialLogin 4.9.5
+================================================================================
+~ PHP 8.5 compatibility: setAccessible is deprecated for reflection objects
+
 Akeeba SocialLogin 4.9.4
 ================================================================================
 + Login with Microsoft: Support for Azure Tenant ID
