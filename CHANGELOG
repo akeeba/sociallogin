@@ -2,6 +2,7 @@
 Akeeba SocialLogin 4.9.5
 ================================================================================
 ~ PHP 8.5 compatibility: setAccessible is deprecated for reflection objects
+~ Joomla 6 compatibility: Joomla\CMS\Filesystem has been removed
 
 Akeeba SocialLogin 4.9.4
 ================================================================================
