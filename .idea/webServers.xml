@@ -3,7 +3,7 @@
   <component name="WebServers">
     <option name="servers">
       <webServer id="315bea5b-abb6-49c1-bf07-1e8acd6ad6f6" name="My Old Site" url="https://myoldsite.com">
-        <fileTransfer rootFolder="/home/myoldsit/public_html" accessType="SFTP" host="mcs001-011.directrouter.com" port="22" sshConfigId="6cc68c13-d21e-4ce2-b745-ce72bdfd6edd" sshConfig="MyOldSite" keyPair="true">
+        <fileTransfer rootFolder="/home/myoldsit/public_html" accessType="SFTP" host="mcs001-011.directrouter.com" port="22" sshConfigId="6cc68c13-d21e-4ce2-b745-ce72bdfd6edd" sshConfig="MyOldSite" authAgent="true">
           <advancedOptions>
             <advancedOptions dataProtectionLevel="Private" keepAliveTimeout="0" passiveMode="true" shareSSLContext="true" />
           </advancedOptions>

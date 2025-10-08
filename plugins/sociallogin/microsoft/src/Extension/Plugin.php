@@ -103,10 +103,12 @@ class Plugin extends AbstractPlugin
 
 				$baseUri = sprintf('https://login.microsoftonline.com/%s/oauth2/v2.0/', $tenant);
 
+				$pluginName = $this->getApplication()->isClient('administrator') ? 'admin:microsoft' : 'microsoft';
+
 				$options = [
 					'clientid'      => $this->appId,
 					'clientsecret'  => $this->appSecret,
-					'redirecturi'   => Uri::base() . 'index.php/aksociallogin_finishLogin/microsoft.raw',
+					'redirecturi'   => Uri::root() . 'index.php/aksociallogin_finishLogin/' . $pluginName . '.raw',
 					'authurl'       => $baseUri . 'authorize',
 					'tokenurl'      => $baseUri . 'token',
 					'scope'         => 'user.read',

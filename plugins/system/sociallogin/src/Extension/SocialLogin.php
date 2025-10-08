@@ -148,6 +148,10 @@ class SocialLogin extends CMSPlugin implements SubscriberInterface, DatabaseAwar
 		{
 			$path = substr($path, 10);
 		}
+		elseif (strpos($path, 'index.php') === 0 && strpos($currentUri->getQuery(), '/aksociallogin_finishLogin') === 0)
+		{
+			$path = substr($currentUri->getQuery(), 1);
+		}
 
 		// Remove the language part on multilingual sites
 		if ($this->getApplication()->isClient('site') && $this->getApplication()->getLanguageFilter())
@@ -176,9 +180,32 @@ class SocialLogin extends CMSPlugin implements SubscriberInterface, DatabaseAwar
 			return;
 		}
 
-		[$plugin,] = explode('.', $plugin);
+		if (strpos($plugin, 'admin:') === 0)
+		{
+			[$admin, $plugin] = explode(':', $plugin, 2);
+			$newUri = rtrim(Uri::root(false), '/') . '/administrator/index.php?/aksociallogin_finishLogin/' .
+			          $plugin . '/' . $currentUri->getQuery();
+			$this->getApplication()->redirect($newUri);
+
+			// No-op; this is just to address static code analysis issues.
+			return;
+		}
+
+		[$plugin, $theRest] = explode('.', $plugin, 2);
 
 		$input = $this->getapplication()->getInput();
+
+		if ($theRest !== 'raw')
+		{
+			[, $query] = explode('/', $theRest, 2);
+			$currentUri->setQuery($query);
+			$params = $currentUri->getQuery(true);
+
+			foreach ($params as $k => $v)
+			{
+				$input->set($k, $v);
+			}
+		}
 
 		$input->set('option', 'com_ajax');
 		$input->set('group', 'sociallogin');

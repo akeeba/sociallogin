@@ -46,6 +46,14 @@
                 />
 
                 <field
+                        name="callbackurireminder"
+                        type="callbackuri"
+                        label="PLG_SYSTEM_SOCIALLOGIN_FIELD_CALLBACKURI"
+                        description="PLG_SYSTEM_SOCIALLOGIN_FIELD_CALLBACKURI_DESC"
+                        path="index.php/aksociallogin_finishLogin/admin:microsoft.raw"
+                />
+
+                <field
                         name="documentation"
                         type="documentation"
                         label="PLG_SYSTEM_SOCIALLOGIN_FIELD_DOCUMENTATION"
