@@ -54,6 +54,14 @@
                 />
 
                 <field
+                        name="adminkey"
+                        type="password"
+                        label="PLG_SOCIALLOGIN_MICROSOFT_FIELD_ADMINKEY_LABEL"
+                        description="PLG_SOCIALLOGIN_MICROSOFT_FIELD_ADMINKEY_DESC"
+                        default=""
+                />
+
+                <field
                         name="documentation"
                         type="documentation"
                         label="PLG_SYSTEM_SOCIALLOGIN_FIELD_DOCUMENTATION"

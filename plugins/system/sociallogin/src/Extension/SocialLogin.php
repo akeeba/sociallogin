@@ -10,20 +10,6 @@ namespace Akeeba\Plugin\System\SocialLogin\Extension;
 // Prevent direct access
 defined('_JEXEC') || die;
 
-use Exception;
-use JLoader;
-use Joomla\CMS\Application\AdministratorApplication;
-use Joomla\CMS\Application\CMSApplication;
-use Joomla\CMS\Application\SiteApplication;
-use Joomla\CMS\Language\LanguageHelper;
-use Joomla\CMS\Plugin\CMSPlugin;
-use Joomla\CMS\Uri\Uri;
-use Joomla\Database\DatabaseAwareInterface;
-use Joomla\Database\DatabaseAwareTrait;
-use Joomla\Database\DatabaseDriver;
-use Joomla\Database\DatabaseInterface;
-use Joomla\Event\Event;
-use Joomla\Event\SubscriberInterface;
 use Akeeba\Plugin\System\SocialLogin\Features\Ajax;
 use Akeeba\Plugin\System\SocialLogin\Features\ButtonInjection;
 use Akeeba\Plugin\System\SocialLogin\Features\DynamicUsergroups;
@@ -31,6 +17,16 @@ use Akeeba\Plugin\System\SocialLogin\Features\UserFields;
 use Akeeba\Plugin\System\SocialLogin\Library\Plugin\AddLoggerTrait;
 use Akeeba\Plugin\System\SocialLogin\Library\Plugin\RunPluginsTrait;
 use Akeeba\Plugin\System\SocialLogin\Library\Plugin\SocialLoginButtonsTrait;
+use Exception;
+use Joomla\CMS\Language\LanguageHelper;
+use Joomla\CMS\Plugin\CMSPlugin;
+use Joomla\CMS\Plugin\PluginHelper;
+use Joomla\CMS\Uri\Uri;
+use Joomla\Database\DatabaseAwareInterface;
+use Joomla\Database\DatabaseAwareTrait;
+use Joomla\Event\Event;
+use Joomla\Event\SubscriberInterface;
+use Joomla\Registry\Registry;
 
 class SocialLogin extends CMSPlugin implements SubscriberInterface, DatabaseAwareInterface
 {
@@ -50,16 +46,16 @@ class SocialLogin extends CMSPlugin implements SubscriberInterface, DatabaseAwar
 	/**
 	 * User group ID to add the user to if they have linked social network accounts to their profile
 	 *
-	 * @since 3.0.1
 	 * @var   int
+	 * @since 3.0.1
 	 */
 	protected int $linkedUserGroup = 0;
 
 	/**
 	 * User group ID to add the user to if they have NOT linked social network accounts to their profile
 	 *
-	 * @since 3.0.1
 	 * @var   int
+	 * @since 3.0.1
 	 */
 	protected int $unlinkedUserGroup = 0;
 
@@ -183,8 +179,21 @@ class SocialLogin extends CMSPlugin implements SubscriberInterface, DatabaseAwar
 		if (strpos($plugin, 'admin:') === 0)
 		{
 			[$admin, $plugin] = explode(':', $plugin, 2);
+			[$cleanPlugin,] = explode('.', $plugin, 2);
+
+			$pluginDef    = PluginHelper::getPlugin('sociallogin', $cleanPlugin) ?: null;
+			$paramsString = !is_object($pluginDef) ? null : ($pluginDef->params ?? null);
+			$pParams      = new Registry($paramsString ?: '{}');
+			$adminKey     = trim($pParams->get('adminkey', null) ?? '');
+
 			$newUri = rtrim(Uri::root(false), '/') . '/administrator/index.php?/aksociallogin_finishLogin/' .
 			          $plugin . '/' . $currentUri->getQuery();
+
+			if ($adminKey)
+			{
+				$newUri .= '&' . $adminKey;
+			}
+
 			$this->getApplication()->redirect($newUri);
 
 			// No-op; this is just to address static code analysis issues.
