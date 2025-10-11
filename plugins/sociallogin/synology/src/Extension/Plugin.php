@@ -85,7 +85,7 @@ class Plugin extends AbstractPlugin
 			'scope'        => 'email openid',
 		];
 		$httpClient      = (new HttpFactory())->getHttp();
-		$this->connector = new SynologyOAuth($options, $httpClient, $application->input, $application);
+		$this->connector = new SynologyOAuth($options, $httpClient, $application->getInput(), $application);
 
 		return $this->connector;
 	}

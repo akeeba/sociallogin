@@ -15,7 +15,7 @@ use Exception;
 use InvalidArgumentException;
 use Joomla\CMS\Application\CMSApplication;
 use Joomla\CMS\Application\WebApplication;
-use Joomla\CMS\Input\Input;
+use Joomla\Input\Input;
 use Joomla\Http\Http;
 use Joomla\Http\HttpFactory;
 use Joomla\Http\Response;
@@ -76,7 +76,7 @@ class OAuth2Client
 
 		$this->options = $options;
 		$this->http    = $http ?: (new HttpFactory())->getHttp($this->options);
-		$this->input   = $input ?: ($application ? $application->input : new Input());
+		$this->input   = $input ?: ($application ? $application->getInput() : new Input());
 
 		$this->application = $application;
 	}

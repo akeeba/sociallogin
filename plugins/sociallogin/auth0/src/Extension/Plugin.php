@@ -91,7 +91,7 @@ class Plugin extends AbstractPlugin
 			'scope'        => 'email openid',
 		];
 		$httpClient      = (new HttpFactory())->getHttp();
-		$this->connector = new Auth0OAuth($options, $httpClient, $application->input, $application);
+		$this->connector = new Auth0OAuth($options, $httpClient, $application->getInput(), $application);
 
 		return $this->connector;
 	}

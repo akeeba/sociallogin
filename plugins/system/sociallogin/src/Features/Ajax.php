@@ -53,7 +53,7 @@ trait Ajax
 			return;
 		}
 
-		$input = $app->input;
+		$input = $app->getInput();
 
 		// ...and this is a request to com_ajax...
 		if ($input->getCmd('option', '') != 'com_ajax')
@@ -95,7 +95,7 @@ trait Ajax
 	{
 		$ajax                     = new \Akeeba\Plugin\System\SocialLogin\Library\Helper\Ajax($this, $this->getApplication(), $this->getDatabase());
 		$app                      = $this->getApplication();
-		$input                    = $app->input;
+		$input                    = $app->getInput();
 
 		// Get the return URL from the session
 		$returnURL = $app->getSession()->get('plg_system_sociallogin.returnUrl', Uri::base());

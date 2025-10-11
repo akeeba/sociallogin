@@ -49,7 +49,7 @@ final class Ajax
 	 */
 	public function handle()
 	{
-		$input          = $this->app->input;
+		$input          = $this->app->getInput();
 		$akaction       = $input->getCmd('akaction');
 		$token          = $this->app->getSession()->getToken();
 		$noTokenActions = ['dontremind'];
@@ -84,7 +84,7 @@ final class Ajax
 	 */
 	protected function ajaxAuthenticate()
 	{
-		$input = $this->app->input;
+		$input = $this->app->getInput();
 		$slug  = $input->getCmd('slug');
 
 		// No slug? No good.
@@ -148,7 +148,7 @@ final class Ajax
 	 */
 	protected function ajaxUnlink()
 	{
-		$input = $this->app->input;
+		$input = $this->app->getInput();
 		$slug  = $input->getCmd('slug');
 
 		// No slug? No good.
