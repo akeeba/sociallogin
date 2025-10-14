@@ -60,7 +60,7 @@ abstract class Integrations
 	 * @return array  Simple array of dictionary arrays. See method description for the format.
 	 * @throws Exception
 	 */
-	public static function getSocialLoginButtonDefinitions(AbstractApplication $app = null, ?string $loginURL = null, ?string $failureURL = null): array
+	public static function getSocialLoginButtonDefinitions(?AbstractApplication $app = null, ?string $loginURL = null, ?string $failureURL = null): array
 	{
 		return ($app ?? Factory::getApplication())
 			->bootPlugin('sociallogin', 'system')

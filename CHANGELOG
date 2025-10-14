@@ -1,4 +1,8 @@
 <?php die(); ?>
+Akeeba SocialLogin 4.9.6
+================================================================================
+~ PHP 8.5 compatibility
+
 Akeeba SocialLogin 4.9.5
 ================================================================================
 + Login with Microsoft: Support for admin login
