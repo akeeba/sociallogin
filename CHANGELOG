@@ -2,6 +2,7 @@
 Akeeba SocialLogin 4.9.6
 ================================================================================
 ~ PHP 8.5 compatibility
+~ Joomla 5.4 and 6.0 compatibility: field UserGroupList renamed to usergrouplist (change of case)
 
 Akeeba SocialLogin 4.9.5
 ================================================================================
