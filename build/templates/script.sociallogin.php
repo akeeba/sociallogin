@@ -150,6 +150,7 @@ class Pkg_SocialloginInstallerScript extends InstallerScript
 					$options = [
 						'defaultgroup' => $group,
 						'cachebase'    => ($client_id) ? JPATH_ADMINISTRATOR . '/cache' : $app->get('cache_path', JPATH_SITE . '/cache'),
+						'result' => false
 					];
 
 					/** @var Cache $cache */
@@ -164,7 +165,16 @@ class Pkg_SocialloginInstallerScript extends InstallerScript
 				// Trigger the onContentCleanCache event.
 				try
 				{
-					$app->triggerEvent('onContentCleanCache', $options);
+					if (version_compare(JVERSION, '5.0.0', 'lt'))
+					{
+						$app->triggerEvent('onContentCleanCache', $options);
+					}
+					else
+					{
+						$event      = new \Joomla\CMS\Event\Model\AfterCleanCacheEvent('onContentCleanCache', $options);
+						$dispatcher = $app->getDispatcher();
+						$dispatcher->dispatch($event->getName(), $event);
+					}
 				}
 				catch (Exception $e)
 				{

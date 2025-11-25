@@ -1,8 +1,9 @@
 <?php die(); ?>
-Akeeba SocialLogin 4.9.6
+Akeeba SocialLogin 5.0.0
 ================================================================================
 ~ PHP 8.5 compatibility
 ~ Joomla 5.4 and 6.0 compatibility: field UserGroupList renamed to usergrouplist (change of case)
+#[HIGH] Joomla 6: error on installation (core b/c break)
 
 Akeeba SocialLogin 4.9.5
 ================================================================================
