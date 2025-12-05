@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e5b958b8f83db08678e8f1190b3e272a",
+    "content-hash": "92c5bebb088961ecb85da91eae922d11",
     "packages": [
         {
             "name": "codercat/jwk-to-pem",
@@ -395,16 +395,16 @@
         },
         {
             "name": "phpseclib/bcmath_compat",
-            "version": "1.0.8",
+            "version": "1.0.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpseclib/bcmath_compat.git",
-                "reference": "09ae1d61a6f2346530ee8c4f81041218c7ea098e"
+                "reference": "52af8637a01609800e606e78869ed268d3d976d7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpseclib/bcmath_compat/zipball/09ae1d61a6f2346530ee8c4f81041218c7ea098e",
-                "reference": "09ae1d61a6f2346530ee8c4f81041218c7ea098e",
+                "url": "https://api.github.com/repos/phpseclib/bcmath_compat/zipball/52af8637a01609800e606e78869ed268d3d976d7",
+                "reference": "52af8637a01609800e606e78869ed268d3d976d7",
                 "shasum": ""
             },
             "require": {
@@ -453,7 +453,7 @@
                 "issues": "https://github.com/phpseclib/bcmath_compat/issues",
                 "source": "https://github.com/phpseclib/bcmath_compat"
             },
-            "time": "2024-02-21T10:30:04+00:00"
+            "time": "2024-06-04T14:25:51+00:00"
         },
         {
             "name": "phpseclib/phpseclib",
@@ -1489,17 +1489,18 @@
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {},
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php": ">=7.4 <8.4",
+        "php": "^8.1",
         "ext-json": "*",
-        "ext-simplexml": "*"
+        "ext-simplexml": "*",
+        "ext-libxml": "*"
     },
-    "platform-dev": [],
+    "platform-dev": {},
     "platform-overrides": {
-        "php": "7.4.0"
+        "php": "8.1.0"
     },
-    "plugin-api-version": "2.2.0"
+    "plugin-api-version": "2.9.0"
 }

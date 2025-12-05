@@ -1,4 +1,9 @@
 <?php die(); ?>
+Akeeba SocialLogin 4.10.0
+================================================================================
+! Minimum required PHP version is now 8.1.0.
+#[HIGH] No longer works on Joomla 6 (core b/c break)
+
 Akeeba SocialLogin 4.9.6
 ================================================================================
 ~ PHP 8.5 compatibility
