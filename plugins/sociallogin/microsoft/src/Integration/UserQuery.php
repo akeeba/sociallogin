@@ -11,6 +11,7 @@ namespace Akeeba\Plugin\Sociallogin\Microsoft\Integration;
 defined('_JEXEC') || die();
 
 use Joomla\Http\Http;
+use RuntimeException;
 
 /**
  * Implements a query to the currently logged in user through Microsoft Live's REST API
@@ -58,15 +59,17 @@ class UserQuery
 	public function getUserInformation()
 	{
 		$path  = '/me?access_token=' . urlencode($this->token);
-		$reply = $this->client->get(self::$endpoint . $path, []);
+		$response = $this->client->get(self::$endpoint . $path, []);
 
-		if ($reply->code > 299)
+		if ($response->getStatusCode() > 299)
 		{
-			throw new \RuntimeException("HTTP {$reply->code}: {$reply->body}");
+			throw new RuntimeException(sprintf(
+				"HTTP %s: %s",
+				$response->getStatusCode(),
+				(string) $response->getBody()
+			));
 		}
 
-		$response = json_decode($reply->body);
-
-		return $response;
+		return json_decode((string) $response->getBody(), true, 512, JSON_THROW_ON_ERROR);
 	}
 }

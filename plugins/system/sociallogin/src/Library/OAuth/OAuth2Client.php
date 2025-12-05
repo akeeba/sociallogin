@@ -106,32 +106,42 @@ class OAuth2Client
 
 			$response = $this->http->post($this->getOption('tokenurl'), $data);
 
-			if (!($response->code >= 200 && $response->code < 400))
+			$statusCode = $response->getStatusCode();
+
+			if (!($statusCode >= 200 && $statusCode < 400))
 			{
-				throw new RuntimeException('Error code ' . $response->code . ' received requesting access token: ' . $response->body . '.');
+				throw new RuntimeException(
+					sprintf(
+						"Error code %s received requesting access token: %s.",
+						$statusCode,
+						(string) $response->getBody()
+					)
+				);
 			}
 
 			$contentType = '';
 
-			if (isset($response->headers['Content-Type']))
+			$headers = $response->getHeaders();
+
+			if (isset($headers['Content-Type']))
 			{
-				$contentType = $response->headers['Content-Type'];
+				$contentType = $headers['Content-Type'];
 			}
 
-			if (isset($response->headers['content-type']))
+			if (isset($headers['content-type']))
 			{
-				$contentType = $response->headers['content-type'];
+				$contentType = $headers['content-type'];
 			}
 
 			$contentType = is_array($contentType) ? array_shift($contentType) : $contentType;
 
 			if (strpos($contentType, 'application/json') !== false)
 			{
-				$token = array_merge(json_decode($response->body, true), ['created' => time()]);
+				$token = array_merge(json_decode((string) $response->getBody(), true), ['created' => time()]);
 			}
 			else
 			{
-				parse_str($response->body, $token);
+				parse_str((string) $response->getBody(), $token);
 				$token = array_merge($token, ['created' => time()]);
 			}
 
@@ -314,12 +324,14 @@ class OAuth2Client
 			case 'get':
 			case 'delete':
 			case 'trace':
+				/** @var Response $response */
 				$response = call_user_func_array([$this->http, $method], [$url, $headers, $timeout]);
 				break;
 
 			case 'post':
 			case 'put':
 			case 'patch':
+				/** @var Response $response */
 				$response = call_user_func_array([$this->http, $method], [$url, $data, $headers, $timeout]);
 				break;
 
@@ -327,9 +339,17 @@ class OAuth2Client
 				throw new InvalidArgumentException('Unknown HTTP request method: ' . $method . '.');
 		}
 
-		if ($response->code < 200 || $response->code >= 400)
+		$statusCode = $response->getStatusCode();
+
+		if ($statusCode < 200 || $statusCode >= 400)
 		{
-			throw new RuntimeException('Error code ' . $response->code . ' received requesting data: ' . $response->body . '.');
+			throw new RuntimeException(
+				sprintf(
+					"Error code %s received requesting data: %s.",
+					$statusCode,
+					(string) $response->getBody()
+				)
+			);
 		}
 
 		return $response;
@@ -370,21 +390,30 @@ class OAuth2Client
 		$data['client_secret'] = $this->getOption('clientsecret');
 		$response              = $this->http->post($this->getOption('tokenurl'), $data);
 
-		if (!($response->code >= 200 || $response->code < 400))
+		$statusCode = $response->getStatusCode();
+
+		if (!($statusCode >= 200 && $statusCode < 400))
 		{
-			throw new Exception('Error code ' . $response->code . ' received refreshing token: ' . $response->body . '.');
+			throw new Exception(
+				sprintf(
+					"Error code %s received refreshing token: %s.",
+					$statusCode,
+					(string) $response->getBody()
+				)
+			);
 		}
 
-		$contentType = $response->headers['Content-Type'];
+		$headers     = $response->getHeaders();
+		$contentType = $headers['Content-Type'];
 		$contentType = is_array($contentType) ? array_shift($contentType) : $contentType;
 
 		if (strpos($contentType, 'application/json') !== false)
 		{
-			$token = array_merge(json_decode($response->body, true), ['created' => time()]);
+			$token = array_merge(json_decode((string) $response->getBody(), true), ['created' => time()]);
 		}
 		else
 		{
-			parse_str($response->body, $token);
+			parse_str((string) $response->getBody(), $token);
 			$token = array_merge($token, ['created' => time()]);
 		}
 

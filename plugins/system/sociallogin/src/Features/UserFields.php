@@ -194,7 +194,6 @@ trait UserFields
 				/** @var Menu $menuItem */
 				$menuItem = Table::getInstance('Menu');
 				$menuItem->load($itemId);
-				/** @noinspection PhpUndefinedFieldInspection */
 				$uri    = new Uri($menuItem->link);
 				$layout = $uri->getVar('layout', $layout);
 			}

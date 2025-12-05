@@ -10,6 +10,7 @@ namespace Akeeba\Plugin\System\SocialLogin\Library\OAuth;
 use Joomla\CMS\Application\CMSApplication;
 use Joomla\CMS\Cache\Controller\CallbackController;
 use Joomla\Http\HttpFactory;
+use JsonException;
 
 trait OpenIDConnectTrait
 {
@@ -102,9 +103,9 @@ trait OpenIDConnectTrait
 
 		try
 		{
-			$info = @json_decode($response->body, false, 512, JSON_THROW_ON_ERROR);
+			$info = @json_decode((string) $response->getBody(), false, 512, JSON_THROW_ON_ERROR);
 		}
-		catch (\JsonException $e)
+		catch (JsonException $e)
 		{
 			return null;
 		}

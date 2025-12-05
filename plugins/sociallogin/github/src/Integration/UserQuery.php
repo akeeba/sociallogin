@@ -11,6 +11,7 @@ namespace Akeeba\Plugin\Sociallogin\Github\Integration;
 defined('_JEXEC') || die();
 
 use Joomla\Http\Http;
+use RuntimeException;
 
 /**
  * Implements a query to the currently logged in user through GitHub's v4 API (which is implemented atop GraphQL).
@@ -67,14 +68,18 @@ JSON;
 			'Authorization' => 'bearer ' . $this->token,
 		];
 
-		$reply = $this->client->post(self::$endpoint, $query, $headers);
+		$response = $this->client->post(self::$endpoint, $query, $headers);
 
-		if ($reply->code > 299)
+		if ($response->getStatusCode() > 299)
 		{
-			throw new \RuntimeException("HTTP {$reply->code}: {$reply->body}");
+			throw new RuntimeException(sprintf(
+				"HTTP %s: %s",
+				$response->getStatusCode(),
+				(string) $response->getBody()
+			));
 		}
 
-		$response = json_decode($reply->body);
+		$response = json_decode((string) $response->getBody(), true, 512, JSON_THROW_ON_ERROR);
 
 		// Validate the response.
 		if (property_exists($response, 'errors'))
@@ -108,14 +113,18 @@ JSON;
 			'Authorization' => 'bearer ' . $this->token,
 		];
 
-		$reply = $this->client->post(self::$endpoint, $query, $headers);
+		$response = $this->client->post(self::$endpoint, $query, $headers);
 
-		if ($reply->code > 299)
+		if ($response->getStatusCode() > 299)
 		{
-			throw new \RuntimeException("HTTP {$reply->code}: {$reply->body}");
+			throw new RuntimeException(sprintf(
+				"HTTP %s: %s",
+				$response->getStatusCode(),
+				(string) $response->getBody()
+			));
 		}
 
-		$response = json_decode($reply->body);
+		$response = json_decode((string) $response->getBody(), true, 512, JSON_THROW_ON_ERROR);
 
 		// Validate the response.
 		if (property_exists($response, 'errors'))

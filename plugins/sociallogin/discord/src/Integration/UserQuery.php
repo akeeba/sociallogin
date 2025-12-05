@@ -11,6 +11,7 @@ namespace Akeeba\Plugin\Sociallogin\Discord\Integration;
 defined('_JEXEC') || die();
 
 use Joomla\Http\Http;
+use RuntimeException;
 
 /**
  * Implements a query to the currently logged-in user through Discord's v10 API.
@@ -91,14 +92,18 @@ class UserQuery
 			//'User-Agent' => sprintf('DiscordBot (%s, %s) AkeebaSocialLogin', Uri::base(false), '4.2.0')
 		];
 
-		$reply = $this->client->get(self::$endpoint . '/users/@me', $headers);
+		$response = $this->client->get(self::$endpoint . '/users/@me', $headers);
 
-		if ($reply->code > 299)
+		if ($response->getStatusCode() > 299)
 		{
-			throw new \RuntimeException("HTTP {$reply->code}: {$reply->body}");
+			throw new RuntimeException(sprintf(
+				"HTTP %s: %s",
+				$response->getStatusCode(),
+				(string) $response->getBody()
+			));
 		}
 
-		return json_decode($reply->body);
+		return json_decode((string) $response->getBody(), true, 512, JSON_THROW_ON_ERROR);
 	}
 
 }

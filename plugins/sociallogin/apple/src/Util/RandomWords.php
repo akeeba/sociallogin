@@ -7,8 +7,6 @@
 
 namespace Akeeba\Plugin\Sociallogin\Apple\Util;
 
-use Random\RandomException;
-
 defined('_JEXEC') || die;
 
 /**

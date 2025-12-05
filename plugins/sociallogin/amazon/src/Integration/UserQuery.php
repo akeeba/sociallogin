@@ -9,6 +9,7 @@ namespace Akeeba\Plugin\Sociallogin\Amazon\Integration;
 
 defined('_JEXEC') || die();
 
+use Joomla\Http\Response;
 use RuntimeException;
 
 class UserQuery
@@ -34,13 +35,19 @@ class UserQuery
 	public function getUserInformation()
 	{
 		$headers = ['Authorization' => 'Bearer ' . $this->token];
-		$reply   = $this->client->get(self::$endpoint, $headers);
-		if ($reply->code > 299)
+		/** @var Response $response */
+		$response   = $this->client->get(self::$endpoint, $headers);
+
+		if ($response->getStatusCode() > 299)
 		{
-			throw new RuntimeException("HTTP {$reply->code}: {$reply->body}");
+			throw new RuntimeException(sprintf(
+				"HTTP %s: %s",
+				$response->getStatusCode(),
+				(string) $response->getBody()
+			));
 		}
 
-		return json_decode($reply->body);
+		return json_decode((string) $response->getBody(), true, 512, JSON_THROW_ON_ERROR);
 	}
 
 }

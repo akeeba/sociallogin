@@ -11,6 +11,7 @@ namespace Akeeba\Plugin\Sociallogin\Linkedin\Integration;
 defined('_JEXEC') || die();
 
 use Joomla\Http\Http;
+use RuntimeException;
 
 /**
  * Implements a query to the currently logged in user through LinkedIn's REST API
@@ -60,14 +61,18 @@ class UserQuery
 			'Authorization' => 'Bearer ' . $this->token,
 		];
 
-		$reply = $this->client->get(self::$endpoint . $path, $headers);
+		$response = $this->client->get(self::$endpoint . $path, $headers);
 
-		if ($reply->code > 299)
+		if ($response->getStatusCode() > 299)
 		{
-			throw new \RuntimeException("HTTP {$reply->code}: {$reply->body}");
+			throw new RuntimeException(sprintf(
+				"HTTP %s: %s",
+				$response->getStatusCode(),
+				(string) $response->getBody()
+			));
 		}
 
-		$response = json_decode($reply->body, true);
+		$response = json_decode((string) $response->getBody(), true);
 
 		return $response->picture;
 	}
@@ -87,16 +92,18 @@ class UserQuery
 			'Authorization' => 'Bearer ' . $this->token,
 		];
 
-		$reply = $this->client->get(self::$endpoint . $path, $headers);
+		$response = $this->client->get(self::$endpoint . $path, $headers);
 
-		if ($reply->code > 299)
+		if ($response->getStatusCode() > 299)
 		{
-			throw new \RuntimeException("HTTP {$reply->code}: {$reply->body}");
+			throw new RuntimeException(sprintf(
+				"HTTP %s: %s",
+				$response->getStatusCode(),
+				(string) $response->getBody()
+			));
 		}
 
-		$response = json_decode($reply->body, true);
-
-		return $response;
+		return json_decode((string) $response->getBody(), true, 512, JSON_THROW_ON_ERROR);
 	}
 
 }

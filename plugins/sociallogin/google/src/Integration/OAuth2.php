@@ -12,6 +12,7 @@ defined('_JEXEC') || die();
 
 use Exception;
 use Akeeba\Plugin\System\SocialLogin\Library\OAuth\OAuth2Client;
+use Joomla\Http\Response;
 
 /**
  * Google OAuth authentication class. Adapted from the Joomla! Framework.
@@ -91,7 +92,7 @@ class OAuth2
 	 * @param   array   $headers  The headers to send with the request.
 	 * @param   string  $method   The type of http request to send.
 	 *
-	 * @return  mixed  Data from Google.
+	 * @return  bool|Response  Data from Google.
 	 *
 	 * @throws  Exception
 	 */

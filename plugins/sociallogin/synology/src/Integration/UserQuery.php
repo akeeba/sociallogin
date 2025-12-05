@@ -8,6 +8,7 @@
 namespace Akeeba\Plugin\Sociallogin\SynologyOIDC\Integration;
 
 use Joomla\Http\Http;
+use RuntimeException;
 
 class UserQuery
 {
@@ -32,11 +33,15 @@ class UserQuery
 
 		$response = $this->client->get($this->userInfoURL, $headers);
 
-		if ($response->code > 299)
+		if ($response->getStatusCode() > 299)
 		{
-			throw new \RuntimeException(sprintf("HTTP %s: %s", $response->code, $response->body));
+			throw new RuntimeException(sprintf(
+				"HTTP %s: %s",
+				$response->getStatusCode(),
+				(string) $response->getBody()
+			));
 		}
 
-		return json_decode($response->body, true, 512, JSON_THROW_ON_ERROR);
+		return json_decode((string) $response->getBody(), true, 512, JSON_THROW_ON_ERROR);
 	}
 }

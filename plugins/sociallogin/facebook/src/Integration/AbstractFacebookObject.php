@@ -82,7 +82,7 @@ abstract class AbstractFacebookObject
 			// Send the post request.
 			$response = $this->oauth->query($this->fetchUrl($path), $parameters, $headers, 'post');
 
-			return json_decode($response->body);
+			return json_decode((string) $response->getBody());
 		}
 		else
 		{
@@ -118,7 +118,7 @@ abstract class AbstractFacebookObject
 			// Send the delete request.
 			$response = $this->oauth->query($this->fetchUrl($path), null, [], 'delete');
 
-			return json_decode($response->body);
+			return json_decode((string) $response->getBody());
 		}
 		else
 		{
@@ -143,7 +143,7 @@ abstract class AbstractFacebookObject
 			{
 				$response = $this->oauth->query($this->fetchUrl($object));
 
-				return json_decode($response->body);
+				return json_decode((string) $response->getBody());
 			}
 			else
 			{
@@ -179,14 +179,17 @@ abstract class AbstractFacebookObject
 			if ($this->oauth->isAuthenticated())
 			{
 				$response = $this->oauth->query($this->fetchUrl($path, $limit, $offset, $until, $since));
+				$body     = (string) $response->getBody();
 
-				if (strcmp($response->body, ''))
+				if (strcmp($body, ''))
 				{
-					return json_decode($response->body);
+					return json_decode($body);
 				}
 				else
 				{
-					return $response->headers['Location'];
+					$headers = $response->getHeaders() ?: [];
+
+					return $headers['Location'];
 				}
 			}
 			else
@@ -243,7 +246,7 @@ abstract class AbstractFacebookObject
 		// Send the request.
 		$response = $this->client->get($this->fetchUrl($path, $limit, $offset, $until, $since), $headers);
 
-		$response = json_decode($response->body);
+		$response = json_decode($response->getBody());
 
 		// Validate the response.
 		if (property_exists($response, 'error'))

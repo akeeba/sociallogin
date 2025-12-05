@@ -40,14 +40,18 @@ class UserQuery
 	public function getUserInformation()
 	{
 		$headers = ['Authorization' => 'Bearer ' . $this->token];
-		$reply   = $this->client->get(self::$endpoint, $headers);
-		if ($reply->code > 299)
-		{
-			throw new RuntimeException("HTTP {$reply->code}: {$reply->body}");
-		}
-		$response = json_decode($reply->body, true);
+		$response   = $this->client->get(self::$endpoint, $headers);
 
-		return $response;
+		if ($response->getStatusCode() > 299)
+		{
+			throw new RuntimeException(sprintf(
+				"HTTP %s: %s",
+				$response->getStatusCode(),
+				(string) $response->getBody()
+			));
+		}
+
+		return json_decode((string) $response->getBody(), true, 512, JSON_THROW_ON_ERROR);
 	}
 
 }
