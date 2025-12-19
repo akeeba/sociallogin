@@ -27,6 +27,9 @@
 # Editor-based Rest Client
 .idea/httpRequests
 
+# We do not use Laravel
+.idea/laravel-idea.xml
+
 ## Composer
 
 /vendor
