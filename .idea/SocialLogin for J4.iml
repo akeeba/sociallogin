@@ -16,9 +16,6 @@
       <sourceFolder url="file://$MODULE_DIR$/plugins/sociallogin/twitch/src" isTestSource="false" packagePrefix="Akeeba\Plugin\Sociallogin\Twitch\" />
       <sourceFolder url="file://$MODULE_DIR$/plugins/sociallogin/yahoo/src" isTestSource="false" packagePrefix="Akeeba\Plugin\Sociallogin\Yahoo\" />
       <sourceFolder url="file://$MODULE_DIR$/plugins/system/sociallogin/src" isTestSource="false" packagePrefix="Akeeba\Plugin\System\SocialLogin\" />
-      <excludeFolder url="file://$MODULE_DIR$/.github" />
-      <excludeFolder url="file://$MODULE_DIR$/.idea" />
-      <excludeFolder url="file://$MODULE_DIR$/modules" />
       <excludeFolder url="file://$MODULE_DIR$/release" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/codercat/jwk-to-pem" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/coenjacobs/mozart" />
