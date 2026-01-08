@@ -738,6 +738,7 @@ trait LoginTrait
 		$response->status        = $statusSuccess;
 		$response->username      = $user->username;
 		$response->fullname      = $user->name;
+		$response->email         = $user->email;
 		$response->error_message = '';
 		$response->language      = $user->getParam('language');
 		$response->type          = 'SocialLogin';
