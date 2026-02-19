@@ -76,7 +76,7 @@ class Plugin extends AbstractPlugin
 				'tokenurl'      => 'https://accounts.google.com/o/oauth2/token',
 				'clientid'      => $this->appId,
 				'clientsecret'  => $this->appSecret,
-				'redirecturi'   => Uri::base() . 'index.php?option=com_ajax&group=sociallogin&plugin=' . $this->integrationName . '&format=raw',
+				'redirecturi'   => Uri::root() . 'index.php?option=com_ajax&group=sociallogin&plugin=' . $this->integrationName . '&format=raw',
 				/**
 				 * Authorization scopes, space separated.
 				 *
@@ -107,7 +107,14 @@ class Plugin extends AbstractPlugin
 	 */
 	protected function getLoginButtonURL(): string
 	{
-		return $this->getClient()->createUrl();
+		$client = $this->getClient();
+
+		if ($this->getApplication()->isClient('administrator'))
+		{
+			$client->setOption('state', 'a');
+		}
+
+		return $client->createUrl();
 	}
 
 	/**

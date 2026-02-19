@@ -681,6 +681,11 @@ abstract class AbstractPlugin extends CMSPlugin implements SubscriberInterface, 
 		// Get a Facebook OAUth2 connector object and retrieve the URL
 		$connector = $this->getConnector();
 
+		if ($this->getApplication()->isClient('administrator'))
+		{
+			$connector->setOption('state', 'a');
+		}
+
 		return $connector->createUrl();
 	}
 

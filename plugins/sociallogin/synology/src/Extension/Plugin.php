@@ -78,7 +78,7 @@ class Plugin extends AbstractPlugin
 			'clientsecret' => $this->appSecret,
 			'redirecturi'  => sprintf(
 				"%sindex.php?option=com_ajax&group=sociallogin&plugin=%s&format=raw",
-				Uri::base(),
+				Uri::root(),
 				$this->integrationName
 			),
 			'wellknown'    => $this->wellknown,

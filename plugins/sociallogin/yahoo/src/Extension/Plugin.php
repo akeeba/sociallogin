@@ -45,7 +45,7 @@ class Plugin extends AbstractPlugin
 			$options         = [
 				'clientid'      => $this->appId,
 				'clientsecret'  => $this->appSecret,
-				'redirecturi'   => Uri::base() . 'index.php?option=com_ajax&group=sociallogin&plugin='
+				'redirecturi'   => Uri::root() . 'index.php?option=com_ajax&group=sociallogin&plugin='
 				                   . $this->integrationName . '&format=raw',
 				'requestparams' => ['state' => $this->getApplication()->getSession()->getToken()],
 			];

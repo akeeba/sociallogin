@@ -122,7 +122,7 @@ class Plugin extends AbstractPlugin
 				'tokenurl'      => 'https://appleid.apple.com/auth/token',
 				'clientid'      => $this->appId,
 				'clientsecret'  => $this->appSecret,
-				'redirecturi'   => Uri::base() . 'index.php?option=com_ajax&group=sociallogin&plugin='
+				'redirecturi'   => Uri::root() . 'index.php?option=com_ajax&group=sociallogin&plugin='
 				                   . $this->integrationName . '&format=raw',
 				'scope'         => 'name email',
 				'requestparams' => [

@@ -94,6 +94,7 @@ class SocialLogin extends CMSPlugin implements SubscriberInterface, DatabaseAwar
 	public function onAfterInitialise(Event $e)
 	{
 		$this->magicRoute();
+		$this->redirectBackendCallbackFromFrontend();
 		$this->onAfterInitialise_DynamicUserGroups($e);
 		$this->onAfterIntialise_Ajax($e);
 	}
@@ -226,6 +227,94 @@ class SocialLogin extends CMSPlugin implements SubscriberInterface, DatabaseAwar
 		$currentUri->setVar('group', 'sociallogin');
 		$currentUri->setVar('plugin', $plugin);
 		$currentUri->setVar('format', 'raw');
+	}
+
+	/**
+	 * Redirect OAuth callbacks with state=a from the frontend to the admin backend.
+	 *
+	 * When social login buttons are rendered in the admin backend, the OAuth state parameter is set to 'a'. Since all
+	 * providers now use the frontend callback URL (Uri::root()), the callback arrives at the frontend. This method
+	 * detects the admin state flag and redirects the request to the admin backend so the login completes there.
+	 *
+	 * For GET callbacks, a standard redirect is used. For POST callbacks (e.g., Apple's form_post response_mode),
+	 * an auto-submitting HTML form is rendered to forward all POST data to the admin backend.
+	 *
+	 * @return  void
+	 * @since   4.11.0
+	 */
+	protected function redirectBackendCallbackFromFrontend(): void
+	{
+		$app = $this->getApplication();
+
+		// Only intercept on the site (frontend) application
+		if (!$app->isClient('site'))
+		{
+			return;
+		}
+
+		$input = $app->getInput();
+
+		// Must be a com_ajax request for the sociallogin group
+		if ($input->getCmd('option') !== 'com_ajax' || $input->getCmd('group') !== 'sociallogin')
+		{
+			return;
+		}
+
+		// Must have the admin state flag
+		if ($input->getString('state') !== 'a')
+		{
+			return;
+		}
+
+		$plugin = $input->getCmd('plugin', '');
+		$format = $input->getCmd('format', 'raw');
+
+		// Build the admin callback URL
+		$adminUrl = Uri::root() . 'administrator/index.php?option=com_ajax&group=sociallogin&plugin='
+		            . urlencode($plugin) . '&format=' . urlencode($format);
+
+		if (strtoupper($input->getMethod()) === 'GET')
+		{
+			// For GET requests, append all query parameters and redirect
+			$queryParams = $input->getArray();
+
+			// Remove the params we already have in the base URL
+			unset($queryParams['option'], $queryParams['group'], $queryParams['plugin'], $queryParams['format']);
+
+			if (!empty($queryParams))
+			{
+				$adminUrl .= '&' . http_build_query($queryParams, '', '&');
+			}
+
+			$app->redirect($adminUrl);
+
+			return;
+		}
+
+		// For POST requests (e.g., Apple Sign In form_post), output an auto-submitting form
+		$postData = $input->post->getArray();
+		$html     = '<!DOCTYPE html><html><head><title>Redirecting...</title></head><body>';
+		$html     .= '<form id="slForm" method="post" action="' . htmlspecialchars($adminUrl, ENT_QUOTES, 'UTF-8') . '">';
+
+		foreach ($postData as $key => $value)
+		{
+			if (is_array($value))
+			{
+				$value = json_encode($value);
+			}
+
+			$html .= '<input type="hidden" name="' . htmlspecialchars($key, ENT_QUOTES, 'UTF-8')
+			          . '" value="' . htmlspecialchars($value, ENT_QUOTES, 'UTF-8') . '">';
+		}
+
+		$html .= '</form>';
+		$html .= '<script>document.getElementById("slForm").submit();</script>';
+		$html .= '<noscript><p>Please click the button to continue.</p>';
+		$html .= '<button type="submit" form="slForm">Continue</button></noscript>';
+		$html .= '</body></html>';
+
+		echo $html;
+		$app->close();
 	}
 
 	/**
