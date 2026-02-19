@@ -82,12 +82,12 @@ JSON;
 		$response = json_decode((string) $response->getBody(), true, 512, JSON_THROW_ON_ERROR);
 
 		// Validate the response.
-		if (property_exists($response, 'errors'))
+		if (isset($response['errors']))
 		{
-			throw new \RuntimeException($response->errors[0]->message);
+			throw new \RuntimeException($response['errors'][0]['message']);
 		}
 
-		return $response->data->viewer->avatarUrl;
+		return $response['data']['viewer']['avatarUrl'];
 	}
 
 	/**
@@ -127,12 +127,12 @@ JSON;
 		$response = json_decode((string) $response->getBody(), true, 512, JSON_THROW_ON_ERROR);
 
 		// Validate the response.
-		if (property_exists($response, 'errors'))
+		if (isset($response['errors']))
 		{
-			throw new \RuntimeException($response->errors[0]->message);
+			throw new \RuntimeException($response['errors'][0]['message']);
 		}
 
-		return $response->data->viewer;
+		return $response['data']['viewer'];
 	}
 
 }
