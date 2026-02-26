@@ -1,4 +1,8 @@
 <?php die(); ?>
+Akeeba SocialLogin 4.10.1
+================================================================================
+! The Spotify integration is deprecated and will be removed after June 6th, 2026
+
 Akeeba SocialLogin 4.10.0
 ================================================================================
 ! Minimum required PHP version is now 8.1.0.
