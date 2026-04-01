@@ -842,6 +842,14 @@ trait LoginTrait
 
 		Form::addFormPath(JPATH_SITE . '/components/com_users/forms');
 
+		// JPATH_COMPONENT may be undefined when this runs during onAfterInitialise (before Joomla's
+		// router sets it). Joomla's FormBehaviorTrait references it without a leading backslash, so
+		// PHP resolves it in the Joomla\CMS\MVC\Model namespace and throws a fatal error.
+		if (!defined('JPATH_COMPONENT'))
+		{
+			define('JPATH_COMPONENT', JPATH_SITE . '/components/com_users');
+		}
+
 		/** @var \Joomla\Component\Users\Site\Model\RegistrationModel $registrationModel */
 		$registrationModel = $this->getApplication()
 		                          ->bootComponent('com_users')->getMVCFactory()

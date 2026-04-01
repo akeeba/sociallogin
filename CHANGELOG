@@ -1,4 +1,8 @@
 <?php die(); ?>
+Akeeba SocialLogin 4.10.2
+================================================================================
+# [HIGH] Social login fails to create new user accounts (undefined constant JPATH_COMPONENT)
+
 Akeeba SocialLogin 4.10.1
 ================================================================================
 ! The Spotify integration is deprecated and will be removed after June 6th, 2026
