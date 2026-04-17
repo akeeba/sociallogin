@@ -1,27 +1,10 @@
-<!--~
-  ~  @package   AkeebaSocialLogin
-  ~  @copyright Copyright (c)2026 Nicholas K. Dionysopoulos / Akeeba Ltd
-  ~  @license   GNU General Public License version 3, or later
-  -->
-
-<!--~
-  ~  @package   AkeebaSocialLogin
-  ~  @copyright Copyright (c)2026 Nicholas K. Dionysopoulos / Akeeba Ltd
-  ~  @license   GNU General Public License version 3, or later
-  -->
-
 <h3>What's new?</h3>
 
 <p>
-	<strong>Deprecation notice</strong>: The Spotify integration is deprecated and will be removed after June 6th, 2026.
-</p>
-
-<p>
-	This release also includes bug fixes and improvements:
+	This release includes a high-severity bug fix and dependency updates:
 </p>
 
 <ul>
-	<li>Fix GitHub login failing due to array/object access mismatch.</li>
-	<li>Social login callback URLs now always use frontend URLs.</li>
-	<li>The email address is now included in the authentication response object.</li>
+	<li><strong>[HIGH] Social login fails to create new user accounts</strong> due to an undefined constant <code>JPATH_COMPONENT</code>.</li>
+	<li>Updated third-party dependencies.</li>
 </ul>
