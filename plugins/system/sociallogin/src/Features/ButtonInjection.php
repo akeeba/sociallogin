@@ -131,6 +131,15 @@ trait ButtonInjection
 	 */
 	private function getReturnURLFromBackTrace(): ?string
 	{
+		// Joomla stores the intended destination in session when redirecting a guest to the login page.
+		// This takes priority over any static menu item redirect configuration.
+		$sessionData = $this->getApplication()->getUserState('users.login.form.data', []);
+
+		if (!empty($sessionData['return']) && Uri::isInternal($sessionData['return']))
+		{
+			return $sessionData['return'];
+		}
+
 		if (!function_exists('debug_backtrace'))
 		{
 			return null;
