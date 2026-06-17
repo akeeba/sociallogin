@@ -44,9 +44,13 @@
       <path value="$PROJECT_DIR$/vendor/symfony/service-contracts" />
       <path value="$PROJECT_DIR$/vendor/symfony/string" />
       <path value="$PROJECT_DIR$/../../master/joomla6" />
+      <path value="$PROJECT_DIR$/../../master/joomla4" />
+      <path value="$PROJECT_DIR$/../../dionysopoulos/joomlatypehints/generated_hints" />
+      <path value="$USER_HOME$/Sites/boot4--" />
+      <path value="$PROJECT_DIR$/../../master/joomla5" />
     </include_path>
   </component>
-  <component name="PhpProjectSharedConfiguration" php_language_level="7.4" />
+  <component name="PhpProjectSharedConfiguration" php_language_level="8.1" />
   <component name="PhpStan">
     <PhpStan_settings>
       <phpstan_by_interpreter asDefaultInterpreter="true" interpreter_id="98235076-2459-405a-ba28-6e4ea475e893" timeout="60000" />

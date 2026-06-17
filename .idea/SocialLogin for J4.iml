@@ -2,20 +2,6 @@
 <module type="WEB_MODULE" version="4">
   <component name="NewModuleRootManager">
     <content url="file://$MODULE_DIR$">
-      <sourceFolder url="file://$MODULE_DIR$/plugins/sociallogin/amazon/src" isTestSource="false" packagePrefix="Akeeba\Plugin\Sociallogin\Amazon\" />
-      <sourceFolder url="file://$MODULE_DIR$/plugins/sociallogin/apple/src" isTestSource="false" packagePrefix="Akeeba\Plugin\Sociallogin\Apple\" />
-      <sourceFolder url="file://$MODULE_DIR$/plugins/sociallogin/auth0/src" isTestSource="false" packagePrefix="Akeeba\Plugin\Sociallogin\Auth0\" />
-      <sourceFolder url="file://$MODULE_DIR$/plugins/sociallogin/discord/src" isTestSource="false" packagePrefix="Akeeba\Plugin\Sociallogin\Discord\" />
-      <sourceFolder url="file://$MODULE_DIR$/plugins/sociallogin/facebook/src" isTestSource="false" packagePrefix="Akeeba\Plugin\Sociallogin\Facebook\" />
-      <sourceFolder url="file://$MODULE_DIR$/plugins/sociallogin/github/src" isTestSource="false" packagePrefix="Akeeba\Plugin\Sociallogin\Github\" />
-      <sourceFolder url="file://$MODULE_DIR$/plugins/sociallogin/google/src" isTestSource="false" packagePrefix="Akeeba\Plugin\Sociallogin\Google\" />
-      <sourceFolder url="file://$MODULE_DIR$/plugins/sociallogin/linkedin/src" isTestSource="false" packagePrefix="Akeeba\Plugin\Sociallogin\Linkedin\" />
-      <sourceFolder url="file://$MODULE_DIR$/plugins/sociallogin/microsoft/src" isTestSource="false" packagePrefix="Akeeba\Plugin\Sociallogin\Microsoft\" />
-      <sourceFolder url="file://$MODULE_DIR$/plugins/sociallogin/spotify/src" isTestSource="false" packagePrefix="Akeeba\Plugin\Sociallogin\Spotify\" />
-      <sourceFolder url="file://$MODULE_DIR$/plugins/sociallogin/synology/src" isTestSource="false" packagePrefix="Akeeba\Plugin\Sociallogin\SynologyOIDC\" />
-      <sourceFolder url="file://$MODULE_DIR$/plugins/sociallogin/twitch/src" isTestSource="false" packagePrefix="Akeeba\Plugin\Sociallogin\Twitch\" />
-      <sourceFolder url="file://$MODULE_DIR$/plugins/sociallogin/yahoo/src" isTestSource="false" packagePrefix="Akeeba\Plugin\Sociallogin\Yahoo\" />
-      <sourceFolder url="file://$MODULE_DIR$/plugins/system/sociallogin/src" isTestSource="false" packagePrefix="Akeeba\Plugin\System\SocialLogin\" />
       <excludeFolder url="file://$MODULE_DIR$/release" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/codercat/jwk-to-pem" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/coenjacobs/mozart" />
