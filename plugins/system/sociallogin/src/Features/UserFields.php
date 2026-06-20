@@ -82,11 +82,8 @@ trait UserFields
 		 * @param   object  $data     The user profile data
 		 */
 		[$context, $data] = array_values($event->getArguments());
-		$result   = $event->getArgument('result') ?: [];
-		$result   = is_array($result) ? $result : [$result];
-		$result[] = true;
 
-		$event->setArgument('result', $result);
+		$this->addEventResult($event, true);
 
 		// Check we are manipulating a valid form.
 		if (!in_array($context, ['com_admin.profile', 'com_users.user', 'com_users.profile', 'com_users.registration']))
@@ -135,8 +132,7 @@ trait UserFields
 			$data->sociallogin[$k] = $v[1];
 		}
 
-		$result[] = true;
-		$event->setArgument('result', $result);
+		$this->addEventResult($event, true);
 	}
 
 	/**
@@ -154,11 +150,8 @@ trait UserFields
 		 * @param   mixed  $data  The associated data for the form.
 		 */
 		[$form, $data] = array_values($event->getArguments());
-		$result   = $event->getArgument('result') ?: [];
-		$result   = is_array($result) ? $result : [$result];
-		$result[] = true;
 
-		$event->setArgument('result', $result);
+		$this->addEventResult($event, true);
 
 		if (!$this->addLinkUnlinkButtons)
 		{
@@ -275,14 +268,10 @@ trait UserFields
 		 * @var   string $msg     Message
 		 */
 		[$user, $success, $msg] = array_values($event->getArguments());
-		$result = $event->getArgument('result') ?: [];
-		$result = is_array($result) ? $result : [$result];
 
 		if (!$success)
 		{
-			$result[] = false;
-
-			$event->setArgument('result', $result);
+			$this->addEventResult($event, false);
 
 			return;
 		}
@@ -310,9 +299,7 @@ trait UserFields
 			$db->setQuery($query)->execute();
 		}
 
-		$result[] = true;
-
-		$event->setArgument('result', $result);
+		$this->addEventResult($event, true);
 	}
 
 	/**
@@ -326,20 +313,17 @@ trait UserFields
 	{
 		/**
 		 * @var   array $data   The user profile data which was saved.
-		 * @var   bool  $isNew  Is this a new user? (ignored)
-		 * @var   bool  $result Was the user saved successfully?
-		 * @var   mixed $error  (ignored)
+		 * @var   bool  $isNew   Is this a new user? (ignored)
+		 * @var   bool  $success Was the user saved successfully? (ignored)
+		 * @var   mixed $error   (ignored)
 		 */
-		[$data, $isNew, $result, $error] = array_values($event->getArguments());
-		$result   = $event->getArgument('result') ?: [];
-		$result   = is_array($result) ? $result : [$result];
-		$result[] = true;
+		[$data, $isNew, $success, $error] = array_values($event->getArguments());
 
-		$event->setArgument('result', $result);
+		$this->addEventResult($event, true);
 
 		$userId = ArrayHelper::getValue($data, 'id', 0, 'int');
 
-		if (!$userId || !$result || !isset($data['sociallogin']) || !is_array($data['sociallogin']) || !count($data['sociallogin']))
+		if (!$userId || !isset($data['sociallogin']) || !is_array($data['sociallogin']) || !count($data['sociallogin']))
 		{
 			return;
 		}
