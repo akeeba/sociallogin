@@ -2,9 +2,6 @@
 Akeeba SocialLogin 4.11.0
 ================================================================================
 ~ Joomla 7.0 compatibility: forward-compatible event result handling for immutable events
-
-Akeeba SocialLogin 4.10.3
-================================================================================
 # [HIGH] After social login, users were not redirected back to the protected page that triggered the login [gh-142]
 
 Akeeba SocialLogin 4.10.2
