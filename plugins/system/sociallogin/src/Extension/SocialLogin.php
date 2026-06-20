@@ -15,6 +15,7 @@ use Akeeba\Plugin\System\SocialLogin\Features\ButtonInjection;
 use Akeeba\Plugin\System\SocialLogin\Features\DynamicUsergroups;
 use Akeeba\Plugin\System\SocialLogin\Features\UserFields;
 use Akeeba\Plugin\System\SocialLogin\Library\Plugin\AddLoggerTrait;
+use Akeeba\Plugin\System\SocialLogin\Library\Plugin\EventResultTrait;
 use Akeeba\Plugin\System\SocialLogin\Library\Plugin\RunPluginsTrait;
 use Akeeba\Plugin\System\SocialLogin\Library\Plugin\SocialLoginButtonsTrait;
 use Exception;
@@ -41,6 +42,7 @@ class SocialLogin extends CMSPlugin implements SubscriberInterface, DatabaseAwar
 	use AddLoggerTrait;
 	use SocialLoginButtonsTrait;
 	use RunPluginsTrait;
+	use EventResultTrait;
 	use DatabaseAwareTrait;
 
 	/**

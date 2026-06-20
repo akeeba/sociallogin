@@ -110,16 +110,7 @@ trait ButtonInjection
 			];
 		}, $buttonDefinitions);
 
-		$result = $event->getArgument('result') ?: [];
-
-		if (!is_array($result))
-		{
-			$result = [$result];
-		}
-
-		$result[] = $ret;
-
-		$event->setArgument('result', $result);
+		$this->addEventResult($event, $ret);
 	}
 
 	/**

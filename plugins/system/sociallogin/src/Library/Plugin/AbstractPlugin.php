@@ -169,6 +169,15 @@ abstract class AbstractPlugin extends CMSPlugin implements SubscriberInterface, 
 	/**
 	 * Return the event handles registered with this plugin
 	 *
+	 * NOTE ON RESULT HANDLING: The handlers below answer SocialLogin's *own* custom events
+	 * (onSocialLoginGetLoginButton, onSocialLoginGetLinkButton). These are dispatched by
+	 * RunPluginsTrait::runPlugins() as a mutable Joomla\CMS\Event\GenericEvent and the aggregated
+	 * button definitions are read back via the `result` argument (`$event['result']`). They must
+	 * therefore keep using `$event->setArgument('result', …)` and must NOT be switched to the
+	 * ResultAwareInterface::addResult() pattern (see EventResultTrait), which would write to a
+	 * different result store and silently break the button aggregation. The immutable-event concern
+	 * (Joomla 6.0+) only applies to the *core* Joomla events handled in the system plugin.
+	 *
 	 * @return string[]
 	 * @since  4.1.0
 	 */
