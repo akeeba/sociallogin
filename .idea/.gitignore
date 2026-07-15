@@ -1,6 +1,11 @@
-# Project exclude paths
-/.
+# Default ignored files
+/shelf/
+/workspace.xml
+# Datasource local storage ignored files
+/dataSources/
+/dataSources.local.xml
+/data_source_mapping.xml
+/db-forest-config.xml
+# Editor-based HTTP Client requests
+/httpRequests/
 
-
-# Project exclude paths
-/.
