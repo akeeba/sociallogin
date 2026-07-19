@@ -7,6 +7,8 @@
 
 namespace Akeeba\Plugin\System\SocialLogin\Library\Plugin;
 
+defined('_JEXEC') || die;
+
 use Exception;
 use Joomla\Application\AbstractApplication;
 use Joomla\CMS\Authentication\Authentication;

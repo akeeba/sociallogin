@@ -7,6 +7,8 @@
 
 namespace Akeeba\Plugin\Sociallogin\Auth0\Integration;
 
+defined('_JEXEC') || die;
+
 use Akeeba\Plugin\System\SocialLogin\Library\OAuth\OAuth2Client;
 use Joomla\CMS\Application\CMSApplication;
 use Joomla\Http\Http;

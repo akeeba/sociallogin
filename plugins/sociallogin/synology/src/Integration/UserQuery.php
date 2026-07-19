@@ -7,6 +7,8 @@
 
 namespace Akeeba\Plugin\Sociallogin\SynologyOIDC\Integration;
 
+defined('_JEXEC') || die;
+
 use Joomla\Http\Http;
 use RuntimeException;
 

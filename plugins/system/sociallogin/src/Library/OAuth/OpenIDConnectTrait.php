@@ -7,6 +7,8 @@
 
 namespace Akeeba\Plugin\System\SocialLogin\Library\OAuth;
 
+defined('_JEXEC') || die;
+
 use Joomla\CMS\Application\CMSApplication;
 use Joomla\CMS\Cache\Controller\CallbackController;
 use Joomla\Http\HttpFactory;

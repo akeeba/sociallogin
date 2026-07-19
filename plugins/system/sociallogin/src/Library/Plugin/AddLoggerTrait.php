@@ -7,6 +7,8 @@
 
 namespace Akeeba\Plugin\System\SocialLogin\Library\Plugin;
 
+defined('_JEXEC') || die;
+
 use Joomla\CMS\Log\Log;
 
 trait AddLoggerTrait

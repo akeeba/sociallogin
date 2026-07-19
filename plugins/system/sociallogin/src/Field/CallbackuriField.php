@@ -7,6 +7,8 @@
 
 namespace Akeeba\Plugin\System\SocialLogin\Field;
 
+defined('_JEXEC') || die;
+
 use Joomla\CMS\Document\HtmlDocument;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Form\FormField;
