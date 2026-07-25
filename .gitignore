@@ -48,3 +48,6 @@
 
 # Temp files for Sign In with Apple
 /apple/**
+
+# Claude Code local (per-machine) settings
+/.claude/settings.local.json
