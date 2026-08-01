@@ -16,7 +16,7 @@ For more information and documentation for administrators, users and developers 
 
 Pre-built packages of Akeeba Social Login are available through [our GitHub repository's Releases page](https://github.com/akeeba/sociallogin/releases).
 
-Akeeba Social Login comes with English (Great Britain) language built-in. We do not offer official translations for any other language nor will we accept pull requests for language files. You are welcome to translate to your own language and make the translation available free of charge under the GPLv3 license which the original translation files are licensed under.
+Akeeba Social Login comes with English (Great Britain) built-in, plus machine-translated German (de-DE), Greek (el-GR), Spanish (es-ES), French (fr-FR), Italian (it-IT) and Portuguese (pt-PT) language files. These machine translations are provided as-is, without a guarantee of accuracy, and we do not accept pull requests for language files. You are welcome to translate to your own language and make the translation available free of charge under the GPLv3 license which the original translation files are licensed under.
 
 ## Support policy
 
