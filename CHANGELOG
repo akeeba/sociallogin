@@ -2,6 +2,7 @@
 Akeeba SocialLogin 4.11.0
 ================================================================================
 ~ Joomla 7.0 compatibility: forward-compatible event result handling for immutable events
+~ PHP 8.6 preparation: is_integer was deprecated in favour of is_int
 # [HIGH] After social login, users were not redirected back to the protected page that triggered the login [gh-142]
 
 Akeeba SocialLogin 4.10.2

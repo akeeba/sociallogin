@@ -228,7 +228,7 @@ trait LoginTrait
 				 */
 				if ($userId !== false)
 				{
-					$actualUserId = is_integer($userId) ? $userId : $this->getUserIdByEmail($email);
+					$actualUserId = is_int($userId) ? $userId : $this->getUserIdByEmail($email);
 
 					if (!empty($actualUserId))
 					{
