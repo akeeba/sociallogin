@@ -13,8 +13,8 @@
 
 <extension type="plugin" group="sociallogin" method="upgrade">
     <name>PLG_SOCIALLOGIN_TWITCH</name>
-    <version>4.10.2</version>
-    <creationDate>2026-04-17</creationDate>
+    <version>4.11.0</version>
+    <creationDate>2026-08-26</creationDate>
     <author>Akeeba Ltd</author>
     <authorEmail>no-reply@akeeba.com</authorEmail>
     <authorUrl>https://www.akeeba.com</authorUrl>

@@ -1,10 +1,11 @@
 <h3>What's new?</h3>
 
 <p>
-	This release includes a high-severity bug fix and dependency updates:
+	This release includes a high-severity bug fix and compatibility preparation for upcoming Joomla and PHP versions:
 </p>
 
 <ul>
-	<li><strong>[HIGH] Social login fails to create new user accounts</strong> due to an undefined constant <code>JPATH_COMPONENT</code>.</li>
-	<li>Updated third-party dependencies.</li>
+	<li><strong>[HIGH] Users were not redirected back to the protected page</strong> that triggered the login after completing social login.</li>
+	<li>Forward-compatible event result handling, in preparation for Joomla 7.0's immutable events.</li>
+	<li>PHP 8.6 preparation: replaced the deprecated <code>is_integer</code> with <code>is_int</code>.</li>
 </ul>
