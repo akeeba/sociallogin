@@ -5,7 +5,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Project Overview
 
 Akeeba Social Login is a Joomla extension package (`pkg_sociallogin`) that enables OAuth2/OpenID Connect
-authentication via social providers. It supports Joomla 4, 5 and 6.
+authentication via social providers. It supports Joomla 5.4 to 6.2, and PHP 8.1 to 8.6.
 
 ## Build Commands
 

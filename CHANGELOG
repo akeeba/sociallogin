@@ -1,6 +1,8 @@
 <?php die(); ?>
 Akeeba SocialLogin 4.11.0
 ================================================================================
+! Minimum supported PHP version is now 8.1.0, maximum supported is 8.6.x. PHP 7.4-8.0 are no longer supported.
+! Minimum supported Joomla! version is now 5.4.0, maximum supported is 6.2.x. Joomla! 4.x is no longer supported.
 ~ Funnel database query construction through Helper\DbQuery::create()
 ~ Joomla 7.0 compatibility: forward-compatible event result handling for immutable events
 ~ PHP 8.6 preparation: is_integer was deprecated in favour of is_int

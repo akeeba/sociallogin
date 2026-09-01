@@ -9,6 +9,7 @@
 use Joomla\CMS\Cache\Cache;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Installer\InstallerScript;
+use Joomla\CMS\Log\Log;
 use Joomla\Database\DatabaseInterface;
 
 defined('_JEXEC') or die;
@@ -28,9 +29,13 @@ class Pkg_SocialloginInstallerScript extends InstallerScript
 		['plugin', 'facebook', 1, 'sociallogin'],
 	];
 
-	protected $minimumPhp = '7.4.0';
+	protected $minimumPhp = '8.1.0';
 
-	protected $minimumJoomla = '4.3.0';
+	protected $maximumPhp = '8.7';
+
+	protected $minimumJoomla = '5.4.0';
+
+	protected $maximumJoomla = '6.3';
 
 	protected $allowDowngrades = true;
 
@@ -46,6 +51,51 @@ class Pkg_SocialloginInstallerScript extends InstallerScript
 	 * DO NOT EDIT BELOW THIS LINE
 	 * =================================================================================================================
 	 */
+
+	/**
+	 * Runs before installation, update or uninstallation of the package. Enforces the maximum supported PHP and
+	 * Joomla! versions, since Joomla! core only enforces the minimum for us.
+	 *
+	 * @param   string                                        $type    install, update, discover_install or uninstall
+	 * @param   \Joomla\CMS\Installer\Adapter\PackageAdapter  $parent  Parent object
+	 *
+	 * @return  bool
+	 */
+	public function preflight($type, $parent)
+	{
+		if (!parent::preflight($type, $parent))
+		{
+			return false;
+		}
+
+		// Check for the maximum PHP version before continuing
+		$maxPhp = !empty($this->maximumPhp) ? trim($this->maximumPhp) : null;
+
+		if (!empty($maxPhp) && version_compare(PHP_VERSION, $maxPhp, 'ge')) {
+			Log::add(
+				sprintf('This extension supports PHP versions lower than %s. Your server has a newer PHP version (%s) which has not been tested with it. The installation cannot proceed.', $maxPhp, PHP_VERSION),
+				Log::WARNING,
+				'jerror'
+			);
+
+			return false;
+		}
+
+		// Check for the maximum Joomla version before continuing
+		$maxJoomla = !empty($this->maximumJoomla) ? trim($this->maximumJoomla) : null;
+
+		if (!empty($maxJoomla) && version_compare(JVERSION, $maxJoomla, 'ge')) {
+			Log::add(
+				sprintf('This extension supports Joomla! versions lower than %s. Your site has a newer Joomla! version (%s) which has not been tested with it. The installation cannot proceed.', $maxJoomla, JVERSION),
+				Log::WARNING,
+				'jerror'
+			);
+
+			return false;
+		}
+
+		return true;
+	}
 
 	/**
 	 * Tuns on installation (but not on upgrade). This happens in install and discover_install installation routes.
@@ -165,16 +215,9 @@ class Pkg_SocialloginInstallerScript extends InstallerScript
 				// Trigger the onContentCleanCache event.
 				try
 				{
-					if (version_compare(JVERSION, '5.0.0', 'lt'))
-					{
-						$app->triggerEvent('onContentCleanCache', $options);
-					}
-					else
-					{
-						$event      = new \Joomla\CMS\Event\Model\AfterCleanCacheEvent('onContentCleanCache', $options);
-						$dispatcher = $app->getDispatcher();
-						$dispatcher->dispatch($event->getName(), $event);
-					}
+					$event      = new \Joomla\CMS\Event\Model\AfterCleanCacheEvent('onContentCleanCache', $options);
+					$dispatcher = $app->getDispatcher();
+					$dispatcher->dispatch($event->getName(), $event);
 				}
 				catch (Exception $e)
 				{

@@ -119,11 +119,6 @@ trait DynamicUsergroups
 
 		$groupsByUser = $reflectedAccess->getProperty('groupsByUser');
 
-		if (version_compare(PHP_VERSION, '8.1.0', 'lt'))
-		{
-			$groupsByUser->setAccessible(true);
-		}
-
 		if (version_compare(PHP_VERSION, '8.3.0', 'ge'))
 		{
 			$rawGroupsByUser = $reflectedAccess->getStaticPropertyValue('groupsByUser');
@@ -170,11 +165,6 @@ trait DynamicUsergroups
 			$groupsByUser->setValue(null, $rawGroupsByUser);
 		}
 
-		if (version_compare(PHP_VERSION, '8.1.0', 'lt'))
-		{
-			$groupsByUser->setAccessible(false);
-		}
-
 		/**
 		 * We are not done. Caching user groups is only one aspect of Joomla access management. Joomla also caches the
 		 * identities, i.e. the user group assignment per user, in a different cache. We need to reset it to for our
@@ -184,11 +174,6 @@ trait DynamicUsergroups
 		 * dynamically. Therefore calling it would destroy our work so far.
 		 */
 		$refProperty = $reflectedAccess->getProperty('identities');
-
-		if (version_compare(PHP_VERSION, '8.1.0', 'lt'))
-		{
-			$refProperty->setAccessible(true);
-		}
 
 		if (version_compare(PHP_VERSION, '8.3.0', 'ge'))
 		{
@@ -220,57 +205,19 @@ trait DynamicUsergroups
 			$refProperty->setValue(null, $identities);
 		}
 
-		if (version_compare(PHP_VERSION, '8.1.0', 'lt'))
-		{
-			$refProperty->setAccessible(false);
-		}
-
 		$reflectedUser = new \ReflectionObject($user);
 
 		// Clear the user group cache
 		$refProperty = $reflectedUser->getProperty('_authGroups');
-
-		if (version_compare(PHP_VERSION, '8.1.0', 'lt'))
-		{
-			$refProperty->setAccessible(true);
-		}
-
 		$refProperty->setValue($user, []);
-
-		if (version_compare(PHP_VERSION, '8.1.0', 'lt'))
-		{
-			$refProperty->setAccessible(false);
-		}
 
 		// Clear the view access level cache
 		$refProperty = $reflectedUser->getProperty('_authLevels');
-
-		if (version_compare(PHP_VERSION, '8.1.0', 'lt'))
-		{
-			$refProperty->setAccessible(true);
-		}
-
 		$refProperty->setValue($user, []);
-
-		if (version_compare(PHP_VERSION, '8.1.0', 'lt'))
-		{
-			$refProperty->setAccessible(false);
-		}
 
 		// Clear the authenticated actions cache. I haven't seen it used anywhere but it's there, so...
 		$refProperty = $reflectedUser->getProperty('_authActions');
-
-		if (version_compare(PHP_VERSION, '8.1.0', 'lt'))
-		{
-			$refProperty->setAccessible(true);
-		}
-
 		$refProperty->setValue($user, []);
-
-		if (version_compare(PHP_VERSION, '8.1.0', 'lt'))
-		{
-			$refProperty->setAccessible(false);
-		}
 	}
 
 	/**
