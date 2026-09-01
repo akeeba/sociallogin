@@ -9,6 +9,7 @@ namespace Akeeba\Plugin\System\SocialLogin\Library\Plugin;
 
 defined('_JEXEC') || die;
 
+use Akeeba\Plugin\System\SocialLogin\Library\Helper\DbQuery;
 use Exception;
 use Joomla\Application\AbstractApplication;
 use Joomla\CMS\Authentication\Authentication;
@@ -410,7 +411,7 @@ trait LoginTrait
 		$keys         = array_keys($data);
 		$primaryKey   = $keys[0];
 		$primaryValue = $data[$primaryKey];
-		$query        = (method_exists($db, 'createQuery') ? $db->createQuery() : $db->getQuery(true))
+		$query        = DbQuery::create($db)
 		                   ->select('user_id')
 		                   ->from($db->qn('#__user_profiles'))
 		                   ->where($db->qn('profile_key') . ' = ' . $db->q($slug . '.' . $primaryKey))
@@ -456,7 +457,7 @@ trait LoginTrait
 		}, $keys);
 
 		// Delete old values
-		$query = (method_exists($db, 'createQuery') ? $db->createQuery() : $db->getQuery(true))
+		$query = DbQuery::create($db)
 		            ->delete($db->qn('#__user_profiles'))
 		            ->where($db->qn('user_id') . ' IN(' . implode(', ', $allUserIDs) . ')')
 		            ->where($db->qn('profile_key') . ' IN(' . implode(', ', $keys) . ')');
@@ -470,7 +471,7 @@ trait LoginTrait
 			$insertData[] = $db->q($userId) . ', ' . $db->q($slug . '.' . $key) . ', ' . $db->q($value);
 		}
 
-		$query = (method_exists($db, 'createQuery') ? $db->createQuery() : $db->getQuery(true))
+		$query = DbQuery::create($db)
 		            ->insert($db->qn('#__user_profiles'))
 		            ->columns($db->qn('user_id') . ', ' . $db->qn('profile_key') . ', ' . $db->qn('profile_value'))
 		            ->values($insertData);
@@ -500,7 +501,7 @@ trait LoginTrait
 		}
 
 		$db    = $this->getDatabase();
-		$query = (method_exists($db, 'createQuery') ? $db->createQuery() : $db->getQuery(true))
+		$query = DbQuery::create($db)
 		            ->select('COUNT(*)')
 		            ->from($db->qn('#__user_profiles'))
 		            ->where($db->qn('user_id') . ' = ' . $db->q($user->id))
@@ -586,7 +587,7 @@ trait LoginTrait
 	protected function getUserIdByProfileData(string $profileKey, string $profileValue): int
 	{
 		$db    = $this->getDatabase();
-		$query = (method_exists($db, 'createQuery') ? $db->createQuery() : $db->getQuery(true))
+		$query = DbQuery::create($db)
 		            ->select([
 			            $db->qn('user_id'),
 		            ])->from($db->qn('#__user_profiles'))
@@ -609,7 +610,7 @@ trait LoginTrait
 			 * does not exist we'll end up with an ugly Warning on our page with a text similar to "JUser: :_load:
 			 * Unable to load user with ID: 1234". This cannot be disabled so we have to be, um, a bit creative :/
 			 */
-			$query      = (method_exists($db, 'createQuery') ? $db->createQuery() : $db->getQuery(true))
+			$query      = DbQuery::create($db)
 			                 ->select('COUNT(*)')->from($db->qn('#__users'))
 			                 ->where($db->qn('id') . ' = ' . $db->q($id));
 			$userExists = $db->setQuery($query)->loadResult();
@@ -697,7 +698,7 @@ trait LoginTrait
 	{
 		// Initialise some variables
 		$db    = $this->getDatabase();
-		$query = (method_exists($db, 'createQuery') ? $db->createQuery() : $db->getQuery(true))
+		$query = DbQuery::create($db)
 		            ->select($db->qn('id'))
 		            ->from($db->qn('#__users'))
 		            ->where($db->qn('email') . ' = ' . $db->q($email));

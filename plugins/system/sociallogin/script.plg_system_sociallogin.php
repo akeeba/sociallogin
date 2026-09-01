@@ -193,6 +193,7 @@ class plgSystemSocialloginInstallerScript
 		}
 
 		$db    = $this->getDatabase();
+		// Installer script: kept inline (no PSR-4 autoloader yet), tracks Library\Helper\DbQuery::create()
 		$query = (method_exists($db, 'createQuery') ? $db->createQuery() : $db->getQuery(true))
 			->select($db->quoteName('extension_id'))
 			->from($db->quoteName('#__extensions'));
@@ -302,6 +303,7 @@ class plgSystemSocialloginInstallerScript
 	private function removeExtensionPackageLink(int $eid): void
 	{
 		$db    = $this->getDatabase();
+		// Installer script: kept inline (no PSR-4 autoloader yet), tracks Library\Helper\DbQuery::create()
 		$query = (method_exists($db, 'createQuery') ? $db->createQuery() : $db->getQuery(true))
 			->update($db->quoteName('#__extensions'))
 			->set($db->quoteName('package_id') . ' = 0')

@@ -10,6 +10,7 @@ namespace Akeeba\Plugin\System\SocialLogin\Features;
 // Protect from unauthorized access
 defined('_JEXEC') || die();
 
+use Akeeba\Plugin\System\SocialLogin\Library\Helper\DbQuery;
 use Joomla\CMS\User\User;
 use Joomla\Event\Event;
 
@@ -284,7 +285,7 @@ trait DynamicUsergroups
 	private function getSocialLoginLinkedStatus(User $user)
 	{
 		$db    = $this->getDatabase();
-		$query = (method_exists($db, 'createQuery') ? $db->createQuery() : $db->getQuery(true))
+		$query = DbQuery::create($db)
 			->select(
 				[
 					$db->qn('profile_key'),

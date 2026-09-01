@@ -10,6 +10,7 @@ namespace Akeeba\Plugin\System\SocialLogin\Features;
 // Prevent direct access
 defined('_JEXEC') || die;
 
+use Akeeba\Plugin\System\SocialLogin\Library\Helper\DbQuery;
 use Exception;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Form\Form as JForm;
@@ -107,7 +108,7 @@ trait UserFields
 		// Load the profile data from the database.
 		$db = $this->getDatabase();
 
-		$query = (method_exists($db, 'createQuery') ? $db->createQuery() : $db->getQuery(true))
+		$query = DbQuery::create($db)
 		            ->select([$db->qn('profile_key'), $db->qn('profile_value')])
 		            ->from($db->qn('#__user_profiles'))
 		            ->where($db->qn('user_id') . ' = ' . $db->q($userId))
@@ -291,7 +292,7 @@ trait UserFields
 			$db = $this->getDatabase();
 
 			/** @noinspection SqlResolve */
-			$query = (method_exists($db, 'createQuery') ? $db->createQuery() : $db->getQuery(true))
+			$query = DbQuery::create($db)
 			            ->delete($db->qn('#__user_profiles'))
 			            ->where($db->qn('user_id') . ' = ' . $db->q($userId))
 			            ->where($db->qn('profile_key') . ' LIKE ' . $db->q('sociallogin.%', false));
@@ -334,7 +335,7 @@ trait UserFields
 			return $db->q('sociallogin.' . $key);
 		}, array_keys($data['sociallogin']));
 
-		$query = (method_exists($db, 'createQuery') ? $db->createQuery() : $db->getQuery(true))
+		$query = DbQuery::create($db)
 		            ->delete($db->qn('#__user_profiles'))
 		            ->where($db->qn('user_id') . ' = ' . $db->q($userId))
 		            ->where($db->qn('profile_key') . ' IN (' . implode(',', $fieldNames) . ')');
@@ -343,7 +344,7 @@ trait UserFields
 
 		$order = 1;
 
-		$query = (method_exists($db, 'createQuery') ? $db->createQuery() : $db->getQuery(true))
+		$query = DbQuery::create($db)
 		            ->insert($db->qn('#__user_profiles'))
 		            ->columns([
 			            $db->qn('user_id'), $db->qn('profile_key'), $db->qn('profile_value'), $db->qn('ordering'),

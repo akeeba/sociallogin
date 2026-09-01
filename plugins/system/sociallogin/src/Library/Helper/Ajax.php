@@ -10,6 +10,7 @@ namespace Akeeba\Plugin\System\SocialLogin\Library\Helper;
 // Protect from unauthorized access
 defined('_JEXEC') || die();
 
+use Akeeba\Plugin\System\SocialLogin\Library\Helper\DbQuery;
 use Exception;
 use Joomla\CMS\Application\CMSApplication;
 use Joomla\CMS\Factory;
@@ -116,7 +117,7 @@ final class Ajax
 		try
 		{
 			// Delete an existing profile value
-			$query = (method_exists($db, 'createQuery') ? $db->createQuery() : $db->getQuery(true))
+			$query = DbQuery::create($db)
 			            ->delete($db->qn('#__user_profiles'))
 			            ->where($db->qn('user_id') . ' = ' . $db->q($myUser->id))
 			            ->where($db->qn('profile_key') . ' = ' . $db->q('sociallogin.dontremind'));

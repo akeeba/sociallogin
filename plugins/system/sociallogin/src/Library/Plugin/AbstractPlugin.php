@@ -10,6 +10,7 @@ namespace Akeeba\Plugin\System\SocialLogin\Library\Plugin;
 // Protect from unauthorized access
 defined('_JEXEC') || die();
 
+use Akeeba\Plugin\System\SocialLogin\Library\Helper\DbQuery;
 use Exception;
 use Joomla\CMS\Application\CMSApplication;
 use Joomla\CMS\Authentication\Authentication;
@@ -792,7 +793,7 @@ abstract class AbstractPlugin extends CMSPlugin implements SubscriberInterface, 
 
 		$db = $this->getDatabase();
 
-		$query = (method_exists($db, 'createQuery') ? $db->createQuery() : $db->getQuery(true))
+		$query = DbQuery::create($db)
 		            ->delete($db->qn('#__user_profiles'))
 		            ->where($db->qn('user_id') . ' = ' . $db->q($userId))
 		            ->where($db->qn('profile_key') . ' LIKE ' . $db->q($slug . '.%'));
