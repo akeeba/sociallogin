@@ -18,42 +18,20 @@ Pre-built packages of Akeeba Social Login are available through [our GitHub repo
 
 Akeeba Social Login comes with English (Great Britain) built-in, plus machine-translated German (de-DE), Greek (el-GR), Spanish (es-ES), French (fr-FR), Italian (it-IT) and Portuguese (pt-PT) language files. These machine translations are provided as-is, without a guarantee of accuracy, and we do not accept pull requests for language files. You are welcome to translate to your own language and make the translation available free of charge under the GPLv3 license which the original translation files are licensed under.
 
-## Support policy
+## Build instructions
 
-The software is free, but support requires a [paid subscription](https://www.akeeba.com/subscribe/sociallogin.html). This allows us to fund continued development and maintenance of the project, while keeping it accessible to everyone regardless of their financial state. Subscribers need to [file a support ticket](https://www.akeeba.com/support/akeeba-sociallogin.html) to receive support.
+Check out this repository and Akeeba Build Tools — Public Packager using the following directory names:
 
-Kindly note that support subscriptions last for _three months_, allow you to request support for up to three integrations – on the same, or different sites – and are non-refundable. 
+- `sociallogin` This repository.
+- `buildfiles` [Akeeba Build Tools — Public Packager](https://github.com/akeeba/buildfiles-public)
+- `build.properties` A file created as per the instructions in `buildfiles/README.md`
 
-If you are unsure if something you are trying to do is possible with SocialLogin please submit a [pre-sales request](https://www.akeeba.com/support/pre-sales-requests/new.html) before subscribing.
+Then:
 
-## Contributing
+```bash
+cd sociallogin
+composer install
+phing git
+```
 
-Please read [our Contributing page](.github/CONTRIBUTING.md), and our [Code of Conduct](.github/CODE_OF_CONDUCT.md).
-
-If you want to financially contribute to the project to ensure its ongoing maintenance, [you can purchase a support subscription](https://www.akeeba.com/subscribe/sociallogin.html).
-
-## Prerequisites
-
-In order to build the installation packages of this component you will need to have the following tools:
-
-* A command line environment. Using Bash under Linux / Mac OS X works best.
-* A PHP CLI binary in your path
-* Phing installed account-wide on your machine
-* Command line Git executables
-
-You will also need the following path structure inside a folder on your system
-
-* **sociallogin** This repository
-* **buildfiles** [Akeeba Build Tools](https://github.com/akeeba/buildfiles)
-
-You will need to use the exact folder names specified here.
-
-### Useful Phing tasks
-
-All commands are to be run from the `build` directory of this repository.
-
-Create a dev release installation package
-
-		phing git
-		
-The installable ZIP file is written in the `release` directory inside the repository's root.
+The generated package is under `sociallogin/release`.
