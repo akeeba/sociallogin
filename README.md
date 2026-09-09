@@ -4,6 +4,9 @@ A social login solution for Joomla!
 
 [Downloads](https://github.com/akeeba/sociallogin/releases) • [Documentation](https://github.com/akeeba/sociallogin/wiki) • [Support](https://www.akeeba.com/support/akeeba-sociallogin.html)
 
+> [!IMPORTANT]
+> Developing and maintaining world-class software is neither easy nor free. The development of this software is subsidised by sales of our commercial offerings. If you like this software and would like to see it maintained in the future, please consider [purchasing a subscription](https://www.akeeba.com/subscribe.html) to one of our commercial offerings. _Thank you!_
+
 ## What does it do?
 
 These plugins let users link their social media (Facebook, Google, Twitter, ...) account to your site. Users can then log in using these social media accounts. A typical use case for that is Facebook login.
