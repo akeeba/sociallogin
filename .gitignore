@@ -51,3 +51,9 @@
 
 # Claude Code local (per-machine) settings
 /.claude/settings.local.json
+
+### Release credentials
+# release.yaml / release.json are written here with all placeholders substituted
+# at release time and deleted afterwards. An aborted release leaves them behind.
+/release.yaml
+/release.json
