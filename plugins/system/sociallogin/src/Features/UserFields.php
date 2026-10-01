@@ -330,6 +330,27 @@ trait UserFields
 			return;
 		}
 
+		/**
+		 * Only persist the fields this plugin itself declares in its form (see forms/sociallogin.xml). Anything else
+		 * submitted in the sociallogin group is silently ignored; otherwise saving a user profile could be abused to
+		 * forge social login link data, e.g. link someone else's social network account to the user being saved.
+		 */
+		$allowedKeys = ['dontremind', 'sociallogin'];
+
+		$data['sociallogin'] = array_intersect_key($data['sociallogin'], array_flip($allowedKeys));
+
+		if (!count($data['sociallogin']))
+		{
+			return;
+		}
+
+		// Make sure the current user is allowed to modify this user's social login settings
+		$user = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($userId);
+
+		if (!$this->canEditUser($user))
+		{
+			return;
+		}
 
 		$db = $this->getDatabase();
 

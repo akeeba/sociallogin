@@ -1,6 +1,7 @@
 <?php die(); ?>
 Akeeba SocialLogin 4.11.1
 ================================================================================
+# [LOW] Saving your profile can no longer be abused to forge social login link data
 ~ Social login profile lookups now escape wildcard characters in their match patterns
 # [LOW] Database writes for social login data now use bound query parameters throughout
 # [MEDIUM] The "don't remind me" action now requires a confirmed form submission
