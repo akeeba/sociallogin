@@ -42,7 +42,7 @@ class OAuth extends OAuth2Client
 		// Setup the authentication and token urls if not already set.
 		if (!isset($this->options['authurl']))
 		{
-			$this->options['authurl'] = 'http://www.facebook.com/dialog/oauth';
+			$this->options['authurl'] = 'https://www.facebook.com/dialog/oauth';
 		}
 
 		if (!isset($this->options['tokenurl']))
