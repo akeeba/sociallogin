@@ -16,6 +16,7 @@ $array_merge = array_merge(array(
 	'slug'       => '',
 	'type'       => 'link',
 	'link'       => '',
+	'token'      => '',
 	'tooltip'    => '',
 	'label'      => '',
 	'img'        => '',
@@ -40,7 +41,9 @@ $array_merge = array_merge(array(
  * @var   string       $type        The type of the button being rendered: 'link' (user has not linked to this social
  *                                  network before) or 'unlink' (user is already linked to this social network, clicking
  *                                  this button will _unlink_ their user account from it).
- * @var   string       $link        URL for the button (href)
+ * @var   string       $link        URL for the button. For 'unlink' buttons this is the action of the POST form used
+ *                                  to carry out the unlinking.
+ * @var   string       $token       The anti-CSRF session token, rendered as a hidden field of the unlink form
  * @var   string       $tooltip     Tooltip to show on the button
  * @var   string       $label       Text content of the button
  * @var   string       $img         An <img> (or other) tag to use inside the button when $icon_class is empty
@@ -59,6 +62,20 @@ if (empty($icon) && substr($rawimage, -4) === '.svg')
 
 // Start writing your template override code below this line
 ?>
+<?php if ($type === 'unlink'): ?>
+<form method="post" action="<?= htmlspecialchars($link, ENT_QUOTES, 'UTF-8') ?>">
+	<input type="hidden" name="<?= htmlspecialchars($token, ENT_QUOTES, 'UTF-8') ?>" value="1">
+	<button type="submit" class="btn btn-default akeeba-sociallogin-linkunlink-button akeeba-sociallogin-<?= htmlspecialchars($type, ENT_QUOTES, 'UTF-8') ?>-button akeeba-sociallogin-<?= htmlspecialchars($type, ENT_QUOTES, 'UTF-8') ?>-button-<?= htmlspecialchars($slug, ENT_QUOTES, 'UTF-8') ?> hasTooltip w-100"
+	   title="<?= htmlspecialchars($tooltip, ENT_QUOTES, 'UTF-8') ?>">
+		<?php if (!empty($icon)): ?>
+		<span class="<?= htmlspecialchars($icon, ENT_QUOTES, 'UTF-8') ?>" aria-hidden="true"></span>
+		<?php else: ?>
+		<?= $img ?>
+		<?php endif; ?>
+		<?= htmlspecialchars($label, ENT_QUOTES, 'UTF-8') ?>
+	</button>
+</form>
+<?php else: ?>
 <a class="btn btn-default akeeba-sociallogin-linkunlink-button akeeba-sociallogin-<?= htmlspecialchars($type, ENT_QUOTES, 'UTF-8') ?>-button akeeba-sociallogin-<?= htmlspecialchars($type, ENT_QUOTES, 'UTF-8') ?>-button-<?= htmlspecialchars($slug, ENT_QUOTES, 'UTF-8') ?> hasTooltip w-100"
    href="<?= htmlspecialchars($link, ENT_QUOTES, 'UTF-8') ?>" title="<?= htmlspecialchars($tooltip, ENT_QUOTES, 'UTF-8') ?>">
 	<?php if (!empty($icon)): ?>
@@ -68,3 +85,4 @@ if (empty($icon) && substr($rawimage, -4) === '.svg')
 	<?php endif; ?>
 	<?= htmlspecialchars($label, ENT_QUOTES, 'UTF-8') ?>
 </a>
+<?php endif; ?>

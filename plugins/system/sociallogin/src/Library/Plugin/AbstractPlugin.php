@@ -492,7 +492,7 @@ abstract class AbstractPlugin extends CMSPlugin implements SubscriberInterface, 
 		if ($this->isLinked($user))
 		{
 			$token     = $session->getToken();
-			$unlinkURL = Uri::base() . 'index.php?option=com_ajax&group=system&plugin=sociallogin&format=raw&akaction=unlink&encoding=redirect&slug=' . $this->integrationName . '&' . $token . '=1';
+			$unlinkURL = Uri::base() . 'index.php?option=com_ajax&group=system&plugin=sociallogin&format=raw&akaction=unlink&encoding=redirect&slug=' . $this->integrationName;
 
 			// Render an unlink button
 			$result[] = [
@@ -500,8 +500,12 @@ abstract class AbstractPlugin extends CMSPlugin implements SubscriberInterface, 
 				'slug'      => $this->integrationName,
 				// The type of the button: 'link' or 'unlink'
 				'type'      => 'unlink',
-				// The href attribute for the anchor tag.
+				// The URL the button submits to. The unlink action must be carried out with a POST request, so
+				// the default layout renders a form using this URL as its action.
 				'link'      => $unlinkURL,
+				// The anti-CSRF session token. Rendered as a hidden form field by the default layout; never
+				// appended to the URL, so it cannot leak through the page address.
+				'token'     => $token,
 				// The tooltip of the anchor tag.
 				'tooltip'   => Text::_(sprintf('PLG_SOCIALLOGIN_%s_UNLINK_DESC', $this->integrationName)),
 				// What to put inside the anchor tag. Leave empty to put the image returned by onSocialLoginGetIntegration.
