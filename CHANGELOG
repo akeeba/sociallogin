@@ -1,6 +1,7 @@
 <?php die(); ?>
 Akeeba SocialLogin 4.11.1
 ================================================================================
+# [LOW] Debug output of OAuth error details is now escaped before display
 # [MEDIUM] Failed social logins now show a generic error unless the site's debug mode is on
 # [MEDIUM] Debug logging no longer writes users' social network access tokens to the log file
 # [LOW] Login error logs no longer record user email addresses on production sites
