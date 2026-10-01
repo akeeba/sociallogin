@@ -21,7 +21,37 @@
 	</fileset>
 
 	<target name="git" description="Makes only packages, not the documentation"
-			depends="new-release,setup-properties,compile-javascript,component-packages">
+			depends="new-release,setup-properties,compile-javascript,prune-dependencies,component-packages">
+	</target>
+
+	<!--
+	Post-Mozart pruning of repackaged dependencies.
+
+	Mozart repackages whole Composer packages into plugins/system/sociallogin/src/Dependencies. phpseclib 2.0
+	ships ~1.4 MB of SSH/SFTP/X509/cipher code, but the only code we actually use is CoderCat\JWKToPEM which
+	needs just Crypt/RSA, Crypt/Hash, Crypt/Random and Math/BigInteger. Remove everything else so it does
+	not end up as dead, web-addressable code inside the system plugin package. This must run on every build:
+	composer install / update (through Mozart's post-install and post-update hooks) regenerates the
+	Dependencies folder.
+	-->
+	<target name="prune-dependencies" description="Remove unused phpseclib code repackaged by Mozart">
+		<delete includeemptydirs="true" failonerror="false" quiet="true">
+			<fileset dir="${dirs.root}/plugins/system/sociallogin/src/Dependencies/phpseclib">
+				<include name="Net/**" />
+				<include name="System/**" />
+				<include name="File/**" />
+				<include name="Crypt/AES.php" />
+				<include name="Crypt/Base.php" />
+				<include name="Crypt/Blowfish.php" />
+				<include name="Crypt/DES.php" />
+				<include name="Crypt/RC2.php" />
+				<include name="Crypt/RC4.php" />
+				<include name="Crypt/Rijndael.php" />
+				<include name="Crypt/TripleDES.php" />
+				<include name="Crypt/Twofish.php" />
+				<include name="bootstrap.php" />
+			</fileset>
+		</delete>
 	</target>
 
 	<!--
@@ -36,24 +66,6 @@
 			<fileset dir="${absname}">
 				<type type="dir" />
 				<depth max="0" min="0" />
-				<exclude name="vendor/codercat/jwk-to-pem/tests/**" />
-				<exclude name="vendor/codercat/jwk-to-pem/.gitignore" />
-				<exclude name="vendor/codercat/jwk-to-pem/composer.json" />
-				<exclude name="vendor/codercat/jwk-to-pem/phpunit.xml" />
-
-				<exclude name="vendor/lcobucci/jwt/test/**" />
-				<exclude name="vendor/lcobucci/jwt/.gitignore" />
-				<exclude name="vendor/lcobucci/jwt/.scrutinizer*" />
-				<exclude name="vendor/lcobucci/jwt/.travis*" />
-				<exclude name="vendor/lcobucci/jwt/composer.json" />
-				<exclude name="vendor/lcobucci/jwt/phpunit.xml.dist" />
-
-				<exclude name="vendor/phpseclib/phpseclib/appveyor.yml" />
-				<exclude name="vendor/phpseclib/phpseclib/AUTHORS" />
-				<exclude name="vendor/phpseclib/phpseclib/BACKERS.md" />
-				<exclude name="vendor/phpseclib/phpseclib/composer.json" />
-
-				<exclude name="vendor/phpseclib/bcmath_compat/composer.json" />
 			</fileset>
 		</foreach>
 	</target>
