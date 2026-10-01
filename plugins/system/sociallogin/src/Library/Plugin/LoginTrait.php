@@ -249,8 +249,8 @@ trait LoginTrait
 					{
 						Log::add(
 							sprintf(
-								'I cannot find the user Joomla ostensibly has just created (email address %s). Crashing is imminent!',
-								$email
+								'I cannot find the user Joomla ostensibly has just created (Joomla returned "%s" instead of a user ID). Crashing is imminent!',
+								$userId
 							),
 							Log::ERROR,
 							'sociallogin.' . $slug
