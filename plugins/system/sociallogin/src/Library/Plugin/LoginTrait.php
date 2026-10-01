@@ -24,6 +24,7 @@ use Joomla\CMS\User\User;
 use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\CMS\User\UserHelper;
 use Joomla\Database\ParameterType;
+use Joomla\Registry\Registry;
 use Akeeba\Plugin\System\SocialLogin\Library\Data\PluginConfiguration;
 use Akeeba\Plugin\System\SocialLogin\Library\Data\UserData;
 use Akeeba\Plugin\System\SocialLogin\Library\Exception\Login\GenericMessage;
@@ -760,8 +761,8 @@ trait LoginTrait
 		/**
 		 * Set up the login options.
 		 *
-		 * The 'remember' element forces the use of the Remember Me feature when logging in with social media, as the
-		 * users would expect.
+		 * The 'remember' element is controlled by the "Remember social login" option of the system plugin. When enabled
+		 * (the default) the Remember Me feature is used when logging in with social media, as the users would expect.
 		 *
 		 * The 'action' element is actually required by plg_user_joomla. It is the core ACL action the logged in user
 		 * must be allowed for the login to succeed. Please note that front-end and back-end logins use a different
@@ -770,8 +771,11 @@ trait LoginTrait
 		 * insufficient privileges - the same thing that'd happen if you tried to use your front-end only username and
 		 * password in a back-end login form.
 		 */
+		$systemPluginParams = PluginHelper::getPlugin('system', 'sociallogin')->params;
+		$rememberLogin      = !($systemPluginParams instanceof Registry) || $systemPluginParams->get('remember_login', 1) == 1;
+
 		$options = [
-			'remember' => true,
+			'remember' => $rememberLogin,
 			'action'   => 'core.login.site',
 		];
 

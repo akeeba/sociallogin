@@ -1,6 +1,7 @@
 <?php die(); ?>
 Akeeba SocialLogin 4.11.1
 ================================================================================
++ Social logins no longer force "remember me"; it can now be disabled in the system plugin's options
 # [LOW] Social login error messages shown to visitors are now HTML-escaped
 # [LOW] Debug output of OAuth error details is now escaped before display
 # [MEDIUM] Failed social logins now show a generic error unless the site's debug mode is on
