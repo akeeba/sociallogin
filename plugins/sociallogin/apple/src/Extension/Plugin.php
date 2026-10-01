@@ -126,10 +126,19 @@ class Plugin extends AbstractPlugin
 		{
 			$this->appSecret = $this->getSecretKey();
 
+			/**
+			 * The nonce for the authorize request is generated when the login button URL is created (see
+			 * getLoginButtonURL) and bound to the user's session. Here we only read it back; on the callback request
+			 * it is validated against the nonce claim in Apple's token before being removed from the session.
+			 */
 			/** @var SessionInterface $session */
 			$session = $this->getApplication()->getSession();
-			$nonce   = $session->get('plg_sociallogin_apple.nonce', hash('sha1', random_bytes(64)));
-			$session->set('plg_sociallogin_apple.nonce', $nonce);
+			$nonce   = $session->get('plg_sociallogin_apple.nonce', '');
+
+			if (empty($nonce))
+			{
+				$nonce = hash('sha1', random_bytes(64));
+			}
 
 			$options         = [
 				'authurl'       => 'https://appleid.apple.com/auth/authorize',
@@ -152,6 +161,30 @@ class Plugin extends AbstractPlugin
 		}
 
 		return $this->connector;
+	}
+
+	/**
+	 * Return the URL for the login button
+	 *
+	 * Each authorization request gets its own nonce, stored in the user's session. This binds the login response
+	 * Apple sends back to the individual login attempt which generated it, instead of having a single nonce reused
+	 * for every attempt in the same session.
+	 *
+	 * @return  string
+	 *
+	 * @throws  Exception
+	 * @since   4.11.1
+	 */
+	protected function getLoginButtonURL(): string
+	{
+		// Generate a fresh nonce for this authorization request and bind it to the session.
+		/** @var SessionInterface $session */
+		$session = $this->getApplication()->getSession();
+		$nonce   = hash('sha1', random_bytes(64));
+
+		$session->set('plg_sociallogin_apple.nonce', $nonce);
+
+		return parent::getLoginButtonURL();
 	}
 
 	/**
@@ -231,18 +264,21 @@ class Plugin extends AbstractPlugin
 			throw new RuntimeException('The login response received lacks the necessary fields set by Apple.');
 		}
 
-		// Verify the nonce (Joomla's anti-CSRF token).
+		// Verify the nonce (Joomla's anti-CSRF token). This check fails closed: it rejects the login response when
+		// the nonce claim is missing or unsupported, when there is no reference nonce in the session, or when the
+		// two nonces do not match.
 		/** @var SessionInterface $session */
 		$session        = $this->getApplication()->getSession();
 		$claims         = $token->claims();
 		$nonceSupported = $claims->get('nonce_supported', false);
-		$incomingNonce  = $claims->get('nonce', '');
+		$incomingNonce  = (string) $claims->get('nonce', '');
 		$referenceNonce = $session->get('plg_sociallogin_apple.nonce', null);
 
 		if (
-			$nonceSupported
-			&& !empty($referenceNonce)
-		    && !Crypt::timingSafeCompare($referenceNonce, $incomingNonce)
+			!$nonceSupported
+			|| empty($referenceNonce)
+			|| empty($incomingNonce)
+			|| !Crypt::timingSafeCompare($referenceNonce, $incomingNonce)
 		)
 		{
 			throw new RuntimeException('Invalid request.');
