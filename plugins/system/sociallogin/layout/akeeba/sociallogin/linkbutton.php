@@ -59,12 +59,12 @@ if (empty($icon) && substr($rawimage, -4) === '.svg')
 
 // Start writing your template override code below this line
 ?>
-<a class="btn btn-default akeeba-sociallogin-linkunlink-button akeeba-sociallogin-<?= $type?>-button akeeba-sociallogin-<?= $type?>-button-<?= $slug?> hasTooltip w-100"
-   href="<?= $link?>" title="<?= $tooltip ?>">
+<a class="btn btn-default akeeba-sociallogin-linkunlink-button akeeba-sociallogin-<?= htmlspecialchars($type, ENT_QUOTES, 'UTF-8') ?>-button akeeba-sociallogin-<?= htmlspecialchars($type, ENT_QUOTES, 'UTF-8') ?>-button-<?= htmlspecialchars($slug, ENT_QUOTES, 'UTF-8') ?> hasTooltip w-100"
+   href="<?= htmlspecialchars($link, ENT_QUOTES, 'UTF-8') ?>" title="<?= htmlspecialchars($tooltip, ENT_QUOTES, 'UTF-8') ?>">
 	<?php if (!empty($icon)): ?>
-	<span class="<?= $icon ?>" aria-hidden="true"></span>
+	<span class="<?= htmlspecialchars($icon, ENT_QUOTES, 'UTF-8') ?>" aria-hidden="true"></span>
 	<?php else: ?>
 	<?= $img ?>
 	<?php endif; ?>
-	<?= $label ?>
+	<?= htmlspecialchars($label, ENT_QUOTES, 'UTF-8') ?>
 </a>
