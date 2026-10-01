@@ -241,10 +241,12 @@ class Plugin extends AbstractPlugin
 		// We don't use the validator directly because we need to check against ANY of the valid signatures.
 		if (!$this->validateJWTSignature($token, $jwkArray))
 		{
+			// Log only a non-sensitive discriminator (the token's key ID), never the JWT itself: it is a
+			// short-lived bearer credential which also carries the user's email address.
 			Log::add(
 				sprintf(
-					'Invalid signature in received JWT: %s',
-					$jwt
+					'Invalid signature in received JWT. Token header key ID (kid): %s',
+					$token->headers()->get('kid', '(none)')
 				),
 				Log::ERROR,
 				'sociallogin.apple'

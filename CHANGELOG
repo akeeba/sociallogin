@@ -1,6 +1,7 @@
 <?php die(); ?>
 Akeeba SocialLogin 4.11.1
 ================================================================================
+# [MEDIUM] Login with Apple: tokens are no longer written to the log file on validation failures
 ~ Plugin packages now consistently include index.html directory guards
 # [MEDIUM] Login with Apple: the login response is now bound to each individual login attempt
 # [MEDIUM] Login with Apple: a temporary connection problem can no longer bypass the signature check
