@@ -22,6 +22,7 @@ use Joomla\CMS\User\User;
 use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\Event\Event;
 use Joomla\Registry\Registry as JRegistry;
+use Joomla\Database\ParameterType;
 use Joomla\Utilities\ArrayHelper;
 
 trait UserFields
@@ -330,16 +331,16 @@ trait UserFields
 		}
 
 
-		$db         = $this->getDatabase();
-		$fieldNames = array_map(function ($key) use ($db) {
-			return $db->q('sociallogin.' . $key);
+		$db = $this->getDatabase();
+
+		$profileKeys = array_map(function ($key) {
+			return 'sociallogin.' . $key;
 		}, array_keys($data['sociallogin']));
 
 		$query = DbQuery::create($db)
 		            ->delete($db->qn('#__user_profiles'))
 		            ->where($db->qn('user_id') . ' = ' . $db->q($userId))
-		            ->where($db->qn('profile_key') . ' IN (' . implode(',', $fieldNames) . ')');
-
+		            ->whereIn($db->qn('profile_key'), $profileKeys);
 		$db->setQuery($query)->execute();
 
 		$order = 1;
@@ -352,7 +353,10 @@ trait UserFields
 
 		foreach ($data['sociallogin'] as $k => $v)
 		{
-			$query->values($userId . ', ' . $db->quote('sociallogin.' . $k) . ', ' . $db->quote($v) . ', ' . $order++);
+			$userIdParam = $query->bindArray([$userId], ParameterType::INTEGER)[0];
+			$binds       = $query->bindArray(['sociallogin.' . $k, (string) $v, (string) $order++]);
+
+			$query->values(implode(', ', array_merge([$userIdParam], $binds)));
 		}
 
 		$db->setQuery($query)->execute();

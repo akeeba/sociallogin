@@ -1,6 +1,7 @@
 <?php die(); ?>
 Akeeba SocialLogin 4.11.1
 ================================================================================
+# [LOW] Database writes for social login data now use bound query parameters throughout
 # [MEDIUM] The "don't remind me" action now requires a confirmed form submission
 # [LOW] Unlinking a social account no longer exposes the session token in the page address
 # [MEDIUM] Unlinking someone else's social login now requires Super User privileges

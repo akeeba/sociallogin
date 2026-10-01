@@ -23,6 +23,7 @@ use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\User\User;
 use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\CMS\User\UserHelper;
+use Joomla\Database\ParameterType;
 use Akeeba\Plugin\System\SocialLogin\Library\Data\PluginConfiguration;
 use Akeeba\Plugin\System\SocialLogin\Library\Data\UserData;
 use Akeeba\Plugin\System\SocialLogin\Library\Exception\Login\GenericMessage;
@@ -450,31 +451,35 @@ trait LoginTrait
 		// Now add our own user's ID back. We need this to remove old integration values so we can INSERT the new ones.
 		$allUserIDs[] = $userId;
 
-		// Create database-escaped lists of user IDs and keys to remove
-		$allUserIDs = array_map([$db, 'quote'], $allUserIDs);
-		$keys       = array_map(function ($x) use ($slug, $db) {
-			return $db->q($slug . '.' . $x);
-		}, $keys);
-
-		// Delete old values
+		// Delete old values. The IN lists are parameterised, not escaped-and-interpolated.
 		$query = DbQuery::create($db)
 		            ->delete($db->qn('#__user_profiles'))
-		            ->where($db->qn('user_id') . ' IN(' . implode(', ', $allUserIDs) . ')')
-		            ->where($db->qn('profile_key') . ' IN(' . implode(', ', $keys) . ')');
+		            ->whereIn($db->qn('user_id'), $allUserIDs, ParameterType::INTEGER)
+		            ->whereIn(
+			            $db->qn('profile_key'),
+			            array_map(function ($x) use ($slug) {
+				            return $slug . '.' . $x;
+			            }, $keys),
+			            ParameterType::STRING
+		            );
 		$db->setQuery($query)->execute();
 
-		// Insert new values
+		// Insert new values. Every value is bound to a named parameter.
+		$query = DbQuery::create($db)
+		            ->insert($db->qn('#__user_profiles'))
+		            ->columns($db->qn('user_id') . ', ' . $db->qn('profile_key') . ', ' . $db->qn('profile_value'));
+
 		$insertData = [];
 
 		foreach ($data as $key => $value)
 		{
-			$insertData[] = $db->q($userId) . ', ' . $db->q($slug . '.' . $key) . ', ' . $db->q($value);
+			$userIdParam  = $query->bindArray([$userId], ParameterType::INTEGER)[0];
+			$keyParam     = $query->bindArray([$slug . '.' . $key])[0];
+			$valueParam   = $query->bindArray([(string) $value])[0];
+			$insertData[] = implode(', ', [$userIdParam, $keyParam, $valueParam]);
 		}
 
-		$query = DbQuery::create($db)
-		            ->insert($db->qn('#__user_profiles'))
-		            ->columns($db->qn('user_id') . ', ' . $db->qn('profile_key') . ', ' . $db->qn('profile_value'))
-		            ->values($insertData);
+		$query->values($insertData);
 		$db->setQuery($query)->execute();
 	}
 
