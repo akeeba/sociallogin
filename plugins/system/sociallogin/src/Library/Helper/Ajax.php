@@ -50,12 +50,20 @@ final class Ajax
 	 */
 	public function handle()
 	{
-		$input          = $this->app->getInput();
-		$akaction       = $input->getCmd('akaction');
-		$token          = $this->app->getSession()->getToken();
-		$noTokenActions = ['dontremind'];
+		$input           = $this->app->getInput();
+		$akaction        = $input->getCmd('akaction');
+		$token           = $this->app->getSession()->getToken();
+		$postOnlyActions = ['unlink', 'dontremind'];
 
-		if (!in_array($akaction, $noTokenActions) && ($input->getInt($token, 0) != 1))
+		if ($input->getInt($token, 0) != 1)
+		{
+			throw new RuntimeException(Text::_('JERROR_ALERTNOAUTHOR'));
+		}
+
+		// Actions which change persisted state must be submitted with an HTTP POST request. The `authenticate`
+		// action is exempt: it is rendered through Joomla's core login buttons API as a plain navigation which
+		// only initiates the OAuth flow, with the OAuth2 state parameter protecting the callback.
+		if (in_array($akaction, $postOnlyActions) && (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'POST'))
 		{
 			throw new RuntimeException(Text::_('JERROR_ALERTNOAUTHOR'));
 		}
@@ -102,7 +110,10 @@ final class Ajax
 	/**
 	 * Set the "don't remind me again" flag
 	 *
-	 * Call by accessing index.php?option=com_ajax&group=system&plugin=sociallogin&akaction=dontremind&format=raw
+	 * This action changes persisted state. It must be submitted with an HTTP POST request, including the session
+	 * anti-CSRF token as a request parameter (a hidden form field named after the session token, with a value of 1).
+	 *
+	 * Call by POSTing to index.php?option=com_ajax&group=system&plugin=sociallogin&akaction=dontremind&format=raw
 	 */
 	protected function ajaxDontremind()
 	{
