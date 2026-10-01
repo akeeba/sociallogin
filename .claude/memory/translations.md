@@ -14,8 +14,8 @@ Language file locations:
 - Package: `build/templates/language/{LANG}/pkg_sociallogin.sys.ini`
 - System plugin: `plugins/system/sociallogin/language/{LANG}/plg_system_sociallogin.{ini,sys.ini}`
 - Provider plugins: `plugins/sociallogin/{provider}/language/{LANG}/plg_sociallogin_{provider}.{ini,sys.ini}`
-  (amazon, apple, auth0, discord, facebook, github, google, linkedin, microsoft, spotify, synology,
-  twitch, yahoo)
+  (amazon, apple, auth0, discord, facebook, github, google, linkedin, microsoft, synology, twitch,
+  yahoo)
 
 After creating the language files for a new language, add `<language tag="{LANG}">` entries inside the
 `<languages folder="language">` block of every plugin manifest:

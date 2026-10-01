@@ -41,7 +41,9 @@ class Pkg_SocialloginInstallerScript extends InstallerScript
 
 	protected $obsoletePlugins = [
 		// Remove Twitter integration, 4.4.0
-		['sociallogin', 'twitter']
+		['sociallogin', 'twitter'],
+		// Remove Spotify integration, 4.11.1
+		['sociallogin', 'spotify']
 	];
 
 	protected $packageName = 'pkg_sociallogin';
