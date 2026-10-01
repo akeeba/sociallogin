@@ -1,6 +1,7 @@
 <?php die(); ?>
 Akeeba SocialLogin 4.11.1
 ================================================================================
+# [MEDIUM] Login with Apple: tighter validation of the signed login response
 # [LOW] Login with Microsoft: invalid custom tenant IDs can no longer alter the login endpoint
 ~ Login with Facebook now uses HTTPS for the initial authorization redirect
 # [LOW] Social link buttons now escape all attribute values in their default layout

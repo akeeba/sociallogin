@@ -360,8 +360,9 @@ class Plugin extends AbstractPlugin
 	/**
 	 * Validates the signature of a JSON Web Token.
 	 *
-	 * Caveat: due to third party library implementation it will only work with RS256 keys which incidentally is what
-	 * Apple is using at the time of this writing (August 2020).
+	 * Apple only ever issues RS256 tokens. The signer is pinned to RSA with SHA-256 and tokens carrying any other
+	 * algorithm in their header are rejected outright, instead of deriving the verification method from the
+	 * unverified token header.
 	 *
 	 * @param   Token  $token     The parsed JWT token to verify the signature for
 	 * @param   array  $jwkArray  An array of one or more JSON Web Keys (JWKs)
@@ -380,46 +381,13 @@ class Plugin extends AbstractPlugin
 			return true;
 		}
 
-		// Get the correct signer based on the algorithm set in the JWT.
-		switch ($token->headers()->get('alg'))
+		// Apple only ever signs its tokens with RS256. Never trust the algorithm in the unverified token header.
+		if ($token->headers()->get('alg') !== 'RS256')
 		{
-			case 'RS256':
-			default:
-				$signer = new Signer\Rsa\Sha256();
-				break;
-
-			case 'RS384':
-				$signer = new Signer\Rsa\Sha384();
-				break;
-
-			case 'RS512':
-				$signer = new Signer\Rsa\Sha512();
-				break;
-
-			case 'ES256':
-				$signer = new Signer\Ecdsa\Sha256;
-				break;
-
-			case 'ES384':
-				$signer = new Signer\Ecdsa\Sha384;
-				break;
-
-			case 'ES512':
-				$signer = new Signer\Ecdsa\Sha512;
-				break;
-
-			case 'HS256':
-				$signer = new Signer\Hmac\Sha256();
-				break;
-
-			case 'HS384':
-				$signer = new Signer\Hmac\Sha384();
-				break;
-
-			case 'HS512':
-				$signer = new Signer\Hmac\Sha512();
-				break;
+			return false;
 		}
+
+		$signer = new Signer\Rsa\Sha256();
 
 		$keyMaterial = $this->params->get('keyMaterial', '');
 		$config      = JWTConfig::forSymmetricSigner(new SignerES256(null), InMemory::plainText($keyMaterial));
