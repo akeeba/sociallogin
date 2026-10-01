@@ -477,6 +477,16 @@ abstract class AbstractPlugin extends CMSPlugin implements SubscriberInterface, 
 		// Save the return URL and user ID into the session
 		$session = $this->getApplication()->getSession();
 		$session->set('plg_system_sociallogin.returnUrl', $returnURL);
+
+		// Only the most recently rendered link / unlink target may be acted upon. If the session holds the ID of a
+		// different user –a leftover from a previously viewed profile– clear the stale target before stashing the new one.
+		$stashedUserId = $session->get('plg_system_sociallogin.userID', null);
+
+		if (!empty($stashedUserId) && ((int) $stashedUserId != (int) $user->id))
+		{
+			$session->set('plg_system_sociallogin.userID', null);
+		}
+
 		$session->set('plg_system_sociallogin.userID', $user->id);
 
 		if ($this->isLinked($user))

@@ -166,7 +166,7 @@ final class Ajax
 		$myUser = $this->app->getSession()->get('user');
 
 		// Make sure we are unlinking our own user or we are Super Users
-		if (empty($userId) || (!$myUser->authorise('core.manage') && ($myUser->id != $userId)))
+		if (empty($userId) || (!$myUser->authorise('core.admin') && ($myUser->id != $userId)))
 		{
 			throw new RuntimeException(Text::_('PLG_SYSTEM_SOCIALLOGIN_ERR_AJAX_INVALIDUSER'));
 		}
