@@ -510,7 +510,7 @@ trait LoginTrait
 		            ->select('COUNT(*)')
 		            ->from($db->qn('#__user_profiles'))
 		            ->where($db->qn('user_id') . ' = ' . $db->q($user->id))
-		            ->where($db->qn('profile_key') . ' LIKE ' . $db->q('sociallogin.' . $slug . '.%'));
+		            ->where($db->qn('profile_key') . ' LIKE ' . $db->q($db->escape('sociallogin.' . $slug . '.', true) . '%', true));
 
 		try
 		{

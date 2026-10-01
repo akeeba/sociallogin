@@ -810,7 +810,7 @@ abstract class AbstractPlugin extends CMSPlugin implements SubscriberInterface, 
 		$query = DbQuery::create($db)
 		            ->delete($db->qn('#__user_profiles'))
 		            ->where($db->qn('user_id') . ' = ' . $db->q($userId))
-		            ->where($db->qn('profile_key') . ' LIKE ' . $db->q($slug . '.%'));
+		            ->where($db->qn('profile_key') . ' LIKE ' . $db->q($db->escape($slug . '.', true) . '%', true));
 		$db->setQuery($query)->execute();
 	}
 

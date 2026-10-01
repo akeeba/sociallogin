@@ -113,7 +113,7 @@ trait UserFields
 		            ->select([$db->qn('profile_key'), $db->qn('profile_value')])
 		            ->from($db->qn('#__user_profiles'))
 		            ->where($db->qn('user_id') . ' = ' . $db->q($userId))
-		            ->where($db->qn('profile_key') . ' LIKE ' . $db->q('sociallogin.%', false))
+		            ->where($db->qn('profile_key') . ' LIKE ' . $db->q($db->escape('sociallogin.', true) . '%', true))
 		            ->order($db->qn('ordering'));
 
 		try
@@ -296,7 +296,7 @@ trait UserFields
 			$query = DbQuery::create($db)
 			            ->delete($db->qn('#__user_profiles'))
 			            ->where($db->qn('user_id') . ' = ' . $db->q($userId))
-			            ->where($db->qn('profile_key') . ' LIKE ' . $db->q('sociallogin.%', false));
+			            ->where($db->qn('profile_key') . ' LIKE ' . $db->q($db->escape('sociallogin.', true) . '%', true));
 
 			$db->setQuery($query)->execute();
 		}

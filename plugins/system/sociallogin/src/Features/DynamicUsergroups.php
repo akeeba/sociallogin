@@ -240,7 +240,7 @@ trait DynamicUsergroups
 				]
 			)
 			->from($db->qn('#__user_profiles'))
-			->where($db->qn('profile_key') . ' LIKE ' . $db->q('sociallogin.%'))
+			->where($db->qn('profile_key') . ' LIKE ' . $db->q($db->escape('sociallogin.', true) . '%', true))
 			->where($db->qn('user_id') . ' = ' . $db->q($user->id));
 
 		$profileValues = $db->setQuery($query)->loadAssocList('profile_key');
