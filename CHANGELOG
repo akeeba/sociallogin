@@ -2,28 +2,28 @@
 Akeeba SocialLogin 4.11.1
 ================================================================================
 + Social logins no longer force "remember me"; it can now be disabled in the system plugin's options
-# [LOW] Social login error messages shown to visitors are now HTML-escaped
-# [LOW] Debug output of OAuth error details is now escaped before display
-# [MEDIUM] Failed social logins now show a generic error unless the site's debug mode is on
-# [MEDIUM] Debug logging no longer writes users' social network access tokens to the log file
-# [LOW] Login error logs no longer record user email addresses on production sites
-# [LOW] Saving your profile can no longer be abused to forge social login link data
-~ Social login profile lookups now escape wildcard characters in their match patterns
-# [LOW] Database writes for social login data now use bound query parameters throughout
-# [MEDIUM] The "don't remind me" action now requires a confirmed form submission
-# [LOW] Unlinking a social account no longer exposes the session token in the page address
-# [MEDIUM] Unlinking someone else's social login now requires Super User privileges
-# [HIGH] Social login could be tricked into linking an attacker's account to a logged-in user
-# [MEDIUM] Login with Apple: tokens are no longer written to the log file on validation failures
-~ Plugin packages now consistently include index.html directory guards
-# [MEDIUM] Login with Apple: the login response is now bound to each individual login attempt
-# [MEDIUM] Login with Apple: a temporary connection problem can no longer bypass the signature check
-~ Smaller plugin package: removed unused third-party SSH/SFTP library code
 - Removed the Spotify integration (its API login program was discontinued)
-# [MEDIUM] Login with Apple: tighter validation of the signed login response
-# [LOW] Login with Microsoft: invalid custom tenant IDs can no longer alter the login endpoint
+~ Social login profile lookups now escape wildcard characters in their match patterns
+~ Plugin packages now consistently include index.html directory guards
+~ Smaller plugin package: removed unused third-party SSH/SFTP library code
 ~ Login with Facebook now uses HTTPS for the initial authorization redirect
+# [HIGH] Social login could be tricked into linking an attacker's account to a logged-in user
+# [MEDIUM] Login with Apple: tighter validation of the signed login response
+# [MEDIUM] Login with Apple: a temporary connection problem can no longer bypass the signature check
+# [MEDIUM] Login with Apple: the login response is now bound to each individual login attempt
+# [MEDIUM] Unlinking someone else's social login now requires Super User privileges
+# [MEDIUM] The "don't remind me" action now requires a confirmed form submission
+# [MEDIUM] Login with Apple: tokens are no longer written to the log file on validation failures
+# [MEDIUM] Debug logging no longer writes users' social network access tokens to the log file
+# [MEDIUM] Failed social logins now show a generic error unless the site's debug mode is on
 # [LOW] Social link buttons now escape all attribute values in their default layout
+# [LOW] Login with Microsoft: invalid custom tenant IDs can no longer alter the login endpoint
+# [LOW] Unlinking a social account no longer exposes the session token in the page address
+# [LOW] Database writes for social login data now use bound query parameters throughout
+# [LOW] Saving your profile can no longer be abused to forge social login link data
+# [LOW] Login error logs no longer record user email addresses on production sites
+# [LOW] Debug output of OAuth error details is now escaped before display
+# [LOW] Social login error messages shown to visitors are now HTML-escaped
 
 Akeeba SocialLogin 4.11.0
 ================================================================================
