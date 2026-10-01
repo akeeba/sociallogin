@@ -30,11 +30,15 @@ use Akeeba\Plugin\System\SocialLogin\Library\Plugin\AbstractPlugin;
 use DateInterval;
 use DateTimeImmutable;
 use Exception;
+use Joomla\CMS\Application\CMSApplication;
+use Joomla\CMS\Cache\CacheControllerFactoryAwareTrait;
+use Joomla\CMS\Cache\Controller\CallbackController;
 use Joomla\CMS\Crypt\Crypt;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Uri\Uri;
 use Joomla\Http\HttpFactory;
 use Joomla\Session\SessionInterface;
+use JsonException;
 use RuntimeException;
 
 if (!class_exists(AbstractPlugin::class))
@@ -51,6 +55,16 @@ if (!class_exists(AbstractPlugin::class))
  */
 class Plugin extends AbstractPlugin
 {
+	use CacheControllerFactoryAwareTrait;
+
+	/**
+	 * The cache controller for caching Apple's JSON Web Key Set
+	 *
+	 * @var   CallbackController|null
+	 * @since 4.11.1
+	 */
+	private ?CallbackController $jwksCacheController = null;
+
 	/**
 	 * The email address of the user logging in with Apple
 	 *
@@ -174,11 +188,22 @@ class Plugin extends AbstractPlugin
 		$config      = JWTConfig::forSymmetricSigner(new SignerES256(null), InMemory::plainText($keyMaterial));
 		$token       = $config->parser()->parse($jwt);
 
-		// Verify the token's signature – if we can connect to Apple's servers to retrieve the valid keys.
-		$keyJson   = @file_get_contents('https://appleid.apple.com/auth/keys');
-		$appleKeys = @json_decode($keyJson ?: '[]', true);
-		$appleKeys = $appleKeys ?? [];
-		$jwkArray  = $appleKeys['keys'] ?? [];
+		// Verify the token's signature against Apple's JSON Web Key Set. If Apple's keys cannot be retrieved the
+		// login fails closed: we never validate a signature without keys.
+		try
+		{
+			$jwkArray = $this->getAppleSigningKeys();
+		}
+		catch (Exception $e)
+		{
+			Log::add(
+				sprintf('Could not retrieve Apple\'s signing keys: %s', $e->getMessage()),
+				Log::ERROR,
+				'sociallogin.apple'
+			);
+
+			throw new RuntimeException('The login response received cannot be verified at this time.');
+		}
 
 		// We don't use the validator directly because we need to check against ANY of the valid signatures.
 		if (!$this->validateJWTSignature($token, $jwkArray))
@@ -375,10 +400,10 @@ class Plugin extends AbstractPlugin
 	 */
 	private function validateJWTSignature(Token $token, array $jwkArray): bool
 	{
-		// No keys? I will say it's valid.
+		// No keys? The signature cannot be verified, therefore the login fails closed.
 		if (empty($jwkArray))
 		{
-			return true;
+			return false;
 		}
 
 		// Apple only ever signs its tokens with RS256. Never trust the algorithm in the unverified token header.
@@ -413,5 +438,121 @@ class Plugin extends AbstractPlugin
 		}
 
 		return false;
+	}
+
+	/**
+	 * Get Apple's JSON Web Key Set (JWKS), cached for up to 24 hours so that a transient connectivity problem
+	 * towards Apple's servers does not block logins.
+	 *
+	 * @return  array  The keys in Apple's JSON Web Key Set
+	 *
+	 * @throws  RuntimeException  When the key set cannot be retrieved, or is empty
+	 * @since   4.11.1
+	 */
+	private function getAppleSigningKeys(): array
+	{
+		$callbackController = $this->getJWKSCacheController();
+
+		if (!$callbackController instanceof CallbackController)
+		{
+			// No cache available. Fetch the key set directly; it still fails closed on error.
+			return $this->fetchAppleSigningKeys();
+		}
+
+		return $callbackController->get(
+			fn() => $this->fetchAppleSigningKeys(), []
+		);
+	}
+
+	/**
+	 * Get, possibly creating afresh, the cache controller for Apple's JSON Web Key Set
+	 *
+	 * @return  CallbackController|null
+	 * @since   4.11.1
+	 */
+	private function getJWKSCacheController(): ?CallbackController
+	{
+		if ($this->jwksCacheController instanceof CallbackController)
+		{
+			return $this->jwksCacheController;
+		}
+
+		$application = $this->getApplication();
+
+		if (!$application instanceof CMSApplication)
+		{
+			return null;
+		}
+
+		$options = [
+			'defaultgroup' => 'plg_sociallogin_apple',
+			'cachebase'    => $application->get('cache_path', JPATH_CACHE),
+			'lifetime'     => 86400,
+			'language'     => $application->get('language', 'en-GB'),
+			'storage'      => $application->get('cache_handler', 'file'),
+			'locking'      => true,
+			'locktime'     => 15,
+			'checkTime'    => true,
+			'caching'      => true,
+		];
+
+		/** @noinspection PhpFieldAssignmentTypeMismatchInspection */
+		$this->jwksCacheController = $this->getCacheControllerFactory()
+			->createCacheController('callback', $options);
+
+		return $this->jwksCacheController;
+	}
+
+	/**
+	 * Fetches Apple's JSON Web Key Set over HTTP, using the same transport as the rest of the plugin.
+	 *
+	 * @return  array  The keys in Apple's JSON Web Key Set
+	 *
+	 * @throws  RuntimeException  When the key set cannot be retrieved, or is empty
+	 * @since   4.11.1
+	 */
+	private function fetchAppleSigningKeys(): array
+	{
+		try
+		{
+			$http     = (new HttpFactory())->getHttp();
+			$response = $http->get('https://appleid.apple.com/auth/keys');
+		}
+		catch (Exception $e)
+		{
+			throw new RuntimeException(
+				sprintf('Could not connect to Apple: %s', $e->getMessage()), 0, $e
+			);
+		}
+
+		if ($response->getStatusCode() !== 200)
+		{
+			throw new RuntimeException(
+				sprintf('Apple returned HTTP status %d when retrieving the signing keys.', $response->getStatusCode())
+			);
+		}
+
+		try
+		{
+			$appleKeys = json_decode((string) $response->getBody(), true, 512, JSON_THROW_ON_ERROR);
+		}
+		catch (JsonException $e)
+		{
+			throw new RuntimeException('Apple returned a malformed JSON Web Key Set.', 0, $e);
+		}
+
+		if (!is_array($appleKeys))
+		{
+			throw new RuntimeException('Apple returned a malformed JSON Web Key Set.');
+		}
+
+		$jwkArray = $appleKeys['keys'] ?? [];
+
+		if (empty($jwkArray))
+		{
+			throw new RuntimeException('Apple returned an empty JSON Web Key Set.');
+		}
+
+		return $jwkArray;
 	}
 }

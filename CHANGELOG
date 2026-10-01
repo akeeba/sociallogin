@@ -1,6 +1,8 @@
 <?php die(); ?>
 Akeeba SocialLogin 4.11.1
 ================================================================================
+# [MEDIUM] Login with Apple: a temporary connection problem can no longer bypass the signature check
+~ Smaller plugin package: removed unused third-party SSH/SFTP library code
 - Removed the Spotify integration (its API login program was discontinued)
 # [MEDIUM] Login with Apple: tighter validation of the signed login response
 # [LOW] Login with Microsoft: invalid custom tenant IDs can no longer alter the login endpoint

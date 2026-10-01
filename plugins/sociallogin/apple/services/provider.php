@@ -7,6 +7,7 @@
 
 defined('_JEXEC') || die;
 
+use Joomla\CMS\Cache\CacheControllerFactoryInterface;
 use Joomla\CMS\Extension\PluginInterface;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\Database\DatabaseInterface;
@@ -36,6 +37,7 @@ return new class implements ServiceProviderInterface {
 
 				$plugin->setApplication(\Joomla\CMS\Factory::getApplication());
 				$plugin->setDatabase($container->get(DatabaseInterface::class));
+				$plugin->setCacheControllerFactory($container->get(CacheControllerFactoryInterface::class));
 
 				$plugin->init();
 
