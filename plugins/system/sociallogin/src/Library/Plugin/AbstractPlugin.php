@@ -363,10 +363,24 @@ abstract class AbstractPlugin extends CMSPlugin implements SubscriberInterface, 
 				unset($userProfileData['pictureUrl']);
 			}
 
+			// Never write the access token itself to the log. A non-sensitive fingerprint is enough for troubleshooting.
+			$logProfileData = $userProfileData;
+
+			if (isset($logProfileData['token']))
+			{
+				$tokenJson = (string) $logProfileData['token'];
+
+				$logProfileData['token'] = sprintf(
+					'[redacted: %d characters, SHA-256 %s…]',
+					strlen($tokenJson),
+					substr(hash('sha256', $tokenJson), 0, 8)
+				);
+			}
+
 			Log::add(
 				sprintf(
 					'Calling Social Login login handler with the following information: %s',
-					ArrayHelper::toString($userProfileData)
+					ArrayHelper::toString($logProfileData)
 				),
 				Log::DEBUG,
 				'sociallogin.' . $this->integrationName
