@@ -96,6 +96,14 @@ class Plugin extends AbstractPlugin
 				if ($tenant === 'tenantid')
 				{
 					$tenant = trim($this->params->get('azure_tenant', '') ?: '');
+
+					// The custom tenant must be a GUID or a letters/numbers/dots/dashes string. Anything else —
+					// e.g. path separators — could rewrite the login endpoint URL. Fall back to the default
+					// `common` tenant instead of throwing an error.
+					if ($tenant !== '' && !$this->isValidTenantId($tenant))
+					{
+						$tenant = '';
+					}
 				}
 
 				// If the tenant is not set, default to `common`
@@ -122,6 +130,27 @@ class Plugin extends AbstractPlugin
 		}
 
 		return $this->connector;
+	}
+
+	/**
+	 * Is the given string a valid Azure AD tenant identifier?
+	 *
+	 * A valid tenant is either a GUID, or a string made up of letters, numbers, dots and dashes only.
+	 *
+	 * @param   string  $tenant  The prospective tenant identifier
+	 *
+	 * @return  bool
+	 *
+	 * @since   4.11.1
+	 */
+	private function isValidTenantId(string $tenant): bool
+	{
+		if (preg_match('/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/', $tenant))
+		{
+			return true;
+		}
+
+		return (bool) preg_match('/^[A-Za-z0-9.-]+$/', $tenant);
 	}
 
 	/**

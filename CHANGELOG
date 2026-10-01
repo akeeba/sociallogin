@@ -1,4 +1,8 @@
 <?php die(); ?>
+Akeeba SocialLogin 4.11.1
+================================================================================
+# [LOW] Login with Microsoft: invalid custom tenant IDs can no longer alter the login endpoint
+
 Akeeba SocialLogin 4.11.0
 ================================================================================
 ! Minimum supported PHP version is now 8.1.0, maximum supported is 8.6.x. PHP 7.4-8.0 are no longer supported.
