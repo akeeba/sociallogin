@@ -232,11 +232,12 @@ class SocialLogin extends CMSPlugin implements SubscriberInterface, DatabaseAwar
 	}
 
 	/**
-	 * Redirect OAuth callbacks with state=a from the frontend to the admin backend.
+	 * Redirect OAuth callbacks for admin-issued login flows from the frontend to the admin backend.
 	 *
-	 * When social login buttons are rendered in the admin backend, the OAuth state parameter is set to 'a'. Since all
-	 * providers now use the frontend callback URL (Uri::root()), the callback arrives at the frontend. This method
-	 * detects the admin state flag and redirects the request to the admin backend so the login completes there.
+	 * When social login buttons are rendered in the admin backend, the OAuth flow is flagged as targeting the backend
+	 * (the flag is stored in the session when the login button URL is created). Since all providers now use the
+	 * frontend callback URL (Uri::root()), the callback arrives at the frontend. This method detects the admin flag
+	 * in the session and redirects the request to the admin backend so the login completes there.
 	 *
 	 * For GET callbacks, a standard redirect is used. For POST callbacks (e.g., Apple's form_post response_mode),
 	 * an auto-submitting HTML form is rendered to forward all POST data to the admin backend.
@@ -262,8 +263,11 @@ class SocialLogin extends CMSPlugin implements SubscriberInterface, DatabaseAwar
 			return;
 		}
 
-		// Must have the admin state flag
-		if ($input->getString('state') !== 'a')
+		// Must be an admin-bound login flow; the flag was stored in the session when the login button URL was created
+		$oauthState = $app->getSession()->get('plg_system_sociallogin.oauthState');
+		$isAdmin    = is_array($oauthState) && !empty($oauthState['admin']);
+
+		if (!$isAdmin)
 		{
 			return;
 		}

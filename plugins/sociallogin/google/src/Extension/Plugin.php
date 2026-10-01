@@ -111,7 +111,7 @@ class Plugin extends AbstractPlugin
 
 		if ($this->getApplication()->isClient('administrator'))
 		{
-			$client->setOption('state', 'a');
+			$client->setOption('admin', true);
 		}
 
 		return $client->createUrl();

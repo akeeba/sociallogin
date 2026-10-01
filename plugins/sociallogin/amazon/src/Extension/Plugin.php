@@ -47,7 +47,6 @@ class Plugin extends AbstractPlugin
 				'clientsecret'  => $this->appSecret,
 				'redirecturi'   => Uri::root() . 'index.php?option=com_ajax&group=sociallogin&plugin='
 				                   . $this->integrationName . '&format=raw',
-				'requestparams' => ['state' => $this->getApplication()->getSession()->getToken()],
 			];
 			$httpClient      = (new HttpFactory())->getHttp();
 			$this->connector = new AmazonOAuth(

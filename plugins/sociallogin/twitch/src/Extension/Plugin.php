@@ -49,7 +49,6 @@ class Plugin extends AbstractPlugin
 				                   . $this->integrationName . '&format=raw',
 				'requestparams' => [
 					'claims' => '{"id_token":{"email":null,"email_verified":null},"userinfo":{"email":null,"email_verified":null,"picture":null,"preferred_username":null,"updated_at":null}}',
-					'state'  => $this->getApplication()->getSession()->getToken(),
 				],
 			];
 			$httpClient      = (new HttpFactory())->getHttp();

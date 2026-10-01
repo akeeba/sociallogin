@@ -92,6 +92,8 @@ class OAuth2Client
 	{
 		if ($data['code'] = $this->input->get('code', false, 'raw'))
 		{
+			$this->validateOAuthState();
+
 			$data['grant_type']    = $this->getOption('grant_type', 'authorization_code');
 			$data['redirect_uri']  = $this->getOption('redirecturi');
 			$data['client_id']     = $this->getOption('clientid');
@@ -209,6 +211,10 @@ class OAuth2Client
 		if ($this->getOption('state'))
 		{
 			$url .= '&state=' . urlencode($this->getOption('state'));
+		}
+		elseif ($this->application instanceof CMSApplication)
+		{
+			$url .= '&state=' . urlencode($this->createOAuthState());
 		}
 
 		if (is_array($this->getOption('requestparams')))
@@ -462,5 +468,68 @@ class OAuth2Client
 	public function getApplication()
 	{
 		return $this->application;
+	}
+
+	/**
+	 * Create a new, cryptographically random OAuth 2 state value and bind it to the current session.
+	 *
+	 * The generated state is returned as the `state` URL parameter of the authorization URL. It is stored in the
+	 * session together with the admin-routing intent of the login flow, so that the callback can be validated against
+	 * it (see validateOAuthState) and, when applicable, routed to the backend of the site.
+	 *
+	 * @return  string
+	 *
+	 * @throws  Exception
+	 *
+	 * @since   4.11.1
+	 */
+	private function createOAuthState(): string
+	{
+		$state = bin2hex(random_bytes(16));
+
+		$this->application->getSession()->set(
+			'plg_system_sociallogin.oauthState',
+			[
+				'state' => $state,
+				'admin' => (bool) $this->getOption('admin', false),
+			]
+		);
+
+		return $state;
+	}
+
+	/**
+	 * Validate the OAuth 2 state parameter returned by the social network against the value bound to the session.
+	 *
+	 * This is the standard OAuth 2 CSRF mitigation: it prevents an attacker from tricking a logged-in user into
+	 * completing a login (or linking an account) the user never initiated.
+	 *
+	 * @return  void
+	 *
+	 * @throws  RuntimeException  When the state is missing or does not match the session-bound value.
+	 *
+	 * @since   4.11.1
+	 */
+	private function validateOAuthState(): void
+	{
+		$session = $this->application instanceof CMSApplication ? $this->application->getSession() : null;
+		$stored  = $session ? $session->get('plg_system_sociallogin.oauthState') : null;
+
+		$returnedState = $this->input->getString('state', '');
+
+		$isValid = is_array($stored)
+			&& !empty($stored['state'])
+			&& !empty($returnedState)
+			&& hash_equals((string) $stored['state'], $returnedState);
+
+		if (!$isValid)
+		{
+			throw new RuntimeException(
+				'The login response does not match the login request. Please try logging in again.'
+			);
+		}
+
+		// The state is single-use: consume it so a replayed or intercepted callback cannot be reused.
+		$session->set('plg_system_sociallogin.oauthState', null);
 	}
 }

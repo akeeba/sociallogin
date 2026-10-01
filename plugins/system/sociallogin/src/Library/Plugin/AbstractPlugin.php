@@ -693,7 +693,7 @@ abstract class AbstractPlugin extends CMSPlugin implements SubscriberInterface, 
 
 		if ($this->getApplication()->isClient('administrator'))
 		{
-			$connector->setOption('state', 'a');
+			$connector->setOption('admin', true);
 		}
 
 		return $connector->createUrl();
