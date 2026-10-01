@@ -566,7 +566,8 @@ trait LoginTrait
 			);
 
 			// Everything logged in the 'jerror' category ends up being enqueued in the application message queue.
-			Log::add($response->error_message, Log::WARNING, 'jerror');
+			// The message queue renders HTML, so escape the message to prevent markup injection.
+			Log::add(htmlspecialchars($response->error_message, ENT_QUOTES, 'UTF-8'), Log::WARNING, 'jerror');
 
 			return false;
 		}
@@ -803,8 +804,9 @@ trait LoginTrait
 		// If we are here the plugins marked a login failure. Trigger the onUserLoginFailure Event.
 		$this->runPlugins('onUserLoginFailure', [(array) $response, []]);
 
-		// Log the failure
-		Log::add($response->error_message, Log::WARNING, 'jerror');
+		// Log the failure. Everything logged in the 'jerror' category ends up being enqueued in the application
+		// message queue which renders HTML, so escape the message to prevent markup injection.
+		Log::add(htmlspecialchars($response->error_message, ENT_QUOTES, 'UTF-8'), Log::WARNING, 'jerror');
 
 		// Throw an exception to let the caller know that the login failed
 		throw new RuntimeException($response->error_message);

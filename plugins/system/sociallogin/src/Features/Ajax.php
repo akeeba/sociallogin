@@ -122,7 +122,7 @@ trait Ajax
 				'sociallogin.system'
 			);
 
-			$app->enqueueMessage($e->getMessage(), 'error');
+			$app->enqueueMessage(htmlspecialchars($e->getMessage(), ENT_QUOTES, 'UTF-8'), 'error');
 			$app->redirect($returnURL);
 
 			return;
