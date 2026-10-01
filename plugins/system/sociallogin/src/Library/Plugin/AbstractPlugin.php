@@ -317,16 +317,29 @@ abstract class AbstractPlugin extends CMSPlugin implements SubscriberInterface, 
 			}
 			catch (Exception $e)
 			{
+				/**
+				 * The exception message may contain the raw response body returned by the social network. That body is
+				 * provider–controlled data which must not be displayed to the user, or written to the log files of a
+				 * production site. Log it for troubleshooting at DEBUG level only, stripping CR/LF characters to
+				 * prevent log forging. The detailed message is only shown to the user when the site's debug mode is
+				 * enabled; otherwise the user gets a generic, non-sensitive error message.
+				 */
+				$detailedMessage = str_replace(["\r", "\n"], ' ', $e->getMessage());
+
 				Log::add(
 					sprintf(
 						"Returning login error '%s'",
-						$e->getMessage()
+						$detailedMessage
 					),
-					Log::ERROR,
+					Log::DEBUG,
 					'sociallogin.' . $this->integrationName
 				);
 
-				throw new LoginError($e->getMessage());
+				$publicMessage = (defined('JDEBUG') && JDEBUG)
+					? $e->getMessage()
+					: Text::_('PLG_SYSTEM_SOCIALLOGIN_ERR_LOGINFAILED');
+
+				throw new LoginError($publicMessage);
 			}
 
 			Log::add(

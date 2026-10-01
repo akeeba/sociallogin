@@ -1,6 +1,7 @@
 <?php die(); ?>
 Akeeba SocialLogin 4.11.1
 ================================================================================
+# [MEDIUM] Failed social logins now show a generic error unless the site's debug mode is on
 # [MEDIUM] Debug logging no longer writes users' social network access tokens to the log file
 # [LOW] Login error logs no longer record user email addresses on production sites
 # [LOW] Saving your profile can no longer be abused to forge social login link data
