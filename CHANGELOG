@@ -24,6 +24,7 @@ Akeeba SocialLogin 4.11.1
 # [LOW] Login error logs no longer record user email addresses on production sites
 # [LOW] Debug output of OAuth error details is now escaped before display
 # [LOW] Social login error messages shown to visitors are now HTML-escaped
+# [LOW] German and Italian language files: fixed unescaped double quotes that broke strict INI parsing
 
 Akeeba SocialLogin 4.11.0
 ================================================================================
