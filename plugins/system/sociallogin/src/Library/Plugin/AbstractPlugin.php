@@ -294,7 +294,7 @@ abstract class AbstractPlugin extends CMSPlugin implements SubscriberInterface, 
 
 						if (!empty($error))
 						{
-							$errorMessage .= "<br/><small>" . htmlspecialchars($error, ENT_QUOTES, 'UTF-8') . "</small>";
+							$errorMessage .= " " . htmlspecialchars($error, ENT_QUOTES, 'UTF-8');
 						}
 					}
 

@@ -25,6 +25,7 @@ Akeeba SocialLogin 4.11.1
 # [LOW] Debug output of OAuth error details is now escaped before display
 # [LOW] Social login error messages shown to visitors are now HTML-escaped
 # [LOW] German and Italian language files: fixed unescaped double quotes that broke strict INI parsing
+# [LOW] Debug-mode OAuth error details no longer show literal HTML tags
 
 Akeeba SocialLogin 4.11.0
 ================================================================================
