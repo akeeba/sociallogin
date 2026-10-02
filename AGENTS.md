@@ -67,6 +67,7 @@ and across agentic harnesses (Claude Code, Codex, Qwen Code, Kimi Code, Junie, â
 | Before youâ€¦ | Read |
 |---|---|
 | add, change or translate language strings, or add a new language | `.claude/memory/translations.md` |
+| run, triage or act on a security audit, or touch composer dependencies / the Mozart setup | `.claude/memory/security-audit-decisions.md` |
 
 ### Recording new memories
 
