@@ -4,6 +4,7 @@ Akeeba SocialLogin 4.11.1
 + Social logins no longer force "remember me"; it can now be disabled in the system plugin's options
 - Removed the Spotify integration (its API login program was discontinued)
 ~ Social login profile lookups now escape wildcard characters in their match patterns
+~ PHP 8.4 compatibility: fixed a "Creation of dynamic property" deprecation during installation of the system plugin
 ~ Plugin packages now consistently include index.html directory guards
 ~ Smaller plugin package: removed unused third-party SSH/SFTP library code
 ~ Login with Facebook now uses HTTPS for the initial authorization redirect
