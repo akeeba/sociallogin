@@ -27,6 +27,7 @@ Akeeba SocialLogin 4.11.1
 # [LOW] Social login error messages shown to visitors are now HTML-escaped
 # [LOW] German and Italian language files: fixed unescaped double quotes that broke strict INI parsing
 # [LOW] Debug-mode OAuth error details no longer show literal HTML tags
+# [LOW] The "Backend only" choice of the Enabled Applications option could not be saved in any social login plugin [gh-150]
 
 Akeeba SocialLogin 4.11.0
 ================================================================================
