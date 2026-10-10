@@ -1,0 +1,431 @@
+/**
+ * Firebase Auth Modal and Button Styles for Akeeba Social Login
+ *
+ * @package   AkeebaSocialLogin
+ * @copyright Copyright (c)2016-2026 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @license   GNU General Public License version 3, or later
+ */
+
+/* Firebase Login Button in Joomla Form */
+.akeeba-sociallogin-link-button-firebase {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  border-radius: 6px;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: all 0.15s ease-in-out;
+  border: 1px solid rgba(0, 0, 0, 0.12) !important;
+  text-decoration: none;
+}
+
+.akeeba-sociallogin-link-button-firebase:hover {
+  filter: brightness(0.96);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.akeeba-sociallogin-link-button-firebase:active {
+  transform: translateY(1px);
+}
+
+.akeeba-sociallogin-link-button-firebase svg,
+.akeeba-sociallogin-link-button-firebase img {
+  width: 18px;
+  height: 18px;
+  margin-right: 8px;
+  vertical-align: middle;
+}
+
+/* Modal Overlay Backdrop */
+.firebase-modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100000;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.25s ease, visibility 0.25s ease;
+  padding: 16px;
+  box-sizing: border-box;
+}
+
+.firebase-modal-backdrop.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Modal Card */
+.firebase-modal-card {
+  background: #ffffff;
+  border-radius: 20px;
+  width: 100%;
+  max-width: 420px;
+  padding: 32px 28px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(0, 0, 0, 0.05);
+  transform: translateY(16px) scale(0.96);
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  box-sizing: border-box;
+}
+
+.firebase-modal-backdrop.active .firebase-modal-card {
+  transform: translateY(0) scale(1);
+}
+
+/* Close Button */
+.firebase-modal-close {
+  position: absolute;
+  top: 16px;
+  right: 18px;
+  background: transparent;
+  border: none;
+  font-size: 26px;
+  line-height: 1;
+  color: #94a3b8;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 8px;
+  transition: color 0.15s ease, background 0.15s ease;
+}
+
+.firebase-modal-close:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+/* Modal Header */
+.firebase-modal-header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.firebase-modal-logo {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  background: #fff8e1;
+  margin-bottom: 14px;
+  box-shadow: 0 4px 12px rgba(255, 179, 0, 0.2);
+}
+
+.firebase-modal-logo svg {
+  width: 32px;
+  height: 32px;
+}
+
+.firebase-modal-title {
+  margin: 0 0 6px 0;
+  font-size: 1.45rem;
+  font-weight: 700;
+  color: #0f172a;
+  letter-spacing: -0.02em;
+}
+
+.firebase-modal-subtitle {
+  margin: 0;
+  font-size: 0.92rem;
+  color: #64748b;
+  line-height: 1.4;
+}
+
+/* Modal Alert Box */
+.firebase-modal-alert {
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-size: 0.88rem;
+  line-height: 1.4;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.firebase-modal-alert.alert-error {
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #b91c1c;
+}
+
+.firebase-modal-alert.alert-warning {
+  background-color: #fffbeb;
+  border: 1px solid #fde68a;
+  color: #92400e;
+}
+
+.firebase-modal-alert.alert-info {
+  background-color: #eff6ff;
+  border: 1px solid #bfdbfe;
+  color: #1d4ed8;
+}
+
+/* Modal Body / Provider List */
+.firebase-modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Provider Buttons */
+.firebase-provider-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+  padding: 12px 20px;
+  border-radius: 12px;
+  font-size: 0.97rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  color: #1e293b;
+  transition: all 0.15s ease;
+  box-sizing: border-box;
+  text-decoration: none;
+  user-select: none;
+}
+
+.firebase-provider-btn svg {
+  flex-shrink: 0;
+}
+
+.firebase-provider-btn .firebase-provider-text {
+  flex: 1;
+  text-align: center;
+  padding-right: 20px; /* Balance icon space */
+}
+
+/* Provider Specific Styles */
+.firebase-provider-btn.btn-google {
+  background: #ffffff;
+  color: #3c4043;
+  border: 1px solid #dadce0;
+}
+
+.firebase-provider-btn.btn-google:hover {
+  background: #f8f9fa;
+  box-shadow: 0 2px 6px rgba(60, 64, 67, 0.15);
+  border-color: #c6c9cc;
+}
+
+.firebase-provider-btn.btn-facebook {
+  background: #1877f2;
+  color: #ffffff;
+  border: 1px solid #1877f2;
+}
+
+.firebase-provider-btn.btn-facebook:hover {
+  background: #166fe5;
+  box-shadow: 0 2px 6px rgba(24, 119, 242, 0.3);
+}
+
+.firebase-provider-btn.btn-apple {
+  background: #000000;
+  color: #ffffff;
+  border: 1px solid #000000;
+}
+
+.firebase-provider-btn.btn-apple:hover {
+  background: #1a1a1a;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+.firebase-provider-btn.btn-github {
+  background: #24292f;
+  color: #ffffff;
+  border: 1px solid #24292f;
+}
+
+.firebase-provider-btn.btn-github:hover {
+  background: #1b1f23;
+  box-shadow: 0 2px 6px rgba(36, 41, 47, 0.3);
+}
+
+.firebase-provider-btn.btn-microsoft {
+  background: #ffffff;
+  color: #2f2f2f;
+  border: 1px solid #dadce0;
+}
+
+.firebase-provider-btn.btn-microsoft:hover {
+  background: #f8f9fa;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+}
+
+.firebase-provider-btn:disabled,
+.firebase-provider-btn.loading {
+  opacity: 0.65;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+/* Spinner Animation */
+.firebase-spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: firebase-spin 0.75s linear infinite;
+  vertical-align: text-bottom;
+}
+
+@keyframes firebase-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Modal Divider */
+.firebase-modal-divider {
+  position: relative;
+  text-align: center;
+  margin: 18px 0 14px 0;
+}
+
+.firebase-modal-divider::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  border-top: 1px solid #e2e8f0;
+}
+
+.firebase-modal-divider span {
+  position: relative;
+  background: #ffffff;
+  padding: 0 12px;
+  font-size: 0.8rem;
+  color: #94a3b8;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+/* Native Email / Password Auth Form */
+.firebase-auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  text-align: left;
+}
+
+.firebase-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.firebase-form-label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.firebase-form-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #334155;
+  margin: 0;
+}
+
+.firebase-forgot-link {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 0.8rem;
+  color: #2563eb;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.firebase-forgot-link:hover {
+  color: #1d4ed8;
+}
+
+.firebase-input {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  color: #0f172a;
+  background: #ffffff;
+  box-sizing: border-box;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.firebase-input:focus {
+  outline: none;
+  border-color: #f59e0b;
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.15);
+}
+
+.firebase-checkbox-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 2px 0;
+}
+
+.firebase-checkbox-group input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  accent-color: #f59e0b;
+  margin: 0;
+}
+
+.firebase-checkbox-label {
+  font-size: 0.82rem;
+  color: #64748b;
+  cursor: pointer;
+  user-select: none;
+  margin: 0;
+}
+
+.firebase-submit-btn {
+  width: 100%;
+  padding: 11px 18px;
+  border-radius: 10px;
+  font-size: 0.96rem;
+  font-weight: 600;
+  border: none;
+  background: #f59e0b;
+  color: #ffffff;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.1s ease;
+  box-sizing: border-box;
+  text-align: center;
+}
+
+.firebase-submit-btn:hover {
+  background: #d97706;
+}
+
+.firebase-submit-btn:active {
+  transform: translateY(1px);
+}
+
+.firebase-submit-btn:disabled,
+.firebase-submit-btn.loading {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
+
