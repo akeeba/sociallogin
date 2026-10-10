@@ -29,6 +29,7 @@
         <file type="plugin" group="sociallogin" id="auth0">plg_sociallogin_auth0.zip</file>
         <file type="plugin" group="sociallogin" id="discord">plg_sociallogin_discord.zip</file>
         <file type="plugin" group="sociallogin" id="facebook">plg_sociallogin_facebook.zip</file>
+        <file type="plugin" group="sociallogin" id="firebase">plg_sociallogin_firebase.zip</file>
         <file type="plugin" group="sociallogin" id="github">plg_sociallogin_github.zip</file>
         <file type="plugin" group="sociallogin" id="google">plg_sociallogin_google.zip</file>
         <file type="plugin" group="sociallogin" id="linkedin">plg_sociallogin_linkedin.zip</file>

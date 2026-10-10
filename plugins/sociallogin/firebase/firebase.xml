@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--~
+  ~  @package   AkeebaSocialLogin
+  ~  @copyright Copyright (c)2016-2026 Nicholas K. Dionysopoulos / Akeeba Ltd
+  ~  @license   GNU General Public License version 3, or later
+  -->
+
+<extension type="plugin" group="sociallogin" method="upgrade">
+    <name>PLG_SOCIALLOGIN_FIREBASE</name>
+    <version>4.11.0</version>
+    <creationDate>2026-10-10</creationDate>
+
+    <author>Akeeba Ltd</author>
+    <authorEmail>no-reply@akeeba.com</authorEmail>
+    <authorUrl>https://www.akeeba.com</authorUrl>
+
+    <copyright>Copyright (c)2016-2026 Nicholas K. Dionysopoulos / Akeeba Ltd</copyright>
+    <license>GNU GPL v3 or later</license>
+
+    <description>PLG_SOCIALLOGIN_FIREBASE_DESCRIPTION</description>
+    <namespace path="src">Akeeba\Plugin\Sociallogin\Firebase</namespace>
+
+    <files>
+        <folder>services</folder>
+        <folder plugin="firebase">src</folder>
+    </files>
+
+    <media folder="media" destination="plg_sociallogin_firebase">
+        <folder>css</folder>
+        <folder>images</folder>
+        <folder>js</folder>
+    </media>
+
+    <languages folder="language">
+        <language tag="en-GB">en-GB/plg_sociallogin_firebase.ini</language>
+        <language tag="en-GB">en-GB/plg_sociallogin_firebase.sys.ini</language>
+    </languages>
+
+    <config addfieldprefix="Akeeba\Plugin\System\SocialLogin\Field">
+        <fields name="params">
+            <fieldset name="basic">
+                <field
+                        name="callbackurireminder"
+                        type="callbackuri"
+                        label="PLG_SYSTEM_SOCIALLOGIN_FIELD_CALLBACKURI"
+                        description="PLG_SYSTEM_SOCIALLOGIN_FIELD_CALLBACKURI_DESC"
+                        plugincode="firebase"
+                />
+
+                <field
+                        name="documentation"
+                        type="documentation"
+                        label="PLG_SYSTEM_SOCIALLOGIN_FIELD_DOCUMENTATION"
+                        slug="Firebase"
+                />
+
+                <field
+                        name="spacer001"
+                        type="spacer"
+                        hr="true"
+                />
+
+                <field
+                        name="project_id"
+                        type="text"
+                        label="PLG_SOCIALLOGIN_FIREBASE_FIELD_PROJECT_ID_LABEL"
+                        description="PLG_SOCIALLOGIN_FIREBASE_FIELD_PROJECT_ID_DESC"
+                        default=""
+                        required="true"
+                />
+
+                <field
+                        name="api_key"
+                        type="text"
+                        label="PLG_SOCIALLOGIN_FIREBASE_FIELD_API_KEY_LABEL"
+                        description="PLG_SOCIALLOGIN_FIREBASE_FIELD_API_KEY_DESC"
+                        default=""
+                        required="true"
+                />
+
+                <field
+                        name="auth_domain"
+                        type="text"
+                        label="PLG_SOCIALLOGIN_FIREBASE_FIELD_AUTH_DOMAIN_LABEL"
+                        description="PLG_SOCIALLOGIN_FIREBASE_FIELD_AUTH_DOMAIN_DESC"
+                        default=""
+                />
+
+                <field
+                        name="providers"
+                        type="checkboxes"
+                        label="PLG_SOCIALLOGIN_FIREBASE_FIELD_PROVIDERS_LABEL"
+                        description="PLG_SOCIALLOGIN_FIREBASE_FIELD_PROVIDERS_DESC"
+                        default="google,facebook,password"
+                >
+                    <option value="google">PLG_SOCIALLOGIN_FIREBASE_PROVIDER_GOOGLE</option>
+                    <option value="facebook">PLG_SOCIALLOGIN_FIREBASE_PROVIDER_FACEBOOK</option>
+                    <option value="password">PLG_SOCIALLOGIN_FIREBASE_PROVIDER_PASSWORD</option>
+                    <option value="apple">PLG_SOCIALLOGIN_FIREBASE_PROVIDER_APPLE</option>
+                    <option value="github">PLG_SOCIALLOGIN_FIREBASE_PROVIDER_GITHUB</option>
+                    <option value="microsoft">PLG_SOCIALLOGIN_FIREBASE_PROVIDER_MICROSOFT</option>
+                </field>
+
+                <field
+                        name="loginunlinked"
+                        type="radio"
+                        layout="joomla.form.field.radio.switcher"
+                        label="PLG_SOCIALLOGIN_FIREBASE_FIELD_LOGINUNLINKED_LABEL"
+                        description="PLG_SOCIALLOGIN_FIREBASE_FIELD_LOGINUNLINKED_DESC"
+                        default="1"
+                >
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field>
+
+                <field
+                        name="createnew"
+                        type="radio"
+                        layout="joomla.form.field.radio.switcher"
+                        label="PLG_SOCIALLOGIN_FIREBASE_FIELD_CREATENEW_LABEL"
+                        description="PLG_SOCIALLOGIN_FIREBASE_FIELD_CREATENEW_DESC"
+                        default="0"
+                >
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field>
+
+                <field
+                        name="forcenew"
+                        type="radio"
+                        layout="joomla.form.field.radio.switcher"
+                        label="PLG_SOCIALLOGIN_FIREBASE_FIELD_FORCENEW_LABEL"
+                        description="PLG_SOCIALLOGIN_FIREBASE_FIELD_FORCENEW_DESC"
+                        default="0"
+                        showon="createnew:1"
+                >
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field>
+
+                <field
+                        name="bypassvalidation"
+                        type="radio"
+                        layout="joomla.form.field.radio.switcher"
+                        label="PLG_SOCIALLOGIN_FIREBASE_FIELD_BYPASSVALIDATION_LABEL"
+                        description="PLG_SOCIALLOGIN_FIREBASE_FIELD_BYPASSVALIDATION_DESC"
+                        default="1"
+                        showon="createnew:1"
+                >
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field>
+
+                <field
+                        name="customcss"
+                        type="radio"
+                        layout="joomla.form.field.radio.switcher"
+                        label="PLG_SOCIALLOGIN_FIREBASE_FIELD_CUSTOMCSS_LABEL"
+                        description="PLG_SOCIALLOGIN_FIREBASE_FIELD_CUSTOMCSS_DESC"
+                        default="1"
+                >
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field>
+
+                <field
+                        name="fgcolor"
+                        type="color"
+                        default="#2F2F2F"
+                        label="PLG_SOCIALLOGIN_FIREBASE_FIELD_FGCOLOR_LABEL"
+                        description="PLG_SOCIALLOGIN_FIREBASE_FIELD_FGCOLOR_DESC"
+                        showon="customcss:1"
+                />
+
+                <field
+                        name="bgcolor"
+                        type="color"
+                        default="#FFCA28"
+                        label="PLG_SOCIALLOGIN_FIREBASE_FIELD_BGCOLOR_LABEL"
+                        description="PLG_SOCIALLOGIN_FIREBASE_FIELD_BGCOLOR_DESC"
+                        showon="customcss:1"
+                />
+
+                <field
+                        name="enabledapplications"
+                        type="radio"
+                        layout="joomla.form.field.radio.buttons"
+                        class="btn-group"
+                        default="site,administrator"
+                        label="PLG_SOCIALLOGIN_FIREBASE_FIELD_ENABLEDAPPLICATIONS_LABEL"
+                        description="PLG_SOCIALLOGIN_FIREBASE_FIELD_ENABLEDAPPLICATIONS_DESC"
+                >
+                    <option value="site" class="btn btn-outline-secondary">PLG_SOCIALLOGIN_FIREBASE_FIELD_ENABLEDAPPLICATIONS_SITE</option>
+                    <option value="administrator" class="btn btn-outline-danger">PLG_SOCIALLOGIN_FIREBASE_FIELD_ENABLEDAPPLICATIONS_ADMIN</option>
+                    <option value="site,administrator" class="btn btn-outline-primary">PLG_SOCIALLOGIN_FIREBASE_FIELD_ENABLEDAPPLICATIONS_BOTH</option>
+                </field>
+
+            </fieldset>
+        </fields>
+    </config>
+
+</extension>
