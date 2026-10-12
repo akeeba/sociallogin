@@ -52,8 +52,9 @@
 # Claude Code local (per-machine) settings
 /.claude/settings.local.json
 
-### Security audit report (working document)
+### Security audit report, discovered bugs (working documents)
 /security.md
+/known-issues.md
 
 ### Release credentials
 # release.yaml / release.json are written here with all placeholders substituted
