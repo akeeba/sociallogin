@@ -20,6 +20,13 @@ use Joomla\Filesystem\Folder;
 class plgSystemSocialloginInstallerScript
 {
 	/**
+	 * Cache of extension IDs, indexed by the extension element (e.g. `plg_sociallogin_paypal`).
+	 *
+	 * @var   array|null[]
+	 */
+	protected array $extensionIds = [];
+
+	/**
 	 * Obsolete files and folders to remove. Use path names relative to the site's root.
 	 *
 	 * @var   array

@@ -177,7 +177,7 @@
                         description="PLG_SOCIALLOGIN_LINKEDIN_FIELD_ENABLEDAPPLICATIONS_DESC"
                 >
                     <option value="site" class="btn btn-outline-secondary">PLG_SOCIALLOGIN_LINKEDIN_FIELD_ENABLEDAPPLICATIONS_SITE</option>
-                    <option class="btn btn-outline-danger">PLG_SOCIALLOGIN_LINKEDIN_FIELD_ENABLEDAPPLICATIONS_ADMIN</option>
+                    <option value="administrator" class="btn btn-outline-danger">PLG_SOCIALLOGIN_LINKEDIN_FIELD_ENABLEDAPPLICATIONS_ADMIN</option>
                     <option value="site,administrator" class="btn btn-outline-primary">PLG_SOCIALLOGIN_LINKEDIN_FIELD_ENABLEDAPPLICATIONS_BOTH</option>
                 </field>
 
