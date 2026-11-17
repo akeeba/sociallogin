@@ -1,11 +1,31 @@
 <h3>What's new?</h3>
 
 <p>
-	This release includes a high-severity bug fix and compatibility preparation for upcoming Joomla and PHP versions:
+	This is a security hardening release. We recommend that everyone updates.
 </p>
 
-<ul>
-	<li><strong>[HIGH] Users were not redirected back to the protected page</strong> that triggered the login after completing social login.</li>
-	<li>Forward-compatible event result handling, in preparation for Joomla 7.0's immutable events.</li>
-	<li>PHP 8.6 preparation: replaced the deprecated <code>is_integer</code> with <code>is_int</code>.</li>
-</ul>
+<p>
+	<strong>Security hardening.</strong>
+	As part of our commitment to security, this release addresses issues which could potentially have security
+	repercussions under specific circumstances even though we cannot find a practical way to exploit them. Most of these
+	have to do with the Login with Apple improvements described below, stricter rules about who can <em>unlink</em>
+	social logins from other users' accounts, and logging. You can consult the CHANGELOG for the full list of issues
+	addressed.
+</p>
+
+<p>
+	<strong>Spotify integration removed.</strong>
+	Spotify discontinued the API login program this plugin relied on, so the Login with Spotify plugin has been removed. If you had it installed, Joomla will uninstall it as part of this update. You will see the message “Uninstalling the plugin PLG_SOCIALLOGIN_SPOTIFY was successful” when installing the new version confirming that. Users who only logged in through Spotify will need another way to log in, e.g. the password reset feature.
+</p>
+
+<p>
+	<strong>"Remember me" is now optional.</strong>
+	Social logins used to always create a persistent "remember me" login. You can now turn this off in the System -
+	Social Login plugin options.
+</p>
+
+<p>
+	<strong>Login with Apple improvements</strong>.
+	The bundled <code>phpseclib</code> library was updated to version 3, and the signed login response is validated more
+	strictly.
+</p>
