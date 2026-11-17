@@ -127,18 +127,11 @@ class Plugin extends AbstractPlugin
 			$this->appSecret = $this->getSecretKey();
 
 			/**
-			 * The nonce for the authorize request is generated when the login button URL is created (see
-			 * getLoginButtonURL) and bound to the user's session. Here we only read it back; on the callback request
-			 * it is validated against the nonce claim in Apple's token before being removed from the session.
+			 * The nonce for each authorize request is generated when the login button URL is created (see
+			 * getLoginButtonURL) and bound to the user's session. This one is only a placeholder which will never
+			 * validate; it is replaced for every login button URL we create.
 			 */
-			/** @var SessionInterface $session */
-			$session = $this->getApplication()->getSession();
-			$nonce   = $session->get('plg_sociallogin_apple.nonce', '');
-
-			if (empty($nonce))
-			{
-				$nonce = hash('sha1', random_bytes(64));
-			}
+			$nonce = hash('sha1', random_bytes(64));
 
 			$options         = [
 				'authurl'       => 'https://appleid.apple.com/auth/authorize',
@@ -177,12 +170,27 @@ class Plugin extends AbstractPlugin
 	 */
 	protected function getLoginButtonURL(): string
 	{
-		// Generate a fresh nonce for this authorization request and bind it to the session.
+		// Generate a fresh nonce for this authorization request and bind it to the session. The page may render several
+		// buttons, and the user may click any of them, so we keep a small set of pending nonces.
 		/** @var SessionInterface $session */
 		$session = $this->getApplication()->getSession();
 		$nonce   = hash('sha1', random_bytes(64));
+		$now     = time();
+		$pending = $session->get('plg_sociallogin_apple.nonces', []);
+		$pending = is_array($pending) ? $pending : [];
+		$pending = array_filter($pending, fn($time) => is_int($time) && ($now - $time) < 3600);
+		asort($pending);
+		$pending = array_slice($pending, -24, null, true);
 
-		$session->set('plg_sociallogin_apple.nonce', $nonce);
+		$pending[$nonce] = $now;
+
+		$session->set('plg_sociallogin_apple.nonces', $pending);
+
+		// The connector is cached; make sure this button's URL carries this nonce.
+		$this->getConnector()->setOption('requestparams', [
+			'nonce'         => $nonce,
+			'response_mode' => 'form_post',
+		]);
 
 		return parent::getLoginButtonURL();
 	}
@@ -267,26 +275,34 @@ class Plugin extends AbstractPlugin
 		}
 
 		// Verify the nonce (Joomla's anti-CSRF token). This check fails closed: it rejects the login response when
-		// the nonce claim is missing or unsupported, when there is no reference nonce in the session, or when the
-		// two nonces do not match.
+		// the nonce claim is missing or unsupported, or when it matches none of the nonces pending in the session.
 		/** @var SessionInterface $session */
 		$session        = $this->getApplication()->getSession();
 		$claims         = $token->claims();
 		$nonceSupported = $claims->get('nonce_supported', false);
 		$incomingNonce  = (string) $claims->get('nonce', '');
-		$referenceNonce = $session->get('plg_sociallogin_apple.nonce', null);
+		$pending        = $session->get('plg_sociallogin_apple.nonces', []);
+		$pending        = is_array($pending) ? $pending : [];
+		$matchedNonce   = null;
 
-		if (
-			!$nonceSupported
-			|| empty($referenceNonce)
-			|| empty($incomingNonce)
-			|| !Crypt::timingSafeCompare($referenceNonce, $incomingNonce)
-		)
+		foreach (array_keys($pending) as $candidate)
+		{
+			if (!empty($incomingNonce) && Crypt::timingSafeCompare((string) $candidate, $incomingNonce))
+			{
+				$matchedNonce = (string) $candidate;
+
+				break;
+			}
+		}
+
+		if (!$nonceSupported || empty($incomingNonce) || $matchedNonce === null)
 		{
 			throw new RuntimeException('Invalid request.');
 		}
 
-		$session->remove('plg_sociallogin_apple.nonce');
+		// The nonce is single-use.
+		unset($pending[$matchedNonce]);
+		$session->set('plg_sociallogin_apple.nonces', $pending);
 
 		// Pass through information from the JWT. Note that the name is NEVER passed through the JWT (Apple doesn't have it)
 		$ret['id']       = $claims->get('sub', '');

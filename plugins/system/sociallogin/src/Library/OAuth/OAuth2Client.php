@@ -494,13 +494,23 @@ class OAuth2Client
 		 */
 		$state = ($isAdmin ? 'admin-' : '') . bin2hex(random_bytes(16));
 
-		$this->application->getSession()->set(
-			'plg_system_sociallogin.oauthState',
-			[
-				'state' => $state,
-				'admin' => $isAdmin,
-			]
-		);
+		/**
+		 * A page may render several login / link buttons, or render them more than once (e.g. the user profile form and
+		 * the Joomla 4 button injection). Each rendering creates its own state, and the user may click any of them, or
+		 * have more than one tab open. So we keep a small set of pending states instead of a single one. Each is
+		 * single-use and expires.
+		 */
+		$session = $this->application->getSession();
+		$now     = time();
+		$pending = $session->get('plg_system_sociallogin.oauthStates', []);
+		$pending = is_array($pending) ? $pending : [];
+		$pending = array_filter($pending, fn($time) => is_int($time) && ($now - $time) < 3600);
+		asort($pending);
+		$pending = array_slice($pending, -24, null, true);
+
+		$pending[$state] = $now;
+
+		$session->set('plg_system_sociallogin.oauthStates', $pending);
 
 		return $state;
 	}
@@ -520,14 +530,25 @@ class OAuth2Client
 	private function validateOAuthState(): void
 	{
 		$session = $this->application instanceof CMSApplication ? $this->application->getSession() : null;
-		$stored  = $session ? $session->get('plg_system_sociallogin.oauthState') : null;
+		$pending = $session ? $session->get('plg_system_sociallogin.oauthStates', []) : [];
+		$pending = is_array($pending) ? $pending : [];
 
 		$returnedState = $this->input->getString('state', '');
+		$isValid       = false;
 
-		$isValid = is_array($stored)
-			&& !empty($stored['state'])
-			&& !empty($returnedState)
-			&& hash_equals((string) $stored['state'], $returnedState);
+		foreach (array_keys($pending) as $candidate)
+		{
+			if (!empty($returnedState) && hash_equals((string) $candidate, $returnedState))
+			{
+				$isValid = true;
+
+				// The state is single-use: consume it so a replayed or intercepted callback cannot be reused.
+				unset($pending[$candidate]);
+				$session->set('plg_system_sociallogin.oauthStates', $pending);
+
+				break;
+			}
+		}
 
 		if (!$isValid)
 		{
@@ -535,8 +556,5 @@ class OAuth2Client
 				'The login response does not match the login request. Please try logging in again.'
 			);
 		}
-
-		// The state is single-use: consume it so a replayed or intercepted callback cannot be reused.
-		$session->set('plg_system_sociallogin.oauthState', null);
 	}
 }
