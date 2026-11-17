@@ -263,11 +263,11 @@ class SocialLogin extends CMSPlugin implements SubscriberInterface, DatabaseAwar
 			return;
 		}
 
-		// Must be an admin-bound login flow; the flag was stored in the session when the login button URL was created
-		$oauthState = $app->getSession()->get('plg_system_sociallogin.oauthState');
-		$isAdmin    = is_array($oauthState) && !empty($oauthState['admin']);
+		// Must be an admin-bound login flow. The frontend session knows nothing about the backend session, so the
+		// routing hint is the "admin-" prefix of the state. The backend validates the full state against its session.
+		$state = $input->getString('state', '');
 
-		if (!$isAdmin)
+		if (!str_starts_with($state, 'admin-'))
 		{
 			return;
 		}

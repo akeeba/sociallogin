@@ -485,13 +485,20 @@ class OAuth2Client
 	 */
 	private function createOAuthState(): string
 	{
-		$state = bin2hex(random_bytes(16));
+		$isAdmin = (bool) $this->getOption('admin', false);
+
+		/**
+		 * Backend flows are prefixed with "admin-". The callback always arrives at the frontend, which has a different
+		 * session than the backend, so it can only tell where to forward the request by looking at the state itself.
+		 * The prefix is only a routing hint: the backend still validates the entire state against its own session.
+		 */
+		$state = ($isAdmin ? 'admin-' : '') . bin2hex(random_bytes(16));
 
 		$this->application->getSession()->set(
 			'plg_system_sociallogin.oauthState',
 			[
 				'state' => $state,
-				'admin' => (bool) $this->getOption('admin', false),
+				'admin' => $isAdmin,
 			]
 		);
 

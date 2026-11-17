@@ -335,6 +335,17 @@ abstract class AbstractPlugin extends CMSPlugin implements SubscriberInterface, 
 					'sociallogin.' . $this->integrationName
 				);
 
+				if (!(defined('JDEBUG') && JDEBUG))
+				{
+					/**
+					 * The generic message lives in the system plugin's language file, which is not necessarily loaded
+					 * while a provider plugin handles the callback.
+					 */
+					$language = $app->getLanguage();
+					$language->load('plg_system_sociallogin', JPATH_ADMINISTRATOR)
+					|| $language->load('plg_system_sociallogin', JPATH_PLUGINS . '/system/sociallogin');
+				}
+
 				$publicMessage = (defined('JDEBUG') && JDEBUG)
 					? $e->getMessage()
 					: Text::_('PLG_SYSTEM_SOCIALLOGIN_ERR_LOGINFAILED');
