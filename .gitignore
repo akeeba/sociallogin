@@ -33,7 +33,9 @@
 ## Composer
 
 /vendor
-/plugins/system/sociallogin/src/Dependencies
+
+# php-scoper scratch output (composer scope-dependencies)
+/build/tmp-scoped
 
 ## Akeeba Stuff
 
@@ -61,3 +63,6 @@
 # at release time and deleted afterwards. An aborted release leaves them behind.
 /release.yaml
 /release.json
+
+# PHPUnit result cache
+/tests/unit/.phpunit.cache

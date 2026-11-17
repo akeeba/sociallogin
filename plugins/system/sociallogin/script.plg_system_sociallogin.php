@@ -36,6 +36,9 @@ class plgSystemSocialloginInstallerScript
 		],
 		'folders' => [
 			// Version 1.x helpers, now migrated into Library
+			// Version 4.11.1: phpseclib 2 replaced by phpseclib 3 (Dependencies/phpseclib3); bcmath_compat dropped
+			'plugins/system/sociallogin/src/Dependencies/phpseclib',
+			'plugins/system/sociallogin/src/Dependencies/bcmath_compat',
 		],
 	];
 

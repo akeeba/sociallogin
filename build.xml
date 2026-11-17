@@ -21,37 +21,13 @@
 	</fileset>
 
 	<target name="git" description="Makes only packages, not the documentation"
-			depends="new-release,setup-properties,compile-js,prune-dependencies,component-packages">
+			depends="new-release,setup-properties,compile-js,component-packages">
 	</target>
 
-	<!--
-	Post-Mozart pruning of repackaged dependencies.
-
-	Mozart repackages whole Composer packages into plugins/system/sociallogin/src/Dependencies. phpseclib 2.0
-	ships ~1.4 MB of SSH/SFTP/X509/cipher code, but the only code we actually use is CoderCat\JWKToPEM which
-	needs just Crypt/RSA, Crypt/Hash, Crypt/Random and Math/BigInteger. Remove everything else so it does
-	not end up as dead, web-addressable code inside the system plugin package. This must run on every build:
-	composer install / update (through Mozart's post-install and post-update hooks) regenerates the
-	Dependencies folder.
-	-->
-	<target name="prune-dependencies" description="Remove unused phpseclib code repackaged by Mozart">
-		<delete includeemptydirs="true" failonerror="false" quiet="true">
-			<fileset dir="${dirs.root}/plugins/system/sociallogin/src/Dependencies/phpseclib">
-				<include name="Net/**" />
-				<include name="System/**" />
-				<include name="File/**" />
-				<include name="Crypt/AES.php" />
-				<include name="Crypt/Base.php" />
-				<include name="Crypt/Blowfish.php" />
-				<include name="Crypt/DES.php" />
-				<include name="Crypt/RC2.php" />
-				<include name="Crypt/RC4.php" />
-				<include name="Crypt/Rijndael.php" />
-				<include name="Crypt/TripleDES.php" />
-				<include name="Crypt/Twofish.php" />
-				<include name="bootstrap.php" />
-			</fileset>
-		</delete>
+	<target name="test" description="Run the unit test suite (delegates to composer test)">
+		<exec executable="composer" dir="${project.basedir}" checkreturn="true" passthru="true">
+			<arg value="test"/>
+		</exec>
 	</target>
 
 	<!--

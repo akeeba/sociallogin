@@ -12,6 +12,8 @@ authentication via social providers. It supports Joomla 5.4 to 6.2, and PHP 8.1 
 Builds run through Phing. See the `akeeba-project-management:phing-build` skill for targets, `build.properties`,
 and the requirement that the Akeeba Build Tools repo is cloned as a sibling directory named `buildfiles`.
 
+Tests run with `composer test` or `phing test` (PHPUnit installed globally, unit suite only for now).
+
 ## Architecture
 
 ### Two-Tier Plugin System
@@ -67,7 +69,8 @@ and across agentic harnesses (Claude Code, Codex, Qwen Code, Kimi Code, Junie, â
 | Before youâ€¦ | Read |
 |---|---|
 | add, change or translate language strings, or add a new language | `.claude/memory/translations.md` |
-| run, triage or act on a security audit, or touch composer dependencies / the Mozart setup | `.claude/memory/security-audit-decisions.md` |
+| run, triage or act on a security audit, or touch composer dependencies | `.claude/memory/security-audit-decisions.md` |
+| update, re-scope, prune or add a bundled third-party library (`scoper.inc.php`, `build/scoped-packages.php`, `plugins/system/sociallogin/src/Dependencies/`) | `.claude/memory/bundled-dependencies.md` |
 
 ### Recording new memories
 

@@ -1,0 +1,105 @@
+{
+    "recordedWith": {
+        "codercat/jwk-to-pem": "1.0",
+        "coenjacobs/mozart": "1.1.6",
+        "phpseclib/phpseclib": "2.0.55"
+    },
+    "cases": [
+        {
+            "name": "apple-nP41CGTvOz",
+            "jwk": {
+                "kty": "RSA",
+                "kid": "nP41CGTvOz",
+                "use": "sig",
+                "alg": "RS256",
+                "n": "5t6lyqRebZHCK0v8B0RbG7opwbEqO3H7iH9eZ00DM65_kGzI7FfumDiRQzPFD51Sm7Dn3puwcfo8dcDJyoOgVrqhbazgBDNNHFUJqMH_t5TTYYXFSCJHP_gQwLPvwLnPfAj75lZu2w4sb1Z1hvkibDoJcFSsKwomjPnBHSSJE1JtnHsAvucJZbsnwEcy4DXnlbkjv_BBrKLGouBpX2n_T5vSDn98_pU4KPD7_WOs8JXBvkYJVbhkV55LtwfrrfKq0jmABGDRjYebOj_qEM0EBeN7F4vSXyFejViieIMdlX4_dG4QUmwJ23LhWXQ7Ik7efCHdSb_Bv1Jm6xbkQbPrUQ",
+                "e": "AQAB"
+            },
+            "pem": "-----BEGIN PUBLIC KEY-----\r\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA5t6lyqRebZHCK0v8B0Rb\r\nG7opwbEqO3H7iH9eZ00DM65/kGzI7FfumDiRQzPFD51Sm7Dn3puwcfo8dcDJyoOg\r\nVrqhbazgBDNNHFUJqMH/t5TTYYXFSCJHP/gQwLPvwLnPfAj75lZu2w4sb1Z1hvki\r\nbDoJcFSsKwomjPnBHSSJE1JtnHsAvucJZbsnwEcy4DXnlbkjv/BBrKLGouBpX2n/\r\nT5vSDn98/pU4KPD7/WOs8JXBvkYJVbhkV55LtwfrrfKq0jmABGDRjYebOj/qEM0E\r\nBeN7F4vSXyFejViieIMdlX4/dG4QUmwJ23LhWXQ7Ik7efCHdSb/Bv1Jm6xbkQbPr\r\nUQIDAQAB\r\n-----END PUBLIC KEY-----"
+        },
+        {
+            "name": "apple-GNCf4J83Oh",
+            "jwk": {
+                "kty": "RSA",
+                "kid": "GNCf4J83Oh",
+                "use": "sig",
+                "alg": "RS256",
+                "n": "0n5COwAlDNqbSbKrmA91jkAmZXLV0LKki5Iv-Ic4LRsXvkbQWG1HG56qE4KrXPdfSCFVfDEz-9J2Li3YFKhpDFl3Tq6UxcIW-VzQuyMbwSkjkYze7v-RsRl_7fWod2XR6znjqym_QhAnX_hoFUIzNPj1Wy9aeSGekUaBiNZnUinCsz7xsqmDonS-BVygEc8NYDCjPSMA1yHXjVGGUI1-KFUDuqenLtOLlzqKk4bKQlCucgDpTSySiTC_TEDk-W6c7LiiFwRTkhp9DlOTmUz-e6KT5HRnWYc2yyUeQwxCDVApOa93EtzuuIqI8z3v-LfPs-A_h_tJ7MYaPDM3oKfxFQ",
+                "e": "AQAB"
+            },
+            "pem": "-----BEGIN PUBLIC KEY-----\r\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA0n5COwAlDNqbSbKrmA91\r\njkAmZXLV0LKki5Iv+Ic4LRsXvkbQWG1HG56qE4KrXPdfSCFVfDEz+9J2Li3YFKhp\r\nDFl3Tq6UxcIW+VzQuyMbwSkjkYze7v+RsRl/7fWod2XR6znjqym/QhAnX/hoFUIz\r\nNPj1Wy9aeSGekUaBiNZnUinCsz7xsqmDonS+BVygEc8NYDCjPSMA1yHXjVGGUI1+\r\nKFUDuqenLtOLlzqKk4bKQlCucgDpTSySiTC/TEDk+W6c7LiiFwRTkhp9DlOTmUz+\r\ne6KT5HRnWYc2yyUeQwxCDVApOa93EtzuuIqI8z3v+LfPs+A/h/tJ7MYaPDM3oKfx\r\nFQIDAQAB\r\n-----END PUBLIC KEY-----"
+        },
+        {
+            "name": "apple-8nTlO3M2Bk",
+            "jwk": {
+                "kty": "RSA",
+                "kid": "8nTlO3M2Bk",
+                "use": "sig",
+                "alg": "RS256",
+                "n": "xOu-GP0-nzajn7s732MfYCtP11ns6GU65M-1ce-DDduxbukLXHAyhd0EsxJSWgKBgG6BEu3rvrpPNl0hc2Af77OE58jZos5j08QDtdyj4VWZCTSuC0zr9Ory8S4RqaFWVYEUpBVXFXqqXzvtlZlegqs0YOIqbAdia-nQGnFcEtnPW0VDL_k7q8D5tWs5o8YHUlYEOAEm2xJA9OrFufExmXQeWiN8-CzFhzkNIyspZBEwz7gRjihnQpZz8KorZSl2JJK6JGR3JFZ_GGBI95CzPSR7oy1bWwCsIebiF05ISR0_ogNqdU-O1kro6Peuq9XT0tMCAlC3dhFUoH1nxhvacQ",
+                "e": "AQAB"
+            },
+            "pem": "-----BEGIN PUBLIC KEY-----\r\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAxOu+GP0+nzajn7s732Mf\r\nYCtP11ns6GU65M+1ce+DDduxbukLXHAyhd0EsxJSWgKBgG6BEu3rvrpPNl0hc2Af\r\n77OE58jZos5j08QDtdyj4VWZCTSuC0zr9Ory8S4RqaFWVYEUpBVXFXqqXzvtlZle\r\ngqs0YOIqbAdia+nQGnFcEtnPW0VDL/k7q8D5tWs5o8YHUlYEOAEm2xJA9OrFufEx\r\nmXQeWiN8+CzFhzkNIyspZBEwz7gRjihnQpZz8KorZSl2JJK6JGR3JFZ/GGBI95Cz\r\nPSR7oy1bWwCsIebiF05ISR0/ogNqdU+O1kro6Peuq9XT0tMCAlC3dhFUoH1nxhva\r\ncQIDAQAB\r\n-----END PUBLIC KEY-----"
+        },
+        {
+            "name": "generated-2048-e65537",
+            "jwk": {
+                "kty": "RSA",
+                "kid": "generated-2048-e65537",
+                "use": "sig",
+                "alg": "RS256",
+                "n": "rQMKI-98gnKygA2UK1VCQ1km4lY0mEwXO2hKLEtINlm0ITFdLG6049heMh4rLUdEr6NZ-XINSQgNZsWPeo13say0dPQX5zmHdU4TihwLaAgSVso-9Uc5ZPfVyTHMWFsBq7SAPZueQREHON3XXJWBfeuXj_k6WCVyIXqgVp5Ytwl-ptoT0GYOV2umD-Xr8mhMJrLyDjhstqAnF6lO7ZaNCRaoVocf31yUeX9WJJnHuJ0HNn4S_6J5bQpqrYsuN-8Mo_kB31yGROGhWlcI0fv2aKR5uDvWMFZwa1vj53bn2kaG8l9vZwoN07j4_64QRwrIBsoHtueFFF8pHjEbrxiBgw",
+                "e": "AQAB"
+            },
+            "pem": "-----BEGIN PUBLIC KEY-----\r\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEArQMKI+98gnKygA2UK1VC\r\nQ1km4lY0mEwXO2hKLEtINlm0ITFdLG6049heMh4rLUdEr6NZ+XINSQgNZsWPeo13\r\nsay0dPQX5zmHdU4TihwLaAgSVso+9Uc5ZPfVyTHMWFsBq7SAPZueQREHON3XXJWB\r\nfeuXj/k6WCVyIXqgVp5Ytwl+ptoT0GYOV2umD+Xr8mhMJrLyDjhstqAnF6lO7ZaN\r\nCRaoVocf31yUeX9WJJnHuJ0HNn4S/6J5bQpqrYsuN+8Mo/kB31yGROGhWlcI0fv2\r\naKR5uDvWMFZwa1vj53bn2kaG8l9vZwoN07j4/64QRwrIBsoHtueFFF8pHjEbrxiB\r\ngwIDAQAB\r\n-----END PUBLIC KEY-----"
+        },
+        {
+            "name": "generated-3072-e65537",
+            "jwk": {
+                "kty": "RSA",
+                "kid": "generated-3072-e65537",
+                "use": "sig",
+                "alg": "RS256",
+                "n": "wfGT1ztUYQd0USyVr4Tkp48KcchOcKEpqBGE3Vrt628iF-_QF26SXP5Rx7SIgMHTRoYUeqS2YYznGbaVeZicMANp2TaXBM705oQbiVyWNiHE4tvLJ7dhXo707uJE7KRlxXwrNAokBouRbnu4lCg-P4TqKnwGE2v4El6W60tb-wZv_htsUa_-2HH5FpTa2torZSn7bGNDOn6edmMYFFGV2nWxx1GNFSHWnLVj-rob1vBhFKXdsfO9qt_ICmfEzVUplPIvGNe1VqS8sTow-bOlvhSFi3M_EjuhcUhtbEnVxm4YpJnlXbYmm5Nf2hUiHIVnRcRO3a6NvOzTkQlTeIqq-9DIcfAQJUy1-FwzqiXbJj7t_b8ynpZbY6jqIk-4J_cfgO9gsVdjWQmmR5npB9YsRI1PcoyVDvBiLR2RGvTZqMPdL6Vog9dZVcNyR8gy9VIgn4gz_DqtORfXiDfHh7Nrh14A0jg1i23hv8hSwyQuSZVqGDi98YU74sKdAOfHqT61",
+                "e": "AQAB"
+            },
+            "pem": "-----BEGIN PUBLIC KEY-----\r\nMIIBojANBgkqhkiG9w0BAQEFAAOCAY8AMIIBigKCAYEAwfGT1ztUYQd0USyVr4Tk\r\np48KcchOcKEpqBGE3Vrt628iF+/QF26SXP5Rx7SIgMHTRoYUeqS2YYznGbaVeZic\r\nMANp2TaXBM705oQbiVyWNiHE4tvLJ7dhXo707uJE7KRlxXwrNAokBouRbnu4lCg+\r\nP4TqKnwGE2v4El6W60tb+wZv/htsUa/+2HH5FpTa2torZSn7bGNDOn6edmMYFFGV\r\n2nWxx1GNFSHWnLVj+rob1vBhFKXdsfO9qt/ICmfEzVUplPIvGNe1VqS8sTow+bOl\r\nvhSFi3M/EjuhcUhtbEnVxm4YpJnlXbYmm5Nf2hUiHIVnRcRO3a6NvOzTkQlTeIqq\r\n+9DIcfAQJUy1+FwzqiXbJj7t/b8ynpZbY6jqIk+4J/cfgO9gsVdjWQmmR5npB9Ys\r\nRI1PcoyVDvBiLR2RGvTZqMPdL6Vog9dZVcNyR8gy9VIgn4gz/DqtORfXiDfHh7Nr\r\nh14A0jg1i23hv8hSwyQuSZVqGDi98YU74sKdAOfHqT61AgMBAAE=\r\n-----END PUBLIC KEY-----"
+        },
+        {
+            "name": "generated-4096-e65537",
+            "jwk": {
+                "kty": "RSA",
+                "kid": "generated-4096-e65537",
+                "use": "sig",
+                "alg": "RS256",
+                "n": "wCavPzTmplsKuoEAYMMWh6sKDEkMz732bhAU7_DxU6v4O5hpA-1-xcDmwlxufGwGPTBjQIQp--XNplhjdVN5EeqGEmJimGefBfGYy5rAPNa2Bxcpm6xAGn55-zjupkv_0vopk0XXP2AXyVc2Ga-D5cZiGn0ktQRxI0N7Pf7Ta1PSsTBjw74AsyhRG50IMFjkKexBUlDpSauKfvXAd6i-7Dx1ymK3Opdt1niyWyfsWWAQSGvPG_jKP_AMVlRl4bnfe7Fm_2SxsWeh8HA3vRBrYzaQB0LOw5YmNez3ZTI09vKkzDACKdOdbcCbAq6l2qJtRpOkD8yVrCujzzqyH92cLxuX3j8U5LT9yDRrxWHRQPMEfsfKVSVuTVjntREukrQ40cq3uTWMV3ri_sYHko18EZmZbfV7ea-QwSGuqhb46HrQ0Dr-UV26Cf-05blYWP7QJn4jW-R0P9KSxRsrLupSSNNDOeX8YTTejHDBsF0J7kXj6P83VHT52Xs7uUCiUHH9LmKxIoynm8pfzYj67LR-hd7fQtENF3wxUWu_A0-zrynjvV9_xUtXvyFUbPidNYUYhjhP3dDSf-fVWj49936TTPymVzFjN47Glomw968cl95czzEvpac0ppvLtD2hekiVnB2pq6oJjkiQEWCri_iCZLhzFkL13Xd9xoPm0n62Nj0",
+                "e": "AQAB"
+            },
+            "pem": "-----BEGIN PUBLIC KEY-----\r\nMIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAwCavPzTmplsKuoEAYMMW\r\nh6sKDEkMz732bhAU7/DxU6v4O5hpA+1+xcDmwlxufGwGPTBjQIQp++XNplhjdVN5\r\nEeqGEmJimGefBfGYy5rAPNa2Bxcpm6xAGn55+zjupkv/0vopk0XXP2AXyVc2Ga+D\r\n5cZiGn0ktQRxI0N7Pf7Ta1PSsTBjw74AsyhRG50IMFjkKexBUlDpSauKfvXAd6i+\r\n7Dx1ymK3Opdt1niyWyfsWWAQSGvPG/jKP/AMVlRl4bnfe7Fm/2SxsWeh8HA3vRBr\r\nYzaQB0LOw5YmNez3ZTI09vKkzDACKdOdbcCbAq6l2qJtRpOkD8yVrCujzzqyH92c\r\nLxuX3j8U5LT9yDRrxWHRQPMEfsfKVSVuTVjntREukrQ40cq3uTWMV3ri/sYHko18\r\nEZmZbfV7ea+QwSGuqhb46HrQ0Dr+UV26Cf+05blYWP7QJn4jW+R0P9KSxRsrLupS\r\nSNNDOeX8YTTejHDBsF0J7kXj6P83VHT52Xs7uUCiUHH9LmKxIoynm8pfzYj67LR+\r\nhd7fQtENF3wxUWu/A0+zrynjvV9/xUtXvyFUbPidNYUYhjhP3dDSf+fVWj49936T\r\nTPymVzFjN47Glomw968cl95czzEvpac0ppvLtD2hekiVnB2pq6oJjkiQEWCri/iC\r\nZLhzFkL13Xd9xoPm0n62Nj0CAwEAAQ==\r\n-----END PUBLIC KEY-----"
+        },
+        {
+            "name": "generated-2047-e65537",
+            "jwk": {
+                "kty": "RSA",
+                "kid": "generated-2047-e65537",
+                "use": "sig",
+                "alg": "RS256",
+                "n": "aVPMC8g77-Vk9flgGbV8Kjy1hP286P1BlAdR6D-dt8mnuWe2qH36HMCJWAT7ie2HydW6VbQWHvyXdu0zDbrfablDXmrf0ljE4GZLM-_vAWd96MYOfCNqlg-HnyRIO09yXUdkICdZfMxiLX8ULIlGGDWWji4M2CP-1PSJhqwsdC_7IeX0uBO5IU1xAQ0BZeLee-CFGOIFXd1jm39YKcBxqG_FFa7w6A8c-hQieS0BpkqWyrLNG1vwo1q8iFP9xoytEYFOw9TS2CkyqqYoRG3JFMZHqwXVYpNFtoPv_GAtkpEgbwFQ5mAXuaOcTijEI4aEXwlxuXYZF113YETEyswkDw",
+                "e": "AQAB"
+            },
+            "pem": "-----BEGIN PUBLIC KEY-----\r\nMIIBITANBgkqhkiG9w0BAQEFAAOCAQ4AMIIBCQKCAQBpU8wLyDvv5WT1+WAZtXwq\r\nPLWE/bzo/UGUB1HoP523yae5Z7aoffocwIlYBPuJ7YfJ1bpVtBYe/Jd27TMNut9p\r\nuUNeat/SWMTgZksz7+8BZ33oxg58I2qWD4efJEg7T3JdR2QgJ1l8zGItfxQsiUYY\r\nNZaOLgzYI/7U9ImGrCx0L/sh5fS4E7khTXEBDQFl4t574IUY4gVd3WObf1gpwHGo\r\nb8UVrvDoDxz6FCJ5LQGmSpbKss0bW/CjWryIU/3GjK0RgU7D1NLYKTKqpihEbckU\r\nxkerBdVik0W2g+/8YC2SkSBvAVDmYBe5o5xOKMQjhoRfCXG5dhkXXXdgRMTKzCQP\r\nAgMBAAE=\r\n-----END PUBLIC KEY-----"
+        },
+        {
+            "name": "generated-2048-e3",
+            "jwk": {
+                "kty": "RSA",
+                "kid": "generated-2048-e3",
+                "use": "sig",
+                "alg": "RS256",
+                "n": "5DPiuoWFarYP3nhbyHrY6jTZGlMOu3Hwd0y0LJ0qdDJSlQekkiR7lmvT8ci0MnHzR6ftTNdMxCMtnqOv0wS0yjbe26i-R0UGhJXIaxcItCs_lFJGPliKgsuud_7p6-Yriy1MKO-m8yoeifAEqVPzIcjs8Wi0X54c4UEO7Hq1Pd-kaup28rsg6b3NaznO_Bo_3nh3o06j8Q8zv9Ue5khEgGaCkRAh6kXHG9V1_ZrwRvMQO4DdRHVvJ6S9ukMdZf1hrdWuPp2wH5FFXtfHrc4lJMEakCJ0myjAsm3PxN8kJwy7AI8kY3dPwr_VdKTwKY0ZfuABVJmrIWrrIB_B7DflCQ",
+                "e": "Aw"
+            },
+            "pem": "-----BEGIN PUBLIC KEY-----\r\nMIIBIDANBgkqhkiG9w0BAQEFAAOCAQ0AMIIBCAKCAQEA5DPiuoWFarYP3nhbyHrY\r\n6jTZGlMOu3Hwd0y0LJ0qdDJSlQekkiR7lmvT8ci0MnHzR6ftTNdMxCMtnqOv0wS0\r\nyjbe26i+R0UGhJXIaxcItCs/lFJGPliKgsuud/7p6+Yriy1MKO+m8yoeifAEqVPz\r\nIcjs8Wi0X54c4UEO7Hq1Pd+kaup28rsg6b3NaznO/Bo/3nh3o06j8Q8zv9Ue5khE\r\ngGaCkRAh6kXHG9V1/ZrwRvMQO4DdRHVvJ6S9ukMdZf1hrdWuPp2wH5FFXtfHrc4l\r\nJMEakCJ0myjAsm3PxN8kJwy7AI8kY3dPwr/VdKTwKY0ZfuABVJmrIWrrIB/B7Dfl\r\nCQIBAw==\r\n-----END PUBLIC KEY-----"
+        }
+    ]
+}

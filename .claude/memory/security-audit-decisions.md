@@ -37,15 +37,11 @@ already-compromised server can trigger, and findings about debug-only output.
 - `adminkey` is forwarded in the redirect URL, not validated here. Admin Tools enforces it against the
   request URI, so moving it into the session would silently break that integration. Only a coordinated
   change in Admin Tools can fix the URL transport.
-- Package installer `allowDowngrades = true`, the empty installer delete lists, source maps in the
-  system plugin and unguarded `src/Dependencies` (Mozart output) are all intentional.
+- Package installer `allowDowngrades = true`, installer delete lists holding only obsolete files and folders
+  (empty when there are none), source maps in the
+  system plugin and unguarded `src/Dependencies` (PHP-Scoper output, see
+  [bundled-dependencies.md](bundled-dependencies.md)) are all intentional.
 - Social-link dedupe (moving an existing link to the current user) and the distinct login-error messages
   are intentional.
 - The "remember me" option in the system plugin defaults to **Yes** to preserve old behaviour. No is the
   safer default; revisit it for a major release.
-
-## Build constraint
-
-`coenjacobs/mozart` must stay in `require` in `composer.json`, not `require-dev`. The unconditional
-`post-install-cmd` runs `vendor/bin/mozart compose`, which exits 255 on `composer install --no-dev`.
-Moving it needs the composer scripts reworked first.
