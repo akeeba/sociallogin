@@ -498,6 +498,21 @@ class Pkg_SocialloginInstallerScript extends InstallerScript
 				continue;
 			}
 
+			// Joomla refuses to uninstall an extension which is a child of a package ("...is part of a package which
+			// does not allow individual extensions to be uninstalled"). Detach it from the package first.
+			try
+			{
+				$update = (method_exists($db, 'createQuery') ? $db->createQuery() : $db->getQuery(true))
+					->update($db->qn('#__extensions'))
+					->set($db->qn('package_id') . ' = 0')
+					->where($db->qn('extension_id') . ' = ' . (int) $eid);
+				$db->setQuery($update)->execute();
+			}
+			catch (Exception $e)
+			{
+				// Ignore; the removal below will report if it cannot proceed.
+			}
+
 			// Uninstall the plugin
 			$model->remove([$eid]);
 		}
