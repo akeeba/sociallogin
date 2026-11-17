@@ -475,8 +475,8 @@ trait LoginTrait
 		foreach ($data as $key => $value)
 		{
 			$userIdParam  = $query->bindArray([$userId], ParameterType::INTEGER)[0];
-			$keyParam     = $query->bindArray([$slug . '.' . $key])[0];
-			$valueParam   = $query->bindArray([(string) $value])[0];
+			$keyParam     = $query->bindArray([$slug . '.' . $key], ParameterType::STRING)[0];
+			$valueParam   = $query->bindArray([(string) $value], ParameterType::STRING)[0];
 			$insertData[] = implode(', ', [$userIdParam, $keyParam, $valueParam]);
 		}
 

@@ -375,9 +375,11 @@ trait UserFields
 		foreach ($data['sociallogin'] as $k => $v)
 		{
 			$userIdParam = $query->bindArray([$userId], ParameterType::INTEGER)[0];
-			$binds       = $query->bindArray(['sociallogin.' . $k, (string) $v, (string) $order++]);
+			// bindArray() defaults to INTEGER; the key and the value are strings, so say so.
+			$strParams   = $query->bindArray(['sociallogin.' . $k, (string) $v], ParameterType::STRING);
+			$orderParam  = $query->bindArray([$order++], ParameterType::INTEGER)[0];
 
-			$query->values(implode(', ', array_merge([$userIdParam], $binds)));
+			$query->values(implode(', ', [$userIdParam, $strParams[0], $strParams[1], $orderParam]));
 		}
 
 		$db->setQuery($query)->execute();

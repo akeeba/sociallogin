@@ -8,6 +8,7 @@
 // Protect from unauthorized access
 defined('_JEXEC') || die();
 
+use Joomla\CMS\Factory;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Layout\FileLayout;
 use Joomla\CMS\Uri\Uri;
@@ -63,18 +64,33 @@ if (empty($icon) && substr($rawimage, -4) === '.svg')
 // Start writing your template override code below this line
 ?>
 <?php if ($type === 'unlink'): ?>
-<form method="post" action="<?= htmlspecialchars($link, ENT_QUOTES, 'UTF-8') ?>">
-	<input type="hidden" name="<?= htmlspecialchars($token, ENT_QUOTES, 'UTF-8') ?>" value="1">
-	<button type="submit" class="btn btn-default akeeba-sociallogin-linkunlink-button akeeba-sociallogin-<?= htmlspecialchars($type, ENT_QUOTES, 'UTF-8') ?>-button akeeba-sociallogin-<?= htmlspecialchars($type, ENT_QUOTES, 'UTF-8') ?>-button-<?= htmlspecialchars($slug, ENT_QUOTES, 'UTF-8') ?> hasTooltip w-100"
-	   title="<?= htmlspecialchars($tooltip, ENT_QUOTES, 'UTF-8') ?>">
-		<?php if (!empty($icon)): ?>
-		<span class="<?= htmlspecialchars($icon, ENT_QUOTES, 'UTF-8') ?>" aria-hidden="true"></span>
-		<?php else: ?>
-		<?= $img ?>
-		<?php endif; ?>
-		<?= htmlspecialchars($label, ENT_QUOTES, 'UTF-8') ?>
-	</button>
-</form>
+<?php
+/**
+ * This button is displayed inside the user edit form. HTML does not allow nested forms, so we cannot render a form
+ * element here. Instead, a script submits a separate, detached POST form (see media/js/unlink.js).
+ */
+$wa = Factory::getApplication()->getDocument()->getWebAssetManager();
+
+if (!$wa->getRegistry()->exists('script', 'plg_system_sociallogin.unlink'))
+{
+	$wa->registerAndUseScript('plg_system_sociallogin.unlink', 'plg_system_sociallogin/unlink.js', [], ['defer' => true], ['core']);
+}
+else
+{
+	$wa->useScript('plg_system_sociallogin.unlink');
+}
+?>
+<button type="button" class="btn btn-default akeeba-sociallogin-linkunlink-button akeeba-sociallogin-<?= htmlspecialchars($type, ENT_QUOTES, 'UTF-8') ?>-button akeeba-sociallogin-<?= htmlspecialchars($type, ENT_QUOTES, 'UTF-8') ?>-button-<?= htmlspecialchars($slug, ENT_QUOTES, 'UTF-8') ?> hasTooltip w-100"
+   data-sociallogin-unlink="<?= htmlspecialchars($link, ENT_QUOTES, 'UTF-8') ?>"
+   data-sociallogin-token="<?= htmlspecialchars($token, ENT_QUOTES, 'UTF-8') ?>"
+   title="<?= htmlspecialchars($tooltip, ENT_QUOTES, 'UTF-8') ?>">
+	<?php if (!empty($icon)): ?>
+	<span class="<?= htmlspecialchars($icon, ENT_QUOTES, 'UTF-8') ?>" aria-hidden="true"></span>
+	<?php else: ?>
+	<?= $img ?>
+	<?php endif; ?>
+	<?= htmlspecialchars($label, ENT_QUOTES, 'UTF-8') ?>
+</button>
 <?php else: ?>
 <a class="btn btn-default akeeba-sociallogin-linkunlink-button akeeba-sociallogin-<?= htmlspecialchars($type, ENT_QUOTES, 'UTF-8') ?>-button akeeba-sociallogin-<?= htmlspecialchars($type, ENT_QUOTES, 'UTF-8') ?>-button-<?= htmlspecialchars($slug, ENT_QUOTES, 'UTF-8') ?> hasTooltip w-100"
    href="<?= htmlspecialchars($link, ENT_QUOTES, 'UTF-8') ?>" title="<?= htmlspecialchars($tooltip, ENT_QUOTES, 'UTF-8') ?>">
