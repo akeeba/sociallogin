@@ -14,7 +14,7 @@
 <extension type="plugin" group="sociallogin" method="upgrade">
     <name>PLG_SOCIALLOGIN_AMAZON</name>
     <version>4.11.1</version>
-    <creationDate>2026-11-17</creationDate>
+    <creationDate>2026-11-18</creationDate>
     <author>Akeeba Ltd</author>
     <authorEmail>no-reply@akeeba.com</authorEmail>
     <authorUrl>https://www.akeeba.com</authorUrl>
