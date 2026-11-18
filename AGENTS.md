@@ -71,6 +71,7 @@ and across agentic harnesses (Claude Code, Codex, Qwen Code, Kimi Code, Junie, â
 | add, change or translate language strings, or add a new language | `.claude/memory/translations.md` |
 | run, triage or act on a security audit, or touch composer dependencies | `.claude/memory/security-audit-decisions.md` |
 | update, re-scope, prune or add a bundled third-party library (`scoper.inc.php`, `build/scoped-packages.php`, `plugins/system/sociallogin/src/Dependencies/`) | `.claude/memory/bundled-dependencies.md` |
+| debug a login that fails only on a hosted site, or send HTTP requests to a hosted test site | `.claude/memory/hosted-site-waf.md` |
 
 ### Recording new memories
 
