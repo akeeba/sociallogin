@@ -14,6 +14,7 @@ use Akeeba\Plugin\System\SocialLogin\Features\Ajax;
 use Akeeba\Plugin\System\SocialLogin\Features\ButtonInjection;
 use Akeeba\Plugin\System\SocialLogin\Features\DynamicUsergroups;
 use Akeeba\Plugin\System\SocialLogin\Features\UserFields;
+use Akeeba\Plugin\System\SocialLogin\Library\Helper\BackendCallback;
 use Akeeba\Plugin\System\SocialLogin\Library\Plugin\AddLoggerTrait;
 use Akeeba\Plugin\System\SocialLogin\Library\Plugin\EventResultTrait;
 use Akeeba\Plugin\System\SocialLogin\Library\Plugin\RunPluginsTrait;
@@ -27,6 +28,7 @@ use Joomla\Database\DatabaseAwareInterface;
 use Joomla\Database\DatabaseAwareTrait;
 use Joomla\Event\Event;
 use Joomla\Event\SubscriberInterface;
+use Joomla\Input\Input;
 use Joomla\Registry\Registry;
 
 class SocialLogin extends CMSPlugin implements SubscriberInterface, DatabaseAwareInterface
@@ -234,10 +236,9 @@ class SocialLogin extends CMSPlugin implements SubscriberInterface, DatabaseAwar
 	/**
 	 * Redirect OAuth callbacks for admin-issued login flows from the frontend to the admin backend.
 	 *
-	 * When social login buttons are rendered in the admin backend, the OAuth flow is flagged as targeting the backend
-	 * (the flag is stored in the session when the login button URL is created). Since all providers now use the
-	 * frontend callback URL (Uri::root()), the callback arrives at the frontend. This method detects the admin flag
-	 * in the session and redirects the request to the admin backend so the login completes there.
+	 * When social login buttons are rendered in the admin backend, the OAuth state is prefixed with "admin-". Since all
+	 * providers now use the frontend callback URL (Uri::root()), the callback arrives at the frontend. This method
+	 * detects the prefix and redirects the request to the admin backend so the login completes there.
 	 *
 	 * For GET callbacks, a standard redirect is used. For POST callbacks (e.g., Apple's form_post response_mode),
 	 * an auto-submitting HTML form is rendered to forward all POST data to the admin backend.
@@ -257,45 +258,32 @@ class SocialLogin extends CMSPlugin implements SubscriberInterface, DatabaseAwar
 
 		$input = $app->getInput();
 
-		// Must be a com_ajax request for the sociallogin group
-		if ($input->getCmd('option') !== 'com_ajax' || $input->getCmd('group') !== 'sociallogin')
+		/**
+		 * Must be an admin-bound com_ajax request for the sociallogin group. The parameters are also read from the
+		 * request URI, because a server firewall may have stripped the query string; see BackendCallback.
+		 */
+		$query = BackendCallback::getBackendQuery(
+			$input->getArray(),
+			(new Input(Uri::getInstance()->getQuery(true)))->getArray()
+		);
+
+		if ($query === null)
 		{
 			return;
 		}
 
-		// Must be an admin-bound login flow. The frontend session knows nothing about the backend session, so the
-		// routing hint is the "admin-" prefix of the state. The backend validates the full state against its session.
-		$state = $input->getString('state', '');
-
-		if (!str_starts_with($state, 'admin-'))
-		{
-			return;
-		}
-
-		$plugin = $input->getCmd('plugin', '');
-		$format = $input->getCmd('format', 'raw');
-
-		// Build the admin callback URL
-		$adminUrl = Uri::root() . 'administrator/index.php?option=com_ajax&group=sociallogin&plugin='
-		            . urlencode($plugin) . '&format=' . urlencode($format);
+		$adminBase = Uri::root() . 'administrator/index.php?';
 
 		if (strtoupper($input->getMethod()) === 'GET')
 		{
-			// For GET requests, append all query parameters and redirect
-			$queryParams = $input->getArray();
-
-			// Remove the params we already have in the base URL
-			unset($queryParams['option'], $queryParams['group'], $queryParams['plugin'], $queryParams['format']);
-
-			if (!empty($queryParams))
-			{
-				$adminUrl .= '&' . http_build_query($queryParams, '', '&');
-			}
-
-			$app->redirect($adminUrl);
+			// For GET requests, forward the query parameters with a redirect
+			$app->redirect($adminBase . http_build_query($query, '', '&'));
 
 			return;
 		}
+
+		// Build the admin callback URL
+		$adminUrl = $adminBase . http_build_query(array_slice($query, 0, 4, true), '', '&');
 
 		// For POST requests (e.g., Apple Sign In form_post), output an auto-submitting form
 		$postData = $input->post->getArray();

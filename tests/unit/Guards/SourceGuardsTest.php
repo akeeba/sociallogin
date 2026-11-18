@@ -122,6 +122,13 @@ class SourceGuardsTest extends TestCase
 		$body = substr($code, $a, 2500);
 
 		$this->assertStringNotContainsString('getSession', $body);
-		$this->assertStringContainsString("'admin-'", $body);
+		$this->assertStringContainsString('BackendCallback::getBackendQuery(', $body);
+
+		// The routing decision itself is made by the helper, from the "admin-" prefix of the state.
+		$helper = file_get_contents(self::root() . '/system/sociallogin/src/Library/Helper/BackendCallback.php');
+
+		$this->assertStringNotContainsString('getSession', $helper);
+		$this->assertStringNotContainsString('Factory::', $helper);
+		$this->assertStringContainsString("'admin-'", $helper);
 	}
 }
